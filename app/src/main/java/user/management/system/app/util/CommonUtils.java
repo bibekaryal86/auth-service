@@ -1,4 +1,4 @@
-package spring.service.skeleton.app.util;
+package user.management.system.app.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

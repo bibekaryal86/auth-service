@@ -1,4 +1,4 @@
-package spring.service.skeleton.app.model;
+package user.management.system.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

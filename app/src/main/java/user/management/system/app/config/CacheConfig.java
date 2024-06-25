@@ -1,4 +1,4 @@
-package spring.service.skeleton.app.config;
+package user.management.system.app.config;
 
 import static java.util.Objects.requireNonNull;
 

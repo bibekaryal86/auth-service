@@ -1,4 +1,4 @@
-package spring.service.skeleton.app.controller;
+package user.management.system.app.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

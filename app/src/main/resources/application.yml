@@ -1,13 +1,14 @@
 spring:
   application:
-    name: spring-service-skeleton
+    name: user-management-system
 
 server:
   servlet:
-    context-path: /spring-service-skeleton
+    context-path: /user-mgmt-system
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+        exclude: shutdown
