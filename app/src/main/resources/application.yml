@@ -1,10 +1,12 @@
 spring:
   application:
     name: user-management-system
+  flyway:
+    enabled: false
 
 server:
   servlet:
-    context-path: /user-mgmt-system
+    context-path: /ums
 
 management:
   endpoints:
