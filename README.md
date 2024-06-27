@@ -20,3 +20,16 @@ enums for actions in history
 enums for statuses
 aop for audit logging
 only superuser can modify roles
+
+team_admin
+team_member
+team_guest
+
+project_admin
+project_member
+project_guest
+
+super
+admin
+member
+guest
