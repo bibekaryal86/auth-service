@@ -8,7 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -58,6 +58,12 @@ public class UsersDto implements Serializable {
   @Column(name = "is_superuser")
   private boolean isSuperuser;
 
-  @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-  private Set<UsersTeamsRolesDto> usersTeamsRoles;
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  private Set<UsersAuditDto> usersAuditDtoSet;
+
+  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
+  private Set<UsersAuditDto> usersAuditDtoSetUpdatedBy;
+
+  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
+  private Set<ProjectsAuditDto> projectsAuditDtoSetUpdatedBy;
 }

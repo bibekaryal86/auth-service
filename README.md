@@ -9,9 +9,10 @@
          * Also, will have to update `SecurityConfig` to allow SwaggerUI
 
 * Flyway
-  * Run flyway command as `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.baselineOnMigrate=true`
+  * Run flyway command as `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx`
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
-  * 
+  * Clear database (DELETES EVERYTHING)
+    * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
 

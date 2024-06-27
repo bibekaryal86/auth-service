@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "users_teams_roles")
-public class UsersTeamsRolesDto implements Serializable {
+@Table(name = "users_project_roles")
+public class UsersProjectsRolesDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

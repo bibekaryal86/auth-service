@@ -44,6 +44,6 @@ public class ProjectsAuditDto implements Serializable {
   @Column(name = "action", nullable = false, length = 250)
   private String action;
 
-  @Column(columnDefinition = "jsonb")
-  private String previous;
+  @Column(name = "details", nullable = false, columnDefinition = "jsonb")
+  private String details;
 }

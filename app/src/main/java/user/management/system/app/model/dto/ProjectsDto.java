@@ -8,9 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -57,10 +55,6 @@ public class ProjectsDto implements Serializable {
   @Column(name = "end_date")
   private LocalDateTime endDate;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "teams_projects",
-      joinColumns = @JoinColumn(name = "team_id"),
-      inverseJoinColumns = @JoinColumn(name = "project_id"))
-  private Set<ProjectsDto> projects;
+  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+  private Set<ProjectsAuditDto> projectsAuditDtoSet;
 }
