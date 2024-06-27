@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,30 +24,26 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "roles")
-public class Roles implements Serializable {
+@Table(name = "users_audit")
+public class UsersAuditDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "name", nullable = false, length = 250, unique = true)
-  private String name;
+  @ManyToOne
+  @JoinColumn(name = "updated_by", nullable = false)
+  private UsersDto updatedBy;
 
-  @Column(name = "desc", nullable = false, columnDefinition = "text")
-  private String desc;
+  @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt;
 
-  @Column(name = "status", nullable = false, length = 50)
-  private String status;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private UsersDto user;
 
-  @Column(name = "created", nullable = false)
-  private LocalDateTime created;
+  @Column(name = "action", nullable = false, length = 250)
+  private String action;
 
-  @Column(name = "updated", nullable = false)
-  private LocalDateTime updated;
-
-  @Column(name = "deleted")
-  private LocalDateTime deleted;
-
-  @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-  private Set<UsersTeamsRoles> usersTeamsRoles;
+  @Column(columnDefinition = "jsonb")
+  private String previous;
 }

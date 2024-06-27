@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
@@ -25,23 +27,17 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "users")
-public class Users implements Serializable {
+@Table(name = "projects")
+public class ProjectsDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "first_name", nullable = false, length = 50)
-  private String firstName;
+  @Column(name = "name", nullable = false, length = 250, unique = true)
+  private String name;
 
-  @Column(name = "last_name", nullable = false, length = 50)
-  private String lastName;
-
-  @Column(name = "email", nullable = false, length = 250, unique = true)
-  private String email;
-
-  @Column(name = "password", nullable = false, length = 250)
-  private transient String password;
+  @Column(name = "desc", nullable = false, columnDefinition = "text")
+  private String desc;
 
   @Column(name = "status", nullable = false, length = 50)
   private String status;
@@ -55,9 +51,16 @@ public class Users implements Serializable {
   @Column(name = "deleted")
   private LocalDateTime deleted;
 
-  @Column(name = "is_superuser")
-  private boolean isSuperuser;
+  @Column(name = "start_date")
+  private LocalDateTime startDate;
 
-  @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-  private Set<UsersTeamsRoles> usersTeamsRoles;
+  @Column(name = "end_date")
+  private LocalDateTime endDate;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "teams_projects",
+      joinColumns = @JoinColumn(name = "team_id"),
+      inverseJoinColumns = @JoinColumn(name = "project_id"))
+  private Set<ProjectsDto> projects;
 }

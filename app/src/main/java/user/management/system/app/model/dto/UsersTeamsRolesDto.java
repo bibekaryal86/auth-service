@@ -2,7 +2,6 @@ package user.management.system.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,26 +22,21 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "roles_audit")
-public class RolesAudit implements Serializable {
+@Table(name = "users_teams_roles")
+public class UsersTeamsRolesDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "updated_by", nullable = false)
-  private Users updatedBy;
+  @JoinColumn(name = "user_id", nullable = false)
+  private UsersDto user;
 
-  @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
+  @ManyToOne
+  @JoinColumn(name = "team_id", nullable = false)
+  private TeamsDto team;
 
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private Roles role;
-
-  @Column(name = "action", nullable = false, length = 250)
-  private String action;
-
-  @Column(columnDefinition = "jsonb")
-  private String previous;
+  private RolesDto role;
 }

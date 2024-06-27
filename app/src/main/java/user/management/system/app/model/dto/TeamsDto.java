@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "teams")
-public class Teams implements Serializable {
+public class TeamsDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -50,8 +50,8 @@ public class Teams implements Serializable {
   private LocalDateTime deleted;
 
   @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
-  private Set<Teams> teams;
+  private Set<TeamsDto> teams;
 
   @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
-  private Set<UsersTeamsRoles> usersTeamsRoles;
+  private Set<UsersTeamsRolesDto> usersTeamsRoles;
 }

@@ -24,22 +24,22 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "projects_audit")
-public class ProjectsAudit implements Serializable {
+@Table(name = "roles_audit")
+public class RolesAuditDto implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "updated_by", nullable = false)
-  private Users updatedBy;
+  private UsersDto updatedBy;
 
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @ManyToOne
-  @JoinColumn(name = "project_id", nullable = false)
-  private Projects project;
+  @JoinColumn(name = "role_id", nullable = false)
+  private RolesDto role;
 
   @Column(name = "action", nullable = false, length = 250)
   private String action;
