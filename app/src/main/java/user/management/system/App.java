@@ -10,9 +10,13 @@ import static user.management.system.app.util.ConstantUtils.SERVER_PORT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @SpringBootApplication
+@EnableWebSecurity
+@EnableTransactionManagement
 public class App {
 
   public static void main(String[] args) {
