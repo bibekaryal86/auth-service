@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,10 +34,10 @@ public class Projects implements Serializable {
   private Integer id;
 
   @Column(name = "name", nullable = false, length = 250, unique = true)
-  private String email;
+  private String name;
 
   @Column(name = "desc", nullable = false, columnDefinition = "text")
-  private String password;
+  private String desc;
 
   @Column(name = "status", nullable = false, length = 50)
   private String status;
@@ -51,4 +56,11 @@ public class Projects implements Serializable {
 
   @Column(name = "end_date")
   private LocalDateTime endDate;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "teams_projects",
+      joinColumns = @JoinColumn(name = "team_id"),
+      inverseJoinColumns = @JoinColumn(name = "project_id"))
+  private Set<Projects> projects;
 }
