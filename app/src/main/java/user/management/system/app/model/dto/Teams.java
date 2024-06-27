@@ -29,10 +29,10 @@ public class Teams implements Serializable {
   private Integer id;
 
   @Column(name = "name", nullable = false, length = 250, unique = true)
-  private String email;
+  private String name;
 
-  @Column(name = "desc", nullable = false, length = 2500)
-  private String password;
+  @Column(name = "desc", nullable = false, columnDefinition = "text")
+  private String desc;
 
   @Column(name = "status", nullable = false, length = 50)
   private String status;

@@ -31,7 +31,7 @@ public class Projects implements Serializable {
   @Column(name = "name", nullable = false, length = 250, unique = true)
   private String email;
 
-  @Column(name = "desc", nullable = false, length = 2500)
+  @Column(name = "desc", nullable = false, columnDefinition = "text")
   private String password;
 
   @Column(name = "status", nullable = false, length = 50)

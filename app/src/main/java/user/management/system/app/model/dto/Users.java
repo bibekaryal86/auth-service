@@ -38,7 +38,7 @@ public class Users implements Serializable {
   private String email;
 
   @Column(name = "password", nullable = false, length = 250)
-  private String password;
+  private transient String password;
 
   @Column(name = "status", nullable = false, length = 50)
   private String status;

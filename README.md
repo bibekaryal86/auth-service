@@ -18,3 +18,4 @@
 enums for actions in history
 enums for statuses
 aop for audit logging
+only superuser can modify roles
