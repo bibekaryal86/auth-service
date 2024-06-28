@@ -1,4 +1,4 @@
-package user.management.system.app.model.dto;
+package user.management.system.app.model.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UsersDto {
+public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -54,23 +54,21 @@ public class UsersDto {
   @Column(name = "deleted")
   private LocalDateTime deleted;
 
-  // audit tables relationships
+  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
+  private Set<UsersAuditEntity> userAudits = new HashSet<>();
+
+  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
+  private Set<ProjectsAuditEntity> projectAudits = new HashSet<>();
+
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  private Set<UsersAuditDto> usersAuditDtoSet;
+  private Set<UsersAuditEntity> userAudits2 = new HashSet<>();
 
-  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
-  private Set<UsersAuditDto> usersAuditDtoSetUpdatedBy;
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+  private List<UserProjectRoleEntity> usersProjectsRoles = new ArrayList<>();
 
-  @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
-  private Set<ProjectsAuditDto> projectsAuditDtoSetUpdatedBy;
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+  private List<UserTeamRoleEntity> usersTeamsRoles = new ArrayList<>();
 
-  // other relationships
   @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-  private Set<RolesDto> roles = new HashSet<>();
-
-  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-  private List<UsersProjectsRolesDto> usersProjectsRoles = new ArrayList<>();
-
-  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-  private List<UsersTeamsRolesDto> usersTeamsRoles = new ArrayList<>();
+  private Set<RoleEntity> roles = new HashSet<>();
 }

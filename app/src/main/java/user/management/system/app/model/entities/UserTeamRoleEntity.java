@@ -1,4 +1,4 @@
-package user.management.system.app.model.dto;
+package user.management.system.app.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,20 +15,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users_projects_roles")
-public class UsersProjectsRolesDto {
+@Table(name = "users_teams_roles")
+public class UserTeamRoleEntity {
   @Id
   @ManyToOne
   @JoinColumn(name = "user_id")
-  private UsersDto user;
+  private UserEntity user;
 
   @Id
   @ManyToOne
-  @JoinColumn(name = "project_id")
-  private ProjectsDto project;
+  @JoinColumn(name = "team_id")
+  private TeamEntity team;
 
   @Id
   @ManyToOne
   @JoinColumn(name = "role_id")
-  private RolesDto role;
+  private RoleEntity role;
 }

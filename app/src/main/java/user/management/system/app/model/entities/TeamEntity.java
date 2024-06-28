@@ -1,4 +1,4 @@
-package user.management.system.app.model.dto;
+package user.management.system.app.model.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +21,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "projects")
-public class ProjectsDto {
+@Table(name = "teams")
+public class TeamEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -46,15 +45,6 @@ public class ProjectsDto {
   @Column(name = "deleted")
   private LocalDateTime deleted;
 
-  @Column(name = "start_date")
-  private LocalDateTime startDate;
-
-  @Column(name = "end_date")
-  private LocalDateTime endDate;
-
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-  private Set<ProjectsAuditDto> projectsAuditDtoSet;
-
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-  private List<UsersProjectsRolesDto> userProjectRoles = new ArrayList<>();
+  @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+  private List<UserTeamRoleEntity> userTeamRoles = new ArrayList<>();
 }

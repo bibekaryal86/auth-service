@@ -1,4 +1,4 @@
-package user.management.system.app.model.dto;
+package user.management.system.app.model.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,21 +20,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users_audit")
-public class UsersAuditDto {
+public class UsersAuditEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "updated_by", nullable = false)
-  private UsersDto updatedBy;
+  private UserEntity updatedBy;
 
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private UsersDto user;
+  private UserEntity user;
 
   @Column(name = "action", nullable = false, length = 250)
   private String action;
