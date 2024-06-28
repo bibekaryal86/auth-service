@@ -5,7 +5,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users_teams_roles")
-public class UsersTeamsRolesDto implements Serializable {
+public class UsersTeamsRolesDto {
   @Id
   @ManyToOne
   @JoinColumn(name = "user_id")

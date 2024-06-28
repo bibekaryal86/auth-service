@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UsersDto implements Serializable {
+public class UsersDto {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -54,9 +53,6 @@ public class UsersDto implements Serializable {
 
   @Column(name = "deleted")
   private LocalDateTime deleted;
-
-  @Column(name = "is_superuser")
-  private boolean isSuperuser;
 
   // audit tables relationships
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
