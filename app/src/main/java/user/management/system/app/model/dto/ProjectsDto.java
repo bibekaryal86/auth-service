@@ -10,6 +10,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,4 +55,7 @@ public class ProjectsDto implements Serializable {
 
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
   private Set<ProjectsAuditDto> projectsAuditDtoSet;
+
+  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+  private List<UsersProjectsRolesDto> userProjectRoles = new ArrayList<>();
 }

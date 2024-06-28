@@ -6,10 +6,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +58,7 @@ public class UsersDto implements Serializable {
   @Column(name = "is_superuser")
   private boolean isSuperuser;
 
+  // audit tables relationships
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private Set<UsersAuditDto> usersAuditDtoSet;
 
@@ -62,4 +67,14 @@ public class UsersDto implements Serializable {
 
   @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
   private Set<ProjectsAuditDto> projectsAuditDtoSetUpdatedBy;
+
+  // other relationships
+  @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+  private Set<RolesDto> roles = new HashSet<>();
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+  private List<UsersProjectsRolesDto> usersProjectsRoles = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+  private List<UsersTeamsRolesDto> usersTeamsRoles = new ArrayList<>();
 }
