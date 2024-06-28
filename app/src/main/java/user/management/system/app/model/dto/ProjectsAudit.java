@@ -1,4 +1,4 @@
-package user.management.system.app.model;
+package user.management.system.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import user.management.system.app.model.ModelBaseAudit;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,10 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsersBase extends ModelBase {
-  private String firstName;
-  private String lastName;
-  private String email;
-  private transient String password;
-  private String status;
+public class ProjectsAudit extends ModelBaseAudit {
+  private Project project;
+  private Project details;
 }

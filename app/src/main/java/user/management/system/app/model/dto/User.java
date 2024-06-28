@@ -1,14 +1,13 @@
-package user.management.system.app.model;
+package user.management.system.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDateTime;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import user.management.system.app.model.ModelBase;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Projects extends ModelBaseNameDescStatus {
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
-
-  // orm entities
-  private Set<ProjectsAudit> projectsAuditSet;
+public class User extends ModelBase {
+  private String firstName;
+  private String lastName;
+  private String email;
+  private transient String password;
+  private String status;
 }

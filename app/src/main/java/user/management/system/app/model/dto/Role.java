@@ -1,4 +1,4 @@
-package user.management.system.app.model;
+package user.management.system.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import user.management.system.app.model.ModelBaseNameDescStatus;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,13 +17,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Users extends ModelBaseAudit {
-  private UsersBase user;
-  private UsersBase details;
-
-  // orm entities
-  private Set<UsersAudit> usersAuditSet;
-  private Set<UsersAudit> usersAuditSetUpdatedBy;
-  private Set<ProjectsAudit> projectsAuditSetUpdatedBy;
-  private Set<Roles> roles;
+public class Role extends ModelBaseNameDescStatus {
+    private Set<User> users;
 }
