@@ -1,4 +1,4 @@
-package user.management.system.app.model.entities;
+package user.management.system.app.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

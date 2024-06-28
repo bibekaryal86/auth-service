@@ -1,4 +1,4 @@
-package user.management.system.app.model.entities;
+package user.management.system.app.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

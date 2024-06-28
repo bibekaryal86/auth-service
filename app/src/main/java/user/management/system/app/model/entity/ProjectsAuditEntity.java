@@ -1,4 +1,4 @@
-package user.management.system.app.model.entities;
+package user.management.system.app.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users_audit")
-public class UsersAuditEntity {
+@Table(name = "projects_audit")
+public class ProjectsAuditEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -33,8 +33,8 @@ public class UsersAuditEntity {
   private LocalDateTime updatedAt;
 
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  @JoinColumn(name = "project_id", nullable = false)
+  private ProjectEntity project;
 
   @Column(name = "action", nullable = false, length = 250)
   private String action;

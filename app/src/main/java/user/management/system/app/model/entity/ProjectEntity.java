@@ -1,4 +1,4 @@
-package user.management.system.app.model.entities;
+package user.management.system.app.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,9 +6,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -26,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class RoleEntity {
+@Table(name = "projects")
+public class ProjectEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -50,16 +47,15 @@ public class RoleEntity {
   @Column(name = "deleted")
   private LocalDateTime deleted;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "users_roles",
-      joinColumns = @JoinColumn(name = "role_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id"))
-  private Set<UserEntity> users = new HashSet<>();
+  @Column(name = "start_date")
+  private LocalDateTime startDate;
 
-  @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-  private List<UserProjectRoleEntity> usersProjectsRoles = new ArrayList<>();
+  @Column(name = "end_date")
+  private LocalDateTime endDate;
 
-  @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-  private List<UserTeamRoleEntity> usersTeamsRoles = new ArrayList<>();
+  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+  private Set<ProjectsAuditEntity> projectAudits = new HashSet<>();
+
+  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+  private List<UserProjectRoleEntity> userProjectRoles = new ArrayList<>();
 }
