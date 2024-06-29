@@ -1,44 +1,25 @@
 package user.management.system.app.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "users_audit")
 public class UsersAuditEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @ManyToOne
-  @JoinColumn(name = "updated_by", nullable = false)
-  private UserEntity updatedBy;
-
-  @Column(name = "updated_at", nullable = false)
+  private Integer updatedBy;
   private LocalDateTime updatedAt;
-
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
-
-  @Column(name = "action", nullable = false, length = 250)
+  private Integer userId;
   private String action;
-
-  @Column(name = "details", nullable = false, columnDefinition = "jsonb")
   private String details;
 }

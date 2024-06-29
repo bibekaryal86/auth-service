@@ -1,6 +1,6 @@
 package user.management.system.app.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import user.management.system.app.model.entity.UsersAuditEntity;
 
-public interface UsersAuditRepository extends JpaRepository<UsersAuditEntity, Integer> {}
+public interface UsersAuditRepository extends CrudRepository<UsersAuditEntity, Integer> {}

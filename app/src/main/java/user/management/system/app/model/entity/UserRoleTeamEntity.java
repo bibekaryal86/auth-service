@@ -1,6 +1,5 @@
 package user.management.system.app.model.entity;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,16 +11,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "projects")
-public class ProjectEntity {
+@Table(name = "users_roles_teams")
+public class UserRoleTeamEntity {
   @Id
   private Integer id;
-  private String name;
-  private String desc;
-  private String status;
-  private LocalDateTime created;
-  private LocalDateTime updated;
-  private LocalDateTime deleted;
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
+  private Integer userId;
+  private Integer roleId;
+  private Integer teamId;
 }
