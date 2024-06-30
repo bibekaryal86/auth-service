@@ -4,24 +4,20 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "projects")
-public class ProjectEntity {
-  @Id
-  private Integer id;
+public class ProjectEntity extends EntityBase {
   private String name;
   private String desc;
   private String status;
-  private LocalDateTime created;
-  private LocalDateTime updated;
-  private LocalDateTime deleted;
   private LocalDateTime startDate;
   private LocalDateTime endDate;
 }
