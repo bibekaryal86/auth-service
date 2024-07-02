@@ -13,4 +13,4 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "roles")
-public class RoleEntity extends EntityBaseNameDescStatus { }
+public class RoleEntity extends EntityBaseNameDescStatus {}

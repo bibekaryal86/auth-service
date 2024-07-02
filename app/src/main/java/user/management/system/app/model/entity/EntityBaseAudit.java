@@ -12,8 +12,7 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EntityBaseAudit {
-  @Id
-  private Integer id;
+  @Id private Integer id;
   private Integer updatedBy;
   private LocalDateTime updatedAt;
   private String action;

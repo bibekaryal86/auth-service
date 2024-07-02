@@ -13,8 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Table(name = "users_roles_projects")
 public class UserRoleProjectEntity {
-  @Id
-  private Integer id;
+  @Id private Integer id;
   private Integer userId;
   private Integer roleId;
   private Integer projectId;

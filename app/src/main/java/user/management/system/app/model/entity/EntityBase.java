@@ -12,8 +12,7 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EntityBase {
-  @Id
-  private Integer id;
+  @Id private Integer id;
   private LocalDateTime created;
   private LocalDateTime updated;
   private LocalDateTime deleted;

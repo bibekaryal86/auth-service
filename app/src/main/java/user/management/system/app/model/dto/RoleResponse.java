@@ -1,16 +1,17 @@
-package user.management.system.app.model.entity;
+package user.management.system.app.model.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.relational.core.mapping.Table;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "teams")
-public class TeamEntity extends EntityBaseNameDescStatus {}
+public class RoleResponse extends BaseResponse {
+  private List<Role> roles;
+}
