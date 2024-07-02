@@ -1,6 +1,7 @@
 package user.management.system.app.controller;
 
 import java.util.Collections;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,13 @@ public class RoleController {
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedRoles,
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedUsers) {
     try {
+      List<Role> roles =
+          roleService.getAllRoles(limit, offset, includeDeletedRoles, includeDeletedUsers);
+
+      if (roles.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      }
+
       return ResponseEntity.ok(
           RoleResponse.builder()
               .roles(
@@ -52,14 +60,6 @@ public class RoleController {
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedRoles,
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedUsers) {
     try {
-      if (id == null || id <= 0) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Invalid Id Provided")
-                .build(),
-            HttpStatus.BAD_REQUEST);
-      }
       Role role = roleService.getRoleById(id, includeDeletedRoles, includeDeletedUsers);
       if (role == null) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,7 +79,8 @@ public class RoleController {
       if (newId <= 0) {
         return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
       }
-      return ResponseEntity.ok(RoleResponse.builder().createdRowsId(newId).build());
+      return new ResponseEntity<>(
+          RoleResponse.builder().createdRowsId(newId).build(), HttpStatus.CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>(
           RoleResponse.builder().error(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,23 +91,9 @@ public class RoleController {
   public ResponseEntity<RoleResponse> updateRole(
       @PathVariable("id") Integer id, @RequestBody RoleRequest role) {
     try {
-      if (id == null || id <= 0) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Invalid ID in request")
-                .build(),
-            HttpStatus.BAD_REQUEST);
-      }
-
       Role currentRole = roleService.getRoleById(id, true, false);
       if (currentRole == null) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Role not found by provided ID")
-                .build(),
-            HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
       int updatedRowsCount = roleService.updateRole(id, role);
@@ -125,23 +112,9 @@ public class RoleController {
       @PathVariable("id") Integer id,
       @RequestParam(required = false, defaultValue = "false") Boolean isHardDelete) {
     try {
-      if (id == null || id <= 0) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Invalid ID in request")
-                .build(),
-            HttpStatus.BAD_REQUEST);
-      }
-
       Role currentRole = roleService.getRoleById(id, true, false);
       if (currentRole == null) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Role not found by provided ID")
-                .build(),
-            HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
       int deletedRowsCount = roleService.deleteRole(id, isHardDelete);
@@ -158,23 +131,9 @@ public class RoleController {
   @PatchMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> restoreRole(@PathVariable("id") Integer id) {
     try {
-      if (id == null || id <= 0) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Invalid ID in request")
-                .build(),
-            HttpStatus.BAD_REQUEST);
-      }
-
       Role currentRole = roleService.getRoleById(id, true, false);
       if (currentRole == null) {
-        return new ResponseEntity<>(
-            RoleResponse.builder()
-                .roles(Collections.emptyList())
-                .error("Role not found by provided ID")
-                .build(),
-            HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
       int restoredRowsCount = roleService.restoreRole(id);
