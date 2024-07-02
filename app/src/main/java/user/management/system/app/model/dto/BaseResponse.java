@@ -10,5 +10,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseResponse {
+  private Integer createdRowsId;
+  private Integer updatedRowsCount;
+  private Integer deletedRowsCount;
+  private Integer restoredRowsCount;
   private String error;
 }
