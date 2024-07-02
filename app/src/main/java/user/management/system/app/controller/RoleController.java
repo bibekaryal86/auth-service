@@ -21,7 +21,7 @@ public class RoleController {
 
   @GetMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<RoleResponse> getAllRoles(
-      @RequestParam(required = false, defaultValue = "0") Integer limit,
+      @RequestParam(required = false, defaultValue = "25") Integer limit,
       @RequestParam(required = false, defaultValue = "0") Integer offset,
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedRoles,
       @RequestParam(required = false, defaultValue = "false") Boolean includeDeletedUsers) {
