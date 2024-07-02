@@ -1,5 +1,6 @@
 package user.management.system.app.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class RoleController {
     this.roleService = roleService;
   }
 
+  @Operation(summary = "Retrieve All Roles")
   @GetMapping
   public ResponseEntity<RoleResponse> getAllRoles(
       @RequestParam(required = false, defaultValue = "25") Integer limit,
@@ -54,6 +56,7 @@ public class RoleController {
     }
   }
 
+  @Operation(summary = "Retrieve One Role By ID")
   @GetMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> getRoleById(
       @PathVariable("id") Integer id,
@@ -72,6 +75,7 @@ public class RoleController {
     }
   }
 
+  @Operation(summary = "Create One Role")
   @PostMapping
   public ResponseEntity<RoleResponse> createRole(@RequestBody RoleRequest role) {
     try {
@@ -87,6 +91,7 @@ public class RoleController {
     }
   }
 
+  @Operation(summary = "Update One Role")
   @PutMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> updateRole(
       @PathVariable("id") Integer id, @RequestBody RoleRequest role) {
@@ -107,6 +112,7 @@ public class RoleController {
     }
   }
 
+  @Operation(summary = "Delete One Role, Requires SuperUser Permissions for Hard Delete")
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> deleteRole(
       @PathVariable("id") Integer id,
@@ -128,6 +134,7 @@ public class RoleController {
     }
   }
 
+  @Operation(summary = "Restore One Soft Deleted Role, Requires SuperUser Permissions")
   @PatchMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> restoreRole(@PathVariable("id") Integer id) {
     try {

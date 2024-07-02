@@ -20,15 +20,15 @@ enums for statuses
 aop for audit logging
 only superuser can modify roles
 
-team_admin
-team_member
-team_guest
+team_admin - can delete
+team_member - can update
+team_guest - can view
 
-project_admin
-project_member
-project_guest
+project_admin - can delete
+project_member - can update
+project_guest - can view
 
-super
-admin
-member
-guest
+guest - can view
+member - can update
+admin - can create and delete
+super - can hard delete and restore
