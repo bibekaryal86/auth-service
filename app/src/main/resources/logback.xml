@@ -11,7 +11,7 @@
               value="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ, America/Denver}] [user-mgmt-sys] [${PID:-},%thread] [%level] [%c{1}] --- %msg%n"/>
 
     <springProfile name="development">
-        <property name="LOG_FILE" value="/zzz_dev/projects/logs/user-mgmt-sys/user-mgmt-sys"/>
+        <property name="LOG_FILE" value="${user.home}/zzz_dev/projects/logs/user-mgmt-sys/user-mgmt-sys"/>
 
         <appender name="FILELOG" class="RollingFileAppender">
             <file>${LOG_FILE}.log</file>
@@ -31,7 +31,7 @@
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="APPLOG"/>
+            <appender-ref ref="FILELOG"/>
         </root>
     </springProfile>
 
