@@ -20,7 +20,7 @@ public class RoleRepository {
       "WITH LimitedRoles AS ( "
           + "SELECT * "
           + "FROM roles "
-          + "WHERE (:includeDeleted = TRUE OR deleted IS NULL) "
+          + "WHERE (:includeDeletedRoles = TRUE OR deleted IS NULL) "
           + "ORDER BY name "
           + "LIMIT :limit OFFSET :offset"
           + ") "
