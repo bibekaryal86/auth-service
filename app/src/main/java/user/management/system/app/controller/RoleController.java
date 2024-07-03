@@ -53,11 +53,7 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
 
-      return ResponseEntity.ok(
-          RoleResponse.builder()
-              .roles(
-                  roleService.getAllRoles(limit, offset, includeDeletedRoles, includeDeletedUsers))
-              .build());
+      return ResponseEntity.ok(RoleResponse.builder().roles(roles).build());
     } catch (Exception e) {
       return new ResponseEntity<>(
           RoleResponse.builder().error(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,7 +113,7 @@ public class RoleController {
   public ResponseEntity<RoleResponse> updateRole(
       @PathVariable("id") Integer id, @RequestBody RoleRequest role) {
     try {
-      Role currentRole = roleService.getRoleById(id, true, false);
+      Role currentRole = roleService.getRoleById(id, true, true);
       if (currentRole == null) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
@@ -146,7 +142,7 @@ public class RoleController {
       @PathVariable("id") Integer id,
       @RequestParam(required = false, defaultValue = "false") Boolean isHardDelete) {
     try {
-      Role currentRole = roleService.getRoleById(id, true, false);
+      Role currentRole = roleService.getRoleById(id, true, true);
       if (currentRole == null) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
@@ -173,7 +169,7 @@ public class RoleController {
   @PatchMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> restoreRole(@PathVariable("id") Integer id) {
     try {
-      Role currentRole = roleService.getRoleById(id, true, false);
+      Role currentRole = roleService.getRoleById(id, true, true);
       if (currentRole == null) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }

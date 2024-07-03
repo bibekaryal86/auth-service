@@ -119,29 +119,29 @@ public class TeamRepository {
       final int limit,
       final int offset,
       final boolean includeDeletedTeams,
-      final boolean includeDeletedRoles,
-      final boolean includeDeletedUsers) {
+      final boolean includeDeletedUsers,
+      final boolean includeDeletedRoles) {
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("limit", limit)
             .addValue("offset", offset)
             .addValue("includeDeletedTeams", includeDeletedTeams)
-            .addValue("includeDeletedRoles", includeDeletedRoles)
-            .addValue("includeDeletedUsers", includeDeletedUsers);
+            .addValue("includeDeletedUsers", includeDeletedUsers)
+            .addValue("includeDeletedRoles", includeDeletedRoles);
     return this.jdbcTemplate.query(SQL_GET_ALL_TEAMS, parameters, new TeamMapper());
   }
 
   public Team getTeamById(
       final int id,
       final boolean includeDeletedTeams,
-      final boolean includeDeletedRoles,
-      final boolean includeDeletedUsers) {
+      final boolean includeDeletedUsers,
+      final boolean includeDeletedRoles) {
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("includeDeletedTeams", includeDeletedTeams)
-            .addValue("includeDeletedRoles", includeDeletedRoles)
-            .addValue("includeDeletedUsers", includeDeletedUsers);
+            .addValue("includeDeletedUsers", includeDeletedUsers)
+            .addValue("includeDeletedRoles", includeDeletedRoles);
     List<Team> teams = this.jdbcTemplate.query(SQL_GET_ONE_TEAM, parameters, new TeamMapper());
     if (CollectionUtils.isEmpty(teams)) {
       return null;
