@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.util.CollectionUtils;
 import user.management.system.app.model.dto.Role;
 import user.management.system.app.model.dto.Team;
 import user.management.system.app.model.dto.User;
@@ -37,6 +38,10 @@ public class TeamMapper implements ResultSetExtractor<List<Team>> {
                         : rs.getTimestamp("team_deleted").toLocalDateTime())
                 .build();
         teams.put(teamId, team);
+      }
+
+      if (CollectionUtils.isEmpty(team.getUserRoles())) {
+        team.setUserRoles(new ArrayList<>());
       }
 
       int userId = rs.getInt("user_id");

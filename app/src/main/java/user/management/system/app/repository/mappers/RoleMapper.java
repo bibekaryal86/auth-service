@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.util.CollectionUtils;
 import user.management.system.app.model.dto.Role;
 import user.management.system.app.model.dto.User;
 
@@ -35,6 +36,10 @@ public class RoleMapper implements ResultSetExtractor<List<Role>> {
                         : rs.getTimestamp("role_deleted").toLocalDateTime())
                 .build();
         roles.put(roleId, role);
+      }
+
+      if (CollectionUtils.isEmpty(role.getUsers())) {
+        role.setUsers(new ArrayList<>());
       }
 
       int userId = rs.getInt("user_id");
