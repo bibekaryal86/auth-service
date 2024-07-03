@@ -43,7 +43,8 @@ public class RoleService {
 
   public int createRole(final RoleRequest role) {
     log.debug("Create Role: [{}]", role);
-    int newRoleId = roleRepository.createRole(role.getName(), role.getDescription(), role.getStatus());
+    int newRoleId =
+        roleRepository.createRole(role.getName(), role.getDescription(), role.getStatus());
     log.debug("Created Role: newRoleId=[{}]", newRoleId);
     return newRoleId;
   }

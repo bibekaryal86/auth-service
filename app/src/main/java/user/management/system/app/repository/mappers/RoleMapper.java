@@ -29,7 +29,10 @@ public class RoleMapper implements ResultSetExtractor<List<Role>> {
                 .status(rs.getString("role_status"))
                 .created(rs.getTimestamp("role_created").toLocalDateTime())
                 .updated(rs.getTimestamp("role_updated").toLocalDateTime())
-                .deleted(rs.getTimestamp("role_deleted")==null? null : rs.getTimestamp("role_deleted").toLocalDateTime())
+                .deleted(
+                    rs.getTimestamp("role_deleted") == null
+                        ? null
+                        : rs.getTimestamp("role_deleted").toLocalDateTime())
                 .build();
         roles.put(roleId, role);
       }

@@ -22,9 +22,9 @@ public class RoleRepository {
     this.jdbcTemplate = jdbcTemplate;
     this.simpleJdbcInsert =
         new SimpleJdbcInsert(dataSource)
-                .withTableName("roles")
-                .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "description", "status");
+            .withTableName("roles")
+            .usingGeneratedKeyColumns("id")
+            .usingColumns("name", "description", "status");
   }
 
   private static final String SQL_GET_ALL_ROLES =
@@ -135,7 +135,8 @@ public class RoleRepository {
     return this.simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
   }
 
-  public int updateRole(final int id, final String name, final String description, final String status) {
+  public int updateRole(
+      final int id, final String name, final String description, final String status) {
     StringBuilder sql = new StringBuilder("UPDATE roles SET updated = NOW() ");
     if (StringUtils.hasText(name)) {
       sql.append(", name = :name ");
