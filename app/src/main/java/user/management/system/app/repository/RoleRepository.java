@@ -91,10 +91,10 @@ public class RoleRepository {
           + "users u ON ur.user_id = u.id "
           + "WHERE "
           + "(:includeDeletedUsers = TRUE OR u.deleted IS NULL) ";
-  private static final String DELETE_ROLE_HARD = "DELETE FROM roles WHERE id = :id";
-  private static final String DELETE_ROLE_SOFT =
+  private static final String SQL_DELETE_ROLE_HARD = "DELETE FROM roles WHERE id = :id";
+  private static final String SQL_DELETE_ROLE_SOFT =
       "UPDATE roles SET deleted = NOW(), updated = NOW() WHERE id = :id";
-  private static final String RESTORE_ROLE_SOFT =
+  private static final String SQL_RESTORE_ROLE_SOFT =
       "UPDATE roles SET deleted = NULL, updated = NOW() WHERE id = :id";
 
   public List<Role> getAllRoles(
@@ -160,14 +160,14 @@ public class RoleRepository {
   public int deleteRole(final int id, final boolean isHardDelete) {
     SqlParameterSource parameters = new MapSqlParameterSource().addValue("id", id);
     if (isHardDelete) {
-      return this.jdbcTemplate.update(DELETE_ROLE_HARD, parameters);
+      return this.jdbcTemplate.update(SQL_DELETE_ROLE_HARD, parameters);
     } else {
-      return this.jdbcTemplate.update(DELETE_ROLE_SOFT, parameters);
+      return this.jdbcTemplate.update(SQL_DELETE_ROLE_SOFT, parameters);
     }
   }
 
   public int restoreRole(final int id) {
     SqlParameterSource parameters = new MapSqlParameterSource().addValue("id", id);
-    return this.jdbcTemplate.update(RESTORE_ROLE_SOFT, parameters);
+    return this.jdbcTemplate.update(SQL_RESTORE_ROLE_SOFT, parameters);
   }
 }
