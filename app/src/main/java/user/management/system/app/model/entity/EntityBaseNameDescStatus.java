@@ -13,6 +13,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class EntityBaseNameDescStatus extends EntityBase {
   private String name;
-  private String desc;
+  private String description;
   private String status;
 }

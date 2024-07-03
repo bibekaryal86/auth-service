@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import user.management.system.app.model.dto.Role;
 import user.management.system.app.repository.mappers.RoleMapper;
 
@@ -20,7 +21,10 @@ public class RoleRepository {
   public RoleRepository(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
     this.jdbcTemplate = jdbcTemplate;
     this.simpleJdbcInsert =
-        new SimpleJdbcInsert(dataSource).withTableName("roles").usingGeneratedKeyColumns("id");
+        new SimpleJdbcInsert(dataSource)
+                .withTableName("roles")
+                .usingGeneratedKeyColumns("id")
+                .usingColumns("name", "description", "status");
   }
 
   private static final String SQL_GET_ALL_ROLES =
@@ -34,7 +38,7 @@ public class RoleRepository {
           + "SELECT "
           + "r.id AS role_id, "
           + "r.name AS role_name, "
-          + "r.desc AS role_desc, "
+          + "r.description AS role_desc, "
           + "r.status AS role_status, "
           + "r.created AS role_created, "
           + "r.updated AS role_updated, "
@@ -66,7 +70,7 @@ public class RoleRepository {
           + "SELECT "
           + "r.id AS role_id, "
           + "r.name AS role_name, "
-          + "r.desc AS role_desc, "
+          + "r.description AS role_desc, "
           + "r.status AS role_status, "
           + "r.created AS role_created, "
           + "r.updated AS role_updated, "
@@ -87,8 +91,6 @@ public class RoleRepository {
           + "users u ON ur.user_id = u.id "
           + "WHERE "
           + "(:includeDeletedUsers = TRUE OR u.deleted IS NULL) ";
-  private static final String UPDATE_ROLE =
-      "UPDATE roles SET name = :name, desc = :desc, status = :status, updated = NOW() WHERE id = :id";
   private static final String DELETE_ROLE_HARD = "DELETE FROM roles WHERE id = :id";
   private static final String DELETE_ROLE_SOFT =
       "UPDATE roles SET deleted = NOW(), updated = NOW() WHERE id = :id";
@@ -96,8 +98,8 @@ public class RoleRepository {
       "UPDATE roles SET deleted = NULL, updated = NOW() WHERE id = :id";
 
   public List<Role> getAllRoles(
-      final int offset,
       final int limit,
+      final int offset,
       final boolean includeDeletedRoles,
       final boolean includeDeletedUsers) {
     SqlParameterSource parameters =
@@ -124,25 +126,34 @@ public class RoleRepository {
     }
   }
 
-  public int insertRole(final String name, final String desc, final String status) {
+  public int createRole(final String name, final String description, final String status) {
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("name", name)
-            .addValue("desc", desc)
+            .addValue("description", description)
             .addValue("status", status);
-
     return this.simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
   }
 
-  public int updateRole(final int id, final String name, final String desc, final String status) {
+  public int updateRole(final int id, final String name, final String description, final String status) {
+    StringBuilder sql = new StringBuilder("UPDATE roles SET updated = NOW() ");
+    if (StringUtils.hasText(name)) {
+      sql.append(", name = :name ");
+    }
+    if (StringUtils.hasText(description)) {
+      sql.append(", description = :description ");
+    }
+    if (StringUtils.hasText(status)) {
+      sql.append(", status = :status ");
+    }
+    sql.append("WHERE id = :id ");
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("name", name)
-            .addValue("desc", desc)
+            .addValue("description", description)
             .addValue("status", status);
-
-    return this.jdbcTemplate.update(UPDATE_ROLE, parameters);
+    return this.jdbcTemplate.update(sql.toString(), parameters);
   }
 
   public int deleteRole(final int id, final boolean isHardDelete) {

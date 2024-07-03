@@ -43,7 +43,7 @@ public class RoleService {
 
   public int createRole(final RoleRequest role) {
     log.debug("Create Role: [{}]", role);
-    int newRoleId = roleRepository.insertRole(role.getName(), role.getDesc(), role.getStatus());
+    int newRoleId = roleRepository.createRole(role.getName(), role.getDescription(), role.getStatus());
     log.debug("Created Role: newRoleId=[{}]", newRoleId);
     return newRoleId;
   }
@@ -51,7 +51,7 @@ public class RoleService {
   public int updateRole(final int roleId, final RoleRequest role) {
     log.debug("Update Role: [{}]", role);
     int updatedRows =
-        roleRepository.updateRole(role.getId(), role.getName(), role.getDesc(), role.getStatus());
+        roleRepository.updateRole(roleId, role.getName(), role.getDescription(), role.getStatus());
     log.debug("Updated Role: updatedRows=[{}]", updatedRows);
     return updatedRows;
   }

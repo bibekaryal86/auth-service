@@ -1,6 +1,8 @@
 package user.management.system.app.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,11 @@ public class RoleController {
   }
 
   @Operation(summary = "Retrieve All Roles")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Roles found"),
+          @ApiResponse(responseCode = "204", description = "Roles not found"),
+          @ApiResponse(responseCode = "500", description = "Something went wrong")
+  })
   @GetMapping
   public ResponseEntity<RoleResponse> getAllRoles(
       @RequestParam(required = false, defaultValue = "25") Integer limit,
@@ -57,6 +64,11 @@ public class RoleController {
   }
 
   @Operation(summary = "Retrieve One Role By ID")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Role found"),
+          @ApiResponse(responseCode = "404", description = "Role not found by provided id"),
+          @ApiResponse(responseCode = "500", description = "Something went wrong")
+  })
   @GetMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> getRoleById(
       @PathVariable("id") Integer id,
@@ -92,6 +104,12 @@ public class RoleController {
   }
 
   @Operation(summary = "Update One Role")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Role successfully updated"),
+          @ApiResponse(responseCode = "404", description = "Role not found by provided id"),
+          @ApiResponse(responseCode = "503", description = "Role was not updated"),
+          @ApiResponse(responseCode = "500", description = "Something went wrong")
+  })
   @PutMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> updateRole(
       @PathVariable("id") Integer id, @RequestBody RoleRequest role) {
@@ -113,6 +131,12 @@ public class RoleController {
   }
 
   @Operation(summary = "Delete One Role, Requires SuperUser Permissions for Hard Delete")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Role successfully deleted"),
+          @ApiResponse(responseCode = "404", description = "Role not found by provided id"),
+          @ApiResponse(responseCode = "503", description = "Role was not deleted"),
+          @ApiResponse(responseCode = "500", description = "Something went wrong")
+  })
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> deleteRole(
       @PathVariable("id") Integer id,
@@ -135,6 +159,12 @@ public class RoleController {
   }
 
   @Operation(summary = "Restore One Soft Deleted Role, Requires SuperUser Permissions")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Role successfully restored"),
+          @ApiResponse(responseCode = "404", description = "Role not found by provided id"),
+          @ApiResponse(responseCode = "503", description = "Role was not restored"),
+          @ApiResponse(responseCode = "500", description = "Something went wrong")
+  })
   @PatchMapping(value = "/{id}")
   public ResponseEntity<RoleResponse> restoreRole(@PathVariable("id") Integer id) {
     try {

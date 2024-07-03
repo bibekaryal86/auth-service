@@ -16,7 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(name = "projects")
 public class ProjectEntity extends EntityBase {
   private String name;
-  private String desc;
+  private String description;
   private String status;
   private LocalDateTime startDate;
   private LocalDateTime endDate;
