@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import user.management.system.app.model.dto.Role;
+import user.management.system.app.model.dto.RoleRequest;
 import user.management.system.app.repository.mappers.RoleMapper;
 
 @Repository
@@ -126,34 +127,33 @@ public class RoleRepository {
     }
   }
 
-  public int createRole(final String name, final String description, final String status) {
+  public int createRole(final RoleRequest role) {
     SqlParameterSource parameters =
         new MapSqlParameterSource()
-            .addValue("name", name)
-            .addValue("description", description)
-            .addValue("status", status);
+            .addValue("name", role.getName())
+            .addValue("description", role.getDescription())
+            .addValue("status", role.getStatus());
     return this.simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
   }
 
-  public int updateRole(
-      final int id, final String name, final String description, final String status) {
+  public int updateRole(final int id, final RoleRequest role) {
     StringBuilder sql = new StringBuilder("UPDATE roles SET updated = NOW() ");
-    if (StringUtils.hasText(name)) {
+    if (StringUtils.hasText(role.getName())) {
       sql.append(", name = :name ");
     }
-    if (StringUtils.hasText(description)) {
+    if (StringUtils.hasText(role.getDescription())) {
       sql.append(", description = :description ");
     }
-    if (StringUtils.hasText(status)) {
+    if (StringUtils.hasText(role.getStatus())) {
       sql.append(", status = :status ");
     }
     sql.append("WHERE id = :id ");
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("id", id)
-            .addValue("name", name)
-            .addValue("description", description)
-            .addValue("status", status);
+            .addValue("name", role.getName())
+            .addValue("description", role.getDescription())
+            .addValue("status", role.getStatus());
     return this.jdbcTemplate.update(sql.toString(), parameters);
   }
 

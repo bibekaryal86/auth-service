@@ -51,16 +51,14 @@ public class TeamService {
 
   public int createTeam(final TeamRequest team) {
     log.debug("Create Team: [{}]", team);
-    int newTeamId =
-        teamRepository.createTeam(team.getName(), team.getDescription(), team.getStatus());
+    int newTeamId = teamRepository.createTeam(team);
     log.debug("Created Team: newTeamId=[{}]", newTeamId);
     return newTeamId;
   }
 
   public int updateTeam(final int teamId, final TeamRequest team) {
     log.debug("Update Team: [{}]", team);
-    int updatedRows =
-        teamRepository.updateTeam(teamId, team.getName(), team.getDescription(), team.getStatus());
+    int updatedRows = teamRepository.updateTeam(teamId, team);
     log.debug("Updated Team: updatedRows=[{}]", updatedRows);
     return updatedRows;
   }

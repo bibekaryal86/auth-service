@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import user.management.system.app.model.dto.Team;
+import user.management.system.app.model.dto.TeamRequest;
 import user.management.system.app.repository.mappers.TeamMapper;
 
 @Repository
@@ -148,34 +149,33 @@ public class TeamRepository {
     }
   }
 
-  public int createTeam(final String name, final String description, final String status) {
+  public int createTeam(final TeamRequest team) {
     SqlParameterSource parameters =
         new MapSqlParameterSource()
-            .addValue("name", name)
-            .addValue("description", description)
-            .addValue("status", status);
+            .addValue("name", team.getName())
+            .addValue("description", team.getDescription())
+            .addValue("status", team.getStatus());
     return this.simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
   }
 
-  public int updateTeam(
-      final int id, final String name, final String description, final String status) {
+  public int updateTeam(final int id, final TeamRequest team) {
     StringBuilder sql = new StringBuilder("UPDATE teams SET updated = NOW() ");
-    if (StringUtils.hasText(name)) {
+    if (StringUtils.hasText(team.getName())) {
       sql.append(", name = :name ");
     }
-    if (StringUtils.hasText(description)) {
+    if (StringUtils.hasText(team.getDescription())) {
       sql.append(", description = :description ");
     }
-    if (StringUtils.hasText(status)) {
+    if (StringUtils.hasText(team.getStatus())) {
       sql.append(", status = :status ");
     }
     sql.append("WHERE id = :id ");
     SqlParameterSource parameters =
         new MapSqlParameterSource()
             .addValue("id", id)
-            .addValue("name", name)
-            .addValue("description", description)
-            .addValue("status", status);
+            .addValue("name", team.getName())
+            .addValue("description", team.getDescription())
+            .addValue("status", team.getStatus());
     return this.jdbcTemplate.update(sql.toString(), parameters);
   }
 
