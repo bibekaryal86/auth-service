@@ -2,7 +2,7 @@ spring:
   application:
     name: user-management-system
   datasource:
-    url: jdbc:postgresql://stalwartly-sincere-mongoose.data-1.use1.tembo.io:5432/postgres
+    url: jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -13,6 +13,24 @@ spring:
       minimum-idle: 5
       max-lifetime: 1800000
       connection-test-query: SELECT 1
+      connection-init-sql: SELECT 1
+      leak-detection-threshold: 30000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        temp:
+          use_jdbc_metadata_defaults: false
+        show_sql: true
+        format_sql: true
+        hbm2ddl:
+          auto: validate
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   servlet:

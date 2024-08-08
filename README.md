@@ -14,16 +14,74 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
+enums for address_type
+    MAILING
+    SHIPPING
+    BILLING
 
-enums for actions in history
-enums for statuses
-aop for audit logging
-only superuser can modify roles
+enums for user_statuses
+    PENDING
+    ACTIVE
+    VALIDATE_INIT
+    VALIDATE_ERROR
+    RESET_INIT
+    RESET_ERROR
+    INACTIVE
+    DELETED
 
-team_admin - can delete
-team_member - can update
-team_guest - can view
+enums for project_statuses
+    PROPOSED
+    APPROVED
+    IN_PROGRESS
+    ON_HOLD
+    DELAYED
+    REJECTED
+    CANCELLED
+    COMPLETED
+    DELETED
 
+enums for audit_users
+    CREATE_USER
+    UPDATE_USER
+    DELETE_USER
+    ASSIGN_ROLE
+    UNASSIGN_ROLE
+    ASSIGN_PROJECT
+    UNASSIGN_PROJECT
+    ASSIGN_PROJECT_ROLE
+    UNASSIGN_PROJECT_ROLE
+    ADD_ADDRESS
+    UPDATE_ADDRESS
+    DELETE_ADDRESS
+    USER_LOGIN
+    USER_LOGOUT
+    USER_VALIDATE_INIT
+    USER_VALIDATE_EXIT
+    USER_VALIDATE_ERROR
+    USER_RESET_INIT
+    USER_RESET_MID
+    USER_RESET_EXIT
+    USER_RESET_ERROR
+
+enums for audit_projects
+    CREATE_PROJECT
+    UPDATE_PROJECT
+    DELETE_PROJECT
+
+enums for audit_roles
+    CREATE_ROLE
+    UPDATE_ROLE
+    DELETE_ROLE
+    ASSIGN_PERMISSION
+    UNASSIGN_PERMISSION
+
+enums for audit_permissions
+    CREATE_PERMISSION
+    UPDATE_PERMISSION
+    DELETE_PERMISSION
+    
+
+only superuser can modify roles and permissions table
 project_admin - can delete
 project_member - can update
 project_guest - can view
