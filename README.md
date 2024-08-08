@@ -14,32 +14,6 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
-enums for address_type
-    MAILING
-    SHIPPING
-    BILLING
-
-enums for user_statuses
-    PENDING
-    ACTIVE
-    VALIDATE_INIT
-    VALIDATE_ERROR
-    RESET_INIT
-    RESET_ERROR
-    INACTIVE
-    DELETED
-
-enums for project_statuses
-    PROPOSED
-    APPROVED
-    IN_PROGRESS
-    ON_HOLD
-    DELAYED
-    REJECTED
-    CANCELLED
-    COMPLETED
-    DELETED
-
 enums for audit_users
     CREATE_USER
     UPDATE_USER
@@ -88,7 +62,7 @@ project_guest - can view
 
 guest - can view
 member - can update
-admin - can create and delete
+admin - can create and delete, can view admin tables - can't modify though
 super - can hard delete and restore
 
 for entities in model.entities package, check what lombok annotations are actually needed

@@ -32,6 +32,9 @@ public class Project extends EntityBaseNameDescCreateModify {
   @Column(name = "start_date")
   private LocalDateTime startDate;
 
+  @Column(name = "end_date")
+  private LocalDateTime endDate;
+
   @Column(name = "repo")
   private String repo;
 
