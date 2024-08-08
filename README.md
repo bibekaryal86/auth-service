@@ -67,3 +67,4 @@ super - can hard delete and restore
 
 for entities in model.entities package, check what lombok annotations are actually needed
     maybe we don't need any, maybe we need just getters and all args
+set show_sql to false in application.yml
