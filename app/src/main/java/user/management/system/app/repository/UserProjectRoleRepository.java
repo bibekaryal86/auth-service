@@ -6,4 +6,5 @@ import user.management.system.app.model.entity.UserProjectRole;
 import user.management.system.app.model.entity.UserProjectRoleId;
 
 @Repository
-public interface UserProjectRoleRepository extends JpaRepository<UserProjectRole, UserProjectRoleId> {}
+public interface UserProjectRoleRepository
+    extends JpaRepository<UserProjectRole, UserProjectRoleId> {}
