@@ -3,8 +3,6 @@ package user.management.system.app.service;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import user.management.system.app.model.dto.Project;
-import user.management.system.app.model.dto.ProjectRequest;
 import user.management.system.app.repository.ProjectRepository;
 
 @Slf4j

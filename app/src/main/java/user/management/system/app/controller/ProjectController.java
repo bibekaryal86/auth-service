@@ -17,9 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import user.management.system.app.model.dto.Project;
-import user.management.system.app.model.dto.ProjectRequest;
-import user.management.system.app.model.dto.ProjectResponse;
 import user.management.system.app.service.ProjectService;
 
 @RestController
