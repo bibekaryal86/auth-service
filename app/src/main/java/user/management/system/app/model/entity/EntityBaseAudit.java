@@ -1,20 +1,29 @@
 package user.management.system.app.model.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.Id;
 
-@Data
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class EntityBaseAudit {
-  @Id private Integer id;
-  private Integer updatedBy;
-  private LocalDateTime updatedAt;
-  private String action;
-  private String details;
+@MappedSuperclass
+public abstract class EntityBaseAudit {
+  @Column(name = "event_type", nullable = false)
+  private String eventType;
+
+  @Column(name = "event_data", columnDefinition = "jsonb", nullable = false)
+  private String eventData;
+
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt;
+
+  @ManyToOne
+  @JoinColumn(name = "created_by", insertable = false, updatable = false)
+  private User createdBy;
+
+  @Column(name = "ip_address", nullable = false)
+  private String ipAddress;
+
+  @Column(name = "user_agent", nullable = false)
+  private String userAgent;
 }

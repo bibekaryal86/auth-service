@@ -160,14 +160,20 @@ CREATE TABLE audit_projects (
 
 -- create indexes
 CREATE UNIQUE INDEX idx_users_phone ON users(phone) WHERE phone IS NOT NULL;
+CREATE index idx_address_type_id ON address_types(id);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_password ON users(password);
+CREATE INDEX idx_users_deleted_date ON users(deleted_date);
+CREATE INDEX idx_users_addresses_id ON users_addresses(id);
+CREATE INDEX idx_user_status_id ON user_status(id);
 CREATE INDEX idx_roles_id ON roles(id);
 CREATE INDEX idx_roles_name ON roles(name);
 CREATE INDEX idx_permissions_id ON permissions(id);
 CREATE INDEX idx_permissions_name ON permissions(name);
 CREATE INDEX idx_projects_id ON projects(id);
 CREATE INDEX idx_projects_name ON projects(name);
+CREATE INDEX idx_projects_deleted_date ON projects(deleted_date);
+CREATE INDEX idx_project_status_id ON project_status(id);
 CREATE INDEX idx_audit_users_created_at ON audit_users(created_at);
 CREATE INDEX idx_audit_roles_created_at ON audit_roles(created_at);
 CREATE INDEX idx_audit_permissions_created_at ON audit_permissions(created_at);

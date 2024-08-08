@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import user.management.system.app.model.entity.ProjectEntity;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
