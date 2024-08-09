@@ -1,18 +1,17 @@
 package user.management.system.app.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class BaseResponse {
+@NoArgsConstructor
+public class ResponseCrudInfo {
   private int createdRowsId;
   private int updatedRowsCount;
   private int deletedRowsCount;
   private int restoredRowsCount;
-  private String error;
 }
