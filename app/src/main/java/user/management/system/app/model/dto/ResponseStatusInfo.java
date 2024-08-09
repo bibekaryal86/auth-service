@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseStatusInfo {
-    private String message;
-    private String errMsg;
+  private String message;
+  private String errMsg;
 }

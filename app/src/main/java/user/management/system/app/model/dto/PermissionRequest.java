@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestSortConfig {
-    private String table;
-    private String column;
-    private RequestSortFilterOptions.SortDirection direction;
+public class PermissionRequest {
+  private String name;
+  private String description;
 }

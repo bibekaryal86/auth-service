@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestFilterConfig {
-    private String table;
-    private String column;
-    private Object value;
-    private RequestSortFilterOptions.FilterOperation operation;
+public class AddressTypeRequest {
+  private String name;
+  private String description;
 }

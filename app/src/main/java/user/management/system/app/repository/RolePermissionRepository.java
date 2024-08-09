@@ -6,4 +6,5 @@ import user.management.system.app.model.entity.RolePermissionEntity;
 import user.management.system.app.model.entity.RolePermissionId;
 
 @Repository
-public interface RolePermissionRepository extends JpaRepository<RolePermissionEntity, RolePermissionId> {}
+public interface RolePermissionRepository
+    extends JpaRepository<RolePermissionEntity, RolePermissionId> {}

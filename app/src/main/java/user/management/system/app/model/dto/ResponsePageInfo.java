@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePageInfo {
-    private int totalItems;
-    private int totalPages;
-    private int pageNumber;
-    private int perPage;
+  private int totalItems;
+  private int totalPages;
+  private int pageNumber;
+  private int perPage;
 }
