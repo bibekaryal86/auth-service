@@ -28,17 +28,17 @@ public class UserProjectRoleEntity {
   @MapsId("userId")
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity userEntity;
+  private UserEntity user;
 
   @MapsId("projectId")
   @ManyToOne
   @JoinColumn(name = "project_id", nullable = false)
-  private ProjectEntity projectEntity;
+  private ProjectEntity project;
 
   @MapsId("roleId")
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private RoleEntity roleEntity;
+  private RoleEntity role;
 
   @Column(name = "assigned_date")
   private LocalDateTime assignedDate;

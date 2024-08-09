@@ -28,12 +28,12 @@ public class RolePermissionEntity {
   @MapsId("roleId")
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private RoleEntity roleEntity;
+  private RoleEntity role;
 
   @MapsId("permissionId")
   @ManyToOne
   @JoinColumn(name = "permission_id", nullable = false)
-  private PermissionEntity permissionEntity;
+  private PermissionEntity permission;
 
   @Column(name = "assigned_date", nullable = false)
   private LocalDateTime assignedDate;

@@ -25,5 +25,5 @@ public class AuditUserEntity extends EntityBaseAudit {
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity userEntity;
+  private UserEntity user;
 }

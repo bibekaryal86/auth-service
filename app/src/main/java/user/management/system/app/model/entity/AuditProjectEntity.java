@@ -23,5 +23,5 @@ public class AuditProjectEntity extends EntityBaseAudit {
 
   @ManyToOne
   @JoinColumn(name = "project_id", nullable = false)
-  private ProjectEntity projectEntity;
+  private ProjectEntity project;
 }

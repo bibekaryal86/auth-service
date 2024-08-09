@@ -25,5 +25,5 @@ public class AuditRoleEntity extends EntityBaseAudit {
 
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private RoleEntity roleEntity;
+  private RoleEntity role;
 }
