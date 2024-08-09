@@ -9,5 +9,7 @@ public class ConstantUtils {
   // provided at runtime
   public static final String SERVER_PORT = "PORT";
 
-  // others
+  // messages
+  public static final String INTERNAL_SERVER_ERROR_MESSAGE =
+      "Something went wrong, please try again later!";
 }
