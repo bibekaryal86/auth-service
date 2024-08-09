@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "address_types")
+@Table(name = "permissions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressType extends EntityBaseNameDesc {
+public class PermissionEntity extends EntityBaseNameDescCreateModify {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

@@ -15,25 +15,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "roles_permissions")
+@Table(name = "users_projects_roles")
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class RolePermission {
+public class UserProjectRoleEntity {
 
-  @EmbeddedId private RolePermissionId id;
+  @EmbeddedId private UserProjectRoleId id;
+
+  @MapsId("userId")
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private UserEntity userEntity;
+
+  @MapsId("projectId")
+  @ManyToOne
+  @JoinColumn(name = "project_id", nullable = false)
+  private ProjectEntity projectEntity;
 
   @MapsId("roleId")
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private Role role;
-
-  @MapsId("permissionId")
-  @ManyToOne
-  @JoinColumn(name = "permission_id", nullable = false)
-  private Permission permission;
+  private RoleEntity roleEntity;
 
   @Column(name = "assigned_date")
   private LocalDateTime assignedDate;

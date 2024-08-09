@@ -13,17 +13,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "audit_users")
+@Table(name = "audit_roles")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuditUser extends EntityBaseAudit {
+public class AuditRoleEntity extends EntityBaseAudit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @JoinColumn(name = "role_id", nullable = false)
+  private RoleEntity roleEntity;
 }

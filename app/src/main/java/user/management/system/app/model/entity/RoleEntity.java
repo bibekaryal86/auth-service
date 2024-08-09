@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "project_status")
+@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectStatus extends EntityBaseNameDesc {
+public class RoleEntity extends EntityBaseNameDescCreateModify {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

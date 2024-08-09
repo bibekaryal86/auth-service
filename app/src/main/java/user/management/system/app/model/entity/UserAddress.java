@@ -26,11 +26,11 @@ public class UserAddress extends EntityBaseCreateModify {
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  private UserEntity userEntity;
 
   @ManyToOne
   @JoinColumn(name = "address_type_id", nullable = false)
-  private AddressType addressType;
+  private AddressTypeEntity addressTypeEntity;
 
   @Column(name = "street", nullable = false)
   private String street;

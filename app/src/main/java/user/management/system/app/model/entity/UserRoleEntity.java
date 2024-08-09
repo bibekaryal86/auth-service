@@ -21,19 +21,19 @@ import lombok.Setter;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRole {
+public class UserRoleEntity {
 
   @EmbeddedId private UserRoleId id;
 
   @MapsId("userId")
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  private UserEntity userEntity;
 
   @MapsId("roleId")
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
-  private Role role;
+  private RoleEntity roleEntity;
 
   @Column(name = "assigned_date")
   private LocalDateTime assignedDate;

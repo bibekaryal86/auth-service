@@ -27,7 +27,7 @@ public abstract class EntityBaseAudit {
 
   @ManyToOne
   @JoinColumn(name = "created_by", insertable = false, updatable = false)
-  private User createdBy;
+  private UserEntity createdBy;
 
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;

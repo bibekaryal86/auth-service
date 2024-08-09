@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends EntityBaseCreateModify {
+public class UserEntity extends EntityBaseCreateModify {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -42,7 +42,7 @@ public class User extends EntityBaseCreateModify {
 
   @ManyToOne
   @JoinColumn(name = "status_id", nullable = false)
-  private UserStatus status;
+  private UserStatusEntity status;
 
   @Column(name = "is_validated", nullable = false)
   private Boolean isValidated;

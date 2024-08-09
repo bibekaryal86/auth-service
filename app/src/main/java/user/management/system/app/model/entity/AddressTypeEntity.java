@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_status")
+@Table(name = "address_types")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserStatus extends EntityBaseNameDesc {
+public class AddressTypeEntity extends EntityBaseNameDesc {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

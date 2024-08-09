@@ -7,23 +7,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "audit_roles")
+@Table(name = "audit_projects")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class AuditRole extends EntityBaseAudit {
+public class AuditProjectEntity extends EntityBaseAudit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "role_id", nullable = false)
-  private Role role;
+  @JoinColumn(name = "project_id", nullable = false)
+  private ProjectEntity projectEntity;
 }
