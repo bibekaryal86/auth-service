@@ -9,12 +9,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.model.dto.ResponseCrudInfo;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.dto.UserStatusDto;
 import user.management.system.app.model.dto.UserStatusRequest;
@@ -54,10 +57,31 @@ public class UserStatusController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserStatusResponse> getUserStatus(@PathVariable int id) {
+  public ResponseEntity<UserStatusResponse> getUserStatus(@PathVariable final int id) {
     try {
       UserStatusEntity userStatusEntity = userStatusService.retrieveUserStatusById(id);
       return getResponseSingle(userStatusEntity);
+    } catch (Exception ex) {
+      return getResponseError(ex);
+    }
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<UserStatusResponse> modifyUserStatus(
+      @PathVariable int id, @RequestBody final UserStatusRequest userStatusRequest) {
+    try {
+      UserStatusEntity userStatusEntity = userStatusService.updateUserStatus(id, userStatusRequest);
+      return getResponseSingle(userStatusEntity);
+    } catch (Exception ex) {
+      return getResponseError(ex);
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<UserStatusResponse> removeUserStatus(@PathVariable int id) {
+    try {
+      userStatusService.deleteUserStatus(id);
+      return getResponseDelete();
     } catch (Exception ex) {
       return getResponseError(ex);
     }
@@ -80,6 +104,15 @@ public class UserStatusController {
       final List<UserStatusEntity> userStatusEntities) {
     List<UserStatusDto> userStatusDtos = convertEntitiesToDtos(userStatusEntities);
     return ResponseEntity.ok(new UserStatusResponse(userStatusDtos, null, null, null));
+  }
+
+  private ResponseEntity<UserStatusResponse> getResponseDelete() {
+    return ResponseEntity.ok(
+        new UserStatusResponse(
+            Collections.emptyList(),
+            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
+            null,
+            null));
   }
 
   private ResponseEntity<UserStatusResponse> getResponseError(final Exception exception) {
