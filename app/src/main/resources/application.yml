@@ -25,8 +25,8 @@ spring:
             non_contextual_creation: true
         boot:
           allow_jdbc_metadata_access: true
-        show_sql: true
-        format_sql: true
+        show_sql: false # set false here, control from logback.xml
+        format_sql: false
         hbm2ddl:
           auto: validate
     open-in-view: false
