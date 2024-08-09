@@ -1,10 +1,12 @@
 package user.management.system.app.model.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class RoleDto extends RoleRequest {
   private Integer id;
 

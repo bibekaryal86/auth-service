@@ -1,12 +1,14 @@
 package user.management.system.app.model.dto;
 
 import java.util.List;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ProjectStatusResponse extends ResponseMetadata {
   private List<ProjectStatusDto> projectStatuses;
