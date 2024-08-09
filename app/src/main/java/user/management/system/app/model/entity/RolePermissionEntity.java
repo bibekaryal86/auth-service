@@ -35,6 +35,6 @@ public class RolePermissionEntity {
   @JoinColumn(name = "permission_id", nullable = false)
   private PermissionEntity permissionEntity;
 
-  @Column(name = "assigned_date")
+  @Column(name = "assigned_date", nullable = false)
   private LocalDateTime assignedDate;
 }
