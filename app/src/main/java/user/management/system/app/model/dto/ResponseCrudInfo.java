@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseCrudInfo {
-  private int createdRowsId;
+  private int insertedRowsCount;
   private int updatedRowsCount;
   private int deletedRowsCount;
   private int restoredRowsCount;
