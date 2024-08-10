@@ -78,7 +78,7 @@ public class UserStatusController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<UserStatusResponse> removeUserStatus(@PathVariable int id) {
+  public ResponseEntity<UserStatusResponse> removeUserStatus(@PathVariable final int id) {
     try {
       userStatusService.deleteUserStatus(id);
       return getResponseDelete();

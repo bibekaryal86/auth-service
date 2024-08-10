@@ -1,0 +1,56 @@
+package user.management.system.app.service;
+
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import user.management.system.app.exception.ElementNotFoundException;
+import user.management.system.app.model.dto.ProjectStatusRequest;
+import user.management.system.app.model.entity.ProjectStatusEntity;
+import user.management.system.app.repository.ProjectStatusRepository;
+
+@Service
+@Slf4j
+public class ProjectStatusService {
+  private final ProjectStatusRepository projectStatusRepository;
+
+  public ProjectStatusService(final ProjectStatusRepository projectStatusRepository) {
+    this.projectStatusRepository = projectStatusRepository;
+  }
+
+  public ProjectStatusEntity createProjectStatus(final ProjectStatusRequest projectStatusRequest) {
+    log.debug("Create Project Status: [{}]", projectStatusRequest);
+    ProjectStatusEntity projectStatusEntity = new ProjectStatusEntity();
+    BeanUtils.copyProperties(projectStatusRequest, projectStatusEntity);
+    return projectStatusRepository.save(projectStatusEntity);
+  }
+
+  public List<ProjectStatusEntity> retrieveAllProjectStatuses() {
+    log.debug("Retrieve All Project Statuses...");
+    return projectStatusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+  }
+
+  public ProjectStatusEntity retrieveProjectStatusById(final int id) {
+    log.debug("Retrieve Project Status By Id: [{}]", id);
+    return projectStatusRepository
+        .findById(id)
+        .orElseThrow(() -> new ElementNotFoundException("Project Status", id));
+  }
+
+  public ProjectStatusEntity updateProjectStatus(
+      final int id, final ProjectStatusRequest projectStatusRequest) {
+    log.debug("Update Project Status: [{}], [{}]", id, projectStatusRequest);
+    // throws exception if trying to update anything that doesn't exist
+    ProjectStatusEntity projectStatusEntity = retrieveProjectStatusById(id);
+    BeanUtils.copyProperties(projectStatusRequest, projectStatusEntity);
+    return projectStatusRepository.save(projectStatusEntity);
+  }
+
+  public void deleteProjectStatus(final int id) {
+    log.info("Delete Project Status: [{}]", id);
+    // throws exception if trying to delete anything that doesn't exist
+    ProjectStatusEntity projectStatusEntity = retrieveProjectStatusById(id);
+    projectStatusRepository.delete(projectStatusEntity);
+  }
+}
