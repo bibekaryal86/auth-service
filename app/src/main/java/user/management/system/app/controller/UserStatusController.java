@@ -49,7 +49,7 @@ public class UserStatusController {
   @GetMapping
   public ResponseEntity<UserStatusResponse> getUserStatuses() {
     try {
-      List<UserStatusEntity> userStatusEntities = userStatusService.retrieveAllUserStatuses();
+      List<UserStatusEntity> userStatusEntities = userStatusService.retrieveUserStatuses();
       return getResponseMultiple(userStatusEntities);
     } catch (Exception ex) {
       return getResponseError(ex);

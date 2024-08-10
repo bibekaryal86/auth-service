@@ -50,7 +50,7 @@ public class AddressTypeController {
   @GetMapping
   public ResponseEntity<AddressTypeResponse> getAddressTypes() {
     try {
-      List<AddressTypeEntity> addressTypeEntities = addressTypeService.retrieveAllAddressTypes();
+      List<AddressTypeEntity> addressTypeEntities = addressTypeService.retrieveAddressTypes();
       return getResponseMultiple(addressTypeEntities);
     } catch (Exception ex) {
       return getResponseError(ex);

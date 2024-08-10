@@ -26,8 +26,8 @@ public class AddressTypeService {
     return addressTypeRepository.save(addressTypeEntity);
   }
 
-  public List<AddressTypeEntity> retrieveAllAddressTypes() {
-    log.debug("Retrieve All Address Types...");
+  public List<AddressTypeEntity> retrieveAddressTypes() {
+    log.debug("Retrieve Address Types...");
     return addressTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
@@ -35,13 +35,12 @@ public class AddressTypeService {
     log.debug("Retrieve Address Type By Id: [{}]", id);
     return addressTypeRepository
         .findById(id)
-        .orElseThrow(() -> new ElementNotFoundException("Address Type", id));
+        .orElseThrow(() -> new ElementNotFoundException("Address Type", String.valueOf(id)));
   }
 
   public AddressTypeEntity updateAddressType(
       final int id, final AddressTypeRequest addressTypeRequest) {
     log.debug("Update Address Type: [{}], [{}]", id, addressTypeRequest);
-    // throws exception if trying to update anything that doesn't exist
     AddressTypeEntity addressTypeEntity = retrieveAddressTypeById(id);
     BeanUtils.copyProperties(addressTypeRequest, addressTypeEntity);
     return addressTypeRepository.save(addressTypeEntity);
@@ -49,7 +48,6 @@ public class AddressTypeService {
 
   public void deleteAddressType(final int id) {
     log.info("Delete Address Type: [{}]", id);
-    // throws exception if trying to delete anything that doesn't exist
     AddressTypeEntity addressTypeEntity = retrieveAddressTypeById(id);
     addressTypeRepository.delete(addressTypeEntity);
   }

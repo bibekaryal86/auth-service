@@ -26,8 +26,8 @@ public class ProjectStatusService {
     return projectStatusRepository.save(projectStatusEntity);
   }
 
-  public List<ProjectStatusEntity> retrieveAllProjectStatuses() {
-    log.debug("Retrieve All Project Statuses...");
+  public List<ProjectStatusEntity> retrieveProjectStatuses() {
+    log.debug("Retrieve Project Statuses...");
     return projectStatusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
@@ -35,13 +35,12 @@ public class ProjectStatusService {
     log.debug("Retrieve Project Status By Id: [{}]", id);
     return projectStatusRepository
         .findById(id)
-        .orElseThrow(() -> new ElementNotFoundException("Project Status", id));
+        .orElseThrow(() -> new ElementNotFoundException("Project Status", String.valueOf(id)));
   }
 
   public ProjectStatusEntity updateProjectStatus(
       final int id, final ProjectStatusRequest projectStatusRequest) {
     log.debug("Update Project Status: [{}], [{}]", id, projectStatusRequest);
-    // throws exception if trying to update anything that doesn't exist
     ProjectStatusEntity projectStatusEntity = retrieveProjectStatusById(id);
     BeanUtils.copyProperties(projectStatusRequest, projectStatusEntity);
     return projectStatusRepository.save(projectStatusEntity);
@@ -49,7 +48,6 @@ public class ProjectStatusService {
 
   public void deleteProjectStatus(final int id) {
     log.info("Delete Project Status: [{}]", id);
-    // throws exception if trying to delete anything that doesn't exist
     ProjectStatusEntity projectStatusEntity = retrieveProjectStatusById(id);
     projectStatusRepository.delete(projectStatusEntity);
   }

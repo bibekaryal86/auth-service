@@ -51,7 +51,7 @@ public class ProjectStatusController {
   public ResponseEntity<ProjectStatusResponse> getProjectStatuses() {
     try {
       List<ProjectStatusEntity> projectStatusEntities =
-          projectStatusService.retrieveAllProjectStatuses();
+          projectStatusService.retrieveProjectStatuses();
       return getResponseMultiple(projectStatusEntities);
     } catch (Exception ex) {
       return getResponseError(ex);

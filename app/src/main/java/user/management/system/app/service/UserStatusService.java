@@ -26,8 +26,8 @@ public class UserStatusService {
     return userStatusRepository.save(userStatusEntity);
   }
 
-  public List<UserStatusEntity> retrieveAllUserStatuses() {
-    log.debug("Retrieve All User Statuses...");
+  public List<UserStatusEntity> retrieveUserStatuses() {
+    log.debug("Retrieve User Statuses...");
     return userStatusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
@@ -35,13 +35,12 @@ public class UserStatusService {
     log.debug("Retrieve User Status By Id: [{}]", id);
     return userStatusRepository
         .findById(id)
-        .orElseThrow(() -> new ElementNotFoundException("User Status", id));
+        .orElseThrow(() -> new ElementNotFoundException("User Status", String.valueOf(id)));
   }
 
   public UserStatusEntity updateUserStatus(
       final int id, final UserStatusRequest userStatusRequest) {
     log.debug("Update User Status: [{}], [{}]", id, userStatusRequest);
-    // throws exception if trying to update anything that doesn't exist
     UserStatusEntity userStatusEntity = retrieveUserStatusById(id);
     BeanUtils.copyProperties(userStatusRequest, userStatusEntity);
     return userStatusRepository.save(userStatusEntity);
@@ -49,7 +48,6 @@ public class UserStatusService {
 
   public void deleteUserStatus(final int id) {
     log.info("Delete User Status: [{}]", id);
-    // throws exception if trying to delete anything that doesn't exist
     UserStatusEntity userStatusEntity = retrieveUserStatusById(id);
     userStatusRepository.delete(userStatusEntity);
   }
