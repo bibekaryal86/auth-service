@@ -3,6 +3,8 @@ package user.management.system.app.service;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -19,6 +21,7 @@ public class UserStatusService {
     this.userStatusRepository = userStatusRepository;
   }
 
+  @CacheEvict(value = "userStatuses", allEntries = true, beforeInvocation = true)
   public UserStatusEntity createUserStatus(final UserStatusRequest userStatusRequest) {
     log.debug("Create User Status: [{}]", userStatusRequest);
     UserStatusEntity userStatusEntity = new UserStatusEntity();
@@ -26,6 +29,7 @@ public class UserStatusService {
     return userStatusRepository.save(userStatusEntity);
   }
 
+  @Cacheable("userStatuses")
   public List<UserStatusEntity> retrieveUserStatuses() {
     log.debug("Retrieve User Statuses...");
     return userStatusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -38,6 +42,7 @@ public class UserStatusService {
         .orElseThrow(() -> new ElementNotFoundException("User Status", String.valueOf(id)));
   }
 
+  @CacheEvict(value = "userStatuses", allEntries = true, beforeInvocation = true)
   public UserStatusEntity updateUserStatus(
       final int id, final UserStatusRequest userStatusRequest) {
     log.debug("Update User Status: [{}], [{}]", id, userStatusRequest);
@@ -46,6 +51,7 @@ public class UserStatusService {
     return userStatusRepository.save(userStatusEntity);
   }
 
+  @CacheEvict(value = "userStatuses", allEntries = true, beforeInvocation = true)
   public void deleteUserStatus(final int id) {
     log.info("Delete User Status: [{}]", id);
     UserStatusEntity userStatusEntity = retrieveUserStatusById(id);

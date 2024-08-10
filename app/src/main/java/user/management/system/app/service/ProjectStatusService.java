@@ -3,6 +3,8 @@ package user.management.system.app.service;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -19,6 +21,7 @@ public class ProjectStatusService {
     this.projectStatusRepository = projectStatusRepository;
   }
 
+  @CacheEvict(value = "projectStatuses", allEntries = true, beforeInvocation = true)
   public ProjectStatusEntity createProjectStatus(final ProjectStatusRequest projectStatusRequest) {
     log.debug("Create Project Status: [{}]", projectStatusRequest);
     ProjectStatusEntity projectStatusEntity = new ProjectStatusEntity();
@@ -26,6 +29,7 @@ public class ProjectStatusService {
     return projectStatusRepository.save(projectStatusEntity);
   }
 
+  @Cacheable("projectStatuses")
   public List<ProjectStatusEntity> retrieveProjectStatuses() {
     log.debug("Retrieve Project Statuses...");
     return projectStatusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -38,6 +42,7 @@ public class ProjectStatusService {
         .orElseThrow(() -> new ElementNotFoundException("Project Status", String.valueOf(id)));
   }
 
+  @CacheEvict(value = "projectStatuses", allEntries = true, beforeInvocation = true)
   public ProjectStatusEntity updateProjectStatus(
       final int id, final ProjectStatusRequest projectStatusRequest) {
     log.debug("Update Project Status: [{}], [{}]", id, projectStatusRequest);
@@ -46,6 +51,7 @@ public class ProjectStatusService {
     return projectStatusRepository.save(projectStatusEntity);
   }
 
+  @CacheEvict(value = "projectStatuses", allEntries = true, beforeInvocation = true)
   public void deleteProjectStatus(final int id) {
     log.info("Delete Project Status: [{}]", id);
     ProjectStatusEntity projectStatusEntity = retrieveProjectStatusById(id);

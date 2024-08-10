@@ -3,6 +3,8 @@ package user.management.system.app.service;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -19,6 +21,7 @@ public class AddressTypeService {
     this.addressTypeRepository = addressTypeRepository;
   }
 
+  @CacheEvict(value = "addressTypes", allEntries = true, beforeInvocation = true)
   public AddressTypeEntity createAddressType(final AddressTypeRequest addressTypeRequest) {
     log.debug("Create Address Type: [{}]", addressTypeRequest);
     AddressTypeEntity addressTypeEntity = new AddressTypeEntity();
@@ -26,6 +29,7 @@ public class AddressTypeService {
     return addressTypeRepository.save(addressTypeEntity);
   }
 
+  @Cacheable(value = "addressTypes")
   public List<AddressTypeEntity> retrieveAddressTypes() {
     log.debug("Retrieve Address Types...");
     return addressTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -38,6 +42,7 @@ public class AddressTypeService {
         .orElseThrow(() -> new ElementNotFoundException("Address Type", String.valueOf(id)));
   }
 
+  @CacheEvict(value = "addressTypes", allEntries = true, beforeInvocation = true)
   public AddressTypeEntity updateAddressType(
       final int id, final AddressTypeRequest addressTypeRequest) {
     log.debug("Update Address Type: [{}], [{}]", id, addressTypeRequest);
@@ -46,6 +51,7 @@ public class AddressTypeService {
     return addressTypeRepository.save(addressTypeEntity);
   }
 
+  @CacheEvict(value = "addressTypes", allEntries = true, beforeInvocation = true)
   public void deleteAddressType(final int id) {
     log.info("Delete Address Type: [{}]", id);
     AddressTypeEntity addressTypeEntity = retrieveAddressTypeById(id);
