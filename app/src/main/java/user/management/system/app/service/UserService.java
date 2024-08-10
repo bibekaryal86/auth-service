@@ -20,7 +20,10 @@ public class UserService {
   private final UserStatusService userStatusService;
   private final PasswordUtils passwordUtils;
 
-  public UserService(final UserRepository userRepository, final UserStatusService userStatusService, final PasswordUtils passwordUtils) {
+  public UserService(
+      final UserRepository userRepository,
+      final UserStatusService userStatusService,
+      final PasswordUtils passwordUtils) {
     this.userRepository = userRepository;
     this.userStatusService = userStatusService;
     this.passwordUtils = passwordUtils;
@@ -45,12 +48,16 @@ public class UserService {
 
   public UserEntity retrieveUserByEmail(final String email) {
     log.debug("Retrieve User by Email: [{}]", email);
-    return userRepository.findByEmail(email).orElseThrow(() -> new ElementNotFoundException("User", email));
+    return userRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new ElementNotFoundException("User", email));
   }
 
   public UserEntity retrieveUserById(final int id) {
     log.debug("Retrieve User by ID: [{}]", id);
-    return userRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("User", String.valueOf(id)));
+    return userRepository
+        .findById(id)
+        .orElseThrow(() -> new ElementNotFoundException("User", String.valueOf(id)));
   }
 
   public UserEntity updateUser(final int id, final UserRequest userRequest) {
@@ -69,7 +76,8 @@ public class UserService {
     if (isHardDelete) {
       userRepository.delete(userEntity);
     } else {
-      // TODO set status to DELETED
+      UserStatusEntity status = getUserStatusEntity("DELETED");
+      userEntity.setStatus(status);
       userEntity.setDeletedDate(LocalDateTime.now());
     }
   }
@@ -78,7 +86,17 @@ public class UserService {
     log.info("Restore User: [{}]", id);
     UserEntity userEntity = retrieveUserById(id);
     userEntity.setDeletedDate(null);
-    // TODO set status to PENDING/VALIDATION_INIT
+    UserStatusEntity status = getUserStatusEntity("PENDING");
+    userEntity.setStatus(status);
+    // TODO send validation email
     userRepository.save(userEntity);
+  }
+
+  private UserStatusEntity getUserStatusEntity(final String userStatusName) {
+    List<UserStatusEntity> userStatusEntities = userStatusService.retrieveUserStatuses();
+    return userStatusEntities.stream()
+        .filter(userStatusEntity -> userStatusName.equals(userStatusEntity.getName()))
+        .findFirst()
+        .orElseThrow(() -> new ElementNotFoundException("User Status", userStatusName));
   }
 }

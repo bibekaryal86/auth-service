@@ -7,5 +7,5 @@ import user.management.system.app.model.entity.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
-    Optional<UserEntity> findByEmail(final String email);
+  Optional<UserEntity> findByEmail(final String email);
 }
