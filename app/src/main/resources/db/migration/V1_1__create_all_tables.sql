@@ -271,3 +271,20 @@ INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 9); -- STANDAR
 INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 10); -- STANDARD, PROJECT_READ
 INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 11); -- POWERUSER, PROJECT_UPDATE
 INSERT INTO roles_permissions (role_id, permission_id) VALUES (4, 10); -- GUEST, PROJECT_READ
+
+-- DROP table public.address_types CASCADE;
+-- DROP table public.audit_permissions CASCADE;
+-- DROP table public.audit_projects CASCADE;
+-- DROP table public.audit_roles CASCADE;
+-- DROP table public.audit_users CASCADE;
+-- DROP table public.flyway_schema_history CASCADE;
+-- DROP table public.permissions CASCADE;
+-- DROP table public.project_status CASCADE;
+-- DROP table public.projects CASCADE;
+-- DROP table public.roles CASCADE;
+-- DROP table public.roles_permissions CASCADE;
+-- DROP table public.user_status CASCADE;
+-- DROP table public.users CASCADE;
+-- DROP table public.users_addresses CASCADE;
+-- DROP table public.users_projects_roles CASCADE;
+-- DROP table public.users_roles CASCADE;
