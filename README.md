@@ -14,60 +14,20 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
-enums for audit_users
-    CREATE_USER
-    UPDATE_USER
-    DELETE_USER
-    ASSIGN_ROLE
-    UNASSIGN_ROLE
-    ASSIGN_PROJECT
-    UNASSIGN_PROJECT
-    ASSIGN_PROJECT_ROLE
-    UNASSIGN_PROJECT_ROLE
-    ADD_ADDRESS
-    UPDATE_ADDRESS
-    DELETE_ADDRESS
-    USER_LOGIN
-    USER_LOGOUT
-    USER_VALIDATE_INIT
-    USER_VALIDATE_EXIT
-    USER_VALIDATE_ERROR
-    USER_RESET_INIT
-    USER_RESET_MID
-    USER_RESET_EXIT
-    USER_RESET_ERROR
-
-enums for audit_projects
-    CREATE_PROJECT
-    UPDATE_PROJECT
-    DELETE_PROJECT
-
-enums for audit_roles
-    CREATE_ROLE
-    UPDATE_ROLE
-    DELETE_ROLE
-    ASSIGN_PERMISSION
-    UNASSIGN_PERMISSION
-
-enums for audit_permissions
-    CREATE_PERMISSION
-    UPDATE_PERMISSION
-    DELETE_PERMISSION
-    
-
-only superuser can modify roles and permissions table
-project_admin - can delete
-project_member - can update
-project_guest - can view
-
-guest - can view
-member - can update
-admin - can create and delete, can view admin tables - can't modify though
-super - can hard delete and restore
-
-for entities in model.entities package, check what lombok annotations are actually needed
-    maybe we don't need any, maybe we need just getters and all args
-set show_sql to false in application.yml
+user, user_address
+    superuser - CRUD
+    self - RU (user can view their account and update it)
+ref_tables (address_type, permission, project_status, role, user_status)
+    superuser - CRUD
+    poweruser - R
+project
+    superuser - CRUD
+    poweruser - CRU
+        can view all projects
+    standard - RU
+        can only view projects they're assigned to
+    guest - R
+        can only view projects they're assigned to
 
 ResponseCrudInfo and ResponsePageInfo need to be implemented
     ResponsePageInfo requires RequestMetadata implemented

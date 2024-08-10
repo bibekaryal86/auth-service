@@ -212,3 +212,62 @@ INSERT INTO project_status (name, description) VALUES ('DELAYED', 'THE PROJECT I
 INSERT INTO project_status (name, description) VALUES ('CANCELLED', 'THE PROJECT IS CANCELLED DUE TO VARIOUS REASONS');
 INSERT INTO project_status (name, description) VALUES ('COMPLETED', 'THE PROJECT IS COMPLETED AND WORK IS DONE');
 INSERT INTO project_status (name, description) VALUES ('DELETED', 'THE PROJECT IS SOFT DELETED AND VERY HARD TO RESTORE');
+
+INSERT INTO permissions (name, description) VALUES ('ADDRESS_TYPE_CREATE', 'CAN ADD ADDRESS TYPE');
+INSERT INTO permissions (name, description) VALUES ('ADDRESS_TYPE_READ', 'CAN VIEW ADDRESS TYPE');
+INSERT INTO permissions (name, description) VALUES ('ADDRESS_TYPE_UPDATE', 'CAN EDIT ADDRESS TYPE');
+INSERT INTO permissions (name, description) VALUES ('ADDRESS_TYPE_DELETE', 'CAN DELETE ADDRESS TYPE');
+INSERT INTO permissions (name, description) VALUES ('PERMISSION_CREATE', 'CAN ADD PERMISSION');
+INSERT INTO permissions (name, description) VALUES ('PERMISSION_READ', 'CAN VIEW PERMISSION');
+INSERT INTO permissions (name, description) VALUES ('PERMISSION_UPDATE', 'CAN EDIT PERMISSION');
+INSERT INTO permissions (name, description) VALUES ('PERMISSION_DELETE', 'CAN DELETE PERMISSION');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_CREATE', 'CAN ADD PROJECT');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_READ', 'CAN VIEW PROJECT');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_UPDATE', 'CAN EDIT PROJECT');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_DELETE', 'CAN DELETE PROJECT');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_STATUS_CREATE', 'CAN ADD PROJECT STATUS');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_STATUS_READ', 'CAN VIEW PROJECT STATUS');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_STATUS_UPDATE', 'CAN EDIT PROJECT STATUS');
+INSERT INTO permissions (name, description) VALUES ('PROJECT_STATUS_DELETE', 'CAN DELETE PROJECT STATUS');
+INSERT INTO permissions (name, description) VALUES ('ROLE_CREATE', 'CAN ADD ROLE');
+INSERT INTO permissions (name, description) VALUES ('ROLE_READ', 'CAN VIEW ROLE');
+INSERT INTO permissions (name, description) VALUES ('ROLE_UPDATE', 'CAN EDIT ROLE');
+INSERT INTO permissions (name, description) VALUES ('ROLE_DELETE', 'CAN DELETE ROLE');
+INSERT INTO permissions (name, description) VALUES ('ROLE_PERMISSION_ASSIGN', 'CAN ADD PERMISSION TO ROLE');
+INSERT INTO permissions (name, description) VALUES ('ROLE_PERMISSION_UNASSIGN', 'CAN REMOVE PERMISSION FROM ROLE');
+INSERT INTO permissions (name, description) VALUES ('USER_CREATE', 'CAN ADD USER');
+INSERT INTO permissions (name, description) VALUES ('USER_READ', 'CAN VIEW USER');
+INSERT INTO permissions (name, description) VALUES ('USER_UPDATE', 'CAN EDIT USER');
+INSERT INTO permissions (name, description) VALUES ('USER_DELETE', 'CAN DELETE USER');
+INSERT INTO permissions (name, description) VALUES ('USER_PROJECT_ROLE_ASSIGN', 'CAN ADD USER TO PROJECT WITH ROLE');
+INSERT INTO permissions (name, description) VALUES ('USER_PROJECT_ROLE_UNASSIGN', 'CAN REMOVE USER FROM PROJECT WITH ROLE');
+INSERT INTO permissions (name, description) VALUES ('USER_PROJECT_ROLE_MODIFY', 'CAN UPDATE USER ROLE IN PROJECT');
+INSERT INTO permissions (name, description) VALUES ('USER_ROLE_ASSIGN', 'CAN ADD ROLE TO USER');
+INSERT INTO permissions (name, description) VALUES ('USER_ROLE_UNASSIGN', 'CAN REMOVE ROLE FROM USER');
+INSERT INTO permissions (name, description) VALUES ('USER_STATUS_CREATE', 'CAN ADD USER STATUS');
+INSERT INTO permissions (name, description) VALUES ('USER_STATUS_READ', 'CAN VIEW USER STATUS');
+INSERT INTO permissions (name, description) VALUES ('USER_STATUS_UPDATE', 'CAN EDIT USER STATUS');
+INSERT INTO permissions (name, description) VALUES ('USER_STATUS_DELETE', 'CAN DELETE USER STATUS');
+
+INSERT INTO roles (name, description) VALUES ('SUPERUSER', 'USER HAS ALL AND UNLIMITED ACCESS');
+INSERT INTO roles (name, description) VALUES ('POWERUSER', 'USER HAS ACCESS TO ALL PARTS OF THE APP, REF TYPES IS VIEW ONLY');
+INSERT INTO roles (name, description) VALUES ('STANDARD', 'USER HAS NO ACCESS TO REF DATA');
+INSERT INTO roles (name, description) VALUES ('GUEST', 'USER HAS VIEW ONLY ACCESS, NO REF DATA');
+
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 2); -- POWERUSER, ADDRESS_TYPE_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 6); -- POWERUSER, PERMISSION_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 9); -- POWERUSER, PROJECT_CREATE
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 10); -- POWERUSER, PROJECT_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 11); -- POWERUSER, PROJECT_UPDATE
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 12); -- POWERUSER, PROJECT_DELETE
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 14); -- POWERUSER, PROJECT_STATUS_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 18); -- POWERUSER, ROLE_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 24); -- POWERUSER, USER_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 27); -- POWERUSER, USER_PROJECT_ROLE_ASSIGN
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 28); -- POWERUSER, USER_PROJECT_ROLE_UNASSIGN
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 29); -- POWERUSER, USER_PROJECT_ROLE_MODIFY
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (2, 33); -- POWERUSER, USER_STATUS_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 9); -- STANDARD, PROJECT_CREATE
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 10); -- STANDARD, PROJECT_READ
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (3, 11); -- POWERUSER, PROJECT_UPDATE
+INSERT INTO roles_permissions (role_id, permission_id) VALUES (4, 10); -- GUEST, PROJECT_READ
