@@ -7,14 +7,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class AppAppPermissionDto extends AppPermissionRequest {
+public class AppPermissionDto extends AppPermissionRequest {
   private Integer id;
 
-  public AppAppPermissionDto() {
+  public AppPermissionDto() {
     super();
   }
 
-  public AppAppPermissionDto(final Integer id, final String app, final String name, final String description) {
+  public AppPermissionDto(
+      final Integer id, final String app, final String name, final String description) {
     super(app, name, description);
     this.id = id;
   }

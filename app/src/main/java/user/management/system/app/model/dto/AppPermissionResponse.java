@@ -11,10 +11,10 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class AppPermissionResponse extends ResponseMetadata {
-  private List<AppAppPermissionDto> permissions;
+  private List<AppPermissionDto> permissions;
 
   public AppPermissionResponse(
-      final List<AppAppPermissionDto> permissions,
+      final List<AppPermissionDto> permissions,
       final ResponseCrudInfo responseCrudInfo,
       final ResponsePageInfo responsePageInfo,
       final ResponseStatusInfo responseStatusInfo) {

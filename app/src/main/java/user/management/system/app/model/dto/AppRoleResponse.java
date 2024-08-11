@@ -11,10 +11,10 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class AppRoleResponse extends ResponseMetadata {
-  private List<AppAppRoleDto> roles;
+  private List<AppRoleDto> roles;
 
   public AppRoleResponse(
-      final List<AppAppRoleDto> roles,
+      final List<AppRoleDto> roles,
       final ResponseCrudInfo responseCrudInfo,
       final ResponsePageInfo responsePageInfo,
       final ResponseStatusInfo responseStatusInfo) {

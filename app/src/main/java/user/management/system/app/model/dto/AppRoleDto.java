@@ -7,14 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class AppAppRoleDto extends AppRoleRequest {
+public class AppRoleDto extends AppRoleRequest {
   private Integer id;
 
-  public AppAppRoleDto() {
+  public AppRoleDto() {
     super();
   }
 
-  public AppAppRoleDto(final Integer id, final String name, final String description) {
+  public AppRoleDto(final Integer id, final String name, final String description) {
     super(name, description);
     this.id = id;
   }

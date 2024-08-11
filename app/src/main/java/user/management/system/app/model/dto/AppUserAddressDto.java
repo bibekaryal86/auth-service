@@ -7,15 +7,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class AppAppUserAddressDto extends AppUserAddressRequest {
+public class AppUserAddressDto extends AppUserAddressRequest {
   private Integer id;
   private AppUserDto user;
 
-  public AppAppUserAddressDto() {
+  public AppUserAddressDto() {
     super();
   }
 
-  public AppAppUserAddressDto(
+  public AppUserAddressDto(
       final Integer id,
       final String addressType,
       final String street,

@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import user.management.system.app.model.entity.AuditAppPermissionEntity;
 
 @Repository
-public interface AuditAppPermissionRepository extends JpaRepository<AuditAppPermissionEntity, Integer> {}
+public interface AuditAppPermissionRepository
+    extends JpaRepository<AuditAppPermissionEntity, Integer> {}
