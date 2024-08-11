@@ -80,17 +80,7 @@ public class AppPermissionController {
     }
   }
 
-  @DeleteMapping("/hard/{id}")
-  public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
-    try {
-      appPermissionService.hardDeleteAppPermission(id);
-      return getResponseDelete();
-    } catch (Exception ex) {
-      return getResponseError(ex);
-    }
-  }
-
-  @DeleteMapping("/soft/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(@PathVariable final int id) {
     try {
       appPermissionService.softDeleteAppPermission(id);
@@ -100,7 +90,17 @@ public class AppPermissionController {
     }
   }
 
-  @PatchMapping("/{id}")
+  @DeleteMapping("/{id}/hard")
+  public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
+    try {
+      appPermissionService.hardDeleteAppPermission(id);
+      return getResponseDelete();
+    } catch (Exception ex) {
+      return getResponseError(ex);
+    }
+  }
+
+  @PatchMapping("/{id}/restore")
   public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
     try {
       AppPermissionEntity appPermissionEntity =

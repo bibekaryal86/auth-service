@@ -78,17 +78,7 @@ public class AppRoleController {
     }
   }
 
-  @DeleteMapping("/hard/{id}")
-  public ResponseEntity<AppRoleResponse> hardDeleteAppRole(@PathVariable final int id) {
-    try {
-      appRoleService.hardDeleteAppRole(id);
-      return getResponseDelete();
-    } catch (Exception ex) {
-      return getResponseError(ex);
-    }
-  }
-
-  @DeleteMapping("/soft/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<AppRoleResponse> softDeleteAppRole(@PathVariable final int id) {
     try {
       appRoleService.softDeleteAppRole(id);
@@ -98,7 +88,17 @@ public class AppRoleController {
     }
   }
 
-  @PatchMapping("/{id}")
+  @DeleteMapping("/{id}/hard")
+  public ResponseEntity<AppRoleResponse> hardDeleteAppRole(@PathVariable final int id) {
+    try {
+      appRoleService.hardDeleteAppRole(id);
+      return getResponseDelete();
+    } catch (Exception ex) {
+      return getResponseError(ex);
+    }
+  }
+
+  @PatchMapping("/{id}/restore")
   public ResponseEntity<AppRoleResponse> restoreAppRole(@PathVariable final int id) {
     try {
       AppRoleEntity appRoleEntity = appRoleService.restoreSoftDeletedAppRole(id);

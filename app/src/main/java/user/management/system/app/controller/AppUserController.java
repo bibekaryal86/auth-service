@@ -79,17 +79,7 @@ public class AppUserController {
     }
   }
 
-  @DeleteMapping("/hard/{id}")
-  public ResponseEntity<AppUserResponse> hardDeleteAppUser(@PathVariable final int id) {
-    try {
-      appUserService.hardDeleteAppUser(id);
-      return getResponseDelete();
-    } catch (Exception ex) {
-      return getResponseError(ex);
-    }
-  }
-
-  @DeleteMapping("/soft/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<AppUserResponse> softDeleteAppUser(@PathVariable final int id) {
     try {
       appUserService.softDeleteAppUser(id);
@@ -99,7 +89,17 @@ public class AppUserController {
     }
   }
 
-  @PatchMapping("/{id}")
+  @DeleteMapping("/{id}/hard")
+  public ResponseEntity<AppUserResponse> hardDeleteAppUser(@PathVariable final int id) {
+    try {
+      appUserService.hardDeleteAppUser(id);
+      return getResponseDelete();
+    } catch (Exception ex) {
+      return getResponseError(ex);
+    }
+  }
+
+  @PatchMapping("/{id}/restore")
   public ResponseEntity<AppUserResponse> restoreAppUser(@PathVariable final int id) {
     try {
       AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);
