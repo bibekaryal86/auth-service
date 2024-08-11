@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class EntityBaseNameDesc {
+public abstract class EntityBaseNameDesc extends EntityBaseDates {
   @Column(name = "name", unique = true, nullable = false)
   private String name;
 

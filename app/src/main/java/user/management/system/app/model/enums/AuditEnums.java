@@ -7,10 +7,6 @@ public class AuditEnums {
     DELETE_USER,
     ASSIGN_ROLE,
     UNASSIGN_ROLE,
-    ASSIGN_PROJECT,
-    UNASSIGN_PROJECT,
-    ASSIGN_PROJECT_ROLE,
-    UNASSIGN_PROJECT_ROLE,
     ADD_ADDRESS,
     UPDATE_ADDRESS,
     DELETE_ADDRESS,
@@ -23,12 +19,6 @@ public class AuditEnums {
     USER_RESET_MID,
     USER_RESET_EXIT,
     USER_RESET_ERROR
-  }
-
-  public enum AuditProjects {
-    CREATE_PROJECT,
-    UPDATE_PROJECT,
-    DELETE_PROJECT
   }
 
   public enum AuditRoles {

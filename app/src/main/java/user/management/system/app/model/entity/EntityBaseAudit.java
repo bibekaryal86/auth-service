@@ -17,7 +17,10 @@ public abstract class EntityBaseAudit {
   @Column(name = "event_type", nullable = false)
   private String eventType;
 
-  @Column(name = "event_data", columnDefinition = "jsonb", nullable = false)
+  @Column(name = "event_desc")
+  private String eventDesc;
+
+  @Column(name = "event_data", columnDefinition = "jsonb")
   private String eventData;
 
   @Column(name = "created_at", nullable = false)
@@ -25,7 +28,7 @@ public abstract class EntityBaseAudit {
 
   @ManyToOne
   @JoinColumn(name = "created_by", insertable = false, updatable = false)
-  private UserEntity createdBy;
+  private AppUserEntity createdBy;
 
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
