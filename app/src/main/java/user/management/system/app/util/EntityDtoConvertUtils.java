@@ -14,6 +14,8 @@ import org.springframework.util.CollectionUtils;
 import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.AppRoleDto;
+import user.management.system.app.model.dto.AppRolePermissionDto;
+import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.dto.AppRoleResponse;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
@@ -21,6 +23,7 @@ import user.management.system.app.model.dto.ResponseCrudInfo;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
+import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 
 @Component
@@ -186,5 +189,67 @@ public class EntityDtoConvertUtils {
       return Collections.emptyList();
     }
     return appUserEntities.stream().map(this::convertEntityToDtoAppUser).toList();
+  }
+
+  public ResponseEntity<AppRolePermissionResponse> getResponseSingleAppRolePermission(
+      final AppRolePermissionEntity appRolePermissionEntity) {
+    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appRolePermissionEntity);
+    final ResponseStatusInfo responseStatusInfo =
+        getResponseStatusInfoForSingleResponse(appRolePermissionEntity);
+    final List<AppRolePermissionDto> appRolePermissionDtos =
+        appRolePermissionEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoAppRolePermission(appRolePermissionEntity));
+    return new ResponseEntity<>(
+        new AppRolePermissionResponse(appRolePermissionDtos, null, null, responseStatusInfo),
+        httpStatus);
+  }
+
+  public ResponseEntity<AppRolePermissionResponse> getResponseMultipleAppRolePermission(
+      final List<AppRolePermissionEntity> appRolePermissionEntities) {
+    final List<AppRolePermissionDto> appRolePermissionDtos =
+        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
+    return ResponseEntity.ok(
+        new AppRolePermissionResponse(appRolePermissionDtos, null, null, null));
+  }
+
+  public ResponseEntity<AppRolePermissionResponse> getResponseDeleteAppRolePermission() {
+    return ResponseEntity.ok(
+        new AppRolePermissionResponse(
+            Collections.emptyList(),
+            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
+            null,
+            null));
+  }
+
+  public ResponseEntity<AppRolePermissionResponse> getResponseErrorAppRolePermission(
+      final Exception exception) {
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    final ResponseStatusInfo responseStatusInfo =
+        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+    return new ResponseEntity<>(
+        new AppRolePermissionResponse(Collections.emptyList(), null, null, responseStatusInfo),
+        httpStatus);
+  }
+
+  public AppRolePermissionDto convertEntityToDtoAppRolePermission(
+      final AppRolePermissionEntity appRolePermissionEntity) {
+    if (appRolePermissionEntity == null) {
+      return null;
+    }
+    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole());
+    AppPermissionDto appPermissionDto =
+        convertEntityToDtoAppPermission(appRolePermissionEntity.getAppPermission());
+    return new AppRolePermissionDto(appRoleDto, appPermissionDto);
+  }
+
+  public List<AppRolePermissionDto> convertEntitiesToDtosAppRolePermission(
+      final List<AppRolePermissionEntity> appRolePermissionEntities) {
+    if (CollectionUtils.isEmpty(appRolePermissionEntities)) {
+      return Collections.emptyList();
+    }
+    return appRolePermissionEntities.stream()
+        .map(this::convertEntityToDtoAppRolePermission)
+        .toList();
   }
 }
