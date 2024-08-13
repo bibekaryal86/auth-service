@@ -22,6 +22,6 @@ public class AuditAppRoleEntity extends EntityBaseAudit {
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "app_role_id", nullable = false)
+  @JoinColumn(name = "app_role_id")
   private AppRoleEntity appRole;
 }

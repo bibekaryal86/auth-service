@@ -22,6 +22,6 @@ public class AuditAppPermissionEntity extends EntityBaseAudit {
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "app_permission_id", nullable = false)
+  @JoinColumn(name = "app_permission_id")
   private AppPermissionEntity appPermission;
 }

@@ -75,11 +75,11 @@ CREATE TABLE audit_app_permission
     event_desc        TEXT,
     event_data        JSONB,
     created_at        TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by        INTEGER                                              NOT NULL,
+    created_by        INTEGER,
     ip_address        VARCHAR(50)                                          NOT NULL,
     user_agent        VARCHAR(100)                                         NOT NULL,
-    FOREIGN KEY (app_permission_id) REFERENCES app_permission (id),
-    FOREIGN KEY (created_by) REFERENCES app_user (id)
+    FOREIGN KEY (app_permission_id) REFERENCES app_permission (id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES app_user (id) ON DELETE SET NULL
 );
 
 CREATE TABLE audit_app_role
@@ -90,11 +90,11 @@ CREATE TABLE audit_app_role
     event_desc  TEXT,
     event_data  JSONB,
     created_at  TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by  INTEGER                                              NOT NULL,
+    created_by  INTEGER,
     ip_address  VARCHAR(50)                                          NOT NULL,
     user_agent  VARCHAR(100)                                         NOT NULL,
-    FOREIGN KEY (app_role_id) REFERENCES app_role (id),
-    FOREIGN KEY (created_by) REFERENCES app_user (id)
+    FOREIGN KEY (app_role_id) REFERENCES app_role (id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES app_user (id) ON DELETE SET NULL
 );
 
 CREATE TABLE audit_app_user
@@ -105,11 +105,11 @@ CREATE TABLE audit_app_user
     event_desc TEXT,
     event_data  JSONB,
     created_at  TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by  INTEGER                                              NOT NULL,
+    created_by  INTEGER,
     ip_address  VARCHAR(50)                                          NOT NULL,
     user_agent  VARCHAR(100)                                         NOT NULL,
-    FOREIGN KEY (app_user_id) REFERENCES app_user (id),
-    FOREIGN KEY (created_by) REFERENCES app_user (id)
+    FOREIGN KEY (app_user_id) REFERENCES app_user (id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES app_user (id) ON DELETE SET NULL
 );
 
 -- create indexes

@@ -22,6 +22,6 @@ public class AuditAppUserEntity extends EntityBaseAudit {
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "app_user_id", nullable = false)
+  @JoinColumn(name = "app_user_id")
   private AppUserEntity appUser;
 }
