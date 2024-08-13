@@ -19,12 +19,15 @@ import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.dto.AppRoleResponse;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
+import user.management.system.app.model.dto.AppUserRoleDto;
+import user.management.system.app.model.dto.AppUserRoleResponse;
 import user.management.system.app.model.dto.ResponseCrudInfo;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppUserRoleEntity;
 
 @Component
 public class EntityDtoConvertUtils {
@@ -251,5 +254,61 @@ public class EntityDtoConvertUtils {
     return appRolePermissionEntities.stream()
         .map(this::convertEntityToDtoAppRolePermission)
         .toList();
+  }
+
+  public ResponseEntity<AppUserRoleResponse> getResponseSingleAppUserRole(
+      final AppUserRoleEntity appUserRoleEntity) {
+    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appUserRoleEntity);
+    final ResponseStatusInfo responseStatusInfo =
+        getResponseStatusInfoForSingleResponse(appUserRoleEntity);
+    final List<AppUserRoleDto> appUserRoleDtos =
+        appUserRoleEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoAppUserRole(appUserRoleEntity));
+    return new ResponseEntity<>(
+        new AppUserRoleResponse(appUserRoleDtos, null, null, responseStatusInfo), httpStatus);
+  }
+
+  public ResponseEntity<AppUserRoleResponse> getResponseMultipleAppUserRole(
+      final List<AppUserRoleEntity> appUserRoleEntities) {
+    final List<AppUserRoleDto> appUserRoleDtos =
+        convertEntitiesToDtosAppUserRole(appUserRoleEntities);
+    return ResponseEntity.ok(new AppUserRoleResponse(appUserRoleDtos, null, null, null));
+  }
+
+  public ResponseEntity<AppUserRoleResponse> getResponseDeleteAppUserRole() {
+    return ResponseEntity.ok(
+        new AppUserRoleResponse(
+            Collections.emptyList(),
+            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
+            null,
+            null));
+  }
+
+  public ResponseEntity<AppUserRoleResponse> getResponseErrorAppUserRole(
+      final Exception exception) {
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    final ResponseStatusInfo responseStatusInfo =
+        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+    return new ResponseEntity<>(
+        new AppUserRoleResponse(Collections.emptyList(), null, null, responseStatusInfo),
+        httpStatus);
+  }
+
+  public AppUserRoleDto convertEntityToDtoAppUserRole(final AppUserRoleEntity appUserRoleEntity) {
+    if (appUserRoleEntity == null) {
+      return null;
+    }
+    AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser());
+    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole());
+    return new AppUserRoleDto(appUserDto, appRoleDto);
+  }
+
+  public List<AppUserRoleDto> convertEntitiesToDtosAppUserRole(
+      final List<AppUserRoleEntity> appUserRoleEntities) {
+    if (CollectionUtils.isEmpty(appUserRoleEntities)) {
+      return Collections.emptyList();
+    }
+    return appUserRoleEntities.stream().map(this::convertEntityToDtoAppUserRole).toList();
   }
 }
