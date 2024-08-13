@@ -20,10 +20,12 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
             .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**"))
+                    .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**"))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                    .anyRequest().authenticated());
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
     return http.build();
   }
 }

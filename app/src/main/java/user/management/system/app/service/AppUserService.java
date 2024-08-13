@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -28,9 +30,19 @@ public class AppUserService {
   // CREATE
   public AppUserEntity createAppUser(final AppUserRequest appUserRequest) {
     log.debug("Create App User: [{}]", appUserRequest);
+    if (!StringUtils.hasText(appUserRequest.getPassword())) {
+      // password is required for create, optional for update
+      throw new ElementMissingException("User", "password");
+    }
+
     AppUserEntity appUserEntity = new AppUserEntity();
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
+    appUserEntity.setIsValidated(false);
+
+    // TODO add guest role or standard user role
+    // TODO initiate validation email
+
     return appUserRepository.save(appUserEntity);
   }
 

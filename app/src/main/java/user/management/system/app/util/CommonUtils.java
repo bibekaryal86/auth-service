@@ -1,5 +1,6 @@
 package user.management.system.app.util;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -10,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 
@@ -25,6 +27,8 @@ public class CommonUtils {
   public static HttpStatus getHttpStatusForErrorResponse(final Exception exception) {
     if (exception instanceof ElementNotFoundException) {
       return NOT_FOUND;
+    } else if (exception instanceof ElementMissingException) {
+      return BAD_REQUEST;
     } else {
       return SERVICE_UNAVAILABLE;
     }
