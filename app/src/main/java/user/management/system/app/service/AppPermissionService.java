@@ -35,6 +35,11 @@ public class AppPermissionService {
     return appPermissionRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
+  public List<AppPermissionEntity> readAppPermissions(final String app) {
+    log.debug("Read App Permissions: [{}]", app);
+    return appPermissionRepository.findByAppOrderByNameAsc(app);
+  }
+
   public AppPermissionEntity readAppPermission(final int id) {
     log.debug("Read App Permission: [{}]", id);
     return appPermissionRepository

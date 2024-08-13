@@ -53,6 +53,16 @@ public class AppPermissionController {
     }
   }
 
+  @GetMapping("/app/{app}")
+  public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(@PathVariable final String app) {
+    try {
+      List<AppPermissionEntity> appPermissionEntities = appPermissionService.readAppPermissions(app);
+      return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
+    }
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
     try {

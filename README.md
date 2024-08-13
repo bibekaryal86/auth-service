@@ -32,3 +32,9 @@ project
 ResponseCrudInfo and ResponsePageInfo need to be implemented
     ResponsePageInfo requires RequestMetadata implemented
         Do it at last
+
+Remaining (thoughts)
+    -> UserAddress in User
+    -> List of Permissions in Role
+        -> Map<String, Permission> appName, appPermission
+    -> List of Roles in User
