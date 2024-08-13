@@ -18,13 +18,15 @@ import user.management.system.app.service.AppPermissionService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @RestController
-@RequestMapping("/app_permissions")
+@RequestMapping("/api/v1/app_permissions")
 public class AppPermissionController {
 
   private final AppPermissionService appPermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
-  public AppPermissionController(final AppPermissionService appPermissionService, final EntityDtoConvertUtils entityDtoConvertUtils) {
+  public AppPermissionController(
+      final AppPermissionService appPermissionService,
+      final EntityDtoConvertUtils entityDtoConvertUtils) {
     this.appPermissionService = appPermissionService;
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }

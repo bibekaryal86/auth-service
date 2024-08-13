@@ -18,11 +18,13 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**"))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**")
+    http.csrf(
+            csrf ->
+                csrf.ignoringRequestMatchers(
+                    "/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**"))
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/na_app_users/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated());

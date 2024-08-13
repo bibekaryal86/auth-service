@@ -18,13 +18,14 @@ import user.management.system.app.service.AppRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @RestController
-@RequestMapping("/app_roles")
+@RequestMapping("/api/v1/app_roles")
 public class AppRoleController {
 
   private final AppRoleService appRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
-  public AppRoleController(final AppRoleService appRoleService, final EntityDtoConvertUtils entityDtoConvertUtils) {
+  public AppRoleController(
+      final AppRoleService appRoleService, final EntityDtoConvertUtils entityDtoConvertUtils) {
     this.appRoleService = appRoleService;
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }

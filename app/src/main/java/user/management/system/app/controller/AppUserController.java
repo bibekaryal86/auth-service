@@ -17,13 +17,14 @@ import user.management.system.app.service.AppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @RestController
-@RequestMapping("/app_users")
+@RequestMapping("/api/v1/app_users")
 public class AppUserController {
 
   private final AppUserService appUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
-  public AppUserController(final AppUserService appUserService, final EntityDtoConvertUtils entityDtoConvertUtils) {
+  public AppUserController(
+      final AppUserService appUserService, final EntityDtoConvertUtils entityDtoConvertUtils) {
     this.appUserService = appUserService;
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
