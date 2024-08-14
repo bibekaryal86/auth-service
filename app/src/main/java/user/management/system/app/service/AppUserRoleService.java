@@ -1,8 +1,12 @@
 package user.management.system.app.service;
 
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_STANDARD;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -11,6 +15,7 @@ import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.model.entity.AppUserRoleId;
+import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.repository.AppUserRoleRepository;
 
 @Slf4j
@@ -33,9 +38,42 @@ public class AppUserRoleService {
   // CREATE
   public AppUserRoleEntity createAppUserRole(final AppUserRoleRequest appUserRoleRequest) {
     log.debug("Create App User Role: [{}]", appUserRoleRequest);
-    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
     final AppUserEntity appUserEntity = appUserService.readAppUser(appUserRoleRequest.getUserId());
     final AppRoleEntity appRoleEntity = appRoleService.readAppRole(appUserRoleRequest.getRoleId());
+    return createAppUserRoleEntity(appUserEntity, appRoleEntity);
+  }
+
+  @EventListener
+  public void handleUserCreated(final AppUserCreatedEvent appUserCreatedEvent) {
+    final AppUserEntity appUserEntity = appUserCreatedEvent.getAppUserEntity();
+    final boolean isGuestUser = appUserCreatedEvent.isGuestUser();
+
+    log.info("Handle User Created: [{}], [{}]", appUserEntity.getApp(), appUserEntity.getId());
+
+    final List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
+    final AppRoleEntity appRoleEntity =
+        appRoleEntities.stream()
+            .filter(
+                are ->
+                    isGuestUser
+                        ? are.getName().equals(APP_ROLE_NAME_GUEST)
+                        : are.getName().equals(APP_ROLE_NAME_STANDARD))
+            .findFirst()
+            .orElse(null);
+
+    if (appRoleEntity == null) {
+      log.error(
+          "Handle User Created, App Role Entity is NULL: [{}], [{}]",
+          appUserEntity.getApp(),
+          appUserEntity.getId());
+    } else {
+      createAppUserRoleEntity(appUserEntity, appRoleEntity);
+    }
+  }
+
+  private AppUserRoleEntity createAppUserRoleEntity(
+      final AppUserEntity appUserEntity, final AppRoleEntity appRoleEntity) {
+    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
     appUserRoleEntity.setAppUser(appUserEntity);
     appUserRoleEntity.setAppRole(appRoleEntity);
     appUserRoleEntity.setAssignedDate(LocalDateTime.now());

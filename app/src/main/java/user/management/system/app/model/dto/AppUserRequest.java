@@ -11,6 +11,8 @@ public class AppUserRequest {
   private transient String password;
   private String status;
 
+  private boolean isGuestUser;
+
   // No Args Constructor
   public AppUserRequest() {}
 
@@ -22,7 +24,8 @@ public class AppUserRequest {
       final String email,
       final String phone,
       final String password,
-      final String status) {
+      final String status,
+      final boolean isGuestUser) {
     this.app = app;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -30,6 +33,7 @@ public class AppUserRequest {
     this.phone = phone;
     this.password = password;
     this.status = status;
+    this.isGuestUser = isGuestUser;
   }
 
   // Required Args Constructor
@@ -100,6 +104,14 @@ public class AppUserRequest {
     this.status = status;
   }
 
+  public boolean isGuestUser() {
+    return this.isGuestUser;
+  }
+
+  public void setGuestUser(final boolean isGuestUser) {
+    this.isGuestUser = isGuestUser;
+  }
+
   // Equals
   @Override
   public boolean equals(Object o) {
@@ -111,7 +123,8 @@ public class AppUserRequest {
         && Objects.equals(this.email, that.email)
         && Objects.equals(this.phone, that.phone)
         && Objects.equals(this.password, that.password)
-        && Objects.equals(this.status, that.status);
+        && Objects.equals(this.status, that.status)
+        && Objects.equals(this.isGuestUser, that.isGuestUser);
   }
 
   // HashCode
@@ -124,7 +137,8 @@ public class AppUserRequest {
         this.email,
         this.phone,
         this.password,
-        this.status);
+        this.status,
+        this.isGuestUser);
   }
 
   // ToString
@@ -148,6 +162,9 @@ public class AppUserRequest {
         + '\''
         + ", status='"
         + this.status
+        + '\''
+        + ", isGuestUser='"
+        + this.isGuestUser
         + '\''
         + "}";
   }

@@ -19,7 +19,9 @@ public class FileReaderUtils {
   public String readFileContents(final String fileName) {
     final Resource resource = resourceLoader.getResource("classpath:" + fileName);
 
-    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+    try (final BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
       StringBuilder content = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {
@@ -27,7 +29,7 @@ public class FileReaderUtils {
       }
       return content.toString();
     } catch (IOException e) {
-        throw new RuntimeException(String.format("Error Reading File Contents: %s", fileName));
+      throw new RuntimeException(String.format("Error Reading File Contents: %s", fileName));
     }
   }
 }

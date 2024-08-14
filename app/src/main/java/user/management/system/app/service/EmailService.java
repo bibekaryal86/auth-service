@@ -15,9 +15,11 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
@@ -101,21 +103,55 @@ public class EmailService {
     }
   }
 
-  public void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
-    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
-    final String activationLink = String.format("%s/na_app_users/validate_exit/?toValidate=%s", baseUrl, encodedEmail);
-    final String emailHtmlContent = fileReaderUtils.readFileContents("email/templates/email_validate_user.html").replace("{activation_link}", activationLink);
-    final String fullName = String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Activation", appUserEntity.getApp());
-    sendEmail(appUserEntity.getApp(), appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+  @EventListener
+  public void handleUserCreated(final AppUserCreatedEvent appUserCreatedEvent) {
+    final AppUserEntity appUserEntity = appUserCreatedEvent.getAppUserEntity();
+    final String baseUrl = appUserCreatedEvent.getBaseUrl();
+    log.info("Handle User Created: [{}], [{}]", appUserEntity.getApp(), appUserEntity.getId());
+    sendUserValidationEmail(appUserEntity, baseUrl);
   }
 
-  public void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+  private void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
-    final String resetLink = String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);
-    final String emailHtmlContent = fileReaderUtils.readFileContents("email/templates/email_reset_user.html").replace("{reset_link}", resetLink);
-    final String fullName = String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
+    final String activationLink =
+        String.format("%s/na_app_users/validate_exit/?toValidate=%s", baseUrl, encodedEmail);
+    final String emailHtmlContent =
+        fileReaderUtils
+            .readFileContents("email/templates/email_validate_user.html")
+            .replace("{activation_link}", activationLink);
+    final String fullName =
+        String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
+    final String subject = String.format("[%s] User Activation", appUserEntity.getApp());
+    sendEmail(
+        appUserEntity.getApp(),
+        appUserEntity.getEmail(),
+        fullName,
+        subject,
+        null,
+        emailHtmlContent,
+        null,
+        null);
+  }
+
+  private void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
+    final String resetLink =
+        String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);
+    final String emailHtmlContent =
+        fileReaderUtils
+            .readFileContents("email/templates/email_reset_user.html")
+            .replace("{reset_link}", resetLink);
+    final String fullName =
+        String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
     final String subject = String.format("[%s] User Reset", appUserEntity.getApp());
-    sendEmail(appUserEntity.getApp(), appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+    sendEmail(
+        appUserEntity.getApp(),
+        appUserEntity.getEmail(),
+        fullName,
+        subject,
+        null,
+        emailHtmlContent,
+        null,
+        null);
   }
 }

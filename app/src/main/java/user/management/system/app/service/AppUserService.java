@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -11,6 +12,7 @@ import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.repository.AppUserRepository;
 import user.management.system.app.util.PasswordUtils;
 
@@ -20,33 +22,40 @@ public class AppUserService {
 
   private final AppUserRepository appUserRepository;
   private final PasswordUtils passwordUtils;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public AppUserService(
-      final AppUserRepository appUserRepository, final PasswordUtils passwordUtils) {
+      final AppUserRepository appUserRepository,
+      final PasswordUtils passwordUtils,
+      final ApplicationEventPublisher applicationEventPublisher) {
     this.appUserRepository = appUserRepository;
     this.passwordUtils = passwordUtils;
+    this.applicationEventPublisher = applicationEventPublisher;
   }
 
   // CREATE
-  public AppUserEntity createAppUser(final AppUserRequest appUserRequest, final String baseUrl) {
-    log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrl);
+  public AppUserEntity createAppUser(
+      final AppUserRequest appUserRequest, final String baseUrlForEmail) {
+    log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrlForEmail);
+    AppUserEntity appUserEntity = new AppUserEntity();
+    BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
+    appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
+    appUserEntity.setIsValidated(false);
+    appUserEntity = appUserRepository.save(appUserEntity);
+    // event is listened in AppUserRoleService, EmailService
+    applicationEventPublisher.publishEvent(
+        new AppUserCreatedEvent(
+            this, appUserEntity, appUserRequest.isGuestUser(), baseUrlForEmail));
+    return appUserEntity;
+  }
 
+  private void validateCreateAppUser(final AppUserRequest appUserRequest) {
     // password and app are required for create user
     if (!StringUtils.hasText(appUserRequest.getPassword())) {
       throw new ElementMissingException("User", "password");
     } else if (!StringUtils.hasText(appUserRequest.getApp())) {
       throw new ElementMissingException("User", "app");
     }
-
-    AppUserEntity appUserEntity = new AppUserEntity();
-    BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
-    appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
-    appUserEntity.setIsValidated(false);
-
-    // TODO add guest role or standard user role
-    // TODO initiate validation email
-
-    return appUserRepository.save(appUserEntity);
   }
 
   // READ

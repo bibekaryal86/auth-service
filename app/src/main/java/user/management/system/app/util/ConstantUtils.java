@@ -15,6 +15,10 @@ public class ConstantUtils {
   public static final String ENV_MAILJET_PRIVATE_KEY = "MJ_PRIVATE";
   public static final String ENV_MAILJET_EMAIL_ADDRESS = "MJ_EMAIL";
 
+  // ROLE NAMES
+  public static final String APP_ROLE_NAME_GUEST = "GUEST";
+  public static final String APP_ROLE_NAME_STANDARD = "STANDARD";
+
   // messages
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
       "Something went wrong, please try again later!";
