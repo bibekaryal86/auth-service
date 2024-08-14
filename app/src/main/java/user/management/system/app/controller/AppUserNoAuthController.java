@@ -1,5 +1,8 @@
 package user.management.system.app.controller;
 
+import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
+
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +29,10 @@ public class AppUserNoAuthController {
 
   @PostMapping
   public ResponseEntity<AppUserResponse> createAppUser(
-      @RequestBody final AppUserRequest appUserRequest) {
+      @RequestBody final AppUserRequest appUserRequest, final HttpServletRequest request) {
     try {
-      AppUserEntity appUserEntity = appUserService.createAppUser(appUserRequest);
+      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      final AppUserEntity appUserEntity = appUserService.createAppUser(appUserRequest, baseUrl);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);

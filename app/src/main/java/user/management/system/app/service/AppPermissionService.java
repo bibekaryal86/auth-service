@@ -51,7 +51,7 @@ public class AppPermissionService {
   public AppPermissionEntity updateAppPermission(
       final int id, final AppPermissionRequest appPermissionRequest) {
     log.debug("Update App Permission: [{}], [{}]", id, appPermissionRequest);
-    AppPermissionEntity appPermissionEntity = readAppPermission(id);
+    final AppPermissionEntity appPermissionEntity = readAppPermission(id);
     BeanUtils.copyProperties(appPermissionRequest, appPermissionEntity);
     return appPermissionRepository.save(appPermissionEntity);
   }
@@ -59,21 +59,21 @@ public class AppPermissionService {
   // DELETE
   public AppPermissionEntity softDeleteAppPermission(final int id) {
     log.info("Soft Delete App Permission: [{}]", id);
-    AppPermissionEntity appPermissionEntity = readAppPermission(id);
+    final AppPermissionEntity appPermissionEntity = readAppPermission(id);
     appPermissionEntity.setDeletedDate(LocalDateTime.now());
     return appPermissionRepository.save(appPermissionEntity);
   }
 
   public void hardDeleteAppPermission(final int id) {
     log.info("Hard Delete App Permission: [{}]", id);
-    AppPermissionEntity appPermissionEntity = readAppPermission(id);
+    final AppPermissionEntity appPermissionEntity = readAppPermission(id);
     appPermissionRepository.delete(appPermissionEntity);
   }
 
   // RESTORE
   public AppPermissionEntity restoreSoftDeletedAppPermission(final int id) {
     log.info("Restore Soft Deleted App Permission: [{}]", id);
-    AppPermissionEntity appPermissionEntity = readAppPermission(id);
+    final AppPermissionEntity appPermissionEntity = readAppPermission(id);
     appPermissionEntity.setDeletedDate(null);
     return appPermissionRepository.save(appPermissionEntity);
   }

@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static user.management.system.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,24 @@ public class CommonUtils {
     final String envProperty =
         System.getProperty(keyName) != null ? System.getProperty(keyName) : System.getenv(keyName);
     return envProperty == null ? defaultValue : envProperty;
+  }
+
+  public static String getBaseUrlForLinkInEmail(final HttpServletRequest request) {
+    final String scheme = request.getScheme();
+    final String serverName = request.getServerName();
+    final int serverPort = request.getServerPort();
+    final String contextPath = request.getContextPath();
+
+    StringBuilder baseUrl = new StringBuilder();
+    baseUrl.append(scheme).append("://").append(serverName);
+
+    if ((scheme.equals("http") && serverPort != 80)
+        || (scheme.equals("https") && serverPort != 443)) {
+      baseUrl.append(":").append(serverPort);
+    }
+
+    baseUrl.append(contextPath);
+    return baseUrl.toString();
   }
 
   public static HttpStatus getHttpStatusForErrorResponse(final Exception exception) {

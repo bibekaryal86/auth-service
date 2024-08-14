@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppUserRoleRequest;
+import user.management.system.app.model.entity.AppRoleEntity;
+import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.model.entity.AppUserRoleId;
 import user.management.system.app.repository.AppUserRoleRepository;
@@ -32,8 +34,10 @@ public class AppUserRoleService {
   public AppUserRoleEntity createAppUserRole(final AppUserRoleRequest appUserRoleRequest) {
     log.debug("Create App User Role: [{}]", appUserRoleRequest);
     AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
-    appUserRoleEntity.setAppUser(appUserService.readAppUser(appUserRoleRequest.getUserId()));
-    appUserRoleEntity.setAppRole(appRoleService.readAppRole(appUserRoleRequest.getRoleId()));
+    final AppUserEntity appUserEntity = appUserService.readAppUser(appUserRoleRequest.getUserId());
+    final AppRoleEntity appRoleEntity = appRoleService.readAppRole(appUserRoleRequest.getRoleId());
+    appUserRoleEntity.setAppUser(appUserEntity);
+    appUserRoleEntity.setAppRole(appRoleEntity);
     appUserRoleEntity.setAssignedDate(LocalDateTime.now());
     return appUserRoleRepository.save(appUserRoleEntity);
   }
@@ -65,7 +69,7 @@ public class AppUserRoleService {
   // DELETE
   public void deleteAppUserRole(final int appUserId, final int appRoleId) {
     log.info("Delete App User Role: [{}], [{}]", appUserId, appRoleId);
-    AppUserRoleEntity appUserRoleEntity = readAppUserRole(appUserId, appRoleId);
+    final AppUserRoleEntity appUserRoleEntity = readAppUserRole(appUserId, appRoleId);
     appUserRoleRepository.delete(appUserRoleEntity);
   }
 }

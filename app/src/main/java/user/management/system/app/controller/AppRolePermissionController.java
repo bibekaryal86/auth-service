@@ -33,7 +33,7 @@ public class AppRolePermissionController {
   public ResponseEntity<AppRolePermissionResponse> createAppRolePermission(
       @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
     try {
-      AppRolePermissionEntity appRolePermissionEntity =
+      final AppRolePermissionEntity appRolePermissionEntity =
           appRolePermissionService.createAppRolePermission(appRolePermissionRequest);
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {
@@ -44,7 +44,7 @@ public class AppRolePermissionController {
   @GetMapping
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissions() {
     try {
-      List<AppRolePermissionEntity> appRolePermissionEntities =
+      final List<AppRolePermissionEntity> appRolePermissionEntities =
           appRolePermissionService.readAppRolePermissions();
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
@@ -56,7 +56,7 @@ public class AppRolePermissionController {
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleId(
       @PathVariable final int roleId) {
     try {
-      List<AppRolePermissionEntity> appRolePermissionEntities =
+      final List<AppRolePermissionEntity> appRolePermissionEntities =
           appRolePermissionService.readAppRolePermissions(roleId);
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
@@ -68,7 +68,7 @@ public class AppRolePermissionController {
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {
     try {
-      AppRolePermissionEntity appRolePermissionEntity =
+      final AppRolePermissionEntity appRolePermissionEntity =
           appRolePermissionService.readAppRolePermission(roleId, permissionId);
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {

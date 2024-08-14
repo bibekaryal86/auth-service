@@ -9,5 +9,6 @@ import user.management.system.app.model.entity.AppUserEntity;
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUserEntity, Integer> {
   Optional<AppUserEntity> findByAppAndEmail(final String app, final String email);
+
   List<AppUserEntity> findAllByEmailOrderByApp(final String email);
 }

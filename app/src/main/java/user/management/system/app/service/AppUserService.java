@@ -28,11 +28,14 @@ public class AppUserService {
   }
 
   // CREATE
-  public AppUserEntity createAppUser(final AppUserRequest appUserRequest) {
-    log.debug("Create App User: [{}]", appUserRequest);
+  public AppUserEntity createAppUser(final AppUserRequest appUserRequest, final String baseUrl) {
+    log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrl);
+
+    // password and app are required for create user
     if (!StringUtils.hasText(appUserRequest.getPassword())) {
-      // password is required for create, optional for update
       throw new ElementMissingException("User", "password");
+    } else if (!StringUtils.hasText(appUserRequest.getApp())) {
+      throw new ElementMissingException("User", "app");
     }
 
     AppUserEntity appUserEntity = new AppUserEntity();
@@ -67,21 +70,22 @@ public class AppUserService {
   public AppUserEntity readAppUser(final String app, final String email) {
     log.debug("Read App User: [{}], [{}]", app, email);
     return appUserRepository
-            .findByAppAndEmail(app, email)
-            .orElseThrow(() -> new ElementNotFoundException("User", String.format("%s,%s", app, email)));
+        .findByAppAndEmail(app, email)
+        .orElseThrow(
+            () -> new ElementNotFoundException("User", String.format("%s,%s", app, email)));
   }
 
   // UPDATE
   public AppUserEntity updateAppUser(final int id, final AppUserRequest appUserRequest) {
     log.debug("Update App User: [{}], [{}]", id, appUserRequest);
-    AppUserEntity appUserEntity = readAppUser(id);
+    final AppUserEntity appUserEntity = readAppUser(id);
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
     return appUserRepository.save(appUserEntity);
   }
 
   public AppUserEntity updateAppUserPassword(final int id, final AppUserRequest appUserRequest) {
     log.debug("Update App User Password: [{}], [{}]", id, appUserRequest);
-    AppUserEntity appUserEntity = readAppUser(id);
+    final AppUserEntity appUserEntity = readAppUser(id);
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
     return appUserRepository.save(appUserEntity);
   }
@@ -89,21 +93,21 @@ public class AppUserService {
   // DELETE
   public AppUserEntity softDeleteAppUser(final int id) {
     log.info("Soft Delete App User: [{}]", id);
-    AppUserEntity appUserEntity = readAppUser(id);
+    final AppUserEntity appUserEntity = readAppUser(id);
     appUserEntity.setDeletedDate(LocalDateTime.now());
     return appUserRepository.save(appUserEntity);
   }
 
   public void hardDeleteAppUser(final int id) {
     log.info("Hard Delete App User: [{}]", id);
-    AppUserEntity appUserEntity = readAppUser(id);
+    final AppUserEntity appUserEntity = readAppUser(id);
     appUserRepository.delete(appUserEntity);
   }
 
   // RESTORE
   public AppUserEntity restoreSoftDeletedAppUser(final int id) {
     log.info("Restore Soft Deleted App User: [{}]", id);
-    AppUserEntity appUserEntity = readAppUser(id);
+    final AppUserEntity appUserEntity = readAppUser(id);
     appUserEntity.setDeletedDate(null);
     return appUserRepository.save(appUserEntity);
   }

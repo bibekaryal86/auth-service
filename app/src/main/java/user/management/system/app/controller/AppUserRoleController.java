@@ -33,7 +33,7 @@ public class AppUserRoleController {
   public ResponseEntity<AppUserRoleResponse> createAppUserRole(
       @RequestBody final AppUserRoleRequest appUserRoleRequest) {
     try {
-      AppUserRoleEntity appUserRoleEntity =
+      final AppUserRoleEntity appUserRoleEntity =
           appUserRoleService.createAppUserRole(appUserRoleRequest);
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
@@ -44,7 +44,7 @@ public class AppUserRoleController {
   @GetMapping
   public ResponseEntity<AppUserRoleResponse> readAppUserRoles() {
     try {
-      List<AppUserRoleEntity> appUserRoleEntities = appUserRoleService.readAppUserRoles();
+      final List<AppUserRoleEntity> appUserRoleEntities = appUserRoleService.readAppUserRoles();
       return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
@@ -55,7 +55,8 @@ public class AppUserRoleController {
   public ResponseEntity<AppUserRoleResponse> readAppUserRolesByUserId(
       @PathVariable final int userId) {
     try {
-      List<AppUserRoleEntity> appUserRoleEntities = appUserRoleService.readAppUserRoles(userId);
+      final List<AppUserRoleEntity> appUserRoleEntities =
+          appUserRoleService.readAppUserRoles(userId);
       return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
@@ -66,7 +67,8 @@ public class AppUserRoleController {
   public ResponseEntity<AppUserRoleResponse> readAppUserRole(
       @PathVariable final int userId, @PathVariable final int roleId) {
     try {
-      AppUserRoleEntity appUserRoleEntity = appUserRoleService.readAppUserRole(userId, roleId);
+      final AppUserRoleEntity appUserRoleEntity =
+          appUserRoleService.readAppUserRole(userId, roleId);
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);

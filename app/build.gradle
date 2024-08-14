@@ -29,6 +29,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.7.3'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.15.0'
 
+    implementation 'com.mailjet:mailjet-client:5.2.5'
+
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

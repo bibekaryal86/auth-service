@@ -32,7 +32,7 @@ public class AppUserController {
   @GetMapping
   public ResponseEntity<AppUserResponse> readAppUsers() {
     try {
-      List<AppUserEntity> appUserEntities = appUserService.readAppUsers();
+      final List<AppUserEntity> appUserEntities = appUserService.readAppUsers();
       return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -42,7 +42,7 @@ public class AppUserController {
   @GetMapping("/users/{email}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
     try {
-      List<AppUserEntity> appUserEntities = appUserService.readAppUsers(email);
+      final List<AppUserEntity> appUserEntities = appUserService.readAppUsers(email);
       return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -52,7 +52,7 @@ public class AppUserController {
   @GetMapping("/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
-      AppUserEntity appUserEntity = appUserService.readAppUser(id);
+      final AppUserEntity appUserEntity = appUserService.readAppUser(id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -60,9 +60,10 @@ public class AppUserController {
   }
 
   @GetMapping("/app/{app}/{email}")
-  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String app, @PathVariable final String email) {
+  public ResponseEntity<AppUserResponse> readAppUser(
+      @PathVariable final String app, @PathVariable final String email) {
     try {
-      AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
+      final AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -73,7 +74,7 @@ public class AppUserController {
   public ResponseEntity<AppUserResponse> updateAppUser(
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
     try {
-      AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
+      final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -103,7 +104,7 @@ public class AppUserController {
   @PatchMapping("/{id}/restore")
   public ResponseEntity<AppUserResponse> restoreAppUser(@PathVariable final int id) {
     try {
-      AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);
+      final AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);

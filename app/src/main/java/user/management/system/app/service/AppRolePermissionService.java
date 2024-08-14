@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppRolePermissionRequest;
+import user.management.system.app.model.entity.AppPermissionEntity;
+import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppRolePermissionId;
 import user.management.system.app.repository.AppRolePermissionRepository;
@@ -33,10 +35,12 @@ public class AppRolePermissionService {
       final AppRolePermissionRequest appRolePermissionRequest) {
     log.debug("Create App Role Permission: [{}]", appRolePermissionRequest);
     AppRolePermissionEntity appRolePermissionEntity = new AppRolePermissionEntity();
-    appRolePermissionEntity.setAppRole(
-        appRoleService.readAppRole(appRolePermissionRequest.getRoleId()));
-    appRolePermissionEntity.setAppPermission(
-        appPermissionService.readAppPermission(appRolePermissionRequest.getPermissionId()));
+    final AppRoleEntity appRoleEntity =
+        appRoleService.readAppRole(appRolePermissionRequest.getRoleId());
+    final AppPermissionEntity appPermissionEntity =
+        appPermissionService.readAppPermission(appRolePermissionRequest.getPermissionId());
+    appRolePermissionEntity.setAppRole(appRoleEntity);
+    appRolePermissionEntity.setAppPermission(appPermissionEntity);
     appRolePermissionEntity.setAssignedDate(LocalDateTime.now());
     return appRolePermissionRepository.save(appRolePermissionEntity);
   }
@@ -69,7 +73,7 @@ public class AppRolePermissionService {
   // DELETE
   public void deleteAppRolePermission(final int appRoleId, final int appPermissionId) {
     log.info("Delete App Role Permission: [{}], [{}]", appRoleId, appPermissionId);
-    AppRolePermissionEntity appRolePermissionEntity =
+    final AppRolePermissionEntity appRolePermissionEntity =
         readAppRolePermission(appRoleId, appPermissionId);
     appRolePermissionRepository.delete(appRolePermissionEntity);
   }

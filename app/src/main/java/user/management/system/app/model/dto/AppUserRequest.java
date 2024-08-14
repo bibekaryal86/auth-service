@@ -118,7 +118,13 @@ public class AppUserRequest {
   @Override
   public int hashCode() {
     return Objects.hash(
-        this.app, this.firstName, this.lastName, this.email, this.phone, this.password, this.status);
+        this.app,
+        this.firstName,
+        this.lastName,
+        this.email,
+        this.phone,
+        this.password,
+        this.status);
   }
 
   // ToString

@@ -100,7 +100,7 @@ public class AppUserDto extends AppUserRequest {
   @Override
   public int hashCode() {
     return Objects.hash(
-this.getApp(),
+        this.getApp(),
         this.getFirstName(),
         this.getLastName(),
         this.getEmail(),

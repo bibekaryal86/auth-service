@@ -34,7 +34,7 @@ public class AppRoleController {
   public ResponseEntity<AppRoleResponse> createAppRole(
       @RequestBody final AppRoleRequest appRoleRequest) {
     try {
-      AppRoleEntity appRoleEntity = appRoleService.createAppRole(appRoleRequest);
+      final AppRoleEntity appRoleEntity = appRoleService.createAppRole(appRoleRequest);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
@@ -44,7 +44,7 @@ public class AppRoleController {
   @GetMapping
   public ResponseEntity<AppRoleResponse> readAppRoles() {
     try {
-      List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
+      final List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
       return entityDtoConvertUtils.getResponseMultipleAppRole(appRoleEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
@@ -54,7 +54,7 @@ public class AppRoleController {
   @GetMapping("/{id}")
   public ResponseEntity<AppRoleResponse> readAppRole(@PathVariable final int id) {
     try {
-      AppRoleEntity appRoleEntity = appRoleService.readAppRole(id);
+      final AppRoleEntity appRoleEntity = appRoleService.readAppRole(id);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
@@ -65,7 +65,7 @@ public class AppRoleController {
   public ResponseEntity<AppRoleResponse> updateAppRole(
       @PathVariable final int id, @RequestBody final AppRoleRequest appRoleRequest) {
     try {
-      AppRoleEntity appRoleEntity = appRoleService.updateAppRole(id, appRoleRequest);
+      final AppRoleEntity appRoleEntity = appRoleService.updateAppRole(id, appRoleRequest);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
@@ -95,7 +95,7 @@ public class AppRoleController {
   @PatchMapping("/{id}/restore")
   public ResponseEntity<AppRoleResponse> restoreAppRole(@PathVariable final int id) {
     try {
-      AppRoleEntity appRoleEntity = appRoleService.restoreSoftDeletedAppRole(id);
+      final AppRoleEntity appRoleEntity = appRoleService.restoreSoftDeletedAppRole(id);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);

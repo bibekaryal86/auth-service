@@ -50,7 +50,7 @@ public class AppRoleService {
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity updateAppRole(final int id, final AppRoleRequest appRoleRequest) {
     log.debug("Update App Role: [{}], [{}]", id, appRoleRequest);
-    AppRoleEntity appRoleEntity = readAppRole(id);
+    final AppRoleEntity appRoleEntity = readAppRole(id);
     BeanUtils.copyProperties(appRoleRequest, appRoleEntity);
     return appRoleRepository.save(appRoleEntity);
   }
@@ -59,7 +59,7 @@ public class AppRoleService {
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity softDeleteAppRole(final int id) {
     log.info("Soft Delete App Role: [{}]", id);
-    AppRoleEntity appRoleEntity = readAppRole(id);
+    final AppRoleEntity appRoleEntity = readAppRole(id);
     appRoleEntity.setDeletedDate(LocalDateTime.now());
     return appRoleRepository.save(appRoleEntity);
   }
@@ -67,7 +67,7 @@ public class AppRoleService {
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public void hardDeleteAppRole(final int id) {
     log.info("Hard Delete App Role: [{}]", id);
-    AppRoleEntity appRoleEntity = readAppRole(id);
+    final AppRoleEntity appRoleEntity = readAppRole(id);
     appRoleRepository.delete(appRoleEntity);
   }
 
@@ -75,7 +75,7 @@ public class AppRoleService {
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity restoreSoftDeletedAppRole(final int id) {
     log.info("Restore Soft Deleted App Role: [{}]", id);
-    AppRoleEntity appRoleEntity = readAppRole(id);
+    final AppRoleEntity appRoleEntity = readAppRole(id);
     appRoleEntity.setDeletedDate(null);
     return appRoleRepository.save(appRoleEntity);
   }

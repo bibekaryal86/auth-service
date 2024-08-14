@@ -35,7 +35,7 @@ public class AppPermissionController {
   public ResponseEntity<AppPermissionResponse> createAppPermission(
       @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
-      AppPermissionEntity appPermissionEntity =
+      final AppPermissionEntity appPermissionEntity =
           appPermissionService.createAppPermission(appPermissionRequest);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
@@ -46,7 +46,8 @@ public class AppPermissionController {
   @GetMapping
   public ResponseEntity<AppPermissionResponse> readAppPermissions() {
     try {
-      List<AppPermissionEntity> appPermissionEntities = appPermissionService.readAppPermissions();
+      final List<AppPermissionEntity> appPermissionEntities =
+          appPermissionService.readAppPermissions();
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -57,7 +58,7 @@ public class AppPermissionController {
   public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(
       @PathVariable final String app) {
     try {
-      List<AppPermissionEntity> appPermissionEntities =
+      final List<AppPermissionEntity> appPermissionEntities =
           appPermissionService.readAppPermissions(app);
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
@@ -68,7 +69,7 @@ public class AppPermissionController {
   @GetMapping("/{id}")
   public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
     try {
-      AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
+      final AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -79,7 +80,7 @@ public class AppPermissionController {
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
       @PathVariable final int id, @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
-      AppPermissionEntity appPermissionEntity =
+      final AppPermissionEntity appPermissionEntity =
           appPermissionService.updateAppPermission(id, appPermissionRequest);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
@@ -110,7 +111,7 @@ public class AppPermissionController {
   @PatchMapping("/{id}/restore")
   public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
     try {
-      AppPermissionEntity appPermissionEntity =
+      final AppPermissionEntity appPermissionEntity =
           appPermissionService.restoreSoftDeletedAppPermission(id);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
