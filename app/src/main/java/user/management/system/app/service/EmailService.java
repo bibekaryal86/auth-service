@@ -4,6 +4,7 @@ import static user.management.system.app.util.CommonUtils.getSystemEnvProperty;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PRIVATE_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PUBLIC_KEY;
+import static user.management.system.app.util.JwtUtils.encodeEmailAddress;
 
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
@@ -16,10 +17,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
 @Service
 public class EmailService {
+
+  private final FileReaderUtils fileReaderUtils;
+
+  public EmailService(final FileReaderUtils fileReaderUtils) {
+    this.fileReaderUtils = fileReaderUtils;
+  }
 
   private MailjetClient mailjetClient() {
     return new MailjetClient(
@@ -38,12 +47,12 @@ public class EmailService {
       final String html,
       final String attachmentFileName,
       final String attachment) {
-    log.info("Sending Email...");
+    log.debug("Sending Email: [{}], [{}], [{}], [{}]", appName, emailTo, emailToFullName, subject);
 
     try {
-      String emailFrom = getSystemEnvProperty(ENV_MAILJET_EMAIL_ADDRESS, null);
+      final String emailFrom = getSystemEnvProperty(ENV_MAILJET_EMAIL_ADDRESS, null);
 
-      JSONObject message =
+      final JSONObject message =
           new JSONObject()
               .put(Emailv31.Message.CUSTOMID, UUID.randomUUID().toString())
               .put(
@@ -76,11 +85,11 @@ public class EmailService {
                         .put("Base64Content", attachment)));
       }
 
-      MailjetRequest request =
+      final MailjetRequest request =
           new MailjetRequest(Emailv31.resource)
               .property(Emailv31.MESSAGES, new JSONArray().put(message));
 
-      MailjetResponse response = mailjetClient().post(request);
+      final MailjetResponse response = mailjetClient().post(request);
 
       if (response.getStatus() == 200) {
         log.info("Send Email Response Success...");
@@ -90,5 +99,23 @@ public class EmailService {
     } catch (Exception ex) {
       log.error("Send Email Error...", ex);
     }
+  }
+
+  public void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
+    final String activationLink = String.format("%s/na_app_users/validate_exit/?toValidate=%s", baseUrl, encodedEmail);
+    final String emailHtmlContent = fileReaderUtils.readFileContents("email/templates/email_validate_user.html").replace("{activation_link}", activationLink);
+    final String fullName = String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
+    final String subject = String.format("[%s] User Activation", appUserEntity.getApp());
+    sendEmail(appUserEntity.getApp(), appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+  }
+
+  public void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
+    final String resetLink = String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);
+    final String emailHtmlContent = fileReaderUtils.readFileContents("email/templates/email_reset_user.html").replace("{reset_link}", resetLink);
+    final String fullName = String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
+    final String subject = String.format("[%s] User Reset", appUserEntity.getApp());
+    sendEmail(appUserEntity.getApp(), appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
   }
 }

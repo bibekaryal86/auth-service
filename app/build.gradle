@@ -17,6 +17,7 @@ plugins {
 dependencies {
     def springVersion = "3.3.1"
     def junitVersion = "5.10.2"
+    def jjwtVersion = "0.12.6"
     
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springVersion"
@@ -30,6 +31,9 @@ dependencies {
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.15.0'
 
     implementation 'com.mailjet:mailjet-client:5.2.5'
+    implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
