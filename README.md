@@ -38,3 +38,6 @@ Remaining (thoughts)
     -> List of Permissions in Role
         -> Map<String, Permission> appName, appPermission
     -> List of Roles in User
+    -> When inserting/updating permissions, validate `app`
+        -> cache `app` in authenv_service
+    -> Do same with users

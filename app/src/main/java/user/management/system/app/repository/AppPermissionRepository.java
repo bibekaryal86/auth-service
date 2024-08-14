@@ -8,5 +8,5 @@ import user.management.system.app.model.entity.AppPermissionEntity;
 
 @Repository
 public interface AppPermissionRepository extends JpaRepository<AppPermissionEntity, Integer> {
-    List<AppPermissionEntity> findByAppOrderByNameAsc(@Param("app") final String app);
+  List<AppPermissionEntity> findByAppOrderByNameAsc(@Param("app") final String app);
 }

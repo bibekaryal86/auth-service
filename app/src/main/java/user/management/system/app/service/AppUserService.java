@@ -52,11 +52,23 @@ public class AppUserService {
     return appUserRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
   }
 
+  public List<AppUserEntity> readAppUsers(final String email) {
+    log.debug("Read App Users: [{}]", email);
+    return appUserRepository.findAllByEmailOrderByApp(email);
+  }
+
   public AppUserEntity readAppUser(final int id) {
     log.debug("Read App User: [{}]", id);
     return appUserRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("User", String.valueOf(id)));
+  }
+
+  public AppUserEntity readAppUser(final String app, final String email) {
+    log.debug("Read App User: [{}], [{}]", app, email);
+    return appUserRepository
+            .findByAppAndEmail(app, email)
+            .orElseThrow(() -> new ElementNotFoundException("User", String.format("%s,%s", app, email)));
   }
 
   // UPDATE

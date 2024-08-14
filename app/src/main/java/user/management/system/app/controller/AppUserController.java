@@ -39,10 +39,30 @@ public class AppUserController {
     }
   }
 
+  @GetMapping("/users/{email}")
+  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
+    try {
+      List<AppUserEntity> appUserEntities = appUserService.readAppUsers(email);
+      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
       AppUserEntity appUserEntity = appUserService.readAppUser(id);
+      return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
+  @GetMapping("/app/{app}/{email}")
+  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String app, @PathVariable final String email) {
+    try {
+      AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
