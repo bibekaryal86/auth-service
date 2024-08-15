@@ -56,6 +56,11 @@ public class AppRolePermissionService {
     return appRolePermissionRepository.findByAppRoleIdOrderByAppPermissionNameAsc(appRoleId);
   }
 
+  public List<AppRolePermissionEntity> readAppRolePermissions(final List<Integer> appRoleIds) {
+    log.debug("Read App Role Permissions: [{}]", appRoleIds);
+    return appRolePermissionRepository.findByAppRoleIdInOrderByAppPermissionNameAsc(appRoleIds);
+  }
+
   public AppRolePermissionEntity readAppRolePermission(
       final int appRoleId, final int appPermissionId) {
     log.debug("Read App Role Permission: [{}], [{}]", appRoleId, appPermissionId);

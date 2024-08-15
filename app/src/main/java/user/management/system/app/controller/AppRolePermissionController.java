@@ -64,6 +64,18 @@ public class AppRolePermissionController {
     }
   }
 
+  @GetMapping("/roles/{roleIds}")
+  public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleIds(
+          @PathVariable final List<Integer> roleIds) {
+    try {
+      final List<AppRolePermissionEntity> appRolePermissionEntities =
+              appRolePermissionService.readAppRolePermissions(roleIds);
+      return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
+    }
+  }
+
   @GetMapping("/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {

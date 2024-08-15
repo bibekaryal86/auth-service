@@ -12,4 +12,6 @@ public interface AppRolePermissionRepository
     extends JpaRepository<AppRolePermissionEntity, AppRolePermissionId> {
   List<AppRolePermissionEntity> findByAppRoleIdOrderByAppPermissionNameAsc(
       @Param("roleId") int roleId);
+  List<AppRolePermissionEntity> findByAppRoleIdInOrderByAppPermissionNameAsc(
+          @Param("roleIds") List<Integer> roleIds);
 }
