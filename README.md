@@ -1,12 +1,5 @@
 # user-management-system
 
-* Things to update:
- * Things to add:
-     * `SwaggerConfig` if using SwaggerUI
-         * See: `app-dependency-update` for example
-         * Also, will have to update `SecurityConfig` to allow SwaggerUI
-     * `SecurityConfig`
-
 * Flyway
   * Run flyway command as `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx`
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
@@ -34,10 +27,12 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
         Do it at last
 
 Remaining (thoughts)
+    -> Security implementation and SecurityConfig
     -> UserAddress in User
     -> List of Permissions in Role
         -> Map<String, Permission> appName, appPermission
     -> List of Roles in User
+    -> Audits
     -> When inserting/updating permissions, validate `app`
         -> cache `app` in authenv_service
-    -> Do same with users
+        -> Do same for users

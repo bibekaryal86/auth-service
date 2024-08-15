@@ -28,7 +28,7 @@ public class AppUserDto extends AppUserRequest {
       final LocalDateTime createdDate,
       final LocalDateTime updatedDate,
       final LocalDateTime deletedDate) {
-    super(app, firstName, lastName, email, phone, "", status);
+    super(app, firstName, lastName, email, phone, "", status, false);
     this.id = id;
     this.isValidated = isValidated;
     this.createdDate = createdDate;

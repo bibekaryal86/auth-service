@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppUserRequest;
+import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.repository.AppUserRepository;
@@ -42,7 +43,7 @@ public class AppUserService {
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
     appUserEntity.setIsValidated(false);
     appUserEntity = appUserRepository.save(appUserEntity);
-    // event is listened in AppUserRoleService, EmailService
+    // @see EmailService, AppUserRoleService
     applicationEventPublisher.publishEvent(
         new AppUserCreatedEvent(
             this, appUserEntity, appUserRequest.isGuestUser(), baseUrlForEmail));
@@ -92,10 +93,10 @@ public class AppUserService {
     return appUserRepository.save(appUserEntity);
   }
 
-  public AppUserEntity updateAppUserPassword(final int id, final AppUserRequest appUserRequest) {
-    log.debug("Update App User Password: [{}], [{}]", id, appUserRequest);
+  public AppUserEntity updateAppUserPassword(final int id, final UserLoginRequest userLoginRequest) {
+    log.debug("Update App User Password: [{}], [{}]", id, userLoginRequest);
     final AppUserEntity appUserEntity = readAppUser(id);
-    appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
+    appUserEntity.setPassword(passwordUtils.hashPassword(userLoginRequest.getPassword()));
     return appUserRepository.save(appUserEntity);
   }
 

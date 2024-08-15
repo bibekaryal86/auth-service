@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
+import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -75,6 +76,17 @@ public class AppUserController {
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
     try {
       final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
+      return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
+  @PutMapping("/{id}/password")
+  public ResponseEntity<AppUserResponse> updateAppUserPassword(
+          @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
+    try {
+      final AppUserEntity appUserEntity = appUserService.updateAppUserPassword(id, userLoginRequest);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
