@@ -111,10 +111,12 @@ public class EmailService {
     sendUserValidationEmail(appUserEntity, baseUrl);
   }
 
-  private void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+  public void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String activationLink =
-        String.format("%s/na_app_users/validate_exit/?toValidate=%s", baseUrl, encodedEmail);
+        String.format(
+            "%s/na_app_users/validate_exit/?app=%s&toValidate=%s",
+            baseUrl, appUserEntity.getApp(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_validate_user.html")
@@ -133,7 +135,7 @@ public class EmailService {
         null);
   }
 
-  private void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+  public void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String resetLink =
         String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);

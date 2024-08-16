@@ -14,10 +14,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class EntityBaseDates {
-  @Column(name = "created_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  @Column(
+      name = "created_date",
+      nullable = false,
+      updatable = false,
+      columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
   private LocalDateTime createdDate;
 
-  @Column(name = "updated_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  @Column(
+      name = "updated_date",
+      nullable = false,
+      columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
   private LocalDateTime updatedDate;
 
   @Column(name = "deleted_date")

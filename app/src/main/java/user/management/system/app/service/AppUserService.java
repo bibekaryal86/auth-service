@@ -90,6 +90,10 @@ public class AppUserService {
     log.debug("Update App User: [{}], [{}]", id, appUserRequest);
     final AppUserEntity appUserEntity = readAppUser(id);
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
+    return updateAppUser(appUserEntity);
+  }
+
+  public AppUserEntity updateAppUser(final AppUserEntity appUserEntity) {
     return appUserRepository.save(appUserEntity);
   }
 

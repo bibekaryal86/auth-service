@@ -1,5 +1,7 @@
 package user.management.system.app.service;
 
+import static user.management.system.app.util.JwtUtils.decodeEmailAddress;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.UserNotAuthorizedException;
@@ -21,7 +23,6 @@ public class AppUserPasswordService {
     this.passwordUtils = passwordUtils;
   }
 
-  // LOGIN
   public AppUserEntity loginUser(final UserLoginRequest userLoginRequest) {
     final AppUserEntity appUserEntity =
         appUserService.readAppUser(userLoginRequest.getApp(), userLoginRequest.getEmail());
@@ -38,5 +39,25 @@ public class AppUserPasswordService {
     }
 
     return appUserEntity;
+  }
+
+  public void resetUser(final UserLoginRequest userLoginRequest) {
+    final AppUserEntity appUserEntity =
+        appUserService.readAppUser(userLoginRequest.getApp(), userLoginRequest.getEmail());
+    appUserEntity.setPassword(passwordUtils.hashPassword(userLoginRequest.getPassword()));
+    appUserService.updateAppUser(appUserEntity);
+  }
+
+  public String validateAndResetUser(
+      final String app, final String encodedEmail, final boolean isValidate) {
+    final String email = decodeEmailAddress(encodedEmail);
+    final AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
+
+    if (isValidate) {
+      appUserEntity.setIsValidated(true);
+      appUserService.updateAppUser(appUserEntity);
+    }
+
+    return email;
   }
 }

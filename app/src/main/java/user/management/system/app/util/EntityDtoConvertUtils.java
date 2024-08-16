@@ -4,11 +4,13 @@ import static user.management.system.app.util.CommonUtils.getHttpStatusForErrorR
 import static user.management.system.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static user.management.system.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -331,6 +333,30 @@ public class EntityDtoConvertUtils {
     final ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
     return new ResponseEntity<>(new UserLoginResponse(null, null, responseStatusInfo), httpStatus);
+  }
+
+  public ResponseEntity<ResponseStatusInfo> getResponseErrorValidateReset(
+      final Exception exception) {
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    final ResponseStatusInfo responseStatusInfo =
+        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+    return new ResponseEntity<>(responseStatusInfo, httpStatus);
+  }
+
+  public ResponseEntity<Void> getResponseValidateUser(
+      final String redirectUrl, final boolean isValidated) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(
+        URI.create(redirectUrl + (isValidated ? "?is_validated=true" : "?is_validated=false")));
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
+
+  public ResponseEntity<Void> getResponseResetUser(
+      final String redirectUrl, final boolean isReset, final String email) {
+    String url = redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(URI.create(url));
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
   public AppUserDto convertEntityToDtoAppUserWithRolesPermissions(
