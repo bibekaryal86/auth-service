@@ -8,10 +8,10 @@ public class AppUserRequest {
   private String lastName;
   private String email;
   private String phone;
-  private transient String password;
+  private String password;
   private String status;
 
-  private boolean isGuestUser;
+  private boolean guestUser;
 
   // No Args Constructor
   public AppUserRequest() {}
@@ -25,7 +25,7 @@ public class AppUserRequest {
       final String phone,
       final String password,
       final String status,
-      final boolean isGuestUser) {
+      final boolean guestUser) {
     this.app = app;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -33,22 +33,7 @@ public class AppUserRequest {
     this.phone = phone;
     this.password = password;
     this.status = status;
-    this.isGuestUser = isGuestUser;
-  }
-
-  // Required Args Constructor
-  public AppUserRequest(
-      final String firstName,
-      final String lastName,
-      final String email,
-      final String phone,
-      final String status) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.email = email;
-    this.phone = phone;
-    this.password = "";
-    this.status = status;
+    this.guestUser = guestUser;
   }
 
   // Getters and Setters
@@ -105,11 +90,11 @@ public class AppUserRequest {
   }
 
   public boolean isGuestUser() {
-    return this.isGuestUser;
+    return this.guestUser;
   }
 
-  public void setGuestUser(final boolean isGuestUser) {
-    this.isGuestUser = isGuestUser;
+  public void setGuestUser(final boolean guestUser) {
+    this.guestUser = guestUser;
   }
 
   // Equals
@@ -124,7 +109,7 @@ public class AppUserRequest {
         && Objects.equals(this.phone, that.phone)
         && Objects.equals(this.password, that.password)
         && Objects.equals(this.status, that.status)
-        && Objects.equals(this.isGuestUser, that.isGuestUser);
+        && Objects.equals(this.guestUser, that.guestUser);
   }
 
   // HashCode
@@ -138,7 +123,7 @@ public class AppUserRequest {
         this.phone,
         this.password,
         this.status,
-        this.isGuestUser);
+        this.guestUser);
   }
 
   // ToString
@@ -163,8 +148,8 @@ public class AppUserRequest {
         + ", status='"
         + this.status
         + '\''
-        + ", isGuestUser='"
-        + this.isGuestUser
+        + ", guestUser='"
+        + this.guestUser
         + '\''
         + "}";
   }

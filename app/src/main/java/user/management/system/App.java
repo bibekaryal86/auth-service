@@ -55,7 +55,7 @@ public class App {
     if (getSystemEnvProperty(ENV_MAILJET_PRIVATE_KEY, null) == null) {
       errors.add("Mailjet Private Key Not Provided...");
     }
-    if (errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       log.error("One or more environment configurations could not be accessed: [{}]", errors);
       throw new IllegalStateException(
           "One or more environment configurations could not be accessed...");

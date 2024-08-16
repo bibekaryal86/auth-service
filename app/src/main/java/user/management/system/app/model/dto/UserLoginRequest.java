@@ -11,5 +11,5 @@ import lombok.ToString;
 public class UserLoginRequest {
   private String app;
   private String email;
-  @ToString.Exclude private transient String password;
+  @ToString.Exclude private String password;
 }
