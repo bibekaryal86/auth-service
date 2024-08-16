@@ -112,7 +112,7 @@ public class EmailService {
   }
 
   private void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
-    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
+    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String activationLink =
         String.format("%s/na_app_users/validate_exit/?toValidate=%s", baseUrl, encodedEmail);
     final String emailHtmlContent =
@@ -134,7 +134,7 @@ public class EmailService {
   }
 
   private void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
-    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail(), 15);
+    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String resetLink =
         String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);
     final String emailHtmlContent =

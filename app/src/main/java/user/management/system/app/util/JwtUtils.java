@@ -24,7 +24,7 @@ public class JwtUtils {
     return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
   }
 
-  public static String encodeEmailAddress(final String email, final int minutes) {
+  public static String encodeEmailAddress(final String email) {
     return Jwts.builder()
         .claims(Map.of("email_token", email))
         .expiration(new Date(System.currentTimeMillis() + EMAIL_LINK_EXPIRATION))
@@ -53,4 +53,5 @@ public class JwtUtils {
       throw new IllegalArgumentException("Invalid Email Credentials", e);
     }
   }
+
 }

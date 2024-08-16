@@ -23,6 +23,7 @@ import user.management.system.app.model.dto.AppUserRoleDto;
 import user.management.system.app.model.dto.AppUserRoleResponse;
 import user.management.system.app.model.dto.ResponseCrudInfo;
 import user.management.system.app.model.dto.ResponseStatusInfo;
+import user.management.system.app.model.dto.UserLoginResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -310,5 +311,13 @@ public class EntityDtoConvertUtils {
       return Collections.emptyList();
     }
     return appUserRoleEntities.stream().map(this::convertEntityToDtoAppUserRole).toList();
+  }
+
+  public ResponseEntity<UserLoginResponse> getResponseErrorAppUserLogin(final Exception exception) {
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    final ResponseStatusInfo responseStatusInfo =
+            ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+    return new ResponseEntity<>(
+            new UserLoginResponse(null, null, responseStatusInfo), httpStatus);
   }
 }

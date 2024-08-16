@@ -1,10 +1,12 @@
 package user.management.system.app.util;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static user.management.system.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
+import user.management.system.app.exception.UserForbiddenException;
+import user.management.system.app.exception.UserNotAuthorizedException;
+import user.management.system.app.exception.UserNotValidatedException;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,6 +53,10 @@ public class CommonUtils {
       return NOT_FOUND;
     } else if (exception instanceof ElementMissingException) {
       return BAD_REQUEST;
+    } else if (exception instanceof UserForbiddenException || exception instanceof UserNotValidatedException) {
+      return FORBIDDEN;
+    } else if (exception instanceof UserNotAuthorizedException) {
+      return UNAUTHORIZED;
     } else {
       return SERVICE_UNAVAILABLE;
     }

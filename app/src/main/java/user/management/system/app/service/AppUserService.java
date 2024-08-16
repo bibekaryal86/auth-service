@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
+import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -82,7 +83,7 @@ public class AppUserService {
     return appUserRepository
         .findByAppAndEmail(app, email)
         .orElseThrow(
-            () -> new ElementNotFoundException("User", String.format("%s,%s", app, email)));
+                UserNotAuthorizedException::new);
   }
 
   // UPDATE
