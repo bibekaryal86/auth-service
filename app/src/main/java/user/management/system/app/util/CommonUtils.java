@@ -53,7 +53,8 @@ public class CommonUtils {
       return NOT_FOUND;
     } else if (exception instanceof ElementMissingException) {
       return BAD_REQUEST;
-    } else if (exception instanceof UserForbiddenException || exception instanceof UserNotValidatedException) {
+    } else if (exception instanceof UserForbiddenException
+        || exception instanceof UserNotValidatedException) {
       return FORBIDDEN;
     } else if (exception instanceof UserNotAuthorizedException) {
       return UNAUTHORIZED;

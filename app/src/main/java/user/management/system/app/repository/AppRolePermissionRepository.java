@@ -11,7 +11,8 @@ import user.management.system.app.model.entity.AppRolePermissionId;
 public interface AppRolePermissionRepository
     extends JpaRepository<AppRolePermissionEntity, AppRolePermissionId> {
   List<AppRolePermissionEntity> findByAppRoleIdOrderByAppPermissionNameAsc(
-      @Param("roleId") int roleId);
-  List<AppRolePermissionEntity> findByAppRoleIdInOrderByAppPermissionNameAsc(
-          @Param("roleIds") List<Integer> roleIds);
+      @Param("roleId") final int roleId);
+
+  List<AppRolePermissionEntity> findByAppPermissionAppAndAppRoleIdInOrderByAppPermissionNameAsc(
+      @Param("app") final String app, @Param("roleIds") final List<Integer> roleIds);
 }

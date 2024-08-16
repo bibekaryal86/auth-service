@@ -16,21 +16,22 @@ public class AppUserPasswordService {
   private final PasswordUtils passwordUtils;
 
   public AppUserPasswordService(
-      final AppUserService appUserService,
-      final PasswordUtils passwordUtils) {
+      final AppUserService appUserService, final PasswordUtils passwordUtils) {
     this.appUserService = appUserService;
     this.passwordUtils = passwordUtils;
   }
 
   // LOGIN
   public AppUserEntity loginUser(final UserLoginRequest userLoginRequest) {
-    AppUserEntity appUserEntity = appUserService.readAppUser(userLoginRequest.getApp(), userLoginRequest.getEmail());
+    final AppUserEntity appUserEntity =
+        appUserService.readAppUser(userLoginRequest.getApp(), userLoginRequest.getEmail());
 
     if (!appUserEntity.getIsValidated()) {
       throw new UserNotValidatedException();
     }
 
-    boolean isLoginSuccess = passwordUtils.verifyPassword(userLoginRequest.getPassword(), appUserEntity.getPassword());
+    boolean isLoginSuccess =
+        passwordUtils.verifyPassword(userLoginRequest.getPassword(), appUserEntity.getPassword());
 
     if (!isLoginSuccess) {
       throw new UserNotAuthorizedException();

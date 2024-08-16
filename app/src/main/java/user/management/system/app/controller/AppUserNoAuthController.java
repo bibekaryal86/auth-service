@@ -3,7 +3,6 @@ package user.management.system.app.controller;
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,16 +13,11 @@ import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.dto.UserLoginResponse;
-import user.management.system.app.model.entity.AppPermissionEntity;
-import user.management.system.app.model.entity.AppRoleEntity;
-import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
-import user.management.system.app.model.entity.AppUserRoleEntity;
-import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.service.AppUserPasswordService;
-import user.management.system.app.service.AppUserRoleService;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
+import user.management.system.app.util.JwtUtils;
 
 @RestController
 @RequestMapping("/api/v1/na_app_users")
@@ -31,20 +25,14 @@ public class AppUserNoAuthController {
 
   private final AppUserService appUserService;
   private final AppUserPasswordService appUserPasswordService;
-  private final AppUserRoleService appUserRoleService;
-  private final AppRolePermissionService appRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   public AppUserNoAuthController(
       final AppUserService appUserService,
       final AppUserPasswordService appUserPasswordService,
-      final AppUserRoleService appUserRoleService,
-      final AppRolePermissionService appRolePermissionService,
       final EntityDtoConvertUtils entityDtoConvertUtils) {
     this.appUserService = appUserService;
     this.appUserPasswordService = appUserPasswordService;
-    this.appUserRoleService = appUserRoleService;
-    this.appRolePermissionService = appRolePermissionService;
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
 
@@ -61,23 +49,14 @@ public class AppUserNoAuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<UserLoginResponse> loginAppUser(@RequestBody final UserLoginRequest userLoginRequest) {
+  public ResponseEntity<UserLoginResponse> loginAppUser(
+      @RequestBody final UserLoginRequest userLoginRequest) {
     try {
-      AppUserEntity appUserEntity = appUserPasswordService.loginUser(userLoginRequest);
-      List<AppUserRoleEntity> appUserRoleEntities = appUserRoleService.readAppUserRoles(appUserEntity.getId());
-      List<AppRoleEntity> appRoleEntities = appUserRoleEntities.stream().map(AppUserRoleEntity::getAppRole).toList();
-      List<Integer> appRoleIds = appRoleEntities.stream().map(AppRoleEntity::getId).toList();
-      List<AppRolePermissionEntity> appRolePermissionEntities = appRolePermissionService.readAppRolePermissions(appRoleIds);
-      List<AppPermissionEntity> appPermissionEntities = appRolePermissionEntities.stream().map(AppRolePermissionEntity::getAppPermission).toList();
-
-
-
-
-
-      AppUserDto appUserDto = entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity);
-
-
-      return null;
+      final AppUserEntity appUserEntity = appUserPasswordService.loginUser(userLoginRequest);
+      final AppUserDto appUserDto =
+          entityDtoConvertUtils.convertEntityToDtoAppUserWithRolesPermissions(appUserEntity);
+      final String token = JwtUtils.encodeAuthCredentials(appUserDto);
+      return ResponseEntity.ok(UserLoginResponse.builder().token(token).user(appUserDto).build());
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }

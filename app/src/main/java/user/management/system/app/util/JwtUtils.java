@@ -8,17 +8,21 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import javax.crypto.SecretKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import user.management.system.app.model.dto.AppUserDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
   private static final String SECRET_KEY = getSystemEnvProperty(ENV_SECRET_KEY, null);
-  private static final long EMAIL_LINK_EXPIRATION = 90000; // 15 minutes
 
   private static SecretKey getSigningKey() {
     return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
@@ -27,12 +31,12 @@ public class JwtUtils {
   public static String encodeEmailAddress(final String email) {
     return Jwts.builder()
         .claims(Map.of("email_token", email))
-        .expiration(new Date(System.currentTimeMillis() + EMAIL_LINK_EXPIRATION))
+        .expiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
         .signWith(getSigningKey())
         .compact();
   }
 
-  public static String decodeEmailAddress(String encodedEmail) {
+  public static String decodeEmailAddress(final String encodedEmail) {
     try {
       String emailToken =
           Jwts.parser()
@@ -54,4 +58,14 @@ public class JwtUtils {
     }
   }
 
+  public static String encodeAuthCredentials(final AppUserDto appUserDto) {
+    Map<String, Object> tokenClaim = new HashMap<>();
+    tokenClaim.put("app_user_token", appUserDto.toAuthToken());
+    tokenClaim.put("expiration", LocalDateTime.now().plusHours(24));
+    return Jwts.builder()
+        .claims(tokenClaim)
+        .expiration(Date.from(Instant.now().plus(24, ChronoUnit.HOURS)))
+        .signWith(getSigningKey())
+        .compact();
+  }
 }

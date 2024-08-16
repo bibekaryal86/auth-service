@@ -6,6 +6,8 @@ import static user.management.system.app.util.CommonUtils.getResponseStatusInfoF
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +31,20 @@ import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
+import user.management.system.app.service.AppRolePermissionService;
+import user.management.system.app.service.AppUserRoleService;
 
 @Component
 public class EntityDtoConvertUtils {
+  private final AppUserRoleService appUserRoleService;
+  private final AppRolePermissionService appRolePermissionService;
+
+  public EntityDtoConvertUtils(
+      final AppUserRoleService appUserRoleService,
+      final AppRolePermissionService appRolePermissionService) {
+    this.appUserRoleService = appUserRoleService;
+    this.appRolePermissionService = appRolePermissionService;
+  }
 
   public ResponseEntity<AppPermissionResponse> getResponseSingleAppPermission(
       final AppPermissionEntity appPermissionEntity) {
@@ -300,8 +313,8 @@ public class EntityDtoConvertUtils {
     if (appUserRoleEntity == null) {
       return null;
     }
-    AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser());
-    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole());
+    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser());
+    final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole());
     return new AppUserRoleDto(appUserDto, appRoleDto);
   }
 
@@ -316,8 +329,40 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<UserLoginResponse> getResponseErrorAppUserLogin(final Exception exception) {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
     final ResponseStatusInfo responseStatusInfo =
-            ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(
-            new UserLoginResponse(null, null, responseStatusInfo), httpStatus);
+        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+    return new ResponseEntity<>(new UserLoginResponse(null, null, responseStatusInfo), httpStatus);
+  }
+
+  public AppUserDto convertEntityToDtoAppUserWithRolesPermissions(
+      final AppUserEntity appUserEntity) {
+    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserEntity);
+    // get all roles for the user
+    final List<AppUserRoleEntity> appUserRoleEntities =
+        appUserRoleService.readAppUserRoles(appUserEntity.getId());
+    final List<AppUserRoleDto> appUserRoleDtos =
+        convertEntitiesToDtosAppUserRole(appUserRoleEntities);
+    final List<AppRoleDto> appRoleDtos =
+        appUserRoleDtos.stream().map(AppUserRoleDto::getRole).toList();
+    // get all permissions for the roles
+    final List<Integer> appRoleIds = appRoleDtos.stream().map(AppRoleDto::getId).toList();
+    final List<AppRolePermissionEntity> appRolePermissionEntities =
+        appRolePermissionService.readAppRolePermissions(appUserEntity.getApp(), appRoleIds);
+    final List<AppRolePermissionDto> appRolePermissionDtos =
+        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
+    // set permissions to roles
+    final Map<Integer, List<AppPermissionDto>> rolePermissionsMap =
+        appRolePermissionDtos.stream()
+            .collect(
+                Collectors.groupingBy(
+                    rolePermission -> rolePermission.getRole().getId(),
+                    Collectors.mapping(AppRolePermissionDto::getPermission, Collectors.toList())));
+    for (final AppRoleDto role : appRoleDtos) {
+      final List<AppPermissionDto> permissions =
+          rolePermissionsMap.getOrDefault(role.getId(), Collections.emptyList());
+      role.setPermissions(permissions);
+    }
+    // set roles to user
+    appUserDto.setRoles(appRoleDtos);
+    return appUserDto;
   }
 }

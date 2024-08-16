@@ -1,5 +1,6 @@
 package user.management.system.app.model.dto;
 
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,8 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 public class AppRoleDto extends AppRoleRequest {
   private Integer id;
+
+  private List<AppPermissionDto> permissions;
 
   public AppRoleDto() {
     super();

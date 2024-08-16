@@ -1,7 +1,12 @@
 package user.management.system.app.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AppUserDto extends AppUserRequest {
   private Integer id;
@@ -9,6 +14,8 @@ public class AppUserDto extends AppUserRequest {
   private LocalDateTime createdDate;
   private LocalDateTime updatedDate;
   private LocalDateTime deletedDate;
+
+  private List<AppRoleDto> roles;
 
   // No Args Constructor
   public AppUserDto() {
@@ -75,6 +82,14 @@ public class AppUserDto extends AppUserRequest {
 
   public void setDeletedDate(final LocalDateTime deletedDate) {
     this.deletedDate = deletedDate;
+  }
+
+  public List<AppRoleDto> getRoles() {
+    return this.roles;
+  }
+
+  public void setRoles(final List<AppRoleDto> roles) {
+    this.roles = roles;
   }
 
   // Equals
@@ -152,5 +167,44 @@ public class AppUserDto extends AppUserRequest {
         + this.deletedDate
         + '\''
         + "}";
+  }
+
+  public Map<String, Object> toAuthToken() {
+    Map<String, Object> token = new HashMap<>();
+    token.put("app", this.getApp());
+    token.put("id", this.getId());
+    token.put("is_deleted", this.getDeletedDate() != null);
+    token.put("email", this.getEmail());
+    token.put("first_name", this.getFirstName());
+    token.put("last_name", this.getLastName());
+    token.put("status", this.getStatus());
+
+    List<Map<String, Object>> roles =
+        this.getRoles().stream()
+            .map(
+                role -> {
+                  Map<String, Object> roleMap = new HashMap<>();
+                  roleMap.put("id", role.getId());
+                  roleMap.put("name", role.getName());
+
+                  List<Map<String, Object>> permissions =
+                      role.getPermissions() != null
+                          ? role.getPermissions().stream()
+                              .map(
+                                  permission -> {
+                                    Map<String, Object> permissionMap = new HashMap<>();
+                                    permissionMap.put("id", permission.getId());
+                                    permissionMap.put("name", permission.getName());
+                                    return permissionMap;
+                                  })
+                              .collect(Collectors.toList())
+                          : Collections.emptyList();
+
+                  roleMap.put("permissions", permissions);
+                  return roleMap;
+                })
+            .toList();
+    token.put("roles", roles);
+    return token;
   }
 }

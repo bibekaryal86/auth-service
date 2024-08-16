@@ -84,9 +84,10 @@ public class AppUserController {
 
   @PutMapping("/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
-          @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
     try {
-      final AppUserEntity appUserEntity = appUserService.updateAppUserPassword(id, userLoginRequest);
+      final AppUserEntity appUserEntity =
+          appUserService.updateAppUserPassword(id, userLoginRequest);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);

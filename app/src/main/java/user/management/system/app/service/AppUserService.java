@@ -82,8 +82,7 @@ public class AppUserService {
     log.debug("Read App User: [{}], [{}]", app, email);
     return appUserRepository
         .findByAppAndEmail(app, email)
-        .orElseThrow(
-                UserNotAuthorizedException::new);
+        .orElseThrow(UserNotAuthorizedException::new);
   }
 
   // UPDATE
@@ -94,7 +93,8 @@ public class AppUserService {
     return appUserRepository.save(appUserEntity);
   }
 
-  public AppUserEntity updateAppUserPassword(final int id, final UserLoginRequest userLoginRequest) {
+  public AppUserEntity updateAppUserPassword(
+      final int id, final UserLoginRequest userLoginRequest) {
     log.debug("Update App User Password: [{}], [{}]", id, userLoginRequest);
     final AppUserEntity appUserEntity = readAppUser(id);
     appUserEntity.setPassword(passwordUtils.hashPassword(userLoginRequest.getPassword()));
