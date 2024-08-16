@@ -40,8 +40,18 @@ public class AppUserController {
     }
   }
 
+  @GetMapping("/app/{app}")
+  public ResponseEntity<AppUserResponse> readAppUsersByApp(@PathVariable final String app) {
+    try {
+      final List<AppUserEntity> appUserEntities = appUserService.readAppUsersByApp(app);
+      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
   @GetMapping("/users/{email}")
-  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
+  public ResponseEntity<AppUserResponse> readAppUsersByEmail(@PathVariable final String email) {
     try {
       final List<AppUserEntity> appUserEntities = appUserService.readAppUsers(email);
       return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
@@ -50,7 +60,7 @@ public class AppUserController {
     }
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
       final AppUserEntity appUserEntity = appUserService.readAppUser(id);
@@ -60,7 +70,7 @@ public class AppUserController {
     }
   }
 
-  @GetMapping("/app/{app}/{email}")
+  @GetMapping("/app/{app}/user/{email}")
   public ResponseEntity<AppUserResponse> readAppUser(
       @PathVariable final String app, @PathVariable final String email) {
     try {
@@ -71,7 +81,7 @@ public class AppUserController {
     }
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> updateAppUser(
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
     try {
@@ -82,7 +92,7 @@ public class AppUserController {
     }
   }
 
-  @PutMapping("/{id}/password")
+  @PutMapping("/user/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
       @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
     try {
@@ -94,7 +104,7 @@ public class AppUserController {
     }
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> softDeleteAppUser(@PathVariable final int id) {
     try {
       appUserService.softDeleteAppUser(id);
@@ -104,7 +114,7 @@ public class AppUserController {
     }
   }
 
-  @DeleteMapping("/{id}/hard")
+  @DeleteMapping("/user/{id}/hard")
   public ResponseEntity<AppUserResponse> hardDeleteAppUser(@PathVariable final int id) {
     try {
       appUserService.hardDeleteAppUser(id);
@@ -114,7 +124,7 @@ public class AppUserController {
     }
   }
 
-  @PatchMapping("/{id}/restore")
+  @PatchMapping("/user/{id}/restore")
   public ResponseEntity<AppUserResponse> restoreAppUser(@PathVariable final int id) {
     try {
       final AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);

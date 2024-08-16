@@ -30,7 +30,7 @@ public class AppRoleController {
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
 
-  @PostMapping
+  @PostMapping("/role")
   public ResponseEntity<AppRoleResponse> createAppRole(
       @RequestBody final AppRoleRequest appRoleRequest) {
     try {
@@ -51,7 +51,7 @@ public class AppRoleController {
     }
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> readAppRole(@PathVariable final int id) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.readAppRole(id);
@@ -61,7 +61,7 @@ public class AppRoleController {
     }
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> updateAppRole(
       @PathVariable final int id, @RequestBody final AppRoleRequest appRoleRequest) {
     try {
@@ -72,7 +72,7 @@ public class AppRoleController {
     }
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> softDeleteAppRole(@PathVariable final int id) {
     try {
       appRoleService.softDeleteAppRole(id);
@@ -82,7 +82,7 @@ public class AppRoleController {
     }
   }
 
-  @DeleteMapping("/{id}/hard")
+  @DeleteMapping("/role/{id}/hard")
   public ResponseEntity<AppRoleResponse> hardDeleteAppRole(@PathVariable final int id) {
     try {
       appRoleService.hardDeleteAppRole(id);
@@ -92,7 +92,7 @@ public class AppRoleController {
     }
   }
 
-  @PatchMapping("/{id}/restore")
+  @PatchMapping("/role/{id}/restore")
   public ResponseEntity<AppRoleResponse> restoreAppRole(@PathVariable final int id) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.restoreSoftDeletedAppRole(id);

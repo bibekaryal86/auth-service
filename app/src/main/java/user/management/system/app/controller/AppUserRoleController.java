@@ -29,7 +29,7 @@ public class AppUserRoleController {
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
 
-  @PostMapping
+  @PostMapping("/user_role")
   public ResponseEntity<AppUserRoleResponse> createAppUserRole(
       @RequestBody final AppUserRoleRequest appUserRoleRequest) {
     try {
@@ -63,7 +63,7 @@ public class AppUserRoleController {
     }
   }
 
-  @GetMapping("/{userId}/{roleId}")
+  @GetMapping("/user_role/{userId}/{roleId}")
   public ResponseEntity<AppUserRoleResponse> readAppUserRole(
       @PathVariable final int userId, @PathVariable final int roleId) {
     try {
@@ -75,7 +75,7 @@ public class AppUserRoleController {
     }
   }
 
-  @DeleteMapping("/{userId}/{roleId}")
+  @DeleteMapping("/user_role/{userId}/{roleId}")
   public ResponseEntity<AppUserRoleResponse> deleteAppUserRole(
       @PathVariable final int userId, @PathVariable final int roleId) {
     try {

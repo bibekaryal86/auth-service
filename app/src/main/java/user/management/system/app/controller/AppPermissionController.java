@@ -31,7 +31,7 @@ public class AppPermissionController {
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
 
-  @PostMapping
+  @PostMapping("/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
       @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
@@ -66,7 +66,7 @@ public class AppPermissionController {
     }
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
     try {
       final AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
@@ -76,7 +76,7 @@ public class AppPermissionController {
     }
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
       @PathVariable final int id, @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
@@ -88,7 +88,7 @@ public class AppPermissionController {
     }
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(@PathVariable final int id) {
     try {
       appPermissionService.softDeleteAppPermission(id);
@@ -98,7 +98,7 @@ public class AppPermissionController {
     }
   }
 
-  @DeleteMapping("/{id}/hard")
+  @DeleteMapping("/permission/{id}/hard")
   public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
     try {
       appPermissionService.hardDeleteAppPermission(id);
@@ -108,7 +108,7 @@ public class AppPermissionController {
     }
   }
 
-  @PatchMapping("/{id}/restore")
+  @PatchMapping("/permission/{id}/restore")
   public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
     try {
       final AppPermissionEntity appPermissionEntity =

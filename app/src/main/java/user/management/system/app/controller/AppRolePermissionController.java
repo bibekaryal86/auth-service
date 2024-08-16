@@ -29,7 +29,7 @@ public class AppRolePermissionController {
     this.entityDtoConvertUtils = entityDtoConvertUtils;
   }
 
-  @PostMapping
+  @PostMapping("/role_permission")
   public ResponseEntity<AppRolePermissionResponse> createAppRolePermission(
       @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
     try {
@@ -76,7 +76,7 @@ public class AppRolePermissionController {
     }
   }
 
-  @GetMapping("/{roleId}/{permissionId}")
+  @GetMapping("/role_permission/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {
     try {
@@ -88,7 +88,7 @@ public class AppRolePermissionController {
     }
   }
 
-  @DeleteMapping("/{roleId}/{permissionId}")
+  @DeleteMapping("/role_permission/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> deleteAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {
     try {

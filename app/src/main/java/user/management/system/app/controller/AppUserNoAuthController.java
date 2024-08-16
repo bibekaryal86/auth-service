@@ -25,7 +25,7 @@ import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @RestController
-@RequestMapping("/api/v1/na_app_users")
+@RequestMapping("/api/v1/na_app_users/user")
 public class AppUserNoAuthController {
 
   private final AppUserService appUserService;

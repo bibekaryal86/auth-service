@@ -66,6 +66,11 @@ public class AppUserService {
     return appUserRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
   }
 
+  public List<AppUserEntity> readAppUsersByApp(final String app) {
+    log.debug("Read App Users By App: [{}]", app);
+    return appUserRepository.findAllByAppOrderByLastName(app);
+  }
+
   public List<AppUserEntity> readAppUsers(final String email) {
     log.debug("Read App Users: [{}]", email);
     return appUserRepository.findAllByEmailOrderByApp(email);
