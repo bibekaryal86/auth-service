@@ -30,7 +30,9 @@ public class JwtUtils {
 
   public static String encodeEmailAddress(final String email) {
     return Jwts.builder()
-        .claims(Map.of("email_token", email))
+        .claim("sub", email)
+        .issuer("USER-MGMT-SYS")
+        .issuedAt(Date.from(Instant.now()))
         .expiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
         .signWith(getSigningKey())
         .compact();
@@ -44,7 +46,7 @@ public class JwtUtils {
               .build()
               .parseSignedClaims(encodedEmail)
               .getPayload()
-              .get("email_token", String.class);
+              .get("sub", String.class);
 
       if (emailToken == null) {
         throw new IllegalArgumentException("Incorrect Email Credentials");
@@ -60,11 +62,13 @@ public class JwtUtils {
 
   public static String encodeAuthCredentials(final AppUserDto appUserDto) {
     Map<String, Object> tokenClaim = new HashMap<>();
-    tokenClaim.put("app_user_token", appUserDto.toAuthToken());
-    tokenClaim.put("expiration", LocalDateTime.now().plusHours(24));
+    tokenClaim.put("sub", appUserDto.toAuthToken());
+    tokenClaim.put("exp", LocalDateTime.now().plusHours(24));
     return Jwts.builder()
         .claims(tokenClaim)
-        .expiration(Date.from(Instant.now().plus(24, ChronoUnit.HOURS)))
+        .issuer("USER-MGMT-SYS")
+        .issuedAt(Date.from(Instant.now()))
+        .expiration(Date.from(Instant.now().plus(30, ChronoUnit.MINUTES)))
         .signWith(getSigningKey())
         .compact();
   }

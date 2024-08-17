@@ -7,20 +7,16 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
-user, user_address
+user, user_address, user_role, role_permission
     superuser - CRUD
-    self - RU (user can view their account and update it)
-ref_tables (address_type, permission, project_status, role, user_status)
+    others - can only view their own
+roles
     superuser - CRUD
     poweruser - R
-project
+permissions
     superuser - CRUD
-    poweruser - CRU
-        can view all projects
-    standard - RU
-        can only view projects they're assigned to
-    guest - R
-        can only view projects they're assigned to
+    poweruser - R, for the app they belong to
+
 
 ResponseCrudInfo and ResponsePageInfo need to be implemented
     ResponsePageInfo requires RequestMetadata implemented
@@ -28,6 +24,7 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 Remaining (thoughts)
     -> Security implementation and SecurityConfig
+    -> No more 24 hours JWT, use refresh tokens
     -> UserAddress in User
     -> List of Permissions in Role
         -> Map<String, Permission> appName, appPermission
