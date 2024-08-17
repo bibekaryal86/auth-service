@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,16 +38,10 @@ import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.service.AppUserRoleService;
 
 @Component
+@RequiredArgsConstructor
 public class EntityDtoConvertUtils {
   private final AppUserRoleService appUserRoleService;
   private final AppRolePermissionService appRolePermissionService;
-
-  public EntityDtoConvertUtils(
-      final AppUserRoleService appUserRoleService,
-      final AppRolePermissionService appRolePermissionService) {
-    this.appUserRoleService = appUserRoleService;
-    this.appRolePermissionService = appRolePermissionService;
-  }
 
   public ResponseEntity<AppPermissionResponse> getResponseSingleAppPermission(
       final AppPermissionEntity appPermissionEntity) {

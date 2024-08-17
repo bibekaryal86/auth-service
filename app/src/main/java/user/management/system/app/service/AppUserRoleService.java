@@ -5,6 +5,7 @@ import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_STANDA
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
@@ -20,20 +21,12 @@ import user.management.system.app.repository.AppUserRoleRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppUserRoleService {
 
   private final AppUserRoleRepository appUserRoleRepository;
   private final AppUserService appUserService;
   private final AppRoleService appRoleService;
-
-  public AppUserRoleService(
-      final AppUserRoleRepository appUserRoleRepository,
-      final AppUserService appUserService,
-      final AppRoleService appRoleService) {
-    this.appUserRoleRepository = appUserRoleRepository;
-    this.appUserService = appUserService;
-    this.appRoleService = appRoleService;
-  }
 
   // CREATE
   public AppUserRoleEntity createAppUserRole(final AppUserRoleRequest appUserRoleRequest) {

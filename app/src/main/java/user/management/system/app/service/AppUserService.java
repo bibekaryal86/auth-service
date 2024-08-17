@@ -2,6 +2,7 @@ package user.management.system.app.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,20 +21,12 @@ import user.management.system.app.util.PasswordUtils;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppUserService {
 
   private final AppUserRepository appUserRepository;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
-
-  public AppUserService(
-      final AppUserRepository appUserRepository,
-      final PasswordUtils passwordUtils,
-      final ApplicationEventPublisher applicationEventPublisher) {
-    this.appUserRepository = appUserRepository;
-    this.passwordUtils = passwordUtils;
-    this.applicationEventPublisher = applicationEventPublisher;
-  }
 
   // CREATE
   public AppUserEntity createAppUser(

@@ -2,6 +2,7 @@ package user.management.system.app.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,13 +16,10 @@ import user.management.system.app.repository.AppRoleRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppRoleService {
 
   private final AppRoleRepository appRoleRepository;
-
-  public AppRoleService(final AppRoleRepository appRoleRepository) {
-    this.appRoleRepository = appRoleRepository;
-  }
 
   // CREATE
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)

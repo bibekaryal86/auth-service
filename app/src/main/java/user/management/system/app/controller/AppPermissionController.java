@@ -1,6 +1,7 @@
 package user.management.system.app.controller;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,19 +18,13 @@ import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.service.AppPermissionService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_permissions")
 public class AppPermissionController {
 
   private final AppPermissionService appPermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
-
-  public AppPermissionController(
-      final AppPermissionService appPermissionService,
-      final EntityDtoConvertUtils entityDtoConvertUtils) {
-    this.appPermissionService = appPermissionService;
-    this.entityDtoConvertUtils = entityDtoConvertUtils;
-  }
 
   @PostMapping("/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(

@@ -1,6 +1,7 @@
 package user.management.system.app.controller;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,18 +18,13 @@ import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.service.AppRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_roles")
 public class AppRoleController {
 
   private final AppRoleService appRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
-
-  public AppRoleController(
-      final AppRoleService appRoleService, final EntityDtoConvertUtils entityDtoConvertUtils) {
-    this.appRoleService = appRoleService;
-    this.entityDtoConvertUtils = entityDtoConvertUtils;
-  }
 
   @PostMapping("/role")
   public ResponseEntity<AppRoleResponse> createAppRole(

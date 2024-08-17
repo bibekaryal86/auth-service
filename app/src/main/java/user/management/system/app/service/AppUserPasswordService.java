@@ -2,6 +2,7 @@ package user.management.system.app.service;
 
 import static user.management.system.app.util.JwtUtils.decodeEmailAddress;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import user.management.system.app.exception.UserNotAuthorizedException;
@@ -12,16 +13,11 @@ import user.management.system.app.util.PasswordUtils;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppUserPasswordService {
 
   private final AppUserService appUserService;
   private final PasswordUtils passwordUtils;
-
-  public AppUserPasswordService(
-      final AppUserService appUserService, final PasswordUtils passwordUtils) {
-    this.appUserService = appUserService;
-    this.passwordUtils = passwordUtils;
-  }
 
   public AppUserEntity loginUser(final UserLoginRequest userLoginRequest) {
     final AppUserEntity appUserEntity =

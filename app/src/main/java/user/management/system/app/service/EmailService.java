@@ -12,6 +12,7 @@ import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.resource.Emailv31;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,13 +25,10 @@ import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
   private final FileReaderUtils fileReaderUtils;
-
-  public EmailService(final FileReaderUtils fileReaderUtils) {
-    this.fileReaderUtils = fileReaderUtils;
-  }
 
   private MailjetClient mailjetClient() {
     return new MailjetClient(

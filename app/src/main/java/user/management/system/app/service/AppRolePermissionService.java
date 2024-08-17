@@ -2,6 +2,7 @@ package user.management.system.app.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,20 +16,12 @@ import user.management.system.app.repository.AppRolePermissionRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppRolePermissionService {
 
   private final AppRolePermissionRepository appRolePermissionRepository;
   private final AppRoleService appRoleService;
   private final AppPermissionService appPermissionService;
-
-  public AppRolePermissionService(
-      final AppRolePermissionRepository appRolePermissionRepository,
-      final AppRoleService appRoleService,
-      final AppPermissionService appPermissionService) {
-    this.appRolePermissionRepository = appRolePermissionRepository;
-    this.appRoleService = appRoleService;
-    this.appPermissionService = appPermissionService;
-  }
 
   // CREATE
   public AppRolePermissionEntity createAppRolePermission(

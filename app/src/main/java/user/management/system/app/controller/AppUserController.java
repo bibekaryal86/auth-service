@@ -1,6 +1,7 @@
 package user.management.system.app.controller;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,18 +18,13 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users")
 public class AppUserController {
 
   private final AppUserService appUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
-
-  public AppUserController(
-      final AppUserService appUserService, final EntityDtoConvertUtils entityDtoConvertUtils) {
-    this.appUserService = appUserService;
-    this.entityDtoConvertUtils = entityDtoConvertUtils;
-  }
 
   @GetMapping
   public ResponseEntity<AppUserResponse> readAppUsers() {

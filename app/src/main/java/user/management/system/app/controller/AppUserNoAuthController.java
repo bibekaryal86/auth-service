@@ -4,6 +4,7 @@ import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEma
 import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/na_app_users/user")
 public class AppUserNoAuthController {
@@ -32,17 +34,6 @@ public class AppUserNoAuthController {
   private final AppUserPasswordService appUserPasswordService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
-
-  public AppUserNoAuthController(
-      final AppUserService appUserService,
-      final AppUserPasswordService appUserPasswordService,
-      final EntityDtoConvertUtils entityDtoConvertUtils,
-      final EmailService emailService) {
-    this.appUserService = appUserService;
-    this.appUserPasswordService = appUserPasswordService;
-    this.entityDtoConvertUtils = entityDtoConvertUtils;
-    this.emailService = emailService;
-  }
 
   @PostMapping("/create")
   public ResponseEntity<AppUserResponse> createAppUser(
