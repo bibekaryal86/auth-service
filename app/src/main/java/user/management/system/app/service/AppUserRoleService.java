@@ -84,6 +84,11 @@ public class AppUserRoleService {
     return appUserRoleRepository.findByIdAppUserIdOrderByAppRoleNameAsc(appUserId);
   }
 
+  public List<AppUserRoleEntity> readAppUserRoles(final List<Integer> appUserIds) {
+    log.debug("Read App User Roles: [{}]", appUserIds);
+    return appUserRoleRepository.findByIdAppUserIdInOrderByAppRoleNameAsc(appUserIds);
+  }
+
   public AppUserRoleEntity readAppUserRole(final int appUserId, final int appRoleId) {
     log.debug("Read App User Role: [{}], [{}]", appUserId, appRoleId);
     return appUserRoleRepository

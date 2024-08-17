@@ -58,6 +58,18 @@ public class AppUserRoleController {
     }
   }
 
+  @GetMapping("/users/{userIds}")
+  public ResponseEntity<AppUserRoleResponse> readAppUserRolesByUserIds(
+      @PathVariable final List<Integer> userIds) {
+    try {
+      final List<AppUserRoleEntity> appUserRoleEntities =
+          appUserRoleService.readAppUserRoles(userIds);
+      return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
+    }
+  }
+
   @GetMapping("/user_role/{userId}/{roleId}")
   public ResponseEntity<AppUserRoleResponse> readAppUserRole(
       @PathVariable final int userId, @PathVariable final int roleId) {

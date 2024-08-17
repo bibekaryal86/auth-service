@@ -53,7 +53,7 @@ public class AppUserNoAuthController {
     try {
       final AppUserEntity appUserEntity = appUserPasswordService.loginUser(userLoginRequest);
       final AppUserDto appUserDto =
-          entityDtoConvertUtils.convertEntityToDtoAppUserWithRolesPermissions(appUserEntity);
+          entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
       final String token = encodeAuthCredentials(appUserDto);
       return ResponseEntity.ok(UserLoginResponse.builder().token(token).user(appUserDto).build());
     } catch (Exception ex) {

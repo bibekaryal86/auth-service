@@ -13,6 +13,9 @@ public interface AppRolePermissionRepository
   List<AppRolePermissionEntity> findByAppRoleIdOrderByAppPermissionNameAsc(
       @Param("roleId") final int roleId);
 
+  List<AppRolePermissionEntity> findByAppRoleIdInOrderByAppPermissionNameAsc(
+      @Param("roleIds") final List<Integer> roleIds);
+
   List<AppRolePermissionEntity> findByAppPermissionAppAndAppRoleIdInOrderByAppPermissionNameAsc(
       @Param("app") final String app, @Param("roleIds") final List<Integer> roleIds);
 }

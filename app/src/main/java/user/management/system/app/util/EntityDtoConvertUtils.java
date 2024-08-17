@@ -110,14 +110,14 @@ public class EntityDtoConvertUtils {
     final List<AppRoleDto> appPermissionDtos =
         appRoleEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppRole(appRoleEntity));
+            : List.of(convertEntityToDtoAppRole(appRoleEntity, true));
     return new ResponseEntity<>(
         new AppRoleResponse(appPermissionDtos, null, null, responseStatusInfo), httpStatus);
   }
 
   public ResponseEntity<AppRoleResponse> getResponseMultipleAppRole(
       final List<AppRoleEntity> appRoleEntities) {
-    final List<AppRoleDto> appRoleDtos = convertEntitiesToDtosAppRole(appRoleEntities);
+    final List<AppRoleDto> appRoleDtos = convertEntitiesToDtosAppRole(appRoleEntities, true);
     return ResponseEntity.ok(new AppRoleResponse(appRoleDtos, null, null, null));
   }
 
@@ -138,19 +138,68 @@ public class EntityDtoConvertUtils {
         new AppRoleResponse(Collections.emptyList(), null, null, responseStatusInfo), httpStatus);
   }
 
-  public AppRoleDto convertEntityToDtoAppRole(final AppRoleEntity appRoleEntity) {
+  public AppRoleDto convertEntityToDtoAppRole(
+      final AppRoleEntity appRoleEntity, final boolean isIncludePermissions) {
     if (appRoleEntity == null) {
       return null;
     }
-    return new AppRoleDto(
-        appRoleEntity.getId(), appRoleEntity.getName(), appRoleEntity.getDescription());
+
+    AppRoleDto appRoleDto =
+        new AppRoleDto(
+            appRoleEntity.getId(), appRoleEntity.getName(), appRoleEntity.getDescription());
+
+    if (isIncludePermissions) {
+      final List<AppRolePermissionEntity> appRolePermissionEntities =
+          appRolePermissionService.readAppRolePermissions(appRoleDto.getId());
+      final List<AppRolePermissionDto> appRolePermissionDtos =
+          convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
+      final List<AppPermissionDto> appPermissionDtos =
+          appRolePermissionDtos.stream().map(AppRolePermissionDto::getPermission).toList();
+      appRoleDto.setPermissions(appPermissionDtos);
+    }
+
+    return appRoleDto;
   }
 
-  public List<AppRoleDto> convertEntitiesToDtosAppRole(final List<AppRoleEntity> appRoleEntities) {
+  public List<AppRoleDto> convertEntitiesToDtosAppRole(
+      final List<AppRoleEntity> appRoleEntities, boolean isIncludePermissions) {
     if (CollectionUtils.isEmpty(appRoleEntities)) {
       return Collections.emptyList();
     }
-    return appRoleEntities.stream().map(this::convertEntityToDtoAppRole).toList();
+
+    if (!isIncludePermissions) {
+      return appRoleEntities.stream()
+          .map(appRoleEntity -> convertEntityToDtoAppRole(appRoleEntity, false))
+          .toList();
+    }
+
+    final List<Integer> appRoleIds = appRoleEntities.stream().map(AppRoleEntity::getId).toList();
+    final List<AppRolePermissionEntity> appRolePermissionEntities =
+        appRolePermissionService.readAppRolePermissions(null, appRoleIds);
+    final List<AppRolePermissionDto> appRolePermissionDtos =
+        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
+
+    final Map<Integer, List<AppPermissionDto>> rolePermissionsMap =
+        appRolePermissionDtos.stream()
+            .collect(
+                Collectors.groupingBy(
+                    rolePermission -> rolePermission.getRole().getId(),
+                    Collectors.mapping(AppRolePermissionDto::getPermission, Collectors.toList())));
+
+    return appRoleEntities.stream()
+        .map(
+            appRoleEntity -> {
+              AppRoleDto roleDto =
+                  new AppRoleDto(
+                      appRoleEntity.getId(),
+                      appRoleEntity.getName(),
+                      appRoleEntity.getDescription());
+              List<AppPermissionDto> permissions =
+                  rolePermissionsMap.getOrDefault(roleDto.getId(), Collections.emptyList());
+              roleDto.setPermissions(permissions);
+              return roleDto;
+            })
+        .toList();
   }
 
   public ResponseEntity<AppUserResponse> getResponseSingleAppUser(
@@ -161,14 +210,14 @@ public class EntityDtoConvertUtils {
     final List<AppUserDto> appUserDtos =
         appUserEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppUser(appUserEntity));
+            : List.of(convertEntityToDtoAppUser(appUserEntity, true));
     return new ResponseEntity<>(
         new AppUserResponse(appUserDtos, null, null, responseStatusInfo), httpStatus);
   }
 
   public ResponseEntity<AppUserResponse> getResponseMultipleAppUser(
       final List<AppUserEntity> appUserEntities) {
-    final List<AppUserDto> appUserDtos = convertEntitiesToDtosAppUser(appUserEntities);
+    final List<AppUserDto> appUserDtos = convertEntitiesToDtosAppUser(appUserEntities, true);
     return ResponseEntity.ok(new AppUserResponse(appUserDtos, null, null, null));
   }
 
@@ -189,20 +238,83 @@ public class EntityDtoConvertUtils {
         new AppUserResponse(Collections.emptyList(), null, null, responseStatusInfo), httpStatus);
   }
 
-  public AppUserDto convertEntityToDtoAppUser(final AppUserEntity appUserEntity) {
+  public AppUserDto convertEntityToDtoAppUser(
+      final AppUserEntity appUserEntity, final boolean isIncludeRoles) {
     if (appUserEntity == null) {
       return null;
     }
     final AppUserDto appUserDto = new AppUserDto();
     BeanUtils.copyProperties(appUserEntity, appUserDto, "password");
+
+    if (isIncludeRoles) {
+      final List<AppUserRoleEntity> appUserRoleEntities =
+          appUserRoleService.readAppUserRoles(appUserEntity.getId());
+      final List<AppRoleEntity> appRoleEntities =
+          appUserRoleEntities.stream().map(AppUserRoleEntity::getAppRole).toList();
+      final List<AppRoleDto> appRoleDtos = convertEntitiesToDtosAppRole(appRoleEntities, true);
+      appUserDto.setRoles(appRoleDtos);
+    }
+
     return appUserDto;
   }
 
-  public List<AppUserDto> convertEntitiesToDtosAppUser(final List<AppUserEntity> appUserEntities) {
+  public List<AppUserDto> convertEntitiesToDtosAppUser(
+      final List<AppUserEntity> appUserEntities, final boolean isIncludeRoles) {
     if (CollectionUtils.isEmpty(appUserEntities)) {
       return Collections.emptyList();
     }
-    return appUserEntities.stream().map(this::convertEntityToDtoAppUser).toList();
+    if (!isIncludeRoles) {
+      return appUserEntities.stream()
+          .map(appUserEntity -> convertEntityToDtoAppUser(appUserEntity, false))
+          .toList();
+    }
+
+    final List<Integer> appUserIds = appUserEntities.stream().map(AppUserEntity::getId).toList();
+    final List<AppUserRoleEntity> appUserRoleEntities =
+        appUserRoleService.readAppUserRoles(appUserIds);
+    final List<Integer> appRoleIds =
+        appUserRoleEntities.stream()
+            .map(appUserRoleEntity -> appUserRoleEntity.getAppRole().getId())
+            .toList();
+    final List<AppRolePermissionEntity> appRolePermissionEntities =
+        appRolePermissionService.readAppRolePermissions("", appRoleIds);
+
+    Map<Integer, List<AppUserRoleEntity>> userRolesMap =
+        appUserRoleEntities.stream()
+            .collect(Collectors.groupingBy(userRole -> userRole.getAppUser().getId()));
+    Map<Integer, List<AppRolePermissionEntity>> rolePermissionsMap =
+        appRolePermissionEntities.stream()
+            .collect(Collectors.groupingBy(rolePermission -> rolePermission.getAppRole().getId()));
+
+    return appUserEntities.stream()
+        .map(
+            appUserEntity -> {
+              List<AppRoleDto> appRoleDtos =
+                  userRolesMap.getOrDefault(appUserEntity.getId(), Collections.emptyList()).stream()
+                      .map(
+                          appUserRoleEntity ->
+                              convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), false))
+                      .toList();
+
+              appRoleDtos.forEach(
+                  roleDto -> {
+                    List<AppPermissionDto> appPermissionDtos =
+                        rolePermissionsMap
+                            .getOrDefault(roleDto.getId(), Collections.emptyList())
+                            .stream()
+                            .map(
+                                appRolePermissionEntity ->
+                                    convertEntityToDtoAppPermission(
+                                        appRolePermissionEntity.getAppPermission()))
+                            .toList();
+                    roleDto.setPermissions(appPermissionDtos);
+                  });
+
+              AppUserDto appUserDto = convertEntityToDtoAppUser(appUserEntity, false);
+              appUserDto.setRoles(appRoleDtos);
+              return appUserDto;
+            })
+        .toList();
   }
 
   public ResponseEntity<AppRolePermissionResponse> getResponseSingleAppRolePermission(
@@ -251,7 +363,7 @@ public class EntityDtoConvertUtils {
     if (appRolePermissionEntity == null) {
       return null;
     }
-    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole());
+    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole(), false);
     AppPermissionDto appPermissionDto =
         convertEntityToDtoAppPermission(appRolePermissionEntity.getAppPermission());
     return new AppRolePermissionDto(appRoleDto, appPermissionDto);
@@ -310,8 +422,8 @@ public class EntityDtoConvertUtils {
     if (appUserRoleEntity == null) {
       return null;
     }
-    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser());
-    final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole());
+    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser(), false);
+    final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), true);
     return new AppUserRoleDto(appUserDto, appRoleDto);
   }
 
@@ -352,38 +464,5 @@ public class EntityDtoConvertUtils {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(URI.create(url));
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
-  }
-
-  public AppUserDto convertEntityToDtoAppUserWithRolesPermissions(
-      final AppUserEntity appUserEntity) {
-    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserEntity);
-    // get all roles for the user
-    final List<AppUserRoleEntity> appUserRoleEntities =
-        appUserRoleService.readAppUserRoles(appUserEntity.getId());
-    final List<AppUserRoleDto> appUserRoleDtos =
-        convertEntitiesToDtosAppUserRole(appUserRoleEntities);
-    final List<AppRoleDto> appRoleDtos =
-        appUserRoleDtos.stream().map(AppUserRoleDto::getRole).toList();
-    // get all permissions for the roles
-    final List<Integer> appRoleIds = appRoleDtos.stream().map(AppRoleDto::getId).toList();
-    final List<AppRolePermissionEntity> appRolePermissionEntities =
-        appRolePermissionService.readAppRolePermissions(appUserEntity.getApp(), appRoleIds);
-    final List<AppRolePermissionDto> appRolePermissionDtos =
-        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
-    // set permissions to roles
-    final Map<Integer, List<AppPermissionDto>> rolePermissionsMap =
-        appRolePermissionDtos.stream()
-            .collect(
-                Collectors.groupingBy(
-                    rolePermission -> rolePermission.getRole().getId(),
-                    Collectors.mapping(AppRolePermissionDto::getPermission, Collectors.toList())));
-    for (final AppRoleDto role : appRoleDtos) {
-      final List<AppPermissionDto> permissions =
-          rolePermissionsMap.getOrDefault(role.getId(), Collections.emptyList());
-      role.setPermissions(permissions);
-    }
-    // set roles to user
-    appUserDto.setRoles(appRoleDtos);
-    return appUserDto;
   }
 }

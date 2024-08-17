@@ -11,6 +11,11 @@ import user.management.system.app.model.entity.AppUserRoleId;
 @Repository
 public interface AppUserRoleRepository extends JpaRepository<AppUserRoleEntity, AppUserRoleId> {
   @Query(
-      "SELECT aure FROM AppUserRoleEntity aure JOIN aure.appRole ar WHERE aure.id.appRoleId = :roleId ORDER BY ar.name ASC")
-  List<AppUserRoleEntity> findByIdAppUserIdOrderByAppRoleNameAsc(@Param("roleId") int roleId);
+      "SELECT aure FROM AppUserRoleEntity aure JOIN aure.appRole ar WHERE aure.id.appUserId = :userId ORDER BY ar.name ASC")
+  List<AppUserRoleEntity> findByIdAppUserIdOrderByAppRoleNameAsc(@Param("userId") int userId);
+
+  @Query(
+      "SELECT aure FROM AppUserRoleEntity aure JOIN aure.appRole ar WHERE aure.id.appUserId in (:userIds) ORDER BY ar.name ASC")
+  List<AppUserRoleEntity> findByIdAppUserIdInOrderByAppRoleNameAsc(
+      @Param("userIds") List<Integer> userIds);
 }
