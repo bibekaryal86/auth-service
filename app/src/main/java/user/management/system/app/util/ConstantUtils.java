@@ -18,6 +18,7 @@ public class ConstantUtils {
   // ROLE NAMES
   public static final String APP_ROLE_NAME_GUEST = "GUEST";
   public static final String APP_ROLE_NAME_STANDARD = "STANDARD";
+  public static final String APP_ROLE_NAME_SUPERUSER = "SUPERUSER";
 
   // messages
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
