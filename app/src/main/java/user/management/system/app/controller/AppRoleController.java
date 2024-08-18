@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppRoleRequest;
 import user.management.system.app.model.dto.AppRoleResponse;
 import user.management.system.app.model.entity.AppRoleEntity;
@@ -26,6 +27,7 @@ public class AppRoleController {
   private final AppRoleService appRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
+  @CheckPermission("ROLE_CREATE")
   @PostMapping("/role")
   public ResponseEntity<AppRoleResponse> createAppRole(
       @RequestBody final AppRoleRequest appRoleRequest) {
@@ -37,6 +39,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ROLE_READ")
   @GetMapping
   public ResponseEntity<AppRoleResponse> readAppRoles() {
     try {
@@ -47,6 +50,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ROLE_READ")
   @GetMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> readAppRole(@PathVariable final int id) {
     try {
@@ -57,6 +61,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ROLE_UPDATE")
   @PutMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> updateAppRole(
       @PathVariable final int id, @RequestBody final AppRoleRequest appRoleRequest) {
@@ -68,6 +73,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ROLE_DELETE")
   @DeleteMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> softDeleteAppRole(@PathVariable final int id) {
     try {
@@ -78,6 +84,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/role/{id}/hard")
   public ResponseEntity<AppRoleResponse> hardDeleteAppRole(@PathVariable final int id) {
     try {
@@ -88,6 +95,7 @@ public class AppRoleController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/role/{id}/restore")
   public ResponseEntity<AppRoleResponse> restoreAppRole(@PathVariable final int id) {
     try {

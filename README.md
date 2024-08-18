@@ -7,15 +7,15 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
-user, user_address, user_role, role_permission
+user, user_address
     superuser - CRUD
-    others - can only view their own
+    others - can only view/update their own
 roles
     superuser - CRUD
     poweruser - R
 permissions
     superuser - CRUD
-    poweruser - R, for the app they belong to
+    poweruser - R
 
 
 ResponseCrudInfo and ResponsePageInfo need to be implemented
@@ -23,14 +23,13 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
         Do it at last
 
 Remaining (thoughts)
-    -> Security implementation and SecurityConfig
-    -> Add custom annotation instead of preauthorize
+    -> Update check permission
+        -> users only allowed to read and update their own user entity
     -> No more 24 hours JWT, use refresh tokens
     -> UserAddress in User
-    -> List of Permissions in Role
-        -> Map<String, Permission> appName, appPermission
-    -> List of Roles in User
     -> Audits
     -> When inserting/updating permissions, validate `app`
         -> cache `app` in authenv_service
         -> Do same for users
+    -> Swagger Documentation
+    -> Unit and Integration tests

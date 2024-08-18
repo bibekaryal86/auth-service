@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppRolePermissionRequest;
 import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -24,6 +25,7 @@ public class AppRolePermissionController {
   private final AppRolePermissionService appRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
+  @CheckPermission("ROLE_PERMISSION_ASSIGN")
   @PostMapping("/role_permission")
   public ResponseEntity<AppRolePermissionResponse> createAppRolePermission(
       @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
@@ -36,6 +38,7 @@ public class AppRolePermissionController {
     }
   }
 
+  @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
   @GetMapping
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissions() {
     try {
@@ -47,6 +50,7 @@ public class AppRolePermissionController {
     }
   }
 
+  @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
   @GetMapping("/role/{roleId}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleId(
       @PathVariable final int roleId) {
@@ -59,6 +63,7 @@ public class AppRolePermissionController {
     }
   }
 
+  @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
   @GetMapping("/app/{app}/roles/{roleIds}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleIds(
       @PathVariable final String app, @PathVariable final List<Integer> roleIds) {
@@ -71,6 +76,7 @@ public class AppRolePermissionController {
     }
   }
 
+  @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
   @GetMapping("/role_permission/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {
@@ -83,6 +89,7 @@ public class AppRolePermissionController {
     }
   }
 
+  @CheckPermission("ROLE_PERMISSION_UNASSIGN")
   @DeleteMapping("/role_permission/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> deleteAppRolePermission(
       @PathVariable final int roleId, @PathVariable final int permissionId) {

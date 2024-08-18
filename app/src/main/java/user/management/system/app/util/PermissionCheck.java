@@ -51,4 +51,7 @@ public class PermissionCheck {
                 authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
     return isSuperUser || hasPermission;
   }
+
+  // TODO user should be able to update their own user entities
+  // check = should be logged in, app and email from token must match app and email, and ID should also match
 }

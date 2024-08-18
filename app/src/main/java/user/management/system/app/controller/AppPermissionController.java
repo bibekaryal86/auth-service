@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppPermissionRequest;
 import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
@@ -26,6 +27,7 @@ public class AppPermissionController {
   private final AppPermissionService appPermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
+  @CheckPermission("PERMISSION_CREATE")
   @PostMapping("/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
       @RequestBody final AppPermissionRequest appPermissionRequest) {
@@ -38,6 +40,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("PERMISSION_READ")
   @GetMapping
   public ResponseEntity<AppPermissionResponse> readAppPermissions() {
     try {
@@ -49,6 +52,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("PERMISSION_READ")
   @GetMapping("/app/{app}")
   public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(
       @PathVariable final String app) {
@@ -61,6 +65,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("PERMISSION_READ")
   @GetMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
     try {
@@ -71,6 +76,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("PERMISSION_UPDATE")
   @PutMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
       @PathVariable final int id, @RequestBody final AppPermissionRequest appPermissionRequest) {
@@ -83,6 +89,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("PERMISSION_DELETE")
   @DeleteMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(@PathVariable final int id) {
     try {
@@ -93,6 +100,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/permission/{id}/hard")
   public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
     try {
@@ -103,6 +111,7 @@ public class AppPermissionController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/permission/{id}/restore")
   public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
     try {

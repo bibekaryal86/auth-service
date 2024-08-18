@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.UserLoginRequest;
@@ -26,6 +27,7 @@ public class AppUserController {
   private final AppUserService appUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
+  @CheckPermission("USER READ")
   @GetMapping
   public ResponseEntity<AppUserResponse> readAppUsers() {
     try {
@@ -36,6 +38,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_READ")
   @GetMapping("/app/{app}")
   public ResponseEntity<AppUserResponse> readAppUsersByApp(@PathVariable final String app) {
     try {
@@ -46,6 +49,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_READ")
   @GetMapping("/users/{email}")
   public ResponseEntity<AppUserResponse> readAppUsersByEmail(@PathVariable final String email) {
     try {
@@ -56,6 +60,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_READ")
   @GetMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
@@ -66,6 +71,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_READ")
   @GetMapping("/app/{app}/user/{email}")
   public ResponseEntity<AppUserResponse> readAppUser(
       @PathVariable final String app, @PathVariable final String email) {
@@ -77,6 +83,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_UPDATE")
   @PutMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> updateAppUser(
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
@@ -88,6 +95,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_UPDATE")
   @PutMapping("/user/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
       @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
@@ -100,6 +108,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("USER_DELETE")
   @DeleteMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> softDeleteAppUser(@PathVariable final int id) {
     try {
@@ -110,6 +119,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/user/{id}/hard")
   public ResponseEntity<AppUserResponse> hardDeleteAppUser(@PathVariable final int id) {
     try {
@@ -120,6 +130,7 @@ public class AppUserController {
     }
   }
 
+  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/user/{id}/restore")
   public ResponseEntity<AppUserResponse> restoreAppUser(@PathVariable final int id) {
     try {
