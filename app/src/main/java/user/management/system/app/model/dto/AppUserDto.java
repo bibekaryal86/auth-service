@@ -1,12 +1,12 @@
 package user.management.system.app.model.dto;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import user.management.system.app.model.token.AuthToken;
+import user.management.system.app.model.token.AuthTokenPermission;
+import user.management.system.app.model.token.AuthTokenRole;
+import user.management.system.app.model.token.AuthTokenUser;
 
 public class AppUserDto extends AppUserRequest {
   private Integer id;
@@ -169,42 +169,41 @@ public class AppUserDto extends AppUserRequest {
         + "}";
   }
 
-  public Map<String, Object> toAuthToken() {
-    Map<String, Object> token = new HashMap<>();
-    token.put("app", this.getApp());
-    token.put("id", this.getId());
-    token.put("is_deleted", this.getDeletedDate() != null);
-    token.put("email", this.getEmail());
-    token.put("first_name", this.getFirstName());
-    token.put("last_name", this.getLastName());
-    token.put("status", this.getStatus());
+  public AuthToken toAuthToken() {
+    AuthTokenUser user =
+        AuthTokenUser.builder()
+            .id(this.getId())
+            .app(this.getApp())
+            .email(this.getEmail())
+            .fullName(this.getFirstName() + " " + this.getLastName())
+            .status(this.getStatus())
+            .isValidated(this.isValidated())
+            .isDeleted(this.getDeletedDate() != null)
+            .build();
 
-    List<Map<String, Object>> roles =
+    List<AuthTokenRole> roles =
         this.getRoles().stream()
             .map(
-                role -> {
-                  Map<String, Object> roleMap = new HashMap<>();
-                  roleMap.put("id", role.getId());
-                  roleMap.put("name", role.getName());
-
-                  List<Map<String, Object>> permissions =
-                      role.getPermissions() != null
-                          ? role.getPermissions().stream()
-                              .map(
-                                  permission -> {
-                                    Map<String, Object> permissionMap = new HashMap<>();
-                                    permissionMap.put("id", permission.getId());
-                                    permissionMap.put("name", permission.getName());
-                                    return permissionMap;
-                                  })
-                              .collect(Collectors.toList())
-                          : Collections.emptyList();
-
-                  roleMap.put("permissions", permissions);
-                  return roleMap;
-                })
+                appRoleDto ->
+                    AuthTokenRole.builder()
+                        .id(appRoleDto.getId())
+                        .name(appRoleDto.getName())
+                        .build())
             .toList();
-    token.put("roles", roles);
-    return token;
+
+    List<AuthTokenPermission> permissions =
+        this.getRoles().stream()
+            .flatMap(
+                appRoleDto ->
+                    appRoleDto.getPermissions().stream()
+                        .map(
+                            appPermissionDto ->
+                                AuthTokenPermission.builder()
+                                    .id(appPermissionDto.getId())
+                                    .name(appPermissionDto.getName())
+                                    .roleId(appRoleDto.getId())
+                                    .build()))
+            .toList();
+    return AuthToken.builder().user(user).roles(roles).permissions(permissions).build();
   }
 }

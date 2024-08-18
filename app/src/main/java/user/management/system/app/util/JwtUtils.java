@@ -9,7 +9,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import javax.crypto.SecretKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import user.management.system.app.model.dto.AppUserDto;
+import user.management.system.app.model.token.AuthToken;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
@@ -54,7 +54,7 @@ public class JwtUtils {
 
       return emailToken;
     } catch (ExpiredJwtException e) {
-      throw new IllegalArgumentException("Token has expired", e);
+      throw new IllegalArgumentException("Email Token has expired", e);
     } catch (JwtException e) {
       throw new IllegalArgumentException("Invalid Email Credentials", e);
     }
@@ -63,13 +63,27 @@ public class JwtUtils {
   public static String encodeAuthCredentials(final AppUserDto appUserDto) {
     Map<String, Object> tokenClaim = new HashMap<>();
     tokenClaim.put("sub", appUserDto.toAuthToken());
-    tokenClaim.put("exp", LocalDateTime.now().plusHours(24));
     return Jwts.builder()
         .claims(tokenClaim)
         .issuer("USER-MGMT-SYS")
         .issuedAt(Date.from(Instant.now()))
-        .expiration(Date.from(Instant.now().plus(30, ChronoUnit.MINUTES)))
+        .expiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
         .signWith(getSigningKey())
         .compact();
+  }
+
+  public static AuthToken decodeAuthCredentials(final String token) {
+    try {
+      return Jwts.parser()
+          .verifyWith(getSigningKey())
+          .build()
+          .parseSignedClaims(token)
+          .getPayload()
+          .get("sub", AuthToken.class);
+    } catch (ExpiredJwtException e) {
+      throw new IllegalArgumentException("Auth Token has expired", e);
+    } catch (JwtException e) {
+      throw new IllegalArgumentException("Invalid Auth Credentials", e);
+    }
   }
 }

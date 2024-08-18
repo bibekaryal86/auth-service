@@ -24,6 +24,7 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 Remaining (thoughts)
     -> Security implementation and SecurityConfig
+    -> Add custom annotation instead of preauthorize
     -> No more 24 hours JWT, use refresh tokens
     -> UserAddress in User
     -> List of Permissions in Role

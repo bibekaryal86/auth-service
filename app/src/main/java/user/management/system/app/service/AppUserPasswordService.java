@@ -2,13 +2,16 @@ package user.management.system.app.service;
 
 import static user.management.system.app.util.JwtUtils.decodeEmailAddress;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import user.management.system.app.exception.UserNotActiveException;
 import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.exception.UserNotValidatedException;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.enums.StatusEnums;
 import user.management.system.app.util.PasswordUtils;
 
 @Slf4j
@@ -25,6 +28,10 @@ public class AppUserPasswordService {
 
     if (!appUserEntity.getIsValidated()) {
       throw new UserNotValidatedException();
+    }
+
+    if (!Objects.equals(appUserEntity.getStatus(), StatusEnums.AppUserStatus.ACTIVE.toString())) {
+      throw new UserNotActiveException();
     }
 
     boolean isLoginSuccess =
