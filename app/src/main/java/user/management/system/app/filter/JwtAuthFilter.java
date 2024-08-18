@@ -1,5 +1,7 @@
 package user.management.system.app.filter;
 
+import static user.management.system.app.util.CommonUtils.convertResponseStatusInfoToJson;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,7 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (JwtInvalidException ex) {
         sendUnauthorizedResponse(response, ex.getMessage());
-        return; // Stop further processing
+        return;
       }
     }
 
@@ -47,29 +51,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     final ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg(errMsg).build();
 
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.setContentType("application/json");
-    response.setCharacterEncoding("UTF-8");
+    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
     final String jsonResponse = convertResponseStatusInfoToJson(responseStatusInfo);
     response.getWriter().write(jsonResponse);
-  }
-
-  private String convertResponseStatusInfoToJson(final ResponseStatusInfo responseStatusInfo) {
-    return "{"
-        + "\"message\":\""
-        + escapeJson(responseStatusInfo.getMessage())
-        + "\","
-        + "\"errMsg\":\""
-        + escapeJson(responseStatusInfo.getErrMsg())
-        + "\""
-        + "}";
-  }
-
-  private String escapeJson(String value) {
-    if (value == null) {
-      return "";
-    }
-    return value.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
   }
 }

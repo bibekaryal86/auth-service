@@ -72,4 +72,23 @@ public class CommonUtils {
         ? ResponseStatusInfo.builder().errMsg(INTERNAL_SERVER_ERROR_MESSAGE).build()
         : null;
   }
+
+  public static String convertResponseStatusInfoToJson(
+      final ResponseStatusInfo responseStatusInfo) {
+    return "{"
+        + "\"message\":\""
+        + escapeJson(responseStatusInfo.getMessage())
+        + "\","
+        + "\"errMsg\":\""
+        + escapeJson(responseStatusInfo.getErrMsg())
+        + "\""
+        + "}";
+  }
+
+  private static String escapeJson(final String value) {
+    if (value == null) {
+      return "";
+    }
+    return value.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+  }
 }

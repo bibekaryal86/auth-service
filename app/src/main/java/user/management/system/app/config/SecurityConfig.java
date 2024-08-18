@@ -8,6 +8,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import user.management.system.app.exception.handler.CustomAccessDeniedHandler;
+import user.management.system.app.exception.handler.CustomAuthenticationEntrypoint;
 import user.management.system.app.filter.JwtAuthFilter;
 
 @Configuration
@@ -34,7 +36,12 @@ public class SecurityConfig {
                     .authenticated())
         .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            exceptionHandling ->
+                exceptionHandling
+                    .accessDeniedHandler(new CustomAccessDeniedHandler())
+                    .authenticationEntryPoint(new CustomAuthenticationEntrypoint()));
     return http.build();
   }
 }

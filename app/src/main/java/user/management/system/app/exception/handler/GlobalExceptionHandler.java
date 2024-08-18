@@ -2,12 +2,12 @@ package user.management.system.app.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import user.management.system.app.exception.CheckPermissionException;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(CheckPermissionException.class)
