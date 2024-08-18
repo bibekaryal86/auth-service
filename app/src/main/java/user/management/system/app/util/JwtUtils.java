@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import user.management.system.app.exception.JwtInvalidException;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.token.AuthToken;
 
@@ -54,9 +55,9 @@ public class JwtUtils {
 
       return emailToken;
     } catch (ExpiredJwtException e) {
-      throw new IllegalArgumentException("Email Token has expired", e);
+      throw new JwtInvalidException("Email Token has expired");
     } catch (JwtException e) {
-      throw new IllegalArgumentException("Invalid Email Credentials", e);
+      throw new JwtInvalidException("Invalid Email Credentials");
     }
   }
 
@@ -81,9 +82,9 @@ public class JwtUtils {
           .getPayload()
           .get("sub", AuthToken.class);
     } catch (ExpiredJwtException e) {
-      throw new IllegalArgumentException("Auth Token has expired", e);
+      throw new JwtInvalidException("Auth Token has expired");
     } catch (JwtException e) {
-      throw new IllegalArgumentException("Invalid Auth Credentials", e);
+      throw new JwtInvalidException("Invalid Auth Credentials");
     }
   }
 }

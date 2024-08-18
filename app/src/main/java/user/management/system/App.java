@@ -18,11 +18,13 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @SpringBootApplication
 @EnableTransactionManagement
+@EnableAspectJAutoProxy
 public class App {
 
   public static void main(String[] args) {
