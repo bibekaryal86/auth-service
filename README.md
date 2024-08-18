@@ -20,7 +20,8 @@ permissions
 
 ResponseCrudInfo and ResponsePageInfo need to be implemented
     ResponsePageInfo requires RequestMetadata implemented
-        Do it at last
+        Do it at last, for users and permissions
+
 
 Remaining (thoughts)
     -> Update check permission

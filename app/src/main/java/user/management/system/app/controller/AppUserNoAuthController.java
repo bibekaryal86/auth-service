@@ -3,6 +3,7 @@ package user.management.system.app.controller;
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -87,6 +88,7 @@ public class AppUserNoAuthController {
     }
   }
 
+  @Hidden
   @GetMapping("/app/{app}/validate_exit")
   public ResponseEntity<Void> validateAppUserExit(
       @PathVariable final String app,
@@ -115,6 +117,7 @@ public class AppUserNoAuthController {
     }
   }
 
+  @Hidden
   @GetMapping("/app/{app}/reset_exit")
   public ResponseEntity<Void> resetAppUserMid(
       @PathVariable final String app,

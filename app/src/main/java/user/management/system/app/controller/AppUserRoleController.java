@@ -1,5 +1,6 @@
 package user.management.system.app.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.service.AppUserRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@Tag(name = "App User Role Controller", description = "View, Assign and Unassign roles from users")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users_roles")

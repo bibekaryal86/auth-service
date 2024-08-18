@@ -37,10 +37,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         sendUnauthorizedResponse(response, ex.getMessage());
         return; // Stop further processing
       }
-    } else {
-      sendUnauthorizedResponse(response, "Auth Token Missing or Invalid...");
-      return;
     }
+
     filterChain.doFilter(request, response);
   }
 
