@@ -24,13 +24,16 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
+    -> UserAddress in User
+    -> Validate `app` when inserting/updating
+        -> users and permissions
+        -> Call authenv_service to get a list of app
+            -> Cache `app` values
+            -> Periodically clear caches
+            -> Manual option to clear caches
     -> Update check permission
         -> users only allowed to read and update their own user entity
     -> No more 24 hours JWT, use refresh tokens
-    -> UserAddress in User
     -> Audits
-    -> When inserting/updating permissions, validate `app`
-        -> cache `app` in authenv_service
-        -> Do same for users
     -> Swagger Documentation
     -> Unit and Integration tests
