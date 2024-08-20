@@ -68,12 +68,12 @@ public class AppRolePermissionController {
   }
 
   @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
-  @GetMapping("/app/{app}/roles/{roleIds}")
+  @GetMapping("/app/{appId}/roles/{roleIds}")
   public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleIds(
-      @PathVariable final String app, @PathVariable final List<Integer> roleIds) {
+      @PathVariable final String appId, @PathVariable final List<Integer> roleIds) {
     try {
       final List<AppRolePermissionEntity> appRolePermissionEntities =
-          appRolePermissionService.readAppRolePermissions(app, roleIds);
+          appRolePermissionService.readAppRolePermissions(appId, roleIds);
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);

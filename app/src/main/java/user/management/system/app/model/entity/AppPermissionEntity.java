@@ -20,6 +20,6 @@ public class AppPermissionEntity extends EntityBaseNameDesc {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "app", nullable = false)
-  private String app;
+  @Column(name = "app_id", nullable = false)
+  private String appId;
 }
