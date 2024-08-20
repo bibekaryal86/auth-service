@@ -37,6 +37,7 @@ Remaining (thoughts)
     -> Swagger Documentation
     -> Unit and Integration tests
     -> Add a table for app
-        -> link users to app
-        -> link permissions to app
+        -> link users to app (this needs a join table)
+        -> link permissions to app (FK app to app_table.name)
         -> validate against the app table
+        -> use shortened UUID (random 8 digits without -) for PK
