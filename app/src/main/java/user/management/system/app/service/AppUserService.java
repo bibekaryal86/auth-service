@@ -8,14 +8,18 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.exception.UserNotAuthorizedException;
+import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.UserLoginRequest;
+import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
+import user.management.system.app.repository.AppUserAddressRepository;
 import user.management.system.app.repository.AppUserRepository;
 import user.management.system.app.util.PasswordUtils;
 
@@ -25,6 +29,7 @@ import user.management.system.app.util.PasswordUtils;
 public class AppUserService {
 
   private final AppUserRepository appUserRepository;
+  private final AppUserAddressRepository appUserAddressRepository;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -32,11 +37,19 @@ public class AppUserService {
   public AppUserEntity createAppUser(
       final AppUserRequest appUserRequest, final String baseUrlForEmail) {
     log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrlForEmail);
+    validateCreateAppUser(appUserRequest);
     AppUserEntity appUserEntity = new AppUserEntity();
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
     appUserEntity.setIsValidated(false);
     appUserEntity = appUserRepository.save(appUserEntity);
+
+    // save addresses
+    if (!CollectionUtils.isEmpty(appUserRequest.getAddresses())) {
+      List<AppUserAddressEntity> appUserAddressEntities =
+          convertAddressRequestToEntity(appUserRequest.getAddresses(), appUserEntity);
+      appUserAddressRepository.saveAll(appUserAddressEntities);
+    }
     // @see EmailService, AppUserRoleService
     applicationEventPublisher.publishEvent(
         new AppUserCreatedEvent(
@@ -86,9 +99,18 @@ public class AppUserService {
   // UPDATE
   public AppUserEntity updateAppUser(final int id, final AppUserRequest appUserRequest) {
     log.debug("Update App User: [{}], [{}]", id, appUserRequest);
-    final AppUserEntity appUserEntity = readAppUser(id);
+    AppUserEntity appUserEntity = readAppUser(id);
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
-    return updateAppUser(appUserEntity);
+    appUserEntity = updateAppUser(appUserEntity);
+
+    // save addresses
+    if (!CollectionUtils.isEmpty(appUserRequest.getAddresses())) {
+      List<AppUserAddressEntity> appUserAddressEntities =
+          convertAddressRequestToEntity(appUserRequest.getAddresses(), appUserEntity);
+      appUserAddressRepository.saveAll(appUserAddressEntities);
+    }
+
+    return appUserEntity;
   }
 
   public AppUserEntity updateAppUser(final AppUserEntity appUserEntity) {
@@ -123,5 +145,19 @@ public class AppUserService {
     final AppUserEntity appUserEntity = readAppUser(id);
     appUserEntity.setDeletedDate(null);
     return appUserRepository.save(appUserEntity);
+  }
+
+  // others
+  private List<AppUserAddressEntity> convertAddressRequestToEntity(
+      final List<AppUserAddressDto> requests, final AppUserEntity appUser) {
+    return requests.stream()
+        .map(
+            request -> {
+              AppUserAddressEntity entity = new AppUserAddressEntity();
+              BeanUtils.copyProperties(request, entity);
+              entity.setAppUser(appUser);
+              return entity;
+            })
+        .toList();
   }
 }

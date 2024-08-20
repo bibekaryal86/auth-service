@@ -24,7 +24,6 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> UserAddress in User
     -> Validate `app` when inserting/updating
         -> users and permissions
         -> Call authenv_service to get a list of app
@@ -37,3 +36,7 @@ Remaining (thoughts)
     -> Audits
     -> Swagger Documentation
     -> Unit and Integration tests
+    -> Add a table for app
+        -> link users to app
+        -> link permissions to app
+        -> validate against the app table

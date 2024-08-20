@@ -4,6 +4,7 @@ import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEma
 import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
+@Tag(name = "App User Controller", description = "View and Manage App Users")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/na_app_users/user")

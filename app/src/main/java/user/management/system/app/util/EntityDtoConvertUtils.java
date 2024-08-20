@@ -22,6 +22,7 @@ import user.management.system.app.model.dto.AppRoleDto;
 import user.management.system.app.model.dto.AppRolePermissionDto;
 import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.dto.AppRoleResponse;
+import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.AppUserRoleDto;
@@ -32,6 +33,7 @@ import user.management.system.app.model.dto.UserLoginResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
+import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.service.AppRolePermissionService;
@@ -255,6 +257,12 @@ public class EntityDtoConvertUtils {
       appUserDto.setRoles(appRoleDtos);
     }
 
+    if (!CollectionUtils.isEmpty(appUserEntity.getAddresses())) {
+      List<AppUserAddressDto> appUserAddressDtos =
+          convertEntitiesToDtosAppUserAddress(appUserEntity.getAddresses());
+      appUserDto.setAddresses(appUserAddressDtos);
+    }
+
     return appUserDto;
   }
 
@@ -315,6 +323,24 @@ public class EntityDtoConvertUtils {
               return appUserDto;
             })
         .toList();
+  }
+
+  public AppUserAddressDto convertEntityToDtoAppUserAddress(
+      final AppUserAddressEntity appUserAddressEntity) {
+    if (appUserAddressEntity == null) {
+      return null;
+    }
+    final AppUserAddressDto appUserAddressDto = new AppUserAddressDto();
+    BeanUtils.copyProperties(appUserAddressEntity, appUserAddressDto, "appUser");
+    return appUserAddressDto;
+  }
+
+  public List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
+      final List<AppUserAddressEntity> appUserAddressEntities) {
+    if (CollectionUtils.isEmpty(appUserAddressEntities)) {
+      return Collections.emptyList();
+    }
+    return appUserAddressEntities.stream().map(this::convertEntityToDtoAppUserAddress).toList();
   }
 
   public ResponseEntity<AppRolePermissionResponse> getResponseSingleAppRolePermission(

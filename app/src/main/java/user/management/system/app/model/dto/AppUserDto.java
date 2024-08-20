@@ -1,6 +1,7 @@
 package user.management.system.app.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import user.management.system.app.model.token.AuthToken;
@@ -35,7 +36,7 @@ public class AppUserDto extends AppUserRequest {
       final LocalDateTime createdDate,
       final LocalDateTime updatedDate,
       final LocalDateTime deletedDate) {
-    super(app, firstName, lastName, email, phone, "", status, false);
+    super(app, firstName, lastName, email, phone, "", status, false, new ArrayList<>());
     this.id = id;
     this.isValidated = isValidated;
     this.createdDate = createdDate;

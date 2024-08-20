@@ -1,5 +1,6 @@
 package user.management.system.app.model.dto;
 
+import java.util.List;
 import java.util.Objects;
 
 public class AppUserRequest {
@@ -12,6 +13,7 @@ public class AppUserRequest {
   private String status;
 
   private boolean guestUser;
+  private List<AppUserAddressDto> addresses;
 
   // No Args Constructor
   public AppUserRequest() {}
@@ -25,7 +27,8 @@ public class AppUserRequest {
       final String phone,
       final String password,
       final String status,
-      final boolean guestUser) {
+      final boolean guestUser,
+      final List<AppUserAddressDto> addresses) {
     this.app = app;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -34,6 +37,7 @@ public class AppUserRequest {
     this.password = password;
     this.status = status;
     this.guestUser = guestUser;
+    this.addresses = addresses;
   }
 
   // Getters and Setters
@@ -97,6 +101,14 @@ public class AppUserRequest {
     this.guestUser = guestUser;
   }
 
+  public List<AppUserAddressDto> getAddresses() {
+    return this.addresses;
+  }
+
+  public void setAddresses(final List<AppUserAddressDto> addresses) {
+    this.addresses = addresses;
+  }
+
   // Equals
   @Override
   public boolean equals(Object o) {
@@ -109,7 +121,8 @@ public class AppUserRequest {
         && Objects.equals(this.phone, that.phone)
         && Objects.equals(this.password, that.password)
         && Objects.equals(this.status, that.status)
-        && Objects.equals(this.guestUser, that.guestUser);
+        && Objects.equals(this.guestUser, that.guestUser)
+        && Objects.equals(this.addresses, that.addresses);
   }
 
   // HashCode
@@ -123,7 +136,8 @@ public class AppUserRequest {
         this.phone,
         this.password,
         this.status,
-        this.guestUser);
+        this.guestUser,
+        this.addresses);
   }
 
   // ToString
@@ -150,6 +164,9 @@ public class AppUserRequest {
         + '\''
         + ", guestUser='"
         + this.guestUser
+        + '\''
+        + ", addressRequests='"
+        + this.addresses
         + '\''
         + "}";
   }
