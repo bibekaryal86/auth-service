@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthToken {
+  private String appId;
   private AuthTokenUser user;
   private List<AuthTokenRole> roles;
   private List<AuthTokenPermission> permissions;

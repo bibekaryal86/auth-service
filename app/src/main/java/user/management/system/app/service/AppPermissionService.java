@@ -20,10 +20,12 @@ public class AppPermissionService {
   private final AppPermissionRepository appPermissionRepository;
 
   // CREATE
-  public AppPermissionEntity createAppPermission(final AppPermissionRequest appPermissionRequest) {
+  public AppPermissionEntity createAppPermission(
+      final String appId, final AppPermissionRequest appPermissionRequest) {
     log.debug("Create App Permission: [{}]", appPermissionRequest);
     AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
     BeanUtils.copyProperties(appPermissionRequest, appPermissionEntity);
+    appPermissionEntity.setAppId(appId);
     return appPermissionRepository.save(appPermissionEntity);
   }
 
@@ -33,9 +35,9 @@ public class AppPermissionService {
     return appPermissionRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
-  public List<AppPermissionEntity> readAppPermissions(final String app) {
-    log.debug("Read App Permissions: [{}]", app);
-    return appPermissionRepository.findByAppOrderByNameAsc(app);
+  public List<AppPermissionEntity> readAppPermissions(final String appId) {
+    log.debug("Read App Permissions: [{}]", appId);
+    return appPermissionRepository.findByAppIdOrderByNameAsc(appId);
   }
 
   public AppPermissionEntity readAppPermission(final int id) {

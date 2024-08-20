@@ -24,21 +24,11 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> Add a table for app
-        -> link users to app (this needs a join table)
-        -> link permissions to app (FK app to app_table.name)
-        -> validate against the app table
-        -> use shortened UUID (random 8 digits without -) for PK
+    -> In authenv_service add a map object for appId <-> redirectUrl
+        -> then use that redirectUrl in stead of redirectUrl in AppUserNoAuthController
     -> Update check permission
         -> users only allowed to read and update their own user entity
     -> No more 24 hours JWT, use refresh tokens
     -> Audits
     -> Swagger Documentation
     -> Unit and Integration tests
-
-
-when login
-    -> check app, email
-    -> check if app is deleted
-    -> check if user is deleted
-    -> check if user status active or not

@@ -26,7 +26,6 @@ public class AppUserDto extends AppUserRequest {
   // Required Args Constructor
   public AppUserDto(
       final Integer id,
-      final String app,
       final String firstName,
       final String lastName,
       final String email,
@@ -36,7 +35,7 @@ public class AppUserDto extends AppUserRequest {
       final LocalDateTime createdDate,
       final LocalDateTime updatedDate,
       final LocalDateTime deletedDate) {
-    super(app, firstName, lastName, email, phone, "", status, false, new ArrayList<>());
+    super(firstName, lastName, email, phone, "", status, false, new ArrayList<>());
     this.id = id;
     this.isValidated = isValidated;
     this.createdDate = createdDate;
@@ -98,8 +97,7 @@ public class AppUserDto extends AppUserRequest {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof AppUserDto that)) return false;
-    return Objects.equals(this.getApp(), that.getApp())
-        && Objects.equals(this.getFirstName(), that.getFirstName())
+    return Objects.equals(this.getFirstName(), that.getFirstName())
         && Objects.equals(this.getLastName(), that.getLastName())
         && Objects.equals(this.getEmail(), that.getEmail())
         && Objects.equals(this.getPhone(), that.getPhone())
@@ -116,7 +114,6 @@ public class AppUserDto extends AppUserRequest {
   @Override
   public int hashCode() {
     return Objects.hash(
-        this.getApp(),
         this.getFirstName(),
         this.getLastName(),
         this.getEmail(),
@@ -136,9 +133,6 @@ public class AppUserDto extends AppUserRequest {
     return "UserDto{"
         + "id='"
         + this.id
-        + '\''
-        + "app='"
-        + this.getApp()
         + '\''
         + "firstName='"
         + this.getFirstName()
@@ -173,10 +167,7 @@ public class AppUserDto extends AppUserRequest {
   public AuthToken toAuthToken() {
     AuthTokenUser user =
         AuthTokenUser.builder()
-            .id(this.getId())
-            .app(this.getApp())
             .email(this.getEmail())
-            .fullName(this.getFirstName() + " " + this.getLastName())
             .status(this.getStatus())
             .isValidated(this.isValidated())
             .isDeleted(this.getDeletedDate() != null)

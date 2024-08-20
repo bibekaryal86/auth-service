@@ -12,15 +12,17 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
-import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserEntity;
+import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.repository.AppUserAddressRepository;
 import user.management.system.app.repository.AppUserRepository;
+import user.management.system.app.repository.AppsAppUserRepository;
 import user.management.system.app.util.PasswordUtils;
 
 @Slf4j
@@ -30,14 +32,18 @@ public class AppUserService {
 
   private final AppUserRepository appUserRepository;
   private final AppUserAddressRepository appUserAddressRepository;
+  private final AppsAppUserRepository appsAppUserRepository;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
 
   // CREATE
   public AppUserEntity createAppUser(
-      final AppUserRequest appUserRequest, final String baseUrlForEmail) {
+      final AppsEntity appsEntity,
+      final AppUserRequest appUserRequest,
+      final String baseUrlForEmail) {
     log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrlForEmail);
     validateCreateAppUser(appUserRequest);
+
     AppUserEntity appUserEntity = new AppUserEntity();
     BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
@@ -50,10 +56,18 @@ public class AppUserService {
           convertAddressRequestToEntity(appUserRequest.getAddresses(), appUserEntity);
       appUserAddressRepository.saveAll(appUserAddressEntities);
     }
+
+    // save apps user
+    AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
+    appsAppUserEntity.setApp(appsEntity);
+    appsAppUserEntity.setAppUser(appUserEntity);
+    appsAppUserEntity.setAssignedDate(LocalDateTime.now());
+    appsAppUserRepository.save(appsAppUserEntity);
+
     // @see EmailService, AppUserRoleService
     applicationEventPublisher.publishEvent(
         new AppUserCreatedEvent(
-            this, appUserEntity, appUserRequest.isGuestUser(), baseUrlForEmail));
+            this, appUserEntity, appsEntity, appUserRequest.isGuestUser(), baseUrlForEmail));
     return appUserEntity;
   }
 
@@ -61,8 +75,6 @@ public class AppUserService {
     // password and app are required for create user
     if (!StringUtils.hasText(appUserRequest.getPassword())) {
       throw new ElementMissingException("User", "password");
-    } else if (!StringUtils.hasText(appUserRequest.getApp())) {
-      throw new ElementMissingException("User", "app");
     }
   }
 
@@ -72,16 +84,6 @@ public class AppUserService {
     return appUserRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
   }
 
-  public List<AppUserEntity> readAppUsersByApp(final String app) {
-    log.debug("Read App Users By App: [{}]", app);
-    return appUserRepository.findAllByAppOrderByLastName(app);
-  }
-
-  public List<AppUserEntity> readAppUsers(final String email) {
-    log.debug("Read App Users: [{}]", email);
-    return appUserRepository.findAllByEmailOrderByApp(email);
-  }
-
   public AppUserEntity readAppUser(final int id) {
     log.debug("Read App User: [{}]", id);
     return appUserRepository
@@ -89,11 +91,11 @@ public class AppUserService {
         .orElseThrow(() -> new ElementNotFoundException("User", String.valueOf(id)));
   }
 
-  public AppUserEntity readAppUser(final String app, final String email) {
-    log.debug("Read App User: [{}], [{}]", app, email);
+  public AppUserEntity readAppUser(final String email) {
+    log.debug("Read App User: [{}]", email);
     return appUserRepository
-        .findByAppAndEmail(app, email)
-        .orElseThrow(UserNotAuthorizedException::new);
+        .findByEmail(email)
+        .orElseThrow(() -> new ElementNotFoundException("User", email));
   }
 
   // UPDATE

@@ -32,12 +32,13 @@ public class AppPermissionController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   @CheckPermission("PERMISSION_CREATE")
-  @PostMapping("/permission")
+  @PostMapping("/{appId}/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
+      @PathVariable final String appId,
       @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
       final AppPermissionEntity appPermissionEntity =
-          appPermissionService.createAppPermission(appPermissionRequest);
+          appPermissionService.createAppPermission(appId, appPermissionRequest);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -57,12 +58,12 @@ public class AppPermissionController {
   }
 
   @CheckPermission("PERMISSION_READ")
-  @GetMapping("/app/{app}")
+  @GetMapping("/app/{appId}")
   public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(
-      @PathVariable final String app) {
+      @PathVariable final String appId) {
     try {
       final List<AppPermissionEntity> appPermissionEntities =
-          appPermissionService.readAppPermissions(app);
+          appPermissionService.readAppPermissions(appId);
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);

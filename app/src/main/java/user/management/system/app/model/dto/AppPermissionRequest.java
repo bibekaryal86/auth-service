@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppPermissionRequest {
-  private String app;
   private String name;
   private String description;
 }

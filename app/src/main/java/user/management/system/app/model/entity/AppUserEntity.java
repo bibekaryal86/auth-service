@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +16,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity
-@Table(
-    name = "app_user",
-    uniqueConstraints = {
-      @UniqueConstraint(
-          name = "uc_app_user_app_email",
-          columnNames = {"app", "email"})
-    })
+@Table(name = "app_user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,9 +24,6 @@ public class AppUserEntity extends EntityBaseDates {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-
-  @Column(name = "app", nullable = false)
-  private String app;
 
   @Column(name = "first_name", nullable = false)
   private String firstName;

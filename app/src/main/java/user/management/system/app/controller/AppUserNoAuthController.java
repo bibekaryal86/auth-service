@@ -22,8 +22,12 @@ import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.dto.UserLoginResponse;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserEntity;
+import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppUserPasswordService;
 import user.management.system.app.service.AppUserService;
+import user.management.system.app.service.AppsAppUserService;
+import user.management.system.app.service.AppsService;
 import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
@@ -34,27 +38,33 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 public class AppUserNoAuthController {
 
   private final AppUserService appUserService;
+  private final AppsService appsService;
+  private final AppsAppUserService appsAppUserService;
   private final AppUserPasswordService appUserPasswordService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
 
-  @PostMapping("/create")
+  @PostMapping("/{appId}/create")
   public ResponseEntity<AppUserResponse> createAppUser(
-      @RequestBody final AppUserRequest appUserRequest, final HttpServletRequest request) {
+      @PathVariable final String appId,
+      @RequestBody final AppUserRequest appUserRequest,
+      final HttpServletRequest request) {
     try {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      final AppUserEntity appUserEntity = appUserService.createAppUser(appUserRequest, baseUrl);
+      final AppsEntity appsEntity = appsService.readApp(appId);
+      final AppUserEntity appUserEntity =
+          appUserService.createAppUser(appsEntity, appUserRequest, baseUrl);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
 
-  @PostMapping("/login")
+  @PostMapping("/{appId}/login")
   public ResponseEntity<UserLoginResponse> loginAppUser(
-      @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final String appId, @RequestBody final UserLoginRequest userLoginRequest) {
     try {
-      final AppUserEntity appUserEntity = appUserPasswordService.loginUser(userLoginRequest);
+      final AppUserEntity appUserEntity = appUserPasswordService.loginUser(appId, userLoginRequest);
       final AppUserDto appUserDto =
           entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
       final String token = encodeAuthCredentials(appUserDto);
@@ -64,26 +74,27 @@ public class AppUserNoAuthController {
     }
   }
 
-  @PostMapping("/reset")
+  @PostMapping("/{appId}/reset")
   public ResponseEntity<ResponseStatusInfo> resetAppUser(
-      @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final String appId, @RequestBody final UserLoginRequest userLoginRequest) {
     try {
-      appUserPasswordService.resetUser(userLoginRequest);
+      appUserPasswordService.resetUser(appId, userLoginRequest);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
     }
   }
 
-  @GetMapping("/app/{app}/validate_init")
+  @GetMapping("/{appId}/validate_init")
   public ResponseEntity<ResponseStatusInfo> validateAppUserInit(
-      @PathVariable final String app,
+      @PathVariable final String appId,
       @RequestParam final String email,
       final HttpServletRequest request) {
     try {
-      final AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
+      final AppsAppUserEntity appsAppUserEntity = appsAppUserService.readAppsAppUser(appId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      emailService.sendUserValidationEmail(appUserEntity, baseUrl);
+      emailService.sendUserValidationEmail(
+          appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
@@ -91,28 +102,29 @@ public class AppUserNoAuthController {
   }
 
   @Hidden
-  @GetMapping("/app/{app}/validate_exit")
+  @GetMapping("/{appId}/validate_exit")
   public ResponseEntity<Void> validateAppUserExit(
-      @PathVariable final String app,
+      @PathVariable final String appId,
       @RequestParam final String toValidate,
       @RequestParam final String redirectUrl) {
     try {
-      appUserPasswordService.validateAndResetUser(app, toValidate, true);
+      appUserPasswordService.validateAndResetUser(appId, toValidate, true);
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, true);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, false);
     }
   }
 
-  @GetMapping("/app/{app}/reset_init")
+  @GetMapping("/{appId}/reset_init")
   public ResponseEntity<ResponseStatusInfo> resetAppUserInit(
-      @PathVariable final String app,
+      @PathVariable final String appId,
       @RequestParam final String email,
       final HttpServletRequest request) {
     try {
-      final AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
+      final AppsAppUserEntity appsAppUserEntity = appsAppUserService.readAppsAppUser(appId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      emailService.sendUserResetEmail(appUserEntity, baseUrl);
+      emailService.sendUserResetEmail(
+          appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
@@ -120,13 +132,13 @@ public class AppUserNoAuthController {
   }
 
   @Hidden
-  @GetMapping("/app/{app}/reset_exit")
+  @GetMapping("/{appId}/reset_exit")
   public ResponseEntity<Void> resetAppUserMid(
-      @PathVariable final String app,
+      @PathVariable final String appId,
       @RequestParam final String toReset,
       @RequestParam final String redirectUrl) {
     try {
-      final String userToReset = appUserPasswordService.validateAndResetUser(app, toReset, false);
+      final String userToReset = appUserPasswordService.validateAndResetUser(appId, toReset, false);
       return entityDtoConvertUtils.getResponseResetUser(redirectUrl, true, userToReset);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseResetUser(redirectUrl, true, "");

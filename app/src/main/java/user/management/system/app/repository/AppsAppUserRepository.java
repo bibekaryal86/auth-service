@@ -15,10 +15,8 @@ public interface AppsAppUserRepository extends JpaRepository<AppsAppUserEntity, 
   Optional<AppsAppUserEntity> findByAppIdAndAppUserEmail(
       @Param("appId") String appId, @Param("email") String email);
 
-  @Query(
-      "SELECT a FROM AppsAppUserEntity a WHERE a.app.id=:appId ORDER BY a.appUser.lastName DESC")
-  List<AppsAppUserEntity> findAllByAppIdOrderByAppUserLastNameDesc(
-      @Param("appId") String appId);
+  @Query("SELECT a FROM AppsAppUserEntity a WHERE a.app.id=:appId ORDER BY a.appUser.lastName DESC")
+  List<AppsAppUserEntity> findAllByAppIdOrderByAppUserLastNameDesc(@Param("appId") String appId);
 
   @Query("SELECT a FROM AppsAppUserEntity a WHERE a.appUser.id=:appUserId ORDER BY a.app.name ASC")
   List<AppsAppUserEntity> findAllByAppUserIdOrderByAppNameAsc(@Param("appUserId") int appUserId);

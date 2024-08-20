@@ -9,14 +9,16 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 public class AppPermissionDto extends AppPermissionRequest {
   private Integer id;
+  private String appId;
 
   public AppPermissionDto() {
     super();
   }
 
   public AppPermissionDto(
-      final Integer id, final String app, final String name, final String description) {
-    super(app, name, description);
+      final Integer id, final String appId, final String name, final String description) {
+    super(name, description);
     this.id = id;
+    this.appId = appId;
   }
 }

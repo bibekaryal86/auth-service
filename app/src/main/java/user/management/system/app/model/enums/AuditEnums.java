@@ -7,6 +7,8 @@ public class AuditEnums {
     DELETE_USER,
     ASSIGN_ROLE,
     UNASSIGN_ROLE,
+    ASSIGN_APP,
+    UNASSIGN_APP,
     ADD_ADDRESS,
     UPDATE_ADDRESS,
     DELETE_ADDRESS,

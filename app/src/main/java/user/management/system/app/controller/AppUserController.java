@@ -17,7 +17,9 @@ import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppUserService;
+import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "App User Controller", description = "View and Manage App Users")
@@ -27,6 +29,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 public class AppUserController {
 
   private final AppUserService appUserService;
+  private final AppsAppUserService appsAppUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   @CheckPermission("USER READ")
@@ -34,28 +37,6 @@ public class AppUserController {
   public ResponseEntity<AppUserResponse> readAppUsers() {
     try {
       final List<AppUserEntity> appUserEntities = appUserService.readAppUsers();
-      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
-    } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
-    }
-  }
-
-  @CheckPermission("USER_READ")
-  @GetMapping("/app/{app}")
-  public ResponseEntity<AppUserResponse> readAppUsersByApp(@PathVariable final String app) {
-    try {
-      final List<AppUserEntity> appUserEntities = appUserService.readAppUsersByApp(app);
-      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
-    } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
-    }
-  }
-
-  @CheckPermission("USER_READ")
-  @GetMapping("/users/{email}")
-  public ResponseEntity<AppUserResponse> readAppUsersByEmail(@PathVariable final String email) {
-    try {
-      final List<AppUserEntity> appUserEntities = appUserService.readAppUsers(email);
       return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -74,12 +55,25 @@ public class AppUserController {
   }
 
   @CheckPermission("USER_READ")
-  @GetMapping("/app/{app}/user/{email}")
-  public ResponseEntity<AppUserResponse> readAppUser(
-      @PathVariable final String app, @PathVariable final String email) {
+  @GetMapping("/user/email/{email}")
+  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
     try {
-      final AppUserEntity appUserEntity = appUserService.readAppUser(app, email);
+      final AppUserEntity appUserEntity = appUserService.readAppUser(email);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
+  @CheckPermission("USER READ")
+  @GetMapping("/{appId}")
+  public ResponseEntity<AppUserResponse> readAppUsers(@PathVariable final String appId) {
+    try {
+      final List<AppsAppUserEntity> appsAppUserEntities =
+          appsAppUserService.readAppsAppUsers(appId);
+      final List<AppUserEntity> appUserEntities =
+          appsAppUserEntities.stream().map(AppsAppUserEntity::getAppUser).toList();
+      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }

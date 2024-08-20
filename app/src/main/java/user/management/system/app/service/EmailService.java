@@ -20,6 +20,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.util.FileReaderUtils;
 
@@ -103,27 +104,29 @@ public class EmailService {
 
   @EventListener
   public void handleUserCreated(final AppUserCreatedEvent appUserCreatedEvent) {
+    final AppsEntity appsEntity = appUserCreatedEvent.getAppsEntity();
     final AppUserEntity appUserEntity = appUserCreatedEvent.getAppUserEntity();
     final String baseUrl = appUserCreatedEvent.getBaseUrl();
-    log.info("Handle User Created: [{}], [{}]", appUserEntity.getApp(), appUserEntity.getId());
-    sendUserValidationEmail(appUserEntity, baseUrl);
+    log.info("Handle User Created: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
+    sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
   }
 
-  public void sendUserValidationEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+  public void sendUserValidationEmail(
+      final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String activationLink =
         String.format(
-            "%s/na_app_users/validate_exit/?app=%s&toValidate=%s",
-            baseUrl, appUserEntity.getApp(), encodedEmail);
+            "%s/na_app_users/%s/validate_exit/?toValidate=%s",
+            baseUrl, appsEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_validate_user.html")
             .replace("{activation_link}", activationLink);
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Activation", appUserEntity.getApp());
+    final String subject = String.format("[%s] User Validation", appsEntity.getName());
     sendEmail(
-        appUserEntity.getApp(),
+        appsEntity.getName(),
         appUserEntity.getEmail(),
         fullName,
         subject,
@@ -133,19 +136,21 @@ public class EmailService {
         null);
   }
 
-  public void sendUserResetEmail(final AppUserEntity appUserEntity, final String baseUrl) {
+  public void sendUserResetEmail(
+      final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String resetLink =
-        String.format("%s/na_app_users/reset_mid/?toReset=%s", baseUrl, encodedEmail);
+        String.format(
+            "%s/na_app_users/%s/reset_exit?toReset=%s", baseUrl, appsEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_reset_user.html")
             .replace("{reset_link}", resetLink);
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Reset", appUserEntity.getApp());
+    final String subject = String.format("[%s] User Reset", appsEntity.getName());
     sendEmail(
-        appUserEntity.getApp(),
+        appsEntity.getName(),
         appUserEntity.getEmail(),
         fullName,
         subject,

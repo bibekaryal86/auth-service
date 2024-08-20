@@ -41,7 +41,10 @@ public class AppUserRoleService {
     final AppUserEntity appUserEntity = appUserCreatedEvent.getAppUserEntity();
     final boolean isGuestUser = appUserCreatedEvent.isGuestUser();
 
-    log.info("Handle User Created: [{}], [{}]", appUserEntity.getApp(), appUserEntity.getId());
+    log.info(
+        "Handle User Created: [{}], [{}]",
+        appUserCreatedEvent.getAppsEntity().getName(),
+        appUserEntity.getId());
 
     final List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
     final AppRoleEntity appRoleEntity =
@@ -57,7 +60,7 @@ public class AppUserRoleService {
     if (appRoleEntity == null) {
       log.error(
           "Handle User Created, App Role Entity is NULL: [{}], [{}]",
-          appUserEntity.getApp(),
+          appUserCreatedEvent.getAppsEntity().getName(),
           appUserEntity.getId());
     } else {
       createAppUserRoleEntity(appUserEntity, appRoleEntity);

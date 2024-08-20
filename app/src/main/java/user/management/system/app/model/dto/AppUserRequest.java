@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class AppUserRequest {
-  private String app;
   private String firstName;
   private String lastName;
   private String email;
@@ -20,7 +19,6 @@ public class AppUserRequest {
 
   // All Args Constructor
   public AppUserRequest(
-      final String app,
       final String firstName,
       final String lastName,
       final String email,
@@ -29,7 +27,6 @@ public class AppUserRequest {
       final String status,
       final boolean guestUser,
       final List<AppUserAddressDto> addresses) {
-    this.app = app;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -41,14 +38,6 @@ public class AppUserRequest {
   }
 
   // Getters and Setters
-  public String getApp() {
-    return this.app;
-  }
-
-  public void setApp(final String app) {
-    this.app = app;
-  }
-
   public String getFirstName() {
     return this.firstName;
   }
@@ -114,8 +103,7 @@ public class AppUserRequest {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof AppUserRequest that)) return false;
-    return Objects.equals(this.app, that.app)
-        && Objects.equals(this.firstName, that.firstName)
+    return Objects.equals(this.firstName, that.firstName)
         && Objects.equals(this.lastName, that.lastName)
         && Objects.equals(this.email, that.email)
         && Objects.equals(this.phone, that.phone)
@@ -129,7 +117,6 @@ public class AppUserRequest {
   @Override
   public int hashCode() {
     return Objects.hash(
-        this.app,
         this.firstName,
         this.lastName,
         this.email,
@@ -144,8 +131,6 @@ public class AppUserRequest {
   @Override
   public String toString() {
     return "UserRequest{"
-        + "app='"
-        + this.app
         + '\''
         + "firstName='"
         + this.firstName

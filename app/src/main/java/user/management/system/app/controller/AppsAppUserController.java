@@ -35,7 +35,7 @@ public class AppsAppUserController {
       @RequestBody final AppsAppUserRequest appAppsAppUserRequest) {
     try {
       final AppsAppUserEntity appAppsAppUserEntity =
-              appsAppUserService.createAppsAppUser(appAppsAppUserRequest);
+          appsAppUserService.createAppsAppUser(appAppsAppUserRequest);
       return entityDtoConvertUtils.getResponseSingleAppsAppUser(appAppsAppUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
@@ -46,8 +46,7 @@ public class AppsAppUserController {
   @GetMapping
   public ResponseEntity<AppsAppUserResponse> readAppAppsAppUsers() {
     try {
-      final List<AppsAppUserEntity> appAppsAppUserEntities =
-              appsAppUserService.readAppsAppUsers();
+      final List<AppsAppUserEntity> appAppsAppUserEntities = appsAppUserService.readAppsAppUsers();
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
@@ -60,7 +59,7 @@ public class AppsAppUserController {
       @PathVariable final String appId) {
     try {
       final List<AppsAppUserEntity> appAppsAppUserEntities =
-              appsAppUserService.readAppsAppUsers(appId);
+          appsAppUserService.readAppsAppUsers(appId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
@@ -70,10 +69,10 @@ public class AppsAppUserController {
   @CheckPermission("ONLY SUPERUSER CAN READ APPS AND USERS")
   @GetMapping("/user/{appUserId}")
   public ResponseEntity<AppsAppUserResponse> readAppsAppUsersByUserId(
-          @PathVariable final int appUserId) {
+      @PathVariable final int appUserId) {
     try {
       final List<AppsAppUserEntity> appAppsAppUserEntities =
-              appsAppUserService.readAppsAppUsers(appUserId);
+          appsAppUserService.readAppsAppUsers(appUserId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);

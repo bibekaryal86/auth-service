@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginRequest {
-  private String app;
   private String email;
   @ToString.Exclude private String password;
 }

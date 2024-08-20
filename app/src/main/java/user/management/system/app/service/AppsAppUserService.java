@@ -23,8 +23,7 @@ public class AppsAppUserService {
   private final AppUserService appUserService;
 
   // CREATE
-  public AppsAppUserEntity createAppsAppUser(
-      final AppsAppUserRequest appsAppUserRequest) {
+  public AppsAppUserEntity createAppsAppUser(final AppsAppUserRequest appsAppUserRequest) {
     log.debug("Create Apps App User: [{}]", appsAppUserRequest);
     AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
     final AppsEntity appsEntity = appsService.readApp(appsAppUserRequest.getAppId());
@@ -38,7 +37,8 @@ public class AppsAppUserService {
   // READ
   public List<AppsAppUserEntity> readAppsAppUsers() {
     log.debug("Read Apps App Users...");
-    return appsAppUserRepository.findAll(Sort.by(Sort.Direction.ASC, "app.name", "appUser.lastName"));
+    return appsAppUserRepository.findAll(
+        Sort.by(Sort.Direction.ASC, "app.name", "appUser.lastName"));
   }
 
   public List<AppsAppUserEntity> readAppsAppUsers(final String appId) {
@@ -51,14 +51,14 @@ public class AppsAppUserService {
     return appsAppUserRepository.findAllByAppUserIdOrderByAppNameAsc(appUserId);
   }
 
-  public AppsAppUserEntity readAppsAppUser(
-      final String appId, final String appUserEmail) {
+  public AppsAppUserEntity readAppsAppUser(final String appId, final String appUserEmail) {
     log.debug("Read Apps App User: [{}], [{}]", appId, appUserEmail);
-    return appsAppUserRepository.findByAppIdAndAppUserEmail(appId, appUserEmail)
-            .orElseThrow(
-                    () ->
-                            new ElementNotFoundException(
-                                    "Apps App User", String.format("%s,%s", appId, appUserEmail)));
+    return appsAppUserRepository
+        .findByAppIdAndAppUserEmail(appId, appUserEmail)
+        .orElseThrow(
+            () ->
+                new ElementNotFoundException(
+                    "Apps App User", String.format("%s,%s", appId, appUserEmail)));
   }
 
   // UPDATE
@@ -67,8 +67,7 @@ public class AppsAppUserService {
   // DELETE
   public void deleteAppsAppUser(final String appId, final String appUserEmail) {
     log.info("Delete App Role Permission: [{}], [{}]", appId, appUserEmail);
-    final AppsAppUserEntity appsAppUserEntity =
-        readAppsAppUser(appId, appUserEmail);
+    final AppsAppUserEntity appsAppUserEntity = readAppsAppUser(appId, appUserEmail);
     appsAppUserRepository.delete(appsAppUserEntity);
   }
 }

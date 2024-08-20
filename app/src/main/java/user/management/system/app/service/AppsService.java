@@ -2,6 +2,8 @@ package user.management.system.app.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -23,10 +25,12 @@ public class AppsService {
 
   // CREATE
   @CacheEvict(value = "apps", allEntries = true, beforeInvocation = true)
-  public AppsEntity createApp(final AppsRequest appRequest) {
-    log.debug("Create Apps: [{}]", appRequest);
+  public AppsEntity createApp(final AppsRequest appsRequest) {
+    log.debug("Create Apps: [{}]", appsRequest);
     AppsEntity appEntity = new AppsEntity();
-    BeanUtils.copyProperties(appRequest, appEntity);
+    appEntity.setId(getRandomId());
+    appEntity.setName(appsRequest.getName());
+    appEntity.setDescription(appsRequest.getDescription());
     return appsRepository.save(appEntity);
   }
 
@@ -74,5 +78,20 @@ public class AppsService {
     final AppsEntity appEntity = readApp(id);
     appEntity.setDeletedDate(null);
     return appsRepository.save(appEntity);
+  }
+
+  /**
+   * @return 8 character long random substring of a UUID
+   */
+  private String getRandomId() {
+    try {
+      UUID uuid = UUID.randomUUID();
+      String uuidString = uuid.toString().replace("-", "");
+      int maxStartIndex = uuidString.length() - 8;
+      int startIndex = ThreadLocalRandom.current().nextInt(maxStartIndex + 1);
+      return uuidString.substring(startIndex, startIndex + 8);
+    } catch (Exception ex) {
+      return String.valueOf(ThreadLocalRandom.current().nextInt(10000000, 100000000));
+    }
   }
 }

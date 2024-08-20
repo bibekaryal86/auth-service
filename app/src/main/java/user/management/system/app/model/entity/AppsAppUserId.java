@@ -19,6 +19,6 @@ public class AppsAppUserId implements Serializable {
   @Column(name = "app_id", nullable = false)
   private String appId;
 
-  @Column(name = "appUserId", nullable = false)
+  @Column(name = "app_user_id", nullable = false)
   private Integer userId;
 }
