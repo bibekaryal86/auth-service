@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.connector.AuthenvServiceConnector;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
@@ -43,6 +44,7 @@ public class AppUserNoAuthController {
   private final AppUserPasswordService appUserPasswordService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
+  private final AuthenvServiceConnector authenvServiceConnector;
 
   @PostMapping("/{appId}/create")
   public ResponseEntity<AppUserResponse> createAppUser(
@@ -104,9 +106,8 @@ public class AppUserNoAuthController {
   @Hidden
   @GetMapping("/{appId}/validate_exit")
   public ResponseEntity<Void> validateAppUserExit(
-      @PathVariable final String appId,
-      @RequestParam final String toValidate,
-      @RequestParam final String redirectUrl) {
+      @PathVariable final String appId, @RequestParam final String toValidate) {
+    final String redirectUrl = authenvServiceConnector.getRedirectUrls().getOrDefault(appId, "");
     try {
       appUserPasswordService.validateAndResetUser(appId, toValidate, true);
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, true);
@@ -134,9 +135,8 @@ public class AppUserNoAuthController {
   @Hidden
   @GetMapping("/{appId}/reset_exit")
   public ResponseEntity<Void> resetAppUserMid(
-      @PathVariable final String appId,
-      @RequestParam final String toReset,
-      @RequestParam final String redirectUrl) {
+      @PathVariable final String appId, @RequestParam final String toReset) {
+    final String redirectUrl = authenvServiceConnector.getRedirectUrls().getOrDefault(appId, "");
     try {
       final String userToReset = appUserPasswordService.validateAndResetUser(appId, toReset, false);
       return entityDtoConvertUtils.getResponseResetUser(redirectUrl, true, userToReset);

@@ -48,3 +48,8 @@ springdoc:
     disable-swagger-default-url: true
     path: /swagger-ui
     doc-expansion: none
+
+# endpoints of authenv_service
+endpoint:
+  authenv_service:
+    get_properties: https://authenv-service.appspot.com/authenv-service/env-props/app_usermgmtsvc

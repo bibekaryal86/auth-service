@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Slf4j
-public class InterceptorUtilsLogging implements HandlerInterceptor {
+public class InterceptorLoggingUtilsIncoming implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(

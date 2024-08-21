@@ -21,6 +21,7 @@ dependencies {
     
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springVersion"
+    implementation "org.springframework.boot:spring-boot-starter-webflux:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springVersion"
 
@@ -30,7 +31,9 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.7.3'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.15.0'
 
+    implementation 'io.projectreactor.netty:reactor-netty:1.1.22'
     implementation 'com.mailjet:mailjet-client:5.2.5'
+
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
