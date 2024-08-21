@@ -3,6 +3,7 @@ package user.management.system.app.util;
 import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_SUPERUSER;
 
 import java.util.List;
+import java.util.Objects;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.core.Authentication;
@@ -51,11 +52,32 @@ public class PermissionCheck {
     }
 
     return authToken.getPermissions().stream()
-            .anyMatch(
-                authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
+        .anyMatch(
+            authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
   }
 
-  // TODO user should be able to update their own user entities
-  // check = should be logged in, app and email from token must match app and email, and ID should
-  // also match
+  public void canUserAccessAppUser(final String email, final int id) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null
+        || authentication.getPrincipal() == null
+        || !authentication.isAuthenticated()) {
+      throw new CheckPermissionException("User not authenticated...");
+    }
+
+    try {
+      AuthToken authToken = (AuthToken) authentication.getPrincipal();
+
+      boolean isPermitted =
+          Objects.equals(email, authToken.getUser().getEmail())
+              || Objects.equals(id, authToken.getUser().getId());
+
+      if (!isPermitted) {
+        throw new CheckPermissionException(
+            "User does not have required permissions to user entity...");
+      }
+    } catch (Exception ex) {
+      throw new CheckPermissionException(ex.getMessage());
+    }
+  }
 }

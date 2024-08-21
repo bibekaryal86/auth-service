@@ -21,6 +21,7 @@ import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
+import user.management.system.app.util.PermissionCheck;
 
 @Tag(name = "App User Controller", description = "View and Manage App Users")
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class AppUserController {
   private final AppUserService appUserService;
   private final AppsAppUserService appsAppUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final PermissionCheck permissionCheck;
 
   @CheckPermission("USER READ")
   @GetMapping
@@ -47,6 +49,7 @@ public class AppUserController {
   @GetMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
+      permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity = appUserService.readAppUser(id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
@@ -58,6 +61,7 @@ public class AppUserController {
   @GetMapping("/user/email/{email}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
     try {
+      permissionCheck.canUserAccessAppUser(email, 0);
       final AppUserEntity appUserEntity = appUserService.readAppUser(email);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
@@ -84,6 +88,7 @@ public class AppUserController {
   public ResponseEntity<AppUserResponse> updateAppUser(
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
     try {
+      permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
@@ -96,6 +101,7 @@ public class AppUserController {
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
       @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
     try {
+      permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity =
           appUserService.updateAppUserPassword(id, userLoginRequest);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
@@ -104,7 +110,7 @@ public class AppUserController {
     }
   }
 
-  @CheckPermission("USER_DELETE")
+  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE USER")
   @DeleteMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> softDeleteAppUser(@PathVariable final int id) {
     try {

@@ -167,6 +167,7 @@ public class AppUserDto extends AppUserRequest {
   public AuthToken toAuthToken() {
     AuthTokenUser user =
         AuthTokenUser.builder()
+            .id(this.getId())
             .email(this.getEmail())
             .status(this.getStatus())
             .isValidated(this.isValidated())
