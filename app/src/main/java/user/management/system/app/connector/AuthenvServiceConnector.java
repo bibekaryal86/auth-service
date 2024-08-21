@@ -1,11 +1,15 @@
 package user.management.system.app.connector;
 
+import static user.management.system.app.util.ConstantUtils.ENV_AUTHENV_PASSWORD;
+import static user.management.system.app.util.ConstantUtils.ENV_AUTHENV_USERNAME;
+import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
+
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -30,10 +34,17 @@ public class AuthenvServiceConnector {
   }
 
   private List<EnvDetails> getUserMgmtSvcEnvProperties() {
-    String url = UriComponentsBuilder.fromHttpUrl(getPropertiesUrl).toUriString();
+    final String url = UriComponentsBuilder.fromHttpUrl(getPropertiesUrl).toUriString();
+    final String credentials =
+        getSystemEnvProperty(ENV_AUTHENV_USERNAME)
+            + ":"
+            + getSystemEnvProperty(ENV_AUTHENV_PASSWORD);
+    final String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+
     return webClient
         .get()
         .uri(url)
+        .header("Authorization", "Basic " + base64Credentials)
         .retrieve()
         .bodyToFlux(EnvDetails.class)
         .collectList()
@@ -57,7 +68,4 @@ public class AuthenvServiceConnector {
     }
     return withRedirectUrls.getMapValue();
   }
-
-  @CacheEvict(value = "redirectUrls", beforeInvocation = true)
-  public void clearRedirectUrlsCache() {}
 }

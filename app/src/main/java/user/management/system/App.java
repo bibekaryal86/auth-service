@@ -4,17 +4,11 @@
 package user.management.system;
 
 import static java.util.Collections.singletonMap;
-import static user.management.system.app.util.ConstantUtils.ENV_DB_PASSWORD;
-import static user.management.system.app.util.ConstantUtils.ENV_DB_USERNAME;
-import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
-import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PRIVATE_KEY;
-import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PUBLIC_KEY;
-import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
+import static user.management.system.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
 import static user.management.system.app.util.SystemEnvPropertyUtils.getAllSystemEnvProperties;
 import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -41,28 +35,11 @@ public class App {
 
   private static void validateInitArgs() {
     Map<String, String> properties = getAllSystemEnvProperties();
-
-    List<String> errors = new ArrayList<>();
-    if (properties.get(ENV_DB_USERNAME) == null) {
-      errors.add("DB Username Not Provided...");
-    }
-    if (properties.get(ENV_DB_PASSWORD) == null) {
-      errors.add("DB Password Not Provided...");
-    }
-    if (properties.get(ENV_SECRET_KEY) == null) {
-      errors.add("Secret Key Not Provided...");
-    }
-    if (properties.get(ENV_MAILJET_EMAIL_ADDRESS) == null) {
-      errors.add("Mailjet Email Address Not Provided...");
-    }
-    if (properties.get(ENV_MAILJET_PUBLIC_KEY) == null) {
-      errors.add("Mailjet Public Key Not Provided...");
-    }
-    if (properties.get(ENV_MAILJET_PRIVATE_KEY) == null) {
-      errors.add("Mailjet Private Key Not Provided...");
-    }
+    List<String> requiredEnvProperties = ENV_KEY_NAMES.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
+    List<String> errors = requiredEnvProperties.stream()
+            .filter(key -> properties.get(key) == null)
+            .toList();
     if (!errors.isEmpty()) {
-      log.error("One or more environment configurations could not be accessed: [{}]", errors);
       throw new IllegalStateException(
           "One or more environment configurations could not be accessed...");
     }
