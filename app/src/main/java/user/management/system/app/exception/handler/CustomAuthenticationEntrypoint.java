@@ -24,7 +24,7 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    ResponseStatusInfo responseStatusInfo =
+    final ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder()
             .errMsg("User not authenticated to access this resource...")
             .build();
