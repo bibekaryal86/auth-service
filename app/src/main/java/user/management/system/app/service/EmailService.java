@@ -1,10 +1,10 @@
 package user.management.system.app.service;
 
-import static user.management.system.app.util.CommonUtils.getSystemEnvProperty;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PRIVATE_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PUBLIC_KEY;
 import static user.management.system.app.util.JwtUtils.encodeEmailAddress;
+import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
@@ -34,8 +34,8 @@ public class EmailService {
   private MailjetClient mailjetClient() {
     return new MailjetClient(
         ClientOptions.builder()
-            .apiKey(getSystemEnvProperty(ENV_MAILJET_PUBLIC_KEY, null))
-            .apiSecretKey(getSystemEnvProperty(ENV_MAILJET_PRIVATE_KEY, null))
+            .apiKey(getSystemEnvProperty(ENV_MAILJET_PUBLIC_KEY))
+            .apiSecretKey(getSystemEnvProperty(ENV_MAILJET_PRIVATE_KEY))
             .build());
   }
 

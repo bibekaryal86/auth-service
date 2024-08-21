@@ -1,7 +1,7 @@
 package user.management.system.app.util;
 
-import static user.management.system.app.util.CommonUtils.getSystemEnvProperty;
 import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
+import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -23,7 +23,7 @@ import user.management.system.app.model.token.AuthToken;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
-  private static final String SECRET_KEY = getSystemEnvProperty(ENV_SECRET_KEY, null);
+  private static final String SECRET_KEY = getSystemEnvProperty(ENV_SECRET_KEY);
 
   private static SecretKey getSigningKey() {
     return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));

@@ -1,5 +1,6 @@
 package user.management.system.app.util;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -7,13 +8,22 @@ import lombok.NoArgsConstructor;
 public class ConstantUtils {
 
   // provided at runtime
-  public static final String SERVER_PORT = "PORT";
+  public static final String ENV_SERVER_PORT = "PORT";
   public static final String ENV_DB_USERNAME = "DB_USERNAME";
   public static final String ENV_DB_PASSWORD = "DB_PASSWORD";
   public static final String ENV_SECRET_KEY = "SECRET_KEY";
   public static final String ENV_MAILJET_PUBLIC_KEY = "MJ_PUBLIC";
   public static final String ENV_MAILJET_PRIVATE_KEY = "MJ_PRIVATE";
   public static final String ENV_MAILJET_EMAIL_ADDRESS = "MJ_EMAIL";
+  public static final List<String> ENV_KEY_NAMES =
+      List.of(
+          ENV_SERVER_PORT,
+          ENV_DB_USERNAME,
+          ENV_DB_PASSWORD,
+          ENV_SECRET_KEY,
+          ENV_MAILJET_PUBLIC_KEY,
+          ENV_MAILJET_PRIVATE_KEY,
+          ENV_MAILJET_EMAIL_ADDRESS);
 
   // ROLE NAMES
   public static final String APP_ROLE_NAME_GUEST = "GUEST";

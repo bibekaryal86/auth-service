@@ -4,17 +4,19 @@
 package user.management.system;
 
 import static java.util.Collections.singletonMap;
-import static user.management.system.app.util.CommonUtils.getSystemEnvProperty;
 import static user.management.system.app.util.ConstantUtils.ENV_DB_PASSWORD;
 import static user.management.system.app.util.ConstantUtils.ENV_DB_USERNAME;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PRIVATE_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PUBLIC_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
-import static user.management.system.app.util.ConstantUtils.SERVER_PORT;
+import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
+import static user.management.system.app.util.SystemEnvPropertyUtils.getAllSystemEnvProperties;
+import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,29 +34,31 @@ public class App {
     validateInitArgs();
     SpringApplication app = new SpringApplication(App.class);
     app.setDefaultProperties(
-        singletonMap("server.port", getSystemEnvProperty(SERVER_PORT, "8080")));
+        singletonMap("server.port", getSystemEnvProperty(ENV_SERVER_PORT, "8080")));
     app.run(args);
     log.info("End application initialization...");
   }
 
   private static void validateInitArgs() {
+    Map<String, String> properties = getAllSystemEnvProperties();
+
     List<String> errors = new ArrayList<>();
-    if (getSystemEnvProperty(ENV_DB_USERNAME, null) == null) {
+    if (properties.get(ENV_DB_USERNAME) == null) {
       errors.add("DB Username Not Provided...");
     }
-    if (getSystemEnvProperty(ENV_DB_PASSWORD, null) == null) {
+    if (properties.get(ENV_DB_PASSWORD) == null) {
       errors.add("DB Password Not Provided...");
     }
-    if (getSystemEnvProperty(ENV_SECRET_KEY, null) == null) {
+    if (properties.get(ENV_SECRET_KEY) == null) {
       errors.add("Secret Key Not Provided...");
     }
-    if (getSystemEnvProperty(ENV_MAILJET_EMAIL_ADDRESS, null) == null) {
+    if (properties.get(ENV_MAILJET_EMAIL_ADDRESS) == null) {
       errors.add("Mailjet Email Address Not Provided...");
     }
-    if (getSystemEnvProperty(ENV_MAILJET_PUBLIC_KEY, null) == null) {
+    if (properties.get(ENV_MAILJET_PUBLIC_KEY) == null) {
       errors.add("Mailjet Public Key Not Provided...");
     }
-    if (getSystemEnvProperty(ENV_MAILJET_PRIVATE_KEY, null) == null) {
+    if (properties.get(ENV_MAILJET_PRIVATE_KEY) == null) {
       errors.add("Mailjet Private Key Not Provided...");
     }
     if (!errors.isEmpty()) {

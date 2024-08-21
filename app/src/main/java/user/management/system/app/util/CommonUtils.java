@@ -24,12 +24,6 @@ import user.management.system.app.model.dto.ResponseStatusInfo;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
 
-  public static String getSystemEnvProperty(final String keyName, final String defaultValue) {
-    final String envProperty =
-        System.getProperty(keyName) != null ? System.getProperty(keyName) : System.getenv(keyName);
-    return envProperty == null ? defaultValue : envProperty;
-  }
-
   public static String getBaseUrlForLinkInEmail(final HttpServletRequest request) {
     final String scheme = request.getScheme();
     final String serverName = request.getServerName();

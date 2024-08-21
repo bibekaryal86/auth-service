@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
-import reactor.netty.tcp.TcpClient;
 import user.management.system.app.util.InterceptorLoggingUtilsOutgoing;
 
 @Configuration
@@ -19,8 +18,8 @@ public class WebClientConfig {
 
   @Bean("webClient")
   public WebClient webClient() {
-    TcpClient tcpClient =
-        TcpClient.create(ConnectionProvider.create("fixed"))
+    final HttpClient httpClient =
+        HttpClient.create(ConnectionProvider.create("fixed"))
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
             .doOnConnected(
                 connection ->
@@ -28,9 +27,7 @@ public class WebClientConfig {
                         .addHandlerLast(new ReadTimeoutHandler(15))
                         .addHandlerLast(new WriteTimeoutHandler(15)));
 
-    HttpClient httpClient = HttpClient.from(tcpClient);
-
-    ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+    final ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
     return WebClient.builder()
         .clientConnector(connector)
