@@ -24,8 +24,6 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> In authenv_service add a map object for appId <-> redirectUrl
-        -> then use that redirectUrl in stead of redirectUrl in AppUserNoAuthController
     -> Update check permission
         -> users only allowed to read and update their own user entity
     -> No more 24 hours JWT, use refresh tokens
