@@ -30,3 +30,4 @@ Remaining (thoughts)
     -> Audits
     -> Swagger Documentation
     -> Unit and Integration tests
+    -> Add basic security for no_auth controller

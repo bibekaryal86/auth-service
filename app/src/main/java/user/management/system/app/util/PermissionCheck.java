@@ -45,11 +45,14 @@ public class PermissionCheck {
     boolean isSuperUser =
         authToken.getRoles().stream()
             .anyMatch(authTokenRole -> authTokenRole.getName().equals(APP_ROLE_NAME_SUPERUSER));
-    boolean hasPermission =
-        authToken.getPermissions().stream()
+
+    if (isSuperUser) {
+      return true;
+    }
+
+    return authToken.getPermissions().stream()
             .anyMatch(
                 authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
-    return isSuperUser || hasPermission;
   }
 
   // TODO user should be able to update their own user entities
