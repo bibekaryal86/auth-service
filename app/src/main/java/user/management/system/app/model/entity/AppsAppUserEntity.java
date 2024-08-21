@@ -28,7 +28,7 @@ public class AppsAppUserEntity {
   @JoinColumn(name = "app_id", nullable = false)
   private AppsEntity app;
 
-  @MapsId("appUserId")
+  @MapsId("userId")
   @ManyToOne
   @JoinColumn(name = "app_user_id", nullable = false)
   private AppUserEntity appUser;

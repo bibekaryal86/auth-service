@@ -26,11 +26,19 @@ public class SecurityConfig {
     http.csrf(
             csrf ->
                 csrf.ignoringRequestMatchers(
-                    "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/na_app_users/**", "/tests/**"))
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/api/v1/na_app_users/**",
+                    "/tests/**",
+                    "/actuator/**"))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
-                        "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/na_app_users/**", "/tests/**")
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api/v1/na_app_users/**",
+                        "/tests/**",
+                        "/actuator/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
