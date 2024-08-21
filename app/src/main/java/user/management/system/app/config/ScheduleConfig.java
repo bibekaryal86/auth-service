@@ -22,7 +22,7 @@ public class ScheduleConfig {
   private final AppsService appsService;
   private final AppRoleService appRoleService;
 
-  @Scheduled(cron = "0 0 0 * * *")
+  @Scheduled(cron = "0 3 0 * * *")
   protected void putAllCache() throws InterruptedException {
     log.info("Recreating app caches...");
     cacheManager

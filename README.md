@@ -24,10 +24,9 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> Update check permission
-        -> users only allowed to read and update their own user entity
+    -> Add basic security to AuthenvServiceConnector
+    -> Add basic security to no_auth controller
     -> No more 24 hours JWT, use refresh tokens
     -> Audits
     -> Swagger Documentation
     -> Unit and Integration tests
-    -> Add basic security for no_auth controller
