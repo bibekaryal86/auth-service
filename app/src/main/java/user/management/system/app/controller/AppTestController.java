@@ -48,7 +48,7 @@ public class AppTestController {
   @GetMapping(value = "/tests/reset", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
       summary = "Reset Caches",
-      description = "Recreates application caches",
+      description = "Clears application caches",
       tags = {"App Test Controller"})
   @ApiResponses(
       value = {
