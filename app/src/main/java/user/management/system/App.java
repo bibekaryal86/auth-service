@@ -35,10 +35,10 @@ public class App {
 
   private static void validateInitArgs() {
     Map<String, String> properties = getAllSystemEnvProperties();
-    List<String> requiredEnvProperties = ENV_KEY_NAMES.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
-    List<String> errors = requiredEnvProperties.stream()
-            .filter(key -> properties.get(key) == null)
-            .toList();
+    List<String> requiredEnvProperties =
+        ENV_KEY_NAMES.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
+    List<String> errors =
+        requiredEnvProperties.stream().filter(key -> properties.get(key) == null).toList();
     if (!errors.isEmpty()) {
       throw new IllegalStateException(
           "One or more environment configurations could not be accessed...");

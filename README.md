@@ -24,7 +24,6 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> Add basic security to AuthenvServiceConnector
     -> Add basic security to no_auth controller
     -> No more 24 hours JWT, use refresh tokens
     -> Audits
