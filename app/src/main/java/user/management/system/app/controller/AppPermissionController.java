@@ -20,9 +20,7 @@ import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.service.AppPermissionService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
-@Tag(
-    name = "App Permissions Controller",
-    description = "Create, View and Manage App User Permissions")
+@Tag(name = "Permissions Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_permissions")

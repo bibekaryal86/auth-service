@@ -20,7 +20,7 @@ import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppsService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
-@Tag(name = "Apps Controller", description = "Create, View and Manage Apps")
+@Tag(name = "Apps Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/apps")

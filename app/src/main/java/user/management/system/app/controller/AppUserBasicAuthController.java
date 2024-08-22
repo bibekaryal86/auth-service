@@ -34,7 +34,7 @@ import user.management.system.app.service.AppsService;
 import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
-@Tag(name = "App User Controller", description = "View and Manage App Users")
+@Tag(name = "Users Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/basic_app_users/user")

@@ -23,7 +23,7 @@ import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 import user.management.system.app.util.PermissionCheck;
 
-@Tag(name = "App User Controller", description = "View and Manage App Users")
+@Tag(name = "Users Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users")

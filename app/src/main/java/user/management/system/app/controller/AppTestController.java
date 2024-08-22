@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "App Test Controller", description = "Some miscellaneous tests for application")
+@Tag(name = "Tests")
 @RestController
 public class AppTestController {
 
@@ -26,10 +27,7 @@ public class AppTestController {
 
   @CrossOrigin
   @GetMapping(value = "/tests/ping", produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(
-      summary = "Ping test",
-      description = "Returns a successful ping response",
-      tags = {"App Test Controller"})
+  @Operation(summary = "Ping test", description = "Returns a successful ping response")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -49,7 +47,7 @@ public class AppTestController {
   @Operation(
       summary = "Reset Caches",
       description = "Clears application caches",
-      tags = {"App Test Controller"})
+      security = {@SecurityRequirement(name = "Basic")})
   @ApiResponses(
       value = {
         @ApiResponse(

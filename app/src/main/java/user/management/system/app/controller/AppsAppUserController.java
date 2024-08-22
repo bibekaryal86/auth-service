@@ -18,9 +18,7 @@ import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
-@Tag(
-    name = "App Apps App User Controller",
-    description = "View, Assign and Unassign users from apps")
+@Tag(name = "Apps Users Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/apps_app_user")

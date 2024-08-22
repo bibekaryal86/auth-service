@@ -18,7 +18,7 @@ import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.service.AppUserRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
-@Tag(name = "App User Role Controller", description = "View, Assign and Unassign roles from users")
+@Tag(name = "Users Roles Management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users_roles")
