@@ -30,11 +30,7 @@ import user.management.system.app.service.AppUserService;
 public class SecurityConfig {
 
   private final AppUserService appUserService;
-
-  @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
-    return new BCryptPasswordEncoder(12);
-  }
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   @Bean
   @Order(1)
@@ -81,7 +77,7 @@ public class SecurityConfig {
     UserDetails user =
         User.builder()
             .username(getSystemEnvProperty(ENV_SELF_USERNAME))
-            .password(bCryptPasswordEncoder().encode(getSystemEnvProperty(ENV_SELF_PASSWORD)))
+            .password(bCryptPasswordEncoder.encode(getSystemEnvProperty(ENV_SELF_PASSWORD)))
             .roles("")
             .build();
     return new InMemoryUserDetailsManager(user);
