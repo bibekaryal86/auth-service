@@ -7,22 +7,12 @@
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
 
 
-user, user_address
-    superuser - CRUD
-    others - can only view/update their own
-roles
-    superuser - CRUD
-    poweruser - R
-permissions
-    superuser - CRUD
-    poweruser - R
-
-
-ResponseCrudInfo and ResponsePageInfo need to be implemented
-    ResponsePageInfo requires RequestMetadata implemented
-        Do it at last, for users and permissions
-
-
 Remaining (thoughts)
+    -> Test addresses
+        -> How does updating it work
+        -> How does deleting it work
     -> Audits
+    -> Implement ResponseCrudInfo and ResponsePageInfo
+        -> ResponseCrudInfo for all
+        -> ResponsePageInfo and RequestMetadata for Users and Permissions
     -> Unit and Integration tests

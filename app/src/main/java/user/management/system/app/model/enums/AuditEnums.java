@@ -4,7 +4,9 @@ public class AuditEnums {
   public enum AuditUsers {
     CREATE_USER,
     UPDATE_USER,
-    DELETE_USER,
+    SOFT_DELETE_USER,
+    HARD_DELETE_USER,
+    RESTORE_USER,
     ASSIGN_ROLE,
     UNASSIGN_ROLE,
     ASSIGN_APP,
@@ -28,14 +30,26 @@ public class AuditEnums {
   public enum AuditRoles {
     CREATE_ROLE,
     UPDATE_ROLE,
-    DELETE_ROLE,
-    ASSIGN_PERMISSION,
-    UNASSIGN_PERMISSION
+    SOFT_DELETE_ROLE,
+    HARD_DELETE_ROLE,
+    RESTORE_ROLE
   }
 
   public enum AuditPermissions {
     CREATE_PERMISSION,
     UPDATE_PERMISSION,
-    DELETE_PERMISSION
+    SOFT_DELETE_PERMISSION,
+    HARD_DELETE_PERMISSION,
+    RESTORE_PERMISSION,
+    ASSIGN_ROLE,
+    UNASSIGN_ROLE
+  }
+
+  public enum AuditApps {
+    CREATE_APP,
+    UPDATE_APP,
+    SOFT_DELETE_APP,
+    HARD_DELETE_APP,
+    RESTORE_APP
   }
 }
