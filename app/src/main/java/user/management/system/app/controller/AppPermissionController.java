@@ -1,5 +1,11 @@
 package user.management.system.app.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +35,57 @@ public class AppPermissionController {
   private final AppPermissionService appPermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
+  @Operation(
+      summary = "Create a new permission for an application",
+      description = "Creates a new permission for the specified application ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(
+            name = "appId",
+            description = "ID of the application for which the permission is created",
+            required = true)
+      },
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Details of the permission to create",
+              content = @Content(schema = @Schema(implementation = AppPermissionRequest.class))),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission created successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_CREATE")
   @PostMapping("/{appId}/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
@@ -43,6 +100,40 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Get all permissions",
+      description = "Retrieves all permissions available in the system",
+      security = @SecurityRequirement(name = "Token"),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permissions retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_READ")
   @GetMapping
   public ResponseEntity<AppPermissionResponse> readAppPermissions() {
@@ -55,6 +146,46 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Get permissions by application ID",
+      description = "Retrieves all permissions associated with the specified application ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(
+            name = "appId",
+            description = "ID of the application for which permissions are retrieved",
+            required = true)
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permissions retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_READ")
   @GetMapping("/app/{appId}")
   public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(
@@ -68,6 +199,50 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Get permission by ID",
+      description = "Retrieves a specific permission by its unique ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(name = "id", description = "ID of the permission to retrieve", required = true)
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found - Permission Not Found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_READ")
   @GetMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
@@ -79,6 +254,55 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Update a permission by ID",
+      description = "Updates an existing permission identified by its unique ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(name = "id", description = "ID of the permission to update", required = true)
+      },
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Details of the permission to update",
+              required = true,
+              content = @Content(schema = @Schema(implementation = AppPermissionRequest.class))),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found - Permission Not Found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_UPDATE")
   @PutMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
@@ -92,6 +316,54 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Soft delete a permission by ID",
+      description =
+          "Marks a permission as deleted without permanently removing it, identified by its unique ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(
+            name = "id",
+            description = "ID of the permission to soft delete",
+            required = true)
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission soft deleted successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found - Permission Not Found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("PERMISSION_DELETE")
   @DeleteMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(@PathVariable final int id) {
@@ -103,6 +375,53 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Hard delete a permission by ID",
+      description = "Permanently removes a permission identified by its unique ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(
+            name = "id",
+            description = "ID of the permission to hard delete",
+            required = true)
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission hard deleted successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found - Permission Not Found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/permission/{id}/hard")
   public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
@@ -114,6 +433,51 @@ public class AppPermissionController {
     }
   }
 
+  @Operation(
+      summary = "Restore a soft-deleted permission by ID",
+      description =
+          "Restores a permission that was previously soft-deleted, identified by its unique ID",
+      security = @SecurityRequirement(name = "Token"),
+      parameters = {
+        @Parameter(name = "id", description = "ID of the permission to restore", required = true)
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Permission restored successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - User Not Authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - User Forbidden or Not Validated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found - Permission Not Found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error - Other Errors",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppPermissionResponse.class)))
+      })
   @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/permission/{id}/restore")
   public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
