@@ -20,7 +20,9 @@ public class AuditEnums {
     USER_RESET_INIT,
     USER_RESET_MID,
     USER_RESET_EXIT,
-    USER_RESET_ERROR
+    USER_RESET_ERROR,
+    TOKEN_REFRESH,
+    TOKEN_REFRESH_ERROR
   }
 
   public enum AuditRoles {
