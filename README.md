@@ -24,7 +24,6 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 
 
 Remaining (thoughts)
-    -> No more 24 hours JWT, use refresh tokens
     -> Audits
     -> Swagger Documentation
     -> Unit and Integration tests
