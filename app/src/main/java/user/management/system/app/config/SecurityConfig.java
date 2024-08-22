@@ -78,7 +78,6 @@ public class SecurityConfig {
         User.builder()
             .username(getSystemEnvProperty(ENV_SELF_USERNAME))
             .password(bCryptPasswordEncoder.encode(getSystemEnvProperty(ENV_SELF_PASSWORD)))
-            .roles("")
             .build();
     return new InMemoryUserDetailsManager(user);
   }
