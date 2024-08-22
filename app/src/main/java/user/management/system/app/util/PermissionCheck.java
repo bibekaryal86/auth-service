@@ -65,7 +65,7 @@ public class PermissionCheck {
     }
 
     try {
-      AuthToken authToken = (AuthToken) authentication.getPrincipal();
+      AuthToken authToken = (AuthToken) authentication.getCredentials();
 
       boolean isPermitted =
           Objects.equals(email, authToken.getUser().getEmail())
