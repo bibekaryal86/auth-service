@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppsAppUserRequest;
 import user.management.system.app.model.dto.AppsAppUserResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -28,6 +31,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/apps_app_user")
+@Validated
 public class AppsAppUserController {
 
   private final AppsAppUserService appsAppUserService;
@@ -49,6 +53,13 @@ public class AppsAppUserController {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppsAppUserResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -81,7 +92,7 @@ public class AppsAppUserController {
   @CheckPermission("ONLY SUPERUSER CAN ASSIGN USER TO APPS")
   @PostMapping("/apps_user")
   public ResponseEntity<AppsAppUserResponse> createAppAppsAppUser(
-      @RequestBody final AppsAppUserRequest appAppsAppUserRequest) {
+      @Valid @RequestBody final AppsAppUserRequest appAppsAppUserRequest) {
     try {
       final AppsAppUserEntity appAppsAppUserEntity =
           appsAppUserService.createAppsAppUser(appAppsAppUserRequest);

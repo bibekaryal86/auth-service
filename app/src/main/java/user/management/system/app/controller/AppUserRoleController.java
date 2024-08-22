@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppUserRoleRequest;
 import user.management.system.app.model.dto.AppUserRoleResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.service.AppUserRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -28,6 +31,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users_roles")
+@Validated
 public class AppUserRoleController {
 
   private final AppUserRoleService appUserRoleService;
@@ -49,6 +53,13 @@ public class AppUserRoleController {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppUserRoleResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -81,7 +92,7 @@ public class AppUserRoleController {
   @CheckPermission("USER_ROLE_ASSIGN")
   @PostMapping("/user_role")
   public ResponseEntity<AppUserRoleResponse> createAppUserRole(
-      @RequestBody final AppUserRoleRequest appUserRoleRequest) {
+      @Valid @RequestBody final AppUserRoleRequest appUserRoleRequest) {
     try {
       final AppUserRoleEntity appUserRoleEntity =
           appUserRoleService.createAppUserRole(appUserRoleRequest);

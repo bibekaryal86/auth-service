@@ -1,6 +1,7 @@
 package user.management.system.app.controller;
 
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
+import static user.management.system.app.util.JwtUtils.decodeAuthCredentials;
 import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,9 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import user.management.system.app.exception.ElementMissingException;
+import user.management.system.app.exception.JwtInvalidException;
 import user.management.system.app.model.dto.AppTokenRequest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
@@ -32,6 +40,7 @@ import user.management.system.app.model.entity.AppTokenEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
+import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.service.AppTokenService;
 import user.management.system.app.service.AppUserPasswordService;
 import user.management.system.app.service.AppUserService;
@@ -44,6 +53,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/basic_app_users/user")
+@Validated
 public class AppUserBasicAuthController {
 
   private final AppUserService appUserService;
@@ -83,7 +93,7 @@ public class AppUserBasicAuthController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = AppUserResponse.class))),
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - Missing/Incorrect credentials",
@@ -116,7 +126,7 @@ public class AppUserBasicAuthController {
   @PostMapping("/{appId}/create")
   public ResponseEntity<AppUserResponse> createAppUser(
       @PathVariable final String appId,
-      @RequestBody final AppUserRequest appUserRequest,
+      @Valid @RequestBody final AppUserRequest appUserRequest,
       final HttpServletRequest request) {
     try {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
@@ -154,6 +164,13 @@ public class AppUserBasicAuthController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = UserLoginResponse.class))),
         @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - Missing/Incorrect credentials",
             content =
@@ -184,7 +201,8 @@ public class AppUserBasicAuthController {
       })
   @PostMapping("/{appId}/login")
   public ResponseEntity<UserLoginResponse> loginAppUser(
-      @PathVariable final String appId, @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final String appId,
+      @Valid @RequestBody final UserLoginRequest userLoginRequest) {
     try {
       final AppUserEntity appUserEntity = appUserPasswordService.loginUser(appId, userLoginRequest);
       final AppUserDto appUserDto =
@@ -261,8 +279,27 @@ public class AppUserBasicAuthController {
   public ResponseEntity<UserLoginResponse> refreshToken(
       @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
     try {
+      if (!StringUtils.hasText(appTokenRequest.getRefreshToken())) {
+        throw new ElementMissingException("Token", "Refresh");
+      }
+
+      Map<String, AuthToken> emailAuthToken =
+          decodeAuthCredentials(appTokenRequest.getRefreshToken());
+      Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
+      String email = firstEntry.getKey();
+      AuthToken authToken = firstEntry.getValue();
+
       final AppTokenEntity appTokenEntity =
           appTokenService.readTokenByRefreshToken(appTokenRequest.getRefreshToken());
+
+      if (!Objects.equals(email, appTokenEntity.getUser().getEmail())) {
+        throw new JwtInvalidException("Identity Mismatch");
+      }
+
+      if (!Objects.equals(appId, authToken.getAppId())) {
+        throw new JwtInvalidException("App Mismatch");
+      }
+
       final AppUserDto appUserDto =
           entityDtoConvertUtils.convertEntityToDtoAppUser(appTokenEntity.getUser(), true);
       final String newAccessToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 15); // 15 min
@@ -342,8 +379,27 @@ public class AppUserBasicAuthController {
   public ResponseEntity<ResponseStatusInfo> logout(
       @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
     try {
+      if (!StringUtils.hasText(appTokenRequest.getAccessToken())) {
+        throw new ElementMissingException("Token", "Access");
+      }
+
+      Map<String, AuthToken> emailAuthToken =
+          decodeAuthCredentials(appTokenRequest.getRefreshToken());
+      Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
+      String email = firstEntry.getKey();
+      AuthToken authToken = firstEntry.getValue();
+
       final AppTokenEntity appTokenEntity =
           appTokenService.readTokenByAccessToken(appTokenRequest.getAccessToken());
+
+      if (!Objects.equals(email, appTokenEntity.getUser().getEmail())) {
+        throw new JwtInvalidException("Identity Mismatch");
+      }
+
+      if (!Objects.equals(appId, authToken.getAppId())) {
+        throw new JwtInvalidException("App Mismatch");
+      }
+
       appTokenService.saveToken(
           appTokenEntity.getId(),
           LocalDateTime.now(),

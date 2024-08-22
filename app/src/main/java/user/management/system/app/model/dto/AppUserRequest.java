@@ -1,14 +1,23 @@
 package user.management.system.app.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
 
 public class AppUserRequest {
+  @NotBlank(message = "First Name is required")
   private String firstName;
+
+  @NotBlank(message = "Last Name is required")
   private String lastName;
+
+  @NotBlank(message = "Email is required")
   private String email;
+
   private String phone;
   private String password;
+
+  @NotBlank(message = "Status is required")
   private String status;
 
   private boolean guestUser;

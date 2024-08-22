@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
@@ -33,6 +36,7 @@ import user.management.system.app.util.PermissionCheck;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users")
+@Validated
 public class AppUserController {
 
   private final AppUserService appUserService;
@@ -269,6 +273,13 @@ public class AppUserController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppUserResponse.class))),
         @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authenticated",
             content =
@@ -299,7 +310,7 @@ public class AppUserController {
       })
   @PutMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> updateAppUser(
-      @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
+      @PathVariable final int id, @Valid @RequestBody final AppUserRequest appUserRequest) {
     try {
       permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
@@ -360,7 +371,7 @@ public class AppUserController {
       })
   @PutMapping("/user/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
-      @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final int id, @Valid @RequestBody final UserLoginRequest userLoginRequest) {
     try {
       permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity =

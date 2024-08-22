@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppRolePermissionRequest;
 import user.management.system.app.model.dto.AppRolePermissionResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -28,6 +31,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_roles_permissions")
+@Validated
 public class AppRolePermissionController {
 
   private final AppRolePermissionService appRolePermissionService;
@@ -50,6 +54,13 @@ public class AppRolePermissionController {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppRolePermissionResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -82,7 +93,7 @@ public class AppRolePermissionController {
   @CheckPermission("ROLE_PERMISSION_ASSIGN")
   @PostMapping("/role_permission")
   public ResponseEntity<AppRolePermissionResponse> createAppRolePermission(
-      @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
+      @Valid @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
     try {
       final AppRolePermissionEntity appRolePermissionEntity =
           appRolePermissionService.createAppRolePermission(appRolePermissionRequest);

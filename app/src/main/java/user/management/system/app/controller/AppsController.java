@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppsRequest;
 import user.management.system.app.model.dto.AppsResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppsService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -30,6 +33,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/apps")
+@Validated
 public class AppsController {
 
   private final AppsService appsService;
@@ -57,7 +61,7 @@ public class AppsController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = AppsResponse.class))),
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -82,7 +86,7 @@ public class AppsController {
       })
   @CheckPermission("ONLY SUPERUSER CAN CREATE APP")
   @PostMapping("/app")
-  public ResponseEntity<AppsResponse> createApp(@RequestBody final AppsRequest appsRequest) {
+  public ResponseEntity<AppsResponse> createApp(@Valid @RequestBody final AppsRequest appsRequest) {
     try {
       final AppsEntity appsEntity = appsService.createApp(appsRequest);
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
@@ -212,6 +216,13 @@ public class AppsController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppsResponse.class))),
         @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
             content =
@@ -243,7 +254,7 @@ public class AppsController {
   @CheckPermission("ONLY SUPERUSER CAN UPDATE APP")
   @PutMapping("/app/{id}")
   public ResponseEntity<AppsResponse> updateApp(
-      @PathVariable final String id, @RequestBody final AppsRequest appsRequest) {
+      @PathVariable final String id, @Valid @RequestBody final AppsRequest appsRequest) {
     try {
       final AppsEntity appsEntity = appsService.updateApps(id, appsRequest);
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);

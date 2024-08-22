@@ -26,5 +26,3 @@ ResponseCrudInfo and ResponsePageInfo need to be implemented
 Remaining (thoughts)
     -> Audits
     -> Unit and Integration tests
-    -> Add validation
-        -> @NonNull or @NonEmpty etc

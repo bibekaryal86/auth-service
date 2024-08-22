@@ -1,6 +1,7 @@
 package user.management.system.app.filter;
 
 import static user.management.system.app.util.CommonUtils.convertResponseStatusInfoToJson;
+import static user.management.system.app.util.JwtUtils.decodeAuthCredentials;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +23,6 @@ import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.service.AppUserService;
-import user.management.system.app.util.JwtUtils;
 
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -41,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       String token = authorizationHeader.substring(7);
 
       try {
-        Map<String, AuthToken> emailAuthToken = JwtUtils.decodeAuthCredentials(token);
+        Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(token);
 
         if (emailAuthToken.size() != 1) {
           sendUnauthorizedResponse(response, "Malformed Auth Token");

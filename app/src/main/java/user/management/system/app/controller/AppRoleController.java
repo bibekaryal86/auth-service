@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppRoleRequest;
 import user.management.system.app.model.dto.AppRoleResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.service.AppRoleService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -30,6 +33,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_roles")
+@Validated
 public class AppRoleController {
 
   private final AppRoleService appRoleService;
@@ -57,7 +61,7 @@ public class AppRoleController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = AppRoleResponse.class))),
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -83,7 +87,7 @@ public class AppRoleController {
   @CheckPermission("ROLE_CREATE")
   @PostMapping("/role")
   public ResponseEntity<AppRoleResponse> createAppRole(
-      @RequestBody final AppRoleRequest appRoleRequest) {
+      @Valid @RequestBody final AppRoleRequest appRoleRequest) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.createAppRole(appRoleRequest);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
@@ -213,6 +217,13 @@ public class AppRoleController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppRoleResponse.class))),
         @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
             content =
@@ -244,7 +255,7 @@ public class AppRoleController {
   @CheckPermission("ROLE_UPDATE")
   @PutMapping("/role/{id}")
   public ResponseEntity<AppRoleResponse> updateAppRole(
-      @PathVariable final int id, @RequestBody final AppRoleRequest appRoleRequest) {
+      @PathVariable final int id, @Valid @RequestBody final AppRoleRequest appRoleRequest) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.updateAppRole(id, appRoleRequest);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);

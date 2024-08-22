@@ -16,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotActiveException;
 import user.management.system.app.exception.ElementNotFoundException;
+import user.management.system.app.exception.JwtInvalidException;
 import user.management.system.app.exception.UserForbiddenException;
 import user.management.system.app.exception.UserNotActiveException;
 import user.management.system.app.exception.UserNotAuthorizedException;
@@ -53,7 +54,8 @@ public class CommonUtils {
         || exception instanceof ElementNotActiveException
         || exception instanceof UserNotActiveException) {
       return FORBIDDEN;
-    } else if (exception instanceof UserNotAuthorizedException) {
+    } else if (exception instanceof UserNotAuthorizedException
+        || exception instanceof JwtInvalidException) {
       return UNAUTHORIZED;
     } else {
       return INTERNAL_SERVER_ERROR;

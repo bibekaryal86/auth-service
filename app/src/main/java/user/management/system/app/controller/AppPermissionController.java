@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppPermissionRequest;
 import user.management.system.app.model.dto.AppPermissionResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.service.AppPermissionService;
 import user.management.system.app.util.EntityDtoConvertUtils;
@@ -30,6 +33,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_permissions")
+@Validated
 public class AppPermissionController {
 
   private final AppPermissionService appPermissionService;
@@ -63,7 +67,7 @@ public class AppPermissionController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = AppPermissionResponse.class))),
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
@@ -90,7 +94,7 @@ public class AppPermissionController {
   @PostMapping("/{appId}/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
       @PathVariable final String appId,
-      @RequestBody final AppPermissionRequest appPermissionRequest) {
+      @Valid @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.createAppPermission(appId, appPermissionRequest);
@@ -275,6 +279,13 @@ public class AppPermissionController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = AppPermissionResponse.class))),
         @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request - Required Element Missing",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseStatusInfo.class))),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - User Not Authorized",
             content =
@@ -306,7 +317,8 @@ public class AppPermissionController {
   @CheckPermission("PERMISSION_UPDATE")
   @PutMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
-      @PathVariable final int id, @RequestBody final AppPermissionRequest appPermissionRequest) {
+      @PathVariable final int id,
+      @Valid @RequestBody final AppPermissionRequest appPermissionRequest) {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.updateAppPermission(id, appPermissionRequest);
