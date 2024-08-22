@@ -573,10 +573,11 @@ public class EntityDtoConvertUtils {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
     final ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(new UserLoginResponse(null, null, responseStatusInfo), httpStatus);
+    return new ResponseEntity<>(
+        new UserLoginResponse(null, null, null, responseStatusInfo), httpStatus);
   }
 
-  public ResponseEntity<ResponseStatusInfo> getResponseErrorValidateReset(
+  public ResponseEntity<ResponseStatusInfo> getResponseErrorResponseStatusInfo(
       final Exception exception) {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
     final ResponseStatusInfo responseStatusInfo =

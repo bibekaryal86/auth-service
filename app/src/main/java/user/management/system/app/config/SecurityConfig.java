@@ -5,6 +5,7 @@ import static user.management.system.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static user.management.system.app.util.ConstantUtils.ENV_SELF_USERNAME;
 import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -21,10 +22,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import user.management.system.app.exception.handler.CustomAccessDeniedHandler;
 import user.management.system.app.exception.handler.CustomAuthenticationEntrypoint;
 import user.management.system.app.filter.JwtAuthFilter;
+import user.management.system.app.service.AppUserService;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final AppUserService appUserService;
 
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -59,7 +64,8 @@ public class SecurityConfig {
   public SecurityFilterChain bearerAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-        .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            new JwtAuthFilter(appUserService), UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(

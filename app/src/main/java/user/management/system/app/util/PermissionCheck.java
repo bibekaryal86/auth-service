@@ -19,8 +19,8 @@ public class PermissionCheck {
 
   @Before("@annotation(checkPermission)")
   public void checkPermission(final CheckPermission checkPermission) {
-    String[] requiredPermissions = checkPermission.value();
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    final String[] requiredPermissions = checkPermission.value();
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication == null
         || authentication.getPrincipal() == null
@@ -29,13 +29,12 @@ public class PermissionCheck {
     }
 
     try {
-      AuthToken authToken = (AuthToken) authentication.getPrincipal();
-      boolean isPermitted = checkUserPermission(authToken, List.of(requiredPermissions));
+      final AuthToken authToken = (AuthToken) authentication.getCredentials();
+      final boolean isPermitted = checkUserPermission(authToken, List.of(requiredPermissions));
 
       if (!isPermitted) {
         throw new CheckPermissionException("User does not have required permissions...");
       }
-
     } catch (Exception ex) {
       throw new CheckPermissionException(ex.getMessage());
     }

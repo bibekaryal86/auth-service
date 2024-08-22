@@ -5,6 +5,7 @@ import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,16 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import user.management.system.app.connector.AuthenvServiceConnector;
+import user.management.system.app.model.dto.AppTokenRequest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.dto.UserLoginResponse;
+import user.management.system.app.model.entity.AppTokenEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
+import user.management.system.app.service.AppTokenService;
 import user.management.system.app.service.AppUserPasswordService;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.AppsAppUserService;
@@ -43,7 +46,7 @@ public class AppUserBasicAuthController {
   private final AppUserPasswordService appUserPasswordService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
-  private final AuthenvServiceConnector authenvServiceConnector;
+  private final AppTokenService appTokenService;
 
   @PostMapping("/{appId}/create")
   public ResponseEntity<AppUserResponse> createAppUser(
@@ -68,10 +71,65 @@ public class AppUserBasicAuthController {
       final AppUserEntity appUserEntity = appUserPasswordService.loginUser(appId, userLoginRequest);
       final AppUserDto appUserDto =
           entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
-      final String token = encodeAuthCredentials(appUserDto);
-      return ResponseEntity.ok(UserLoginResponse.builder().token(token).user(appUserDto).build());
+      final String accessToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 15); // 15 min
+      final String refreshToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24); // 1 day
+      final AppTokenEntity appTokenEntity =
+          appTokenService.saveToken(null, null, appUserEntity, accessToken, refreshToken);
+      return ResponseEntity.ok(
+          UserLoginResponse.builder()
+              .aToken(appTokenEntity.getAccessToken())
+              .rToken(appTokenEntity.getRefreshToken())
+              .user(appUserDto)
+              .build());
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
+    }
+  }
+
+  @PostMapping("/{appId}/refresh")
+  public ResponseEntity<UserLoginResponse> refreshToken(
+      @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
+    try {
+      final AppTokenEntity appTokenEntity =
+          appTokenService.readTokenByRefreshToken(appTokenRequest.getRefreshToken());
+      final AppUserDto appUserDto =
+          entityDtoConvertUtils.convertEntityToDtoAppUser(appTokenEntity.getUser(), true);
+      final String newAccessToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 15); // 15 min
+      final String newRefreshToken =
+          encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24); // 1 day
+      final AppTokenEntity newAppTokenEntity =
+          appTokenService.saveToken(
+              appTokenEntity.getId(),
+              null,
+              appTokenEntity.getUser(),
+              newAccessToken,
+              newRefreshToken);
+      return ResponseEntity.ok(
+          UserLoginResponse.builder()
+              .aToken(newAppTokenEntity.getAccessToken())
+              .rToken(newAppTokenEntity.getRefreshToken())
+              .user(appUserDto)
+              .build());
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
+    }
+  }
+
+  @PostMapping("/{appId}/logout")
+  public ResponseEntity<ResponseStatusInfo> logout(
+      @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
+    try {
+      final AppTokenEntity appTokenEntity =
+          appTokenService.readTokenByAccessToken(appTokenRequest.getAccessToken());
+      appTokenService.saveToken(
+          appTokenEntity.getId(),
+          LocalDateTime.now(),
+          appTokenEntity.getUser(),
+          appTokenEntity.getAccessToken(),
+          appTokenEntity.getRefreshToken());
+      return ResponseEntity.noContent().build();
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
 
@@ -82,7 +140,7 @@ public class AppUserBasicAuthController {
       appUserPasswordService.resetUser(appId, userLoginRequest);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
+      return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
 
@@ -98,7 +156,7 @@ public class AppUserBasicAuthController {
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
+      return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
 
@@ -114,7 +172,7 @@ public class AppUserBasicAuthController {
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorValidateReset(ex);
+      return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
 }
