@@ -230,13 +230,13 @@ INSERT INTO app_role (name, description)
 VALUES ('GUEST', 'USER HAS VIEW ONLY ACCESS, NO REF DATA');
 
 INSERT INTO app_role_permission (app_role_id, app_permission_id)
-VALUES (2, 2); -- POWERUSER, PERMISSION_READ
+VALUES (2, 2);  -- POWERUSER, PERMISSION_READ
 INSERT INTO app_role_permission (app_role_id, app_permission_id)
-VALUES (2, 6); -- POWERUSER, ROLE_READ
+VALUES (2, 6);  -- POWERUSER, ROLE_READ
 INSERT INTO app_role_permission (app_role_id, app_permission_id)
-VALUES (2, 12);
--- POWERUSER, USER_READ
+VALUES (2, 12); -- POWERUSER, USER_READ
 
+-- DROP TABLE public.audit_apps CASCADE;
 -- DROP TABLE public.audit_app_user CASCADE;
 -- DROP TABLE public.audit_app_role CASCADE;
 -- DROP TABLE public.audit_app_permission CASCADE;
@@ -244,6 +244,8 @@ VALUES (2, 12);
 -- DROP TABLE public.app_user_role CASCADE;
 -- DROP TABLE public.app_permission CASCADE;
 -- DROP TABLE public.app_role CASCADE;
+-- DROP TABLE public.app_token CASCADE;
+-- DROP TABLE public.app_user_app CASCADE;
 -- DROP TABLE public.app_user_address CASCADE;
 -- DROP TABLE public.app_user CASCADE;
 -- DROP TABLE public.apps CASCADE;
