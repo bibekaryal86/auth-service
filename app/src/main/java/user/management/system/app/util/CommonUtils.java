@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static user.management.system.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 
@@ -53,7 +52,7 @@ public class CommonUtils {
     } else if (exception instanceof UserNotAuthorizedException) {
       return UNAUTHORIZED;
     } else {
-      return SERVICE_UNAVAILABLE;
+      return INTERNAL_SERVER_ERROR;
     }
   }
 
