@@ -34,18 +34,33 @@ public class AppUserController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final PermissionCheck permissionCheck;
 
-  @CheckPermission("USER READ")
   @GetMapping
   public ResponseEntity<AppUserResponse> readAppUsers() {
     try {
       final List<AppUserEntity> appUserEntities = appUserService.readAppUsers();
-      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+      final List<AppUserEntity> filteredAppUserEntities =
+          permissionCheck.filterAppUserListByAccess(appUserEntities);
+      return entityDtoConvertUtils.getResponseMultipleAppUser(filteredAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
 
-  @CheckPermission("USER_READ")
+  @GetMapping("/{appId}")
+  public ResponseEntity<AppUserResponse> readAppUsers(@PathVariable final String appId) {
+    try {
+      final List<AppsAppUserEntity> appsAppUserEntities =
+          appsAppUserService.readAppsAppUsers(appId);
+      final List<AppUserEntity> appUserEntities =
+          appsAppUserEntities.stream().map(AppsAppUserEntity::getAppUser).toList();
+      final List<AppUserEntity> filteredAppUserEntities =
+          permissionCheck.filterAppUserListByAccess(appUserEntities);
+      return entityDtoConvertUtils.getResponseMultipleAppUser(filteredAppUserEntities);
+    } catch (Exception ex) {
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
   @GetMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final int id) {
     try {
@@ -57,7 +72,6 @@ public class AppUserController {
     }
   }
 
-  @CheckPermission("USER_READ")
   @GetMapping("/user/email/{email}")
   public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
     try {
@@ -69,21 +83,6 @@ public class AppUserController {
     }
   }
 
-  @CheckPermission("USER READ")
-  @GetMapping("/{appId}")
-  public ResponseEntity<AppUserResponse> readAppUsers(@PathVariable final String appId) {
-    try {
-      final List<AppsAppUserEntity> appsAppUserEntities =
-          appsAppUserService.readAppsAppUsers(appId);
-      final List<AppUserEntity> appUserEntities =
-          appsAppUserEntities.stream().map(AppsAppUserEntity::getAppUser).toList();
-      return entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
-    } catch (Exception ex) {
-      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
-    }
-  }
-
-  @CheckPermission("USER_UPDATE")
   @PutMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> updateAppUser(
       @PathVariable final int id, @RequestBody final AppUserRequest appUserRequest) {
@@ -96,7 +95,6 @@ public class AppUserController {
     }
   }
 
-  @CheckPermission("USER_UPDATE")
   @PutMapping("/user/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
       @PathVariable final int id, @RequestBody final UserLoginRequest userLoginRequest) {

@@ -14,8 +14,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import user.management.system.app.exception.ElementMissingException;
+import user.management.system.app.exception.ElementNotActiveException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.exception.UserForbiddenException;
+import user.management.system.app.exception.UserNotActiveException;
 import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.exception.UserNotValidatedException;
 import user.management.system.app.model.dto.ResponseStatusInfo;
@@ -47,7 +49,9 @@ public class CommonUtils {
     } else if (exception instanceof ElementMissingException) {
       return BAD_REQUEST;
     } else if (exception instanceof UserForbiddenException
-        || exception instanceof UserNotValidatedException) {
+        || exception instanceof UserNotValidatedException
+        || exception instanceof ElementNotActiveException
+        || exception instanceof UserNotActiveException) {
       return FORBIDDEN;
     } else if (exception instanceof UserNotAuthorizedException) {
       return UNAUTHORIZED;

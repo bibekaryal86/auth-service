@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import user.management.system.app.exception.CheckPermissionException;
 import user.management.system.app.model.annotation.CheckPermission;
+import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.token.AuthToken;
 
 @Aspect
@@ -20,13 +21,7 @@ public class PermissionCheck {
   @Before("@annotation(checkPermission)")
   public void checkPermission(final CheckPermission checkPermission) {
     final String[] requiredPermissions = checkPermission.value();
-    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null
-        || authentication.getPrincipal() == null
-        || !authentication.isAuthenticated()) {
-      throw new CheckPermissionException("User not authenticated...");
-    }
+    final Authentication authentication = getAuthentication();
 
     try {
       final AuthToken authToken = (AuthToken) authentication.getCredentials();
@@ -40,11 +35,60 @@ public class PermissionCheck {
     }
   }
 
+  public void canUserAccessAppUser(final String email, final int id) {
+    final Authentication authentication = getAuthentication();
+
+    try {
+      AuthToken authToken = (AuthToken) authentication.getCredentials();
+      boolean isSuperUser = checkSuperUser(authToken);
+      boolean isPermitted = checkPermission(email, id, authToken);
+
+      if (!isSuperUser && !isPermitted) {
+        throw new CheckPermissionException(
+            "User does not have required permissions to user entity...");
+      }
+    } catch (Exception ex) {
+      throw new CheckPermissionException(ex.getMessage());
+    }
+  }
+
+  public List<AppUserEntity> filterAppUserListByAccess(List<AppUserEntity> appUserEntities) {
+    final Authentication authentication = getAuthentication();
+
+    try {
+      AuthToken authToken = (AuthToken) authentication.getCredentials();
+      boolean isSuperUser = checkSuperUser(authToken);
+
+      if (isSuperUser) {
+        return appUserEntities;
+      }
+
+      return appUserEntities.stream()
+          .filter(
+              appUserEntity ->
+                  Objects.equals(appUserEntity.getEmail(), authToken.getUser().getEmail())
+                      || Objects.equals(appUserEntity.getId(), authToken.getUser().getId()))
+          .toList();
+    } catch (Exception ex) {
+      throw new CheckPermissionException(ex.getMessage());
+    }
+  }
+
+  private Authentication getAuthentication() {
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null
+        || authentication.getPrincipal() == null
+        || !authentication.isAuthenticated()) {
+      throw new CheckPermissionException("User not authenticated...");
+    }
+
+    return authentication;
+  }
+
   private boolean checkUserPermission(
       final AuthToken authToken, final List<String> requiredPermissions) {
-    boolean isSuperUser =
-        authToken.getRoles().stream()
-            .anyMatch(authTokenRole -> authTokenRole.getName().equals(APP_ROLE_NAME_SUPERUSER));
+    boolean isSuperUser = checkSuperUser(authToken);
 
     if (isSuperUser) {
       return true;
@@ -55,28 +99,13 @@ public class PermissionCheck {
             authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
   }
 
-  public void canUserAccessAppUser(final String email, final int id) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  private boolean checkSuperUser(final AuthToken authToken) {
+    return authToken.getRoles().stream()
+        .anyMatch(authTokenRole -> authTokenRole.getName().equals(APP_ROLE_NAME_SUPERUSER));
+  }
 
-    if (authentication == null
-        || authentication.getPrincipal() == null
-        || !authentication.isAuthenticated()) {
-      throw new CheckPermissionException("User not authenticated...");
-    }
-
-    try {
-      AuthToken authToken = (AuthToken) authentication.getCredentials();
-
-      boolean isPermitted =
-          Objects.equals(email, authToken.getUser().getEmail())
-              || Objects.equals(id, authToken.getUser().getId());
-
-      if (!isPermitted) {
-        throw new CheckPermissionException(
-            "User does not have required permissions to user entity...");
-      }
-    } catch (Exception ex) {
-      throw new CheckPermissionException(ex.getMessage());
-    }
+  private boolean checkPermission(final String email, final int id, final AuthToken authToken) {
+    return Objects.equals(email, authToken.getUser().getEmail())
+        || Objects.equals(id, authToken.getUser().getId());
   }
 }
