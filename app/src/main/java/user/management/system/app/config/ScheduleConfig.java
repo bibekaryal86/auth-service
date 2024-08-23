@@ -1,5 +1,6 @@
 package user.management.system.app.config;
 
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -23,7 +24,7 @@ public class ScheduleConfig {
   private final AppRoleService appRoleService;
 
   @Scheduled(cron = "0 3 0 * * *")
-  protected void putAllCache() throws InterruptedException {
+  protected void recreateAppCaches() throws InterruptedException {
     log.info("Recreating app caches...");
     cacheManager
         .getCacheNames()
@@ -37,8 +38,8 @@ public class ScheduleConfig {
 
     Thread.sleep(5000);
 
-    authenvServiceConnector.getRedirectUrls();
-    appsService.readApps();
-    appRoleService.readAppRoles();
+    CompletableFuture.runAsync(authenvServiceConnector::getRedirectUrls);
+    CompletableFuture.runAsync(appsService::readApps);
+    CompletableFuture.runAsync(appRoleService::readAppRoles);
   }
 }
