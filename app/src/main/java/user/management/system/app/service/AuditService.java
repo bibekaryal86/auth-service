@@ -1,6 +1,5 @@
 package user.management.system.app.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ import user.management.system.app.repository.AuditAppsRepository;
 @RequiredArgsConstructor
 public class AuditService {
 
-  private final ObjectMapper objectMapper;
   private final AuditAppPermissionRepository auditAppPermissionRepository;
   private final AuditAppRoleRepository auditAppRoleRepository;
   private final AuditAppsRepository auditAppsRepository;
