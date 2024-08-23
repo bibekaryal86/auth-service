@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Roles Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_roles")
@@ -96,6 +98,7 @@ public class AppRoleController {
       auditService.auditAppRoleCreate(request, appRoleEntity);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
+      log.error("Create App Role: [{}]", appRoleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -141,6 +144,7 @@ public class AppRoleController {
       final List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
       return entityDtoConvertUtils.getResponseMultipleAppRole(appRoleEntities);
     } catch (Exception ex) {
+      log.error("Read App Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -196,6 +200,7 @@ public class AppRoleController {
       final AppRoleEntity appRoleEntity = appRoleService.readAppRole(id);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
+      log.error("Read App Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -267,6 +272,7 @@ public class AppRoleController {
       auditService.auditAppRoleUpdate(request, appRoleEntity);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
+      log.error("Update App Role: [{}] | [{}]", id, appRoleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -325,6 +331,7 @@ public class AppRoleController {
       auditService.auditAppRoleDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppRole();
     } catch (Exception ex) {
+      log.error("Soft Delete App Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -382,6 +389,7 @@ public class AppRoleController {
       auditService.auditAppRoleDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppRole();
     } catch (Exception ex) {
+      log.error("Hard Delete App Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }
@@ -439,6 +447,7 @@ public class AppRoleController {
       auditService.auditAppRoleRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
+      log.error("Restore App Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppRole(ex);
     }
   }

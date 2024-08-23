@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Users Roles Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users_roles")
@@ -103,6 +105,7 @@ public class AppUserRoleController {
       auditService.auditAppUserAssignRole(request, appUserRoleEntity);
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
+      log.error("Create App User Role: [{}}", appUserRoleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }
@@ -148,6 +151,7 @@ public class AppUserRoleController {
       final List<AppUserRoleEntity> appUserRoleEntities = appUserRoleService.readAppUserRoles();
       return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
     } catch (Exception ex) {
+      log.error("Read App User Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }
@@ -201,6 +205,7 @@ public class AppUserRoleController {
           appUserRoleService.readAppUserRoles(userId);
       return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
     } catch (Exception ex) {
+      log.error("Read App User Roles By User ID: [{}]", userId, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }
@@ -254,6 +259,7 @@ public class AppUserRoleController {
           appUserRoleService.readAppUserRoles(userIds);
       return entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
     } catch (Exception ex) {
+      log.error("Read App User Roles By User IDs: [{}]", userIds, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }
@@ -318,6 +324,7 @@ public class AppUserRoleController {
           appUserRoleService.readAppUserRole(userId, roleId);
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
+      log.error("Read App User Role: [{}], [{}]", userId, roleId, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }
@@ -384,6 +391,7 @@ public class AppUserRoleController {
       auditService.auditAppUserUnassignRole(request, userId, roleId);
       return entityDtoConvertUtils.getResponseDeleteAppUserRole();
     } catch (Exception ex) {
+      log.error("Delete App User Role: [{}], [{}]", userId, roleId, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
     }
   }

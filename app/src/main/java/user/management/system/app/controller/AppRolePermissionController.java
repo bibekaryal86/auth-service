@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Roles Permissions Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_roles_permissions")
@@ -104,6 +106,7 @@ public class AppRolePermissionController {
       auditService.auditAppRoleAssignPermission(request, appRolePermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {
+      log.error("Create App Role Permission: [{}]", appRolePermissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }
@@ -150,6 +153,7 @@ public class AppRolePermissionController {
           appRolePermissionService.readAppRolePermissions();
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
+      log.error("Read App Role Permissions...", ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }
@@ -203,6 +207,7 @@ public class AppRolePermissionController {
           appRolePermissionService.readAppRolePermissions(roleId);
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
+      log.error("Read App Role Permissions By Role Id: [{}]", roleId, ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }
@@ -261,6 +266,7 @@ public class AppRolePermissionController {
           appRolePermissionService.readAppRolePermissions(appId, roleIds);
       return entityDtoConvertUtils.getResponseMultipleAppRolePermission(appRolePermissionEntities);
     } catch (Exception ex) {
+      log.error("Read App Role Permissions By Role Ids: [{}], [{}]", appId, roleIds, ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }
@@ -325,6 +331,7 @@ public class AppRolePermissionController {
           appRolePermissionService.readAppRolePermission(roleId, permissionId);
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {
+      log.error("Read App Role Permission: [{}], [{}]", roleId, permissionId, ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }
@@ -391,6 +398,7 @@ public class AppRolePermissionController {
       auditService.auditAppRoleUnassignPermission(request, roleId, permissionId);
       return entityDtoConvertUtils.getResponseDeleteAppRolePermission();
     } catch (Exception ex) {
+      log.error("Delete App Role Permission: [{}], [{}]", roleId, permissionId, ex);
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
     }
   }

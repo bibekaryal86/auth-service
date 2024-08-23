@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ import user.management.system.app.util.EntityDtoConvertUtils;
 import user.management.system.app.util.PermissionCheck;
 
 @Tag(name = "Users Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_users")
@@ -89,6 +91,7 @@ public class AppUserController {
           permissionCheck.filterAppUserListByAccess(appUserEntities);
       return entityDtoConvertUtils.getResponseMultipleAppUser(filteredAppUserEntities);
     } catch (Exception ex) {
+      log.error("Read App Users...", ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -131,7 +134,7 @@ public class AppUserController {
                     schema = @Schema(implementation = AppUserResponse.class)))
       })
   @GetMapping("/{appId}")
-  public ResponseEntity<AppUserResponse> readAppUsers(@PathVariable final String appId) {
+  public ResponseEntity<AppUserResponse> readAppUsersByAppId(@PathVariable final String appId) {
     try {
       final List<AppsAppUserEntity> appsAppUserEntities =
           appsAppUserService.readAppsAppUsers(appId);
@@ -141,6 +144,7 @@ public class AppUserController {
           permissionCheck.filterAppUserListByAccess(appUserEntities);
       return entityDtoConvertUtils.getResponseMultipleAppUser(filteredAppUserEntities);
     } catch (Exception ex) {
+      log.error("Read App Users By App Id: [{}]", appId, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -194,6 +198,7 @@ public class AppUserController {
       final AppUserEntity appUserEntity = appUserService.readAppUser(id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Read App User: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -243,12 +248,13 @@ public class AppUserController {
                     schema = @Schema(implementation = AppUserResponse.class)))
       })
   @GetMapping("/user/email/{email}")
-  public ResponseEntity<AppUserResponse> readAppUser(@PathVariable final String email) {
+  public ResponseEntity<AppUserResponse> readAppUserByEmail(@PathVariable final String email) {
     try {
       permissionCheck.canUserAccessAppUser(email, 0);
       final AppUserEntity appUserEntity = appUserService.readAppUser(email);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Read App User By Email: [{}]", email, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -322,6 +328,7 @@ public class AppUserController {
       auditService.auditAppUserUpdate(request, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Update App User: [{}] | [{}]", id, appUserRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -387,6 +394,7 @@ public class AppUserController {
       auditService.auditAppUserUpdatePassword(request, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Update App User Password: [{}] | [{}]", id, userLoginRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -445,6 +453,7 @@ public class AppUserController {
       auditService.auditAppUserDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
+      log.error("Soft Delete App User: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -502,6 +511,7 @@ public class AppUserController {
       auditService.auditAppUserDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
+      log.error("Hard Delete App User: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -559,6 +569,7 @@ public class AppUserController {
       auditService.auditAppUserRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Restore App User: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }

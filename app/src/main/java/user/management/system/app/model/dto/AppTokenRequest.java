@@ -9,6 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppTokenRequest {
+  private int appUserId;
   @ToString.Exclude private String accessToken;
   @ToString.Exclude private String refreshToken;
 }

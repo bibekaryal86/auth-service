@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Permissions Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/app_permissions")
@@ -105,6 +107,7 @@ public class AppPermissionController {
       auditService.auditAppPermissionCreate(request, appId, appPermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
+      log.error("Create App Permission: [{}] | [{}]", appId, appPermissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -151,6 +154,7 @@ public class AppPermissionController {
           appPermissionService.readAppPermissions();
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
+      log.error("Read App Permissions...", ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -197,13 +201,14 @@ public class AppPermissionController {
       })
   @CheckPermission("PERMISSION_READ")
   @GetMapping("/app/{appId}")
-  public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppName(
+  public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppId(
       @PathVariable final String appId) {
     try {
       final List<AppPermissionEntity> appPermissionEntities =
           appPermissionService.readAppPermissions(appId);
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
+      log.error("Read App Permissions By App ID: [{}]", appId, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -259,6 +264,7 @@ public class AppPermissionController {
       final AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
+      log.error("Read App Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -331,6 +337,7 @@ public class AppPermissionController {
       auditService.auditAppPermissionUpdate(request, appPermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
+      log.error("Update App Permission: [{}] | [{}]", id, appPermissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -392,6 +399,7 @@ public class AppPermissionController {
       auditService.auditAppPermissionDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
+      log.error("Soft Delete App Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -452,6 +460,7 @@ public class AppPermissionController {
       auditService.auditAppPermissionDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
+      log.error("Hard Delete App Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
@@ -511,6 +520,7 @@ public class AppPermissionController {
       auditService.auditAppPermissionRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
+      log.error("Restore App Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -51,6 +52,7 @@ import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Users Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/basic_app_users/user")
@@ -138,6 +140,7 @@ public class AppUserBasicAuthController {
       auditService.auditAppUserCreate(request, appId, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
+      log.error("Create App User: [{}] | [{}]", appId, appUserRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }
@@ -223,6 +226,7 @@ public class AppUserBasicAuthController {
               .user(appUserDto)
               .build());
     } catch (Exception ex) {
+      log.error("Login App User: [{}] | [{}]", appId, userLoginRequest, ex);
       auditService.auditAppUserLoginFailure(request, appId, userLoginRequest.getEmail(), ex);
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
@@ -328,6 +332,7 @@ public class AppUserBasicAuthController {
               .user(appUserDto)
               .build());
     } catch (Exception ex) {
+      log.error("Refresh Token: [{}] | [{}]", appId, appTokenRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
   }
@@ -421,6 +426,7 @@ public class AppUserBasicAuthController {
       auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      log.error("Logout: [{}] | [{}]", appId, appTokenRequest, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -481,6 +487,7 @@ public class AppUserBasicAuthController {
       auditService.auditAppUserResetSuccess(request, appId, appUserEntity);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      log.error("Reset App User: [{}] | [{}]", appId, userLoginRequest, ex);
       auditService.auditAppUserResetFailure(request, appId, userLoginRequest.getEmail(), ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
@@ -545,6 +552,7 @@ public class AppUserBasicAuthController {
       auditService.auditAppUserValidateInit(request, appId, appsAppUserEntity.getAppUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      log.error("Validate App User Init: [{}], [{}]", appId, email, ex);
       auditService.auditAppUserValidateFailure(request, appId, email, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
@@ -609,6 +617,7 @@ public class AppUserBasicAuthController {
       auditService.auditAppUserResetInit(request, appId, appsAppUserEntity.getAppUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      log.error("Reset App User Init: [{}], [{}]", appId, email, ex);
       auditService.auditAppUserResetFailure(request, appId, email, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Apps Users Management")
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/apps_app_user")
@@ -94,7 +96,7 @@ public class AppsAppUserController {
       })
   @CheckPermission("ONLY SUPERUSER CAN ASSIGN USER TO APPS")
   @PostMapping("/apps_user")
-  public ResponseEntity<AppsAppUserResponse> createAppAppsAppUser(
+  public ResponseEntity<AppsAppUserResponse> createAppsAppUser(
       @Valid @RequestBody final AppsAppUserRequest appsAppUserRequest,
       final HttpServletRequest request) {
     try {
@@ -103,6 +105,7 @@ public class AppsAppUserController {
       auditService.auditAppUserAssignApp(request, appsAppUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppsAppUser(appsAppUserEntity);
     } catch (Exception ex) {
+      log.error("Create Apps App User: [{}]", appsAppUserRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }
@@ -148,6 +151,7 @@ public class AppsAppUserController {
       final List<AppsAppUserEntity> appsAppUserEntities = appsAppUserService.readAppsAppUsers();
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
+      log.error("Read Apps App Users...", ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }
@@ -201,6 +205,7 @@ public class AppsAppUserController {
           appsAppUserService.readAppsAppUsers(appId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
+      log.error("Read Apps App Users By App Id: [{}]", appId, ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }
@@ -254,6 +259,7 @@ public class AppsAppUserController {
           appsAppUserService.readAppsAppUsers(appUserId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
+      log.error("Read Apps App Users By User Id: [{}]", appUserId, ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }
@@ -318,6 +324,8 @@ public class AppsAppUserController {
           appsAppUserService.readAppsAppUser(appId, appUserEmail);
       return entityDtoConvertUtils.getResponseSingleAppsAppUser(appsAppUserEntity);
     } catch (Exception ex) {
+      log.error(
+          "Read Apps App Users By App Id And User Email: [{}], [{}]", appId, appUserEmail, ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }
@@ -384,6 +392,7 @@ public class AppsAppUserController {
       auditService.auditAppUserUnassignApp(request, appUserEmail, appId);
       return entityDtoConvertUtils.getResponseDeleteAppsAppUser();
     } catch (Exception ex) {
+      log.error("Delete Apps App User: [{}], [{}]", appId, appUserEmail, ex);
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
   }

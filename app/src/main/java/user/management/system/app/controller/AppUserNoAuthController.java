@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Hidden
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/na_app_users/user")
@@ -85,6 +87,7 @@ public class AppUserNoAuthController {
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, true);
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toValidate);
+      log.error("Validate App User Exit: [{}], [{}]", appId, decodedEmail, ex);
       auditService.auditAppUserValidateFailure(request, appId, decodedEmail, ex);
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, false);
     }
@@ -140,6 +143,7 @@ public class AppUserNoAuthController {
           redirectUrl, true, appUserEntity.getEmail());
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toReset);
+      log.error("Reset App User Exit: [{}], [{}]", appId, decodedEmail, ex);
       auditService.auditAppUserResetFailure(request, appId, decodedEmail, ex);
       return entityDtoConvertUtils.getResponseResetUser(redirectUrl, false, "");
     }
