@@ -366,10 +366,10 @@ public class AuditService {
   }
 
   public void auditAppUserLoginSuccess(
-      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+      final HttpServletRequest request, final String appId, final int appUserId) {
     final String eventDesc =
-        String.format("Login Success User [%s] for app [%s]", appUserEntity.getId(), appId);
-    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGIN, eventDesc);
+        String.format("Login Success User [%s] for app [%s]", appUserId, appId);
+    auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.USER_LOGIN, eventDesc);
   }
 
   public void auditAppUserLoginFailure(

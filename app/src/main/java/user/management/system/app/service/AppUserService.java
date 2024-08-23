@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementMissingException;
@@ -38,6 +39,7 @@ public class AppUserService {
   private final ApplicationEventPublisher applicationEventPublisher;
 
   // CREATE
+  @Transactional
   public AppUserEntity createAppUser(
       final AppsEntity appsEntity,
       final AppUserRequest appUserRequest,
@@ -101,6 +103,7 @@ public class AppUserService {
   }
 
   // UPDATE
+  @Transactional
   public AppUserEntity updateAppUser(final int id, final AppUserRequest appUserRequest) {
     log.debug("Update App User: [{}], [{}]", id, appUserRequest);
     AppUserEntity appUserEntity = readAppUser(id);

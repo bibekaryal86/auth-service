@@ -6,11 +6,13 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotActiveException;
 import user.management.system.app.exception.UserNotActiveException;
 import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.exception.UserNotValidatedException;
 import user.management.system.app.model.dto.UserLoginRequest;
+import user.management.system.app.model.dto.UserLoginResponse;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
@@ -25,8 +27,10 @@ public class AppUserPasswordService {
   private final AppsAppUserService appsAppUserService;
   private final AppUserService appUserService;
   private final PasswordUtils passwordUtils;
+  private final AppTokenService appTokenService;
 
-  public AppUserEntity loginUser(final String appId, final UserLoginRequest userLoginRequest) {
+  @Transactional
+  public UserLoginResponse loginUser(final String appId, final UserLoginRequest userLoginRequest) {
     final AppsAppUserEntity appsAppUserEntity =
         appsAppUserService.readAppsAppUser(appId, userLoginRequest.getEmail());
     final AppsEntity appsEntity = appsAppUserEntity.getApp();
@@ -48,14 +52,14 @@ public class AppUserPasswordService {
       throw new UserNotActiveException();
     }
 
-    boolean isLoginSuccess =
+    final boolean isLoginSuccess =
         passwordUtils.verifyPassword(userLoginRequest.getPassword(), appUserEntity.getPassword());
 
     if (!isLoginSuccess) {
       throw new UserNotAuthorizedException();
     }
 
-    return appUserEntity;
+    return appTokenService.saveToken(null, null, appUserEntity);
   }
 
   public AppUserEntity resetUser(final String appId, final UserLoginRequest userLoginRequest) {

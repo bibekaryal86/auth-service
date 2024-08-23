@@ -2,7 +2,6 @@ package user.management.system.app.controller;
 
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static user.management.system.app.util.JwtUtils.decodeAuthCredentials;
-import static user.management.system.app.util.JwtUtils.encodeAuthCredentials;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.JwtInvalidException;
 import user.management.system.app.model.dto.AppTokenRequest;
-import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
@@ -211,20 +209,10 @@ public class AppUserBasicAuthController {
       @Valid @RequestBody final UserLoginRequest userLoginRequest,
       final HttpServletRequest request) {
     try {
-      final AppUserEntity appUserEntity = appUserPasswordService.loginUser(appId, userLoginRequest);
-      final AppUserDto appUserDto =
-          entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
-      final String accessToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 15); // 15 min
-      final String refreshToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24); // 1 day
-      final AppTokenEntity appTokenEntity =
-          appTokenService.saveToken(null, null, appUserEntity, accessToken, refreshToken);
-      auditService.auditAppUserLoginSuccess(request, appId, appUserEntity);
-      return ResponseEntity.ok(
-          UserLoginResponse.builder()
-              .aToken(appTokenEntity.getAccessToken())
-              .rToken(appTokenEntity.getRefreshToken())
-              .user(appUserDto)
-              .build());
+      final UserLoginResponse userLoginResponse =
+          appUserPasswordService.loginUser(appId, userLoginRequest);
+      auditService.auditAppUserLoginSuccess(request, appId, userLoginResponse.getUser().getId());
+      return ResponseEntity.ok(userLoginResponse);
     } catch (Exception ex) {
       log.error("Login App User: [{}] | [{}]", appId, userLoginRequest, ex);
       auditService.auditAppUserLoginFailure(request, appId, userLoginRequest.getEmail(), ex);
@@ -312,25 +300,10 @@ public class AppUserBasicAuthController {
         throw new JwtInvalidException("App Mismatch");
       }
 
-      final AppUserDto appUserDto =
-          entityDtoConvertUtils.convertEntityToDtoAppUser(appTokenEntity.getUser(), true);
-      final String newAccessToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 15); // 15 min
-      final String newRefreshToken =
-          encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24); // 1 day
-      final AppTokenEntity newAppTokenEntity =
-          appTokenService.saveToken(
-              appTokenEntity.getId(),
-              null,
-              appTokenEntity.getUser(),
-              newAccessToken,
-              newRefreshToken);
+      final UserLoginResponse userLoginResponse =
+          appTokenService.saveToken(appTokenEntity.getId(), null, appTokenEntity.getUser());
       auditService.auditAppUserTokenRefreshSuccess(request, appId, appTokenEntity.getUser());
-      return ResponseEntity.ok(
-          UserLoginResponse.builder()
-              .aToken(newAppTokenEntity.getAccessToken())
-              .rToken(newAppTokenEntity.getRefreshToken())
-              .user(appUserDto)
-              .build());
+      return ResponseEntity.ok(userLoginResponse);
     } catch (Exception ex) {
       log.error("Refresh Token: [{}] | [{}]", appId, appTokenRequest, ex);
       auditService.auditAppUserTokenRefreshFailure(
@@ -419,11 +392,7 @@ public class AppUserBasicAuthController {
       }
 
       appTokenService.saveToken(
-          appTokenEntity.getId(),
-          LocalDateTime.now(),
-          appTokenEntity.getUser(),
-          appTokenEntity.getAccessToken(),
-          appTokenEntity.getRefreshToken());
+          appTokenEntity.getId(), LocalDateTime.now(), appTokenEntity.getUser());
 
       auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.noContent().build();
