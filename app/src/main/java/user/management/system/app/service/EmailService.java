@@ -116,7 +116,7 @@ public class EmailService {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String activationLink =
         String.format(
-            "%s/na_app_users/%s/validate_exit/?toValidate=%s",
+            "%s/api/v1/na_app_users/user/%s/validate_exit/?toValidate=%s",
             baseUrl, appsEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
@@ -142,7 +142,7 @@ public class EmailService {
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String resetLink =
         String.format(
-            "%s/na_app_users/%s/reset_exit?toReset=%s", baseUrl, appsEntity.getId(), encodedEmail);
+            "%s/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", baseUrl, appsEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_reset_user.html")
