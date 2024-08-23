@@ -35,6 +35,7 @@ public class AppRolePermissionService {
     appRolePermissionEntity.setAppRole(appRoleEntity);
     appRolePermissionEntity.setAppPermission(appPermissionEntity);
     appRolePermissionEntity.setAssignedDate(LocalDateTime.now());
+    appRolePermissionEntity.setId(new AppRolePermissionId(appRoleEntity.getId(), appPermissionEntity.getId()));
     return appRolePermissionRepository.save(appRolePermissionEntity);
   }
 

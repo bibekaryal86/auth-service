@@ -73,6 +73,7 @@ public class AppUserRoleService {
     appUserRoleEntity.setAppUser(appUserEntity);
     appUserRoleEntity.setAppRole(appRoleEntity);
     appUserRoleEntity.setAssignedDate(LocalDateTime.now());
+    appUserRoleEntity.setId(new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId()));
     return appUserRoleRepository.save(appUserRoleEntity);
   }
 

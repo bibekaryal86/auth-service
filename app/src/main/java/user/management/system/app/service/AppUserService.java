@@ -18,6 +18,7 @@ import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserId;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
 import user.management.system.app.repository.AppUserAddressRepository;
@@ -62,6 +63,7 @@ public class AppUserService {
     appsAppUserEntity.setApp(appsEntity);
     appsAppUserEntity.setAppUser(appUserEntity);
     appsAppUserEntity.setAssignedDate(LocalDateTime.now());
+    appsAppUserEntity.setId(new AppsAppUserId(appsEntity.getId(), appUserEntity.getId()));
     appsAppUserRepository.save(appsAppUserEntity);
 
     // @see EmailService, AppUserRoleService

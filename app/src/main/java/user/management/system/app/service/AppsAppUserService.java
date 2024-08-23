@@ -10,6 +10,7 @@ import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppsAppUserRequest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserId;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.repository.AppsAppUserRepository;
 
@@ -31,6 +32,7 @@ public class AppsAppUserService {
     appsAppUserEntity.setApp(appsEntity);
     appsAppUserEntity.setAppUser(appUserEntity);
     appsAppUserEntity.setAssignedDate(LocalDateTime.now());
+    appsAppUserEntity.setId(new AppsAppUserId(appsEntity.getId(), appUserEntity.getId()));
     return appsAppUserRepository.save(appsAppUserEntity);
   }
 
