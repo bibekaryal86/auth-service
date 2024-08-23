@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,8 @@ import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppUserRoleEntity;
+import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.entity.AuditAppPermissionEntity;
 import user.management.system.app.model.entity.AuditAppRoleEntity;
@@ -20,6 +23,10 @@ import user.management.system.app.model.entity.AuditAppUserEntity;
 import user.management.system.app.model.entity.AuditAppsEntity;
 import user.management.system.app.model.enums.AuditEnums;
 import user.management.system.app.model.token.AuthToken;
+import user.management.system.app.repository.AppPermissionRepository;
+import user.management.system.app.repository.AppRoleRepository;
+import user.management.system.app.repository.AppUserRepository;
+import user.management.system.app.repository.AppsRepository;
 import user.management.system.app.repository.AuditAppPermissionRepository;
 import user.management.system.app.repository.AuditAppRoleRepository;
 import user.management.system.app.repository.AuditAppUserRepository;
@@ -27,6 +34,7 @@ import user.management.system.app.repository.AuditAppsRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuditService {
 
   private final ObjectMapper objectMapper;
@@ -34,19 +42,10 @@ public class AuditService {
   private final AuditAppRoleRepository auditAppRoleRepository;
   private final AuditAppsRepository auditAppsRepository;
   private final AuditAppUserRepository auditAppUserRepository;
-
-  public AuditService(
-      final AuditAppPermissionRepository auditAppPermissionRepository,
-      final AuditAppRoleRepository auditAppRoleRepository,
-      final AuditAppsRepository auditAppsRepository,
-      final AuditAppUserRepository auditAppUserRepository) {
-    this.auditAppPermissionRepository = auditAppPermissionRepository;
-    this.auditAppRoleRepository = auditAppRoleRepository;
-    this.auditAppsRepository = auditAppsRepository;
-    this.auditAppUserRepository = auditAppUserRepository;
-    this.objectMapper = new ObjectMapper();
-    this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-  }
+  private final AppPermissionRepository appPermissionRepository;
+  private final AppRoleRepository appRoleRepository;
+  private final AppsRepository appsRepository;
+  private final AppUserRepository appUserRepository;
 
   private String getIpAddress(final HttpServletRequest request) {
     String ipAddress = request.getHeader("X-Forwarded-For");
@@ -60,36 +59,29 @@ public class AuditService {
     return request.getHeader("User-Agent");
   }
 
-  private AppUserEntity getAppUserEntity(final int appUserId) {
-    AppUserEntity appUserEntity = new AppUserEntity();
-
+  private AppUserEntity getAppUserEntityById(int appUserId) {
     if (appUserId == 0) {
       final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       final AuthToken authToken = (AuthToken) authentication.getCredentials();
-      appUserEntity.setId(authToken.getUser().getId());
-    } else {
-      appUserEntity.setId(appUserId);
+      appUserId = authToken.getUser().getId();
     }
+    return appUserRepository.findById(appUserId).orElse(null);
+  }
 
-    return appUserEntity;
+  private AppUserEntity getAppUserEntityByEmail(final String email) {
+    return appUserRepository.findByEmail(email).orElse(new AppUserEntity());
   }
 
   private AppPermissionEntity getAppPermissionEntity(final int appPermissionId) {
-    AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
-    appPermissionEntity.setId(appPermissionId);
-    return appPermissionEntity;
+    return appPermissionRepository.findById(appPermissionId).orElse(null);
   }
 
   private AppRoleEntity getAppRoleEntity(final int appRoleId) {
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setId(appRoleId);
-    return appRoleEntity;
+    return appRoleRepository.findById(appRoleId).orElse(null);
   }
 
   private AppsEntity getAppsEntity(final String appId) {
-    AppsEntity appsEntity = new AppsEntity();
-    appsEntity.setId(appId);
-    return appsEntity;
+    return appsRepository.findById(appId).orElse(null);
   }
 
   private String serializeToJson(Object object) {
@@ -98,6 +90,7 @@ public class AuditService {
     }
 
     try {
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       return objectMapper.writeValueAsString(object);
     } catch (JsonProcessingException ex) {
       log.error("Serialize To JSON: [{}]", object, ex);
@@ -121,7 +114,7 @@ public class AuditService {
       auditAppPermissionEntity.setEventData(serializeToJson(appPermissionEntity));
       auditAppPermissionEntity.setEventType(eventType.name());
       auditAppPermissionEntity.setEventDesc(eventDesc);
-      auditAppPermissionEntity.setCreatedBy(getAppUserEntity(0));
+      auditAppPermissionEntity.setCreatedBy(getAppUserEntityById(0));
       auditAppPermissionEntity.setCreatedAt(LocalDateTime.now());
       auditAppPermissionEntity.setIpAddress(getIpAddress(request));
       auditAppPermissionEntity.setUserAgent(getUserAgent(request));
@@ -153,7 +146,7 @@ public class AuditService {
       auditAppsEntity.setEventData(serializeToJson(appsEntity));
       auditAppsEntity.setEventType(eventType.name());
       auditAppsEntity.setEventDesc(eventDesc);
-      auditAppsEntity.setCreatedBy(getAppUserEntity(0));
+      auditAppsEntity.setCreatedBy(getAppUserEntityById(0));
       auditAppsEntity.setCreatedAt(LocalDateTime.now());
       auditAppsEntity.setIpAddress(getIpAddress(request));
       auditAppsEntity.setUserAgent(getUserAgent(request));
@@ -181,7 +174,7 @@ public class AuditService {
       auditAppRoleEntity.setEventData(serializeToJson(appRoleEntity));
       auditAppRoleEntity.setEventType(eventType.name());
       auditAppRoleEntity.setEventDesc(eventDesc);
-      auditAppRoleEntity.setCreatedBy(getAppUserEntity(0));
+      auditAppRoleEntity.setCreatedBy(getAppUserEntityById(0));
       auditAppRoleEntity.setCreatedAt(LocalDateTime.now());
       auditAppRoleEntity.setIpAddress(getIpAddress(request));
       auditAppRoleEntity.setUserAgent(getUserAgent(request));
@@ -204,17 +197,16 @@ public class AuditService {
       final AuditEnums.AuditUsers eventType,
       final String eventDesc) {
     if (appUserEntity == null) {
-      appUserEntity = getAppUserEntity(appUserId);
+      appUserEntity = getAppUserEntityById(appUserId);
     }
 
     try {
-
       AuditAppUserEntity auditAppUserEntity = new AuditAppUserEntity();
       auditAppUserEntity.setAppUser(appUserEntity);
       auditAppUserEntity.setEventData(serializeToJson(appUserEntity));
       auditAppUserEntity.setEventType(eventType.name());
       auditAppUserEntity.setEventDesc(eventDesc);
-      auditAppUserEntity.setCreatedBy(getAppUserEntity(0));
+      auditAppUserEntity.setCreatedBy(getAppUserEntityById(0));
       auditAppUserEntity.setCreatedAt(LocalDateTime.now());
       auditAppUserEntity.setIpAddress(getIpAddress(request));
       auditAppUserEntity.setUserAgent(getUserAgent(request));
@@ -337,5 +329,169 @@ public class AuditService {
   public void auditAppsRestore(final HttpServletRequest request, final String id) {
     final String eventDesc = String.format("Restore App [%s]", id);
     auditApps(request, null, id, AuditEnums.AuditApps.RESTORE_APP, eventDesc);
+  }
+
+  public void auditAppUserCreate(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Create User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.CREATE_USER, eventDesc);
+  }
+
+  public void auditAppUserUpdate(
+      final HttpServletRequest request, final AppUserEntity appUserEntity) {
+    final String eventDesc = String.format("Update User [%s]", appUserEntity.getId());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER, eventDesc);
+  }
+
+  public void auditAppUserUpdatePassword(
+      final HttpServletRequest request, final AppUserEntity appUserEntity) {
+    final String eventDesc = String.format("Update User [%s] password", appUserEntity.getId());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER_PASSWORD, eventDesc);
+  }
+
+  public void auditAppUserDeleteSoft(final HttpServletRequest request, final int id) {
+    final String eventDesc = String.format("Soft Delete User [%s]", id);
+    auditAppUser(request, null, id, AuditEnums.AuditUsers.SOFT_DELETE_USER, eventDesc);
+  }
+
+  public void auditAppUserDeleteHard(final HttpServletRequest request, final int id) {
+    final String eventDesc = String.format("Hard Delete User [%s]", id);
+    auditAppUser(request, null, id, AuditEnums.AuditUsers.HARD_DELETE_USER, eventDesc);
+  }
+
+  public void auditAppUserRestore(final HttpServletRequest request, final int id) {
+    final String eventDesc = String.format("Restore User [%s]", id);
+    auditAppUser(request, null, id, AuditEnums.AuditUsers.RESTORE_USER, eventDesc);
+  }
+
+  public void auditAppUserLoginSuccess(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Login Success User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGIN, eventDesc);
+  }
+
+  public void auditAppUserLoginFailure(
+      final HttpServletRequest request,
+      final String appId,
+      final String email,
+      final Exception ex) {
+    final AppUserEntity appUserEntity = getAppUserEntityByEmail(email);
+    final String eventDesc =
+        String.format(
+            "Login Failed User [%s]-[%s] for app [%s] for [%s]",
+            appUserEntity.getId(), email, appId, ex.getMessage());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGIN_ERROR, eventDesc);
+  }
+
+  public void auditAppUserTokenRefreshSuccess(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Token Refresh Success User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.TOKEN_REFRESH, eventDesc);
+  }
+
+  public void auditAppUserLogoutSuccess(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Logout Success User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGOUT, eventDesc);
+  }
+
+  public void auditAppUserResetInit(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Reset Init User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_RESET_INIT, eventDesc);
+  }
+
+  public void auditAppUserResetExit(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Reset Init User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_RESET_EXIT, eventDesc);
+  }
+
+  public void auditAppUserResetSuccess(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Reset Success User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_RESET, eventDesc);
+  }
+
+  public void auditAppUserResetFailure(
+      final HttpServletRequest request,
+      final String appId,
+      final String email,
+      final Exception ex) {
+    final AppUserEntity appUserEntity = getAppUserEntityByEmail(email);
+    final String eventDesc =
+        String.format(
+            "Reset Failed User [%s]-[%s] for app [%s] for [%s]",
+            appUserEntity.getId(), email, appId, ex.getMessage());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_RESET_ERROR, eventDesc);
+  }
+
+  public void auditAppUserValidateInit(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Validate Init User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_VALIDATE_INIT, eventDesc);
+  }
+
+  public void auditAppUserValidateExit(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Validate Exit User [%s] for app [%s]", appUserEntity.getId(), appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_VALIDATE_EXIT, eventDesc);
+  }
+
+  public void auditAppUserValidateFailure(
+      final HttpServletRequest request,
+      final String appId,
+      final String email,
+      final Exception ex) {
+    final AppUserEntity appUserEntity = getAppUserEntityByEmail(email);
+    final String eventDesc =
+        String.format(
+            "Validation Failed User [%s]-[%s] for app [%s] for [%s]",
+            appUserEntity.getId(), email, appId, ex.getMessage());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_VALIDATE_ERROR, eventDesc);
+  }
+
+  public void auditAppUserAssignRole(
+      final HttpServletRequest request, final AppUserRoleEntity appUserRoleEntity) {
+    final String eventDesc =
+        String.format(
+            "Assign Role [%s] to User [%s]",
+            appUserRoleEntity.getAppRole().getId(), appUserRoleEntity.getAppUser().getId());
+    auditAppUser(
+        request, appUserRoleEntity.getAppUser(), 0, AuditEnums.AuditUsers.ASSIGN_ROLE, eventDesc);
+  }
+
+  public void auditAppUserUnassignRole(
+      final HttpServletRequest request, final int appUserId, final int appRoleId) {
+    final String eventDesc =
+        String.format("Unassign Role [%s] from User [%s]", appRoleId, appUserId);
+    auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.UNASSIGN_ROLE, eventDesc);
+  }
+
+  public void auditAppUserAssignApp(
+      final HttpServletRequest request, final AppsAppUserEntity appsAppUserEntity) {
+    final String eventDesc =
+        String.format(
+            "Assign User [%s] to App [%s]",
+            appsAppUserEntity.getAppUser().getId(), appsAppUserEntity.getApp().getId());
+    auditAppUser(
+        request, appsAppUserEntity.getAppUser(), 0, AuditEnums.AuditUsers.ASSIGN_APP, eventDesc);
+  }
+
+  public void auditAppUserUnassignApp(
+      final HttpServletRequest request, final String email, final String appId) {
+    final AppUserEntity appUserEntity = getAppUserEntityByEmail(email);
+    final String eventDesc =
+        String.format("Unassign User [%s]-[%s] from app [%s]", appUserEntity.getId(), email, appId);
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UNASSIGN_APP, eventDesc);
   }
 }

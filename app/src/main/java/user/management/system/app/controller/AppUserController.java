@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.AppsAppUserService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 import user.management.system.app.util.PermissionCheck;
 
@@ -43,6 +45,7 @@ public class AppUserController {
   private final AppsAppUserService appsAppUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final PermissionCheck permissionCheck;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Retrieve all app users",
@@ -310,10 +313,13 @@ public class AppUserController {
       })
   @PutMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> updateAppUser(
-      @PathVariable final int id, @Valid @RequestBody final AppUserRequest appUserRequest) {
+      @PathVariable final int id,
+      @Valid @RequestBody final AppUserRequest appUserRequest,
+      final HttpServletRequest request) {
     try {
       permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
+      auditService.auditAppUserUpdate(request, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -371,11 +377,14 @@ public class AppUserController {
       })
   @PutMapping("/user/{id}/password")
   public ResponseEntity<AppUserResponse> updateAppUserPassword(
-      @PathVariable final int id, @Valid @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final int id,
+      @Valid @RequestBody final UserLoginRequest userLoginRequest,
+      final HttpServletRequest request) {
     try {
       permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity =
           appUserService.updateAppUserPassword(id, userLoginRequest);
+      auditService.auditAppUserUpdatePassword(request, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -429,9 +438,11 @@ public class AppUserController {
       })
   @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE USER")
   @DeleteMapping("/user/{id}")
-  public ResponseEntity<AppUserResponse> softDeleteAppUser(@PathVariable final int id) {
+  public ResponseEntity<AppUserResponse> softDeleteAppUser(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       appUserService.softDeleteAppUser(id);
+      auditService.auditAppUserDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -484,9 +495,11 @@ public class AppUserController {
       })
   @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/user/{id}/hard")
-  public ResponseEntity<AppUserResponse> hardDeleteAppUser(@PathVariable final int id) {
+  public ResponseEntity<AppUserResponse> hardDeleteAppUser(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       appUserService.hardDeleteAppUser(id);
+      auditService.auditAppUserDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -539,9 +552,11 @@ public class AppUserController {
       })
   @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/user/{id}/restore")
-  public ResponseEntity<AppUserResponse> restoreAppUser(@PathVariable final int id) {
+  public ResponseEntity<AppUserResponse> restoreAppUser(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       final AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);
+      auditService.auditAppUserRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);

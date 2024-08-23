@@ -8,8 +8,10 @@
 
 
 Remaining (thoughts)
+    -> log errors in controllers, controller advice
     -> Audits
     -> Test
+      -> Test password set in audit json or not
       -> How does adding address work
       -> How does updating address work
         -> How does updating 1 out of 3 addresses work

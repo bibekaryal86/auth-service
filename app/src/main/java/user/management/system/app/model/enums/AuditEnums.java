@@ -4,6 +4,7 @@ public class AuditEnums {
   public enum AuditUsers {
     CREATE_USER,
     UPDATE_USER,
+    UPDATE_USER_PASSWORD,
     SOFT_DELETE_USER,
     HARD_DELETE_USER,
     RESTORE_USER,
@@ -11,20 +12,17 @@ public class AuditEnums {
     UNASSIGN_ROLE,
     ASSIGN_APP,
     UNASSIGN_APP,
-    ADD_ADDRESS,
-    UPDATE_ADDRESS,
-    DELETE_ADDRESS,
     USER_LOGIN,
+    USER_LOGIN_ERROR,
     USER_LOGOUT,
     USER_VALIDATE_INIT,
     USER_VALIDATE_EXIT,
     USER_VALIDATE_ERROR,
     USER_RESET_INIT,
-    USER_RESET_MID,
     USER_RESET_EXIT,
+    USER_RESET,
     USER_RESET_ERROR,
-    TOKEN_REFRESH,
-    TOKEN_REFRESH_ERROR
+    TOKEN_REFRESH
   }
 
   public enum AuditRoles {

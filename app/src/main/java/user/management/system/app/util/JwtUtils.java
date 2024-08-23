@@ -61,6 +61,15 @@ public class JwtUtils {
     }
   }
 
+  public static String decodeEmailAddressNoException(final String encodedEmail) {
+    try {
+      return decodeEmailAddress(encodedEmail);
+    } catch (Exception ex) {
+      // ignore exception
+      return encodedEmail;
+    }
+  }
+
   public static String encodeAuthCredentials(
       final AppUserDto appUserDto, final long expirationMillis) {
     Map<String, Object> tokenClaim = new HashMap<>();

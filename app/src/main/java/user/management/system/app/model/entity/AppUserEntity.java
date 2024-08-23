@@ -1,5 +1,6 @@
 package user.management.system.app.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +38,7 @@ public class AppUserEntity extends EntityBaseDates {
   @Column(name = "phone")
   private String phone;
 
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(name = "password", nullable = false)
   private String password;
 

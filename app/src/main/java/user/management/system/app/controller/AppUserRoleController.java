@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import user.management.system.app.model.dto.AppUserRoleResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.service.AppUserRoleService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Users Roles Management")
@@ -36,6 +38,7 @@ public class AppUserRoleController {
 
   private final AppUserRoleService appUserRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Assign Role to a User",
@@ -92,10 +95,12 @@ public class AppUserRoleController {
   @CheckPermission("USER_ROLE_ASSIGN")
   @PostMapping("/user_role")
   public ResponseEntity<AppUserRoleResponse> createAppUserRole(
-      @Valid @RequestBody final AppUserRoleRequest appUserRoleRequest) {
+      @Valid @RequestBody final AppUserRoleRequest appUserRoleRequest,
+      final HttpServletRequest request) {
     try {
       final AppUserRoleEntity appUserRoleEntity =
           appUserRoleService.createAppUserRole(appUserRoleRequest);
+      auditService.auditAppUserAssignRole(request, appUserRoleEntity);
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);
@@ -371,9 +376,12 @@ public class AppUserRoleController {
   @CheckPermission("USER_ROLE_UNASSIGN")
   @DeleteMapping("/user_role/{userId}/{roleId}")
   public ResponseEntity<AppUserRoleResponse> deleteAppUserRole(
-      @PathVariable final int userId, @PathVariable final int roleId) {
+      @PathVariable final int userId,
+      @PathVariable final int roleId,
+      final HttpServletRequest request) {
     try {
       appUserRoleService.deleteAppUserRole(userId, roleId);
+      auditService.auditAppUserUnassignRole(request, userId, roleId);
       return entityDtoConvertUtils.getResponseDeleteAppUserRole();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUserRole(ex);

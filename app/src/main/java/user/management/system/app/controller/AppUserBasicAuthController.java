@@ -46,6 +46,7 @@ import user.management.system.app.service.AppUserPasswordService;
 import user.management.system.app.service.AppUserService;
 import user.management.system.app.service.AppsAppUserService;
 import user.management.system.app.service.AppsService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.service.EmailService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
@@ -63,6 +64,7 @@ public class AppUserBasicAuthController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
   private final AppTokenService appTokenService;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Create a new user for an application",
@@ -133,6 +135,7 @@ public class AppUserBasicAuthController {
       final AppsEntity appsEntity = appsService.readApp(appId);
       final AppUserEntity appUserEntity =
           appUserService.createAppUser(appsEntity, appUserRequest, baseUrl);
+      auditService.auditAppUserCreate(request, appId, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
@@ -202,7 +205,8 @@ public class AppUserBasicAuthController {
   @PostMapping("/{appId}/login")
   public ResponseEntity<UserLoginResponse> loginAppUser(
       @PathVariable final String appId,
-      @Valid @RequestBody final UserLoginRequest userLoginRequest) {
+      @Valid @RequestBody final UserLoginRequest userLoginRequest,
+      final HttpServletRequest request) {
     try {
       final AppUserEntity appUserEntity = appUserPasswordService.loginUser(appId, userLoginRequest);
       final AppUserDto appUserDto =
@@ -211,6 +215,7 @@ public class AppUserBasicAuthController {
       final String refreshToken = encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24); // 1 day
       final AppTokenEntity appTokenEntity =
           appTokenService.saveToken(null, null, appUserEntity, accessToken, refreshToken);
+      auditService.auditAppUserLoginSuccess(request, appId, appUserEntity);
       return ResponseEntity.ok(
           UserLoginResponse.builder()
               .aToken(appTokenEntity.getAccessToken())
@@ -218,6 +223,7 @@ public class AppUserBasicAuthController {
               .user(appUserDto)
               .build());
     } catch (Exception ex) {
+      auditService.auditAppUserLoginFailure(request, appId, userLoginRequest.getEmail(), ex);
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
   }
@@ -277,7 +283,9 @@ public class AppUserBasicAuthController {
       })
   @PostMapping("/{appId}/refresh")
   public ResponseEntity<UserLoginResponse> refreshToken(
-      @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
+      @PathVariable final String appId,
+      @RequestBody final AppTokenRequest appTokenRequest,
+      final HttpServletRequest request) {
     try {
       if (!StringUtils.hasText(appTokenRequest.getRefreshToken())) {
         throw new ElementMissingException("Token", "Refresh");
@@ -312,6 +320,7 @@ public class AppUserBasicAuthController {
               appTokenEntity.getUser(),
               newAccessToken,
               newRefreshToken);
+      auditService.auditAppUserTokenRefreshSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.ok(
           UserLoginResponse.builder()
               .aToken(newAppTokenEntity.getAccessToken())
@@ -377,7 +386,9 @@ public class AppUserBasicAuthController {
       })
   @PostMapping("/{appId}/logout")
   public ResponseEntity<ResponseStatusInfo> logout(
-      @PathVariable final String appId, @RequestBody final AppTokenRequest appTokenRequest) {
+      @PathVariable final String appId,
+      @RequestBody final AppTokenRequest appTokenRequest,
+      final HttpServletRequest request) {
     try {
       if (!StringUtils.hasText(appTokenRequest.getAccessToken())) {
         throw new ElementMissingException("Token", "Access");
@@ -406,6 +417,8 @@ public class AppUserBasicAuthController {
           appTokenEntity.getUser(),
           appTokenEntity.getAccessToken(),
           appTokenEntity.getRefreshToken());
+
+      auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
@@ -460,11 +473,15 @@ public class AppUserBasicAuthController {
       })
   @PostMapping("/{appId}/reset")
   public ResponseEntity<ResponseStatusInfo> resetAppUser(
-      @PathVariable final String appId, @RequestBody final UserLoginRequest userLoginRequest) {
+      @PathVariable final String appId,
+      @RequestBody final UserLoginRequest userLoginRequest,
+      final HttpServletRequest request) {
     try {
-      appUserPasswordService.resetUser(appId, userLoginRequest);
+      final AppUserEntity appUserEntity = appUserPasswordService.resetUser(appId, userLoginRequest);
+      auditService.auditAppUserResetSuccess(request, appId, appUserEntity);
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      auditService.auditAppUserResetFailure(request, appId, userLoginRequest.getEmail(), ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -525,8 +542,10 @@ public class AppUserBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendUserValidationEmail(
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
+      auditService.auditAppUserValidateInit(request, appId, appsAppUserEntity.getAppUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      auditService.auditAppUserValidateFailure(request, appId, email, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -587,8 +606,10 @@ public class AppUserBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendUserResetEmail(
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
+      auditService.auditAppUserResetInit(request, appId, appsAppUserEntity.getAppUser());
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
+      auditService.auditAppUserResetFailure(request, appId, email, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }

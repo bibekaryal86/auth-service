@@ -58,15 +58,15 @@ public class AppUserPasswordService {
     return appUserEntity;
   }
 
-  public void resetUser(final String appId, final UserLoginRequest userLoginRequest) {
+  public AppUserEntity resetUser(final String appId, final UserLoginRequest userLoginRequest) {
     final AppsAppUserEntity appsAppUserEntity =
         appsAppUserService.readAppsAppUser(appId, userLoginRequest.getEmail());
     final AppUserEntity appUserEntity = appsAppUserEntity.getAppUser();
     appUserEntity.setPassword(passwordUtils.hashPassword(userLoginRequest.getPassword()));
-    appUserService.updateAppUser(appUserEntity);
+    return appUserService.updateAppUser(appUserEntity);
   }
 
-  public String validateAndResetUser(
+  public AppUserEntity validateAndResetUser(
       final String appId, final String encodedEmail, final boolean isValidate) {
     final String email = decodeEmailAddress(encodedEmail);
     final AppsAppUserEntity appsAppUserEntity = appsAppUserService.readAppsAppUser(appId, email);
@@ -77,6 +77,6 @@ public class AppUserPasswordService {
       appUserService.updateAppUser(appUserEntity);
     }
 
-    return email;
+    return appUserEntity;
   }
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import user.management.system.app.model.dto.AppsAppUserResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppsAppUserService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Apps Users Management")
@@ -36,6 +38,7 @@ public class AppsAppUserController {
 
   private final AppsAppUserService appsAppUserService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Assign User to an App",
@@ -92,11 +95,13 @@ public class AppsAppUserController {
   @CheckPermission("ONLY SUPERUSER CAN ASSIGN USER TO APPS")
   @PostMapping("/apps_user")
   public ResponseEntity<AppsAppUserResponse> createAppAppsAppUser(
-      @Valid @RequestBody final AppsAppUserRequest appAppsAppUserRequest) {
+      @Valid @RequestBody final AppsAppUserRequest appsAppUserRequest,
+      final HttpServletRequest request) {
     try {
-      final AppsAppUserEntity appAppsAppUserEntity =
-          appsAppUserService.createAppsAppUser(appAppsAppUserRequest);
-      return entityDtoConvertUtils.getResponseSingleAppsAppUser(appAppsAppUserEntity);
+      final AppsAppUserEntity appsAppUserEntity =
+          appsAppUserService.createAppsAppUser(appsAppUserRequest);
+      auditService.auditAppUserAssignApp(request, appsAppUserEntity);
+      return entityDtoConvertUtils.getResponseSingleAppsAppUser(appsAppUserEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
@@ -138,10 +143,10 @@ public class AppsAppUserController {
       })
   @CheckPermission("ONLY SUPERUSER CAN READ APPS AND USERS")
   @GetMapping
-  public ResponseEntity<AppsAppUserResponse> readAppAppsAppUsers() {
+  public ResponseEntity<AppsAppUserResponse> readAppsAppUsers() {
     try {
-      final List<AppsAppUserEntity> appAppsAppUserEntities = appsAppUserService.readAppsAppUsers();
-      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
+      final List<AppsAppUserEntity> appsAppUserEntities = appsAppUserService.readAppsAppUsers();
+      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
@@ -192,9 +197,9 @@ public class AppsAppUserController {
   public ResponseEntity<AppsAppUserResponse> readAppsAppUsersByAppId(
       @PathVariable final String appId) {
     try {
-      final List<AppsAppUserEntity> appAppsAppUserEntities =
+      final List<AppsAppUserEntity> appsAppUserEntities =
           appsAppUserService.readAppsAppUsers(appId);
-      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
+      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
@@ -245,9 +250,9 @@ public class AppsAppUserController {
   public ResponseEntity<AppsAppUserResponse> readAppsAppUsersByUserId(
       @PathVariable final int appUserId) {
     try {
-      final List<AppsAppUserEntity> appAppsAppUserEntities =
+      final List<AppsAppUserEntity> appsAppUserEntities =
           appsAppUserService.readAppsAppUsers(appUserId);
-      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appAppsAppUserEntities);
+      return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
     }
@@ -371,9 +376,12 @@ public class AppsAppUserController {
   @CheckPermission("ONLY SUPERUSER CAN UNASSIGN USER FROM APP")
   @DeleteMapping("/apps_user/{appId}/{appUserEmail}")
   public ResponseEntity<AppsAppUserResponse> deleteAppsAppUser(
-      @PathVariable final String appId, @PathVariable final String appUserEmail) {
+      @PathVariable final String appId,
+      @PathVariable final String appUserEmail,
+      final HttpServletRequest request) {
     try {
       appsAppUserService.deleteAppsAppUser(appId, appUserEmail);
+      auditService.auditAppUserUnassignApp(request, appUserEmail, appId);
       return entityDtoConvertUtils.getResponseDeleteAppsAppUser();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppsAppUser(ex);
