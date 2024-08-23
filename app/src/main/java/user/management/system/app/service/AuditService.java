@@ -380,7 +380,7 @@ public class AuditService {
     final AppUserEntity appUserEntity = getAppUserEntityByEmail(email);
     final String eventDesc =
         String.format(
-            "Login Failed User [%s]-[%s] for app [%s] for [%s]",
+            "Login Failed User [%s]-[%s] for app [%s] because [%s]",
             appUserEntity.getId(), email, appId, ex.getMessage());
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGIN_ERROR, eventDesc);
   }
@@ -392,11 +392,34 @@ public class AuditService {
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.TOKEN_REFRESH, eventDesc);
   }
 
+  public void auditAppUserTokenRefreshFailure(
+      final HttpServletRequest request,
+      final String appId,
+      final int appUserId,
+      final Exception ex) {
+    final String eventDesc =
+        String.format(
+            "Token Refresh Failed User [%s] for app [%s] because [%s]",
+            appUserId, appId, ex.getMessage());
+    auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.TOKEN_REFRESH_ERROR, eventDesc);
+  }
+
   public void auditAppUserLogoutSuccess(
       final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
     final String eventDesc =
         String.format("Logout Success User [%s] for app [%s]", appUserEntity.getId(), appId);
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_LOGOUT, eventDesc);
+  }
+
+  public void auditAppUserLogoutFailure(
+      final HttpServletRequest request,
+      final String appId,
+      final int appUserId,
+      final Exception ex) {
+    final String eventDesc =
+        String.format(
+            "Logout Failed User [%s] for app [%s] because [%s]", appUserId, appId, ex.getMessage());
+    auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.USER_LOGOUT_ERROR, eventDesc);
   }
 
   public void auditAppUserResetInit(

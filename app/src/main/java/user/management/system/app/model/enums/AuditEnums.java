@@ -15,6 +15,7 @@ public class AuditEnums {
     USER_LOGIN,
     USER_LOGIN_ERROR,
     USER_LOGOUT,
+    USER_LOGOUT_ERROR,
     USER_VALIDATE_INIT,
     USER_VALIDATE_EXIT,
     USER_VALIDATE_ERROR,
@@ -22,7 +23,8 @@ public class AuditEnums {
     USER_RESET_EXIT,
     USER_RESET,
     USER_RESET_ERROR,
-    TOKEN_REFRESH
+    TOKEN_REFRESH,
+    TOKEN_REFRESH_ERROR
   }
 
   public enum AuditRoles {

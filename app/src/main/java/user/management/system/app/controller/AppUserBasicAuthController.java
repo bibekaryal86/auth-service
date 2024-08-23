@@ -333,6 +333,8 @@ public class AppUserBasicAuthController {
               .build());
     } catch (Exception ex) {
       log.error("Refresh Token: [{}] | [{}]", appId, appTokenRequest, ex);
+      auditService.auditAppUserTokenRefreshFailure(
+          request, appId, appTokenRequest.getAppUserId(), ex);
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
   }
@@ -427,6 +429,7 @@ public class AppUserBasicAuthController {
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Logout: [{}] | [{}]", appId, appTokenRequest, ex);
+      auditService.auditAppUserLogoutFailure(request, appId, appTokenRequest.getAppUserId(), ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
