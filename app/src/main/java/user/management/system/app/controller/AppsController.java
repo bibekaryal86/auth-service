@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import user.management.system.app.model.dto.AppsResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppsService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Apps Management")
@@ -38,6 +40,7 @@ public class AppsController {
 
   private final AppsService appsService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Create a new app",
@@ -86,9 +89,11 @@ public class AppsController {
       })
   @CheckPermission("ONLY SUPERUSER CAN CREATE APP")
   @PostMapping("/app")
-  public ResponseEntity<AppsResponse> createApp(@Valid @RequestBody final AppsRequest appsRequest) {
+  public ResponseEntity<AppsResponse> createApp(
+      @Valid @RequestBody final AppsRequest appsRequest, final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.createApp(appsRequest);
+      auditService.auditAppsCreate(request, appsEntity);
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorApps(ex);
@@ -254,9 +259,12 @@ public class AppsController {
   @CheckPermission("ONLY SUPERUSER CAN UPDATE APP")
   @PutMapping("/app/{id}")
   public ResponseEntity<AppsResponse> updateApp(
-      @PathVariable final String id, @Valid @RequestBody final AppsRequest appsRequest) {
+      @PathVariable final String id,
+      @Valid @RequestBody final AppsRequest appsRequest,
+      final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.updateApps(id, appsRequest);
+      auditService.auditAppsUpdate(request, appsEntity);
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorApps(ex);
@@ -310,9 +318,11 @@ public class AppsController {
       })
   @CheckPermission("ONLY SUPERUSER CAN DELETE APP")
   @DeleteMapping("/app/{id}")
-  public ResponseEntity<AppsResponse> softDeleteApps(@PathVariable final String id) {
+  public ResponseEntity<AppsResponse> softDeleteApps(
+      @PathVariable final String id, final HttpServletRequest request) {
     try {
       appsService.softDeleteApps(id);
+      auditService.auditAppsDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteApps();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorApps(ex);
@@ -365,9 +375,11 @@ public class AppsController {
       })
   @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/app/{id}/hard")
-  public ResponseEntity<AppsResponse> hardDeleteApps(@PathVariable final String id) {
+  public ResponseEntity<AppsResponse> hardDeleteApps(
+      @PathVariable final String id, final HttpServletRequest request) {
     try {
       appsService.hardDeleteApps(id);
+      auditService.auditAppsDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteApps();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorApps(ex);
@@ -420,9 +432,11 @@ public class AppsController {
       })
   @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/app/{id}/restore")
-  public ResponseEntity<AppsResponse> restoreApps(@PathVariable final String id) {
+  public ResponseEntity<AppsResponse> restoreApps(
+      @PathVariable final String id, final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.restoreSoftDeletedApps(id);
+      auditService.auditAppsRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorApps(ex);

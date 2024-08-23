@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.service.AppPermissionService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Permissions Management")
@@ -38,6 +40,7 @@ public class AppPermissionController {
 
   private final AppPermissionService appPermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Create a new permission for an application",
@@ -94,10 +97,12 @@ public class AppPermissionController {
   @PostMapping("/{appId}/permission")
   public ResponseEntity<AppPermissionResponse> createAppPermission(
       @PathVariable final String appId,
-      @Valid @RequestBody final AppPermissionRequest appPermissionRequest) {
+      @Valid @RequestBody final AppPermissionRequest appPermissionRequest,
+      final HttpServletRequest request) {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.createAppPermission(appId, appPermissionRequest);
+      auditService.auditAppPermissionCreate(request, appId, appPermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -318,10 +323,12 @@ public class AppPermissionController {
   @PutMapping("/permission/{id}")
   public ResponseEntity<AppPermissionResponse> updateAppPermission(
       @PathVariable final int id,
-      @Valid @RequestBody final AppPermissionRequest appPermissionRequest) {
+      @Valid @RequestBody final AppPermissionRequest appPermissionRequest,
+      final HttpServletRequest request) {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.updateAppPermission(id, appPermissionRequest);
+      auditService.auditAppPermissionUpdate(request, appPermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -378,9 +385,11 @@ public class AppPermissionController {
       })
   @CheckPermission("PERMISSION_DELETE")
   @DeleteMapping("/permission/{id}")
-  public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(@PathVariable final int id) {
+  public ResponseEntity<AppPermissionResponse> softDeleteAppPermission(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       appPermissionService.softDeleteAppPermission(id);
+      auditService.auditAppPermissionDeleteSoft(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -436,9 +445,11 @@ public class AppPermissionController {
       })
   @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
   @DeleteMapping("/permission/{id}/hard")
-  public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(@PathVariable final int id) {
+  public ResponseEntity<AppPermissionResponse> hardDeleteAppPermission(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       appPermissionService.hardDeleteAppPermission(id);
+      auditService.auditAppPermissionDeleteHard(request, id);
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
@@ -492,10 +503,12 @@ public class AppPermissionController {
       })
   @CheckPermission("ONLY SUPERUSER CAN RESTORE")
   @PatchMapping("/permission/{id}/restore")
-  public ResponseEntity<AppPermissionResponse> restoreAppPermission(@PathVariable final int id) {
+  public ResponseEntity<AppPermissionResponse> restoreAppPermission(
+      @PathVariable final int id, final HttpServletRequest request) {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.restoreSoftDeletedAppPermission(id);
+      auditService.auditAppPermissionRestore(request, id);
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);

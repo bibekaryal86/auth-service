@@ -8,10 +8,13 @@
 
 
 Remaining (thoughts)
-    -> Test addresses
-        -> How does updating it work
-        -> How does deleting it work
     -> Audits
+    -> Test
+      -> How does adding address work
+      -> How does updating address work
+        -> How does updating 1 out of 3 addresses work
+      -> How does deleting address work
+      -> How does clearing phone work (phone can be empty/null in DB)
     -> Implement ResponseCrudInfo and ResponsePageInfo
         -> ResponseCrudInfo for all
         -> ResponsePageInfo and RequestMetadata for Users and Permissions

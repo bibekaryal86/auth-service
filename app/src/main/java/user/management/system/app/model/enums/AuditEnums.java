@@ -32,7 +32,9 @@ public class AuditEnums {
     UPDATE_ROLE,
     SOFT_DELETE_ROLE,
     HARD_DELETE_ROLE,
-    RESTORE_ROLE
+    RESTORE_ROLE,
+    ASSIGN_PERMISSION,
+    UNASSIGN_PERMISSION
   }
 
   public enum AuditPermissions {
@@ -40,9 +42,7 @@ public class AuditEnums {
     UPDATE_PERMISSION,
     SOFT_DELETE_PERMISSION,
     HARD_DELETE_PERMISSION,
-    RESTORE_PERMISSION,
-    ASSIGN_ROLE,
-    UNASSIGN_ROLE
+    RESTORE_PERMISSION
   }
 
   public enum AuditApps {

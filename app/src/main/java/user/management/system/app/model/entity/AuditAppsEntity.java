@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AuditApps extends EntityBaseAudit {
+public class AuditAppsEntity extends EntityBaseAudit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

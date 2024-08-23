@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.service.AppRolePermissionService;
+import user.management.system.app.service.AuditService;
 import user.management.system.app.util.EntityDtoConvertUtils;
 
 @Tag(name = "Roles Permissions Management")
@@ -36,6 +38,7 @@ public class AppRolePermissionController {
 
   private final AppRolePermissionService appRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final AuditService auditService;
 
   @Operation(
       summary = "Assign Permission to a Role",
@@ -93,10 +96,12 @@ public class AppRolePermissionController {
   @CheckPermission("ROLE_PERMISSION_ASSIGN")
   @PostMapping("/role_permission")
   public ResponseEntity<AppRolePermissionResponse> createAppRolePermission(
-      @Valid @RequestBody final AppRolePermissionRequest appRolePermissionRequest) {
+      @Valid @RequestBody final AppRolePermissionRequest appRolePermissionRequest,
+      final HttpServletRequest request) {
     try {
       final AppRolePermissionEntity appRolePermissionEntity =
           appRolePermissionService.createAppRolePermission(appRolePermissionRequest);
+      auditService.auditAppRoleAssignPermission(request, appRolePermissionEntity);
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
@@ -378,9 +383,12 @@ public class AppRolePermissionController {
   @CheckPermission("ROLE_PERMISSION_UNASSIGN")
   @DeleteMapping("/role_permission/{roleId}/{permissionId}")
   public ResponseEntity<AppRolePermissionResponse> deleteAppRolePermission(
-      @PathVariable final int roleId, @PathVariable final int permissionId) {
+      @PathVariable final int roleId,
+      @PathVariable final int permissionId,
+      final HttpServletRequest request) {
     try {
       appRolePermissionService.deleteAppRolePermission(roleId, permissionId);
+      auditService.auditAppRoleUnassignPermission(request, roleId, permissionId);
       return entityDtoConvertUtils.getResponseDeleteAppRolePermission();
     } catch (Exception ex) {
       return entityDtoConvertUtils.getResponseErrorAppRolePermission(ex);
