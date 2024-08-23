@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -21,7 +23,8 @@ public abstract class EntityBaseAudit {
   private String eventDesc;
 
   @Column(name = "event_data", columnDefinition = "jsonb")
-  private String eventData;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private Object eventData;
 
   @Column(name = "created_at", nullable = false)
   private LocalDateTime createdAt;

@@ -1,7 +1,5 @@
 package user.management.system.app.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -63,7 +61,10 @@ public class AuditService {
     if (appUserId == 0) {
       final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       final AuthToken authToken = (AuthToken) authentication.getCredentials();
-      appUserId = authToken.getUser().getId();
+
+      if (authToken != null) {
+        appUserId = authToken.getUser().getId();
+      }
     }
     return appUserRepository.findById(appUserId).orElse(null);
   }
@@ -84,20 +85,6 @@ public class AuditService {
     return appsRepository.findById(appId).orElse(null);
   }
 
-  private String serializeToJson(Object object) {
-    if (object == null) {
-      return null;
-    }
-
-    try {
-      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      return objectMapper.writeValueAsString(object);
-    } catch (JsonProcessingException ex) {
-      log.error("Serialize To JSON: [{}]", object, ex);
-      return object.toString();
-    }
-  }
-
   private void auditAppPermission(
       final HttpServletRequest request,
       AppPermissionEntity appPermissionEntity,
@@ -111,7 +98,7 @@ public class AuditService {
     try {
       AuditAppPermissionEntity auditAppPermissionEntity = new AuditAppPermissionEntity();
       auditAppPermissionEntity.setAppPermission(appPermissionEntity);
-      auditAppPermissionEntity.setEventData(serializeToJson(appPermissionEntity));
+      auditAppPermissionEntity.setEventData(appPermissionEntity);
       auditAppPermissionEntity.setEventType(eventType.name());
       auditAppPermissionEntity.setEventDesc(eventDesc);
       auditAppPermissionEntity.setCreatedBy(getAppUserEntityById(0));
@@ -143,7 +130,7 @@ public class AuditService {
     try {
       AuditAppsEntity auditAppsEntity = new AuditAppsEntity();
       auditAppsEntity.setApp(appsEntity);
-      auditAppsEntity.setEventData(serializeToJson(appsEntity));
+      auditAppsEntity.setEventData(appsEntity);
       auditAppsEntity.setEventType(eventType.name());
       auditAppsEntity.setEventDesc(eventDesc);
       auditAppsEntity.setCreatedBy(getAppUserEntityById(0));
@@ -171,7 +158,7 @@ public class AuditService {
     try {
       AuditAppRoleEntity auditAppRoleEntity = new AuditAppRoleEntity();
       auditAppRoleEntity.setAppRole(appRoleEntity);
-      auditAppRoleEntity.setEventData(serializeToJson(appRoleEntity));
+      auditAppRoleEntity.setEventData(appRoleEntity);
       auditAppRoleEntity.setEventType(eventType.name());
       auditAppRoleEntity.setEventDesc(eventDesc);
       auditAppRoleEntity.setCreatedBy(getAppUserEntityById(0));
@@ -200,13 +187,18 @@ public class AuditService {
       appUserEntity = getAppUserEntityById(appUserId);
     }
 
+    AppUserEntity createdBy = getAppUserEntityById(0);
+    if (createdBy == null) {
+      createdBy = appUserEntity;
+    }
+
     try {
       AuditAppUserEntity auditAppUserEntity = new AuditAppUserEntity();
       auditAppUserEntity.setAppUser(appUserEntity);
-      auditAppUserEntity.setEventData(serializeToJson(appUserEntity));
+      auditAppUserEntity.setEventData(appUserEntity);
       auditAppUserEntity.setEventType(eventType.name());
       auditAppUserEntity.setEventDesc(eventDesc);
-      auditAppUserEntity.setCreatedBy(getAppUserEntityById(0));
+      auditAppUserEntity.setCreatedBy(createdBy);
       auditAppUserEntity.setCreatedAt(LocalDateTime.now());
       auditAppUserEntity.setIpAddress(getIpAddress(request));
       auditAppUserEntity.setUserAgent(getUserAgent(request));
