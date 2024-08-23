@@ -202,7 +202,7 @@ public class AppsAppUserController {
       @PathVariable final String appId) {
     try {
       final List<AppsAppUserEntity> appsAppUserEntities =
-          appsAppUserService.readAppsAppUsers(appId);
+          appsAppUserService.readAppsAppUsersByAppId(appId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
       log.error("Read Apps App Users By App Id: [{}]", appId, ex);
@@ -256,7 +256,7 @@ public class AppsAppUserController {
       @PathVariable final int appUserId) {
     try {
       final List<AppsAppUserEntity> appsAppUserEntities =
-          appsAppUserService.readAppsAppUsers(appUserId);
+          appsAppUserService.readAppsAppUsersByUserId(appUserId);
       return entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
     } catch (Exception ex) {
       log.error("Read Apps App Users By User Id: [{}]", appUserId, ex);

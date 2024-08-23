@@ -288,7 +288,7 @@ public class AppUserBasicAuthController {
   @PostMapping("/{appId}/refresh")
   public ResponseEntity<UserLoginResponse> refreshToken(
       @PathVariable final String appId,
-      @RequestBody final AppTokenRequest appTokenRequest,
+      @Valid @RequestBody final AppTokenRequest appTokenRequest,
       final HttpServletRequest request) {
     try {
       if (!StringUtils.hasText(appTokenRequest.getRefreshToken())) {
@@ -394,7 +394,7 @@ public class AppUserBasicAuthController {
   @PostMapping("/{appId}/logout")
   public ResponseEntity<ResponseStatusInfo> logout(
       @PathVariable final String appId,
-      @RequestBody final AppTokenRequest appTokenRequest,
+      @Valid @RequestBody final AppTokenRequest appTokenRequest,
       final HttpServletRequest request) {
     try {
       if (!StringUtils.hasText(appTokenRequest.getAccessToken())) {
@@ -483,7 +483,7 @@ public class AppUserBasicAuthController {
   @PostMapping("/{appId}/reset")
   public ResponseEntity<ResponseStatusInfo> resetAppUser(
       @PathVariable final String appId,
-      @RequestBody final UserLoginRequest userLoginRequest,
+      @Valid @RequestBody final UserLoginRequest userLoginRequest,
       final HttpServletRequest request) {
     try {
       final AppUserEntity appUserEntity = appUserPasswordService.resetUser(appId, userLoginRequest);

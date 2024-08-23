@@ -10,6 +10,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginRequest {
-  @NotBlank private String email;
-  @NotBlank @ToString.Exclude private String password;
+  @NotBlank(message = "REQUIRED")
+  private String email;
+
+  @NotBlank(message = "REQUIRED")
+  @ToString.Exclude
+  private String password;
 }

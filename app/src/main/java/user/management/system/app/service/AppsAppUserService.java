@@ -41,12 +41,12 @@ public class AppsAppUserService {
         Sort.by(Sort.Direction.ASC, "app.name", "appUser.lastName"));
   }
 
-  public List<AppsAppUserEntity> readAppsAppUsers(final String appId) {
+  public List<AppsAppUserEntity> readAppsAppUsersByAppId(final String appId) {
     log.debug("Read Apps App Users: [{}]", appId);
     return appsAppUserRepository.findAllByAppIdOrderByAppUserLastNameDesc(appId);
   }
 
-  public List<AppsAppUserEntity> readAppsAppUsers(final int appUserId) {
+  public List<AppsAppUserEntity> readAppsAppUsersByUserId(final int appUserId) {
     log.debug("Read Apps App Users: [{}]", appUserId);
     return appsAppUserRepository.findAllByAppUserIdOrderByAppNameAsc(appUserId);
   }

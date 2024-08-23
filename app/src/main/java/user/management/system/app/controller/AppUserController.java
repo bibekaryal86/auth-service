@@ -137,7 +137,7 @@ public class AppUserController {
   public ResponseEntity<AppUserResponse> readAppUsersByAppId(@PathVariable final String appId) {
     try {
       final List<AppsAppUserEntity> appsAppUserEntities =
-          appsAppUserService.readAppsAppUsers(appId);
+          appsAppUserService.readAppsAppUsersByAppId(appId);
       final List<AppUserEntity> appUserEntities =
           appsAppUserEntities.stream().map(AppsAppUserEntity::getAppUser).toList();
       final List<AppUserEntity> filteredAppUserEntities =
