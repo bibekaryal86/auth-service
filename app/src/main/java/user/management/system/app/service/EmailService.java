@@ -121,7 +121,8 @@ public class EmailService {
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_validate_user.html")
-            .replace("{activation_link}", activationLink);
+            .replace("{activation_link}", activationLink)
+            .replace("{app_name}", appsEntity.getName());
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
     final String subject = String.format("[%s] User Validation", appsEntity.getName());
@@ -145,7 +146,8 @@ public class EmailService {
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_reset_user.html")
-            .replace("{reset_link}", resetLink);
+            .replace("{reset_link}", resetLink)
+            .replace("{app_name}", appsEntity.getName());
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
     final String subject = String.format("[%s] User Reset", appsEntity.getName());

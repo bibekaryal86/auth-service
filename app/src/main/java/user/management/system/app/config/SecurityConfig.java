@@ -36,7 +36,7 @@ public class SecurityConfig {
   @Order(1)
   public SecurityFilterChain noAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf(AbstractHttpConfigurer::disable)
-        .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping")
+        .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping", "/api/v1/na_app_users/**")
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
