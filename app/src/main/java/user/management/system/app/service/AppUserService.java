@@ -50,7 +50,7 @@ public class AppUserService {
     validateCreateAppUser(appUserRequest);
 
     AppUserEntity appUserEntity = new AppUserEntity();
-    BeanUtils.copyProperties(appUserRequest, appUserEntity, "password");
+    BeanUtils.copyProperties(appUserRequest, appUserEntity, "password", "addresses");
     appUserEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
     appUserEntity.setIsValidated(false);
     appUserEntity = appUserRepository.save(appUserEntity);

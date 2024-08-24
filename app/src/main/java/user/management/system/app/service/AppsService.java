@@ -28,9 +28,8 @@ public class AppsService {
   public AppsEntity createApp(final AppsRequest appsRequest) {
     log.debug("Create Apps: [{}]", appsRequest);
     AppsEntity appEntity = new AppsEntity();
+    BeanUtils.copyProperties(appsRequest, appEntity);
     appEntity.setId(getRandomId());
-    appEntity.setName(appsRequest.getName());
-    appEntity.setDescription(appsRequest.getDescription());
     return appsRepository.save(appEntity);
   }
 
@@ -48,10 +47,10 @@ public class AppsService {
 
   // UPDATE
   @CacheEvict(value = "apps", allEntries = true, beforeInvocation = true)
-  public AppsEntity updateApps(final String id, final AppsRequest appRequest) {
-    log.debug("Update Apps: [{}], [{}]", id, appRequest);
+  public AppsEntity updateApps(final String id, final AppsRequest appsRequest) {
+    log.debug("Update Apps: [{}], [{}]", id, appsRequest);
     final AppsEntity appEntity = readApp(id);
-    BeanUtils.copyProperties(appRequest, appEntity);
+    BeanUtils.copyProperties(appsRequest, appEntity);
     return appsRepository.save(appEntity);
   }
 
