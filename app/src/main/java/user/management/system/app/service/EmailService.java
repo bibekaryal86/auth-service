@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
+import user.management.system.app.model.events.AppUserEmailUpdatedEvent;
 import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
@@ -58,9 +59,7 @@ public class EmailService {
               .put(Emailv31.Message.CUSTOMID, UUID.randomUUID().toString())
               .put(
                   Emailv31.Message.FROM,
-                  new JSONObject()
-                      .put("Email", emailFrom)
-                      .put("Name", String.format("[%s] %s", appName, emailFrom)))
+                  new JSONObject().put("Email", emailFrom).put("Name", appName))
               .put(
                   Emailv31.Message.TO,
                   new JSONArray()
@@ -111,8 +110,18 @@ public class EmailService {
     sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
   }
 
+  @EventListener
+  public void handleUserEmailUpdated(final AppUserEmailUpdatedEvent appUserEmailUpdatedEvent) {
+    final AppsEntity appsEntity = appUserEmailUpdatedEvent.getAppsEntity();
+    final AppUserEntity appUserEntity = appUserEmailUpdatedEvent.getAppUserEntity();
+    final String baseUrl = appUserEmailUpdatedEvent.getBaseUrl();
+    log.info("Handle User Email Updated: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
+    sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
+  }
+
   public void sendUserValidationEmail(
       final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
+    final String appName = convertAppNameToTitleCase(appsEntity.getName());
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String activationLink =
         String.format(
@@ -122,23 +131,17 @@ public class EmailService {
         fileReaderUtils
             .readFileContents("email/templates/email_validate_user.html")
             .replace("{activation_link}", activationLink)
-            .replace("{app_name}", appsEntity.getName());
+            .replace("{app_name}", appName);
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Validation", appsEntity.getName());
+    final String subject = String.format("[%s] User Validation", appName);
     sendEmail(
-        appsEntity.getName(),
-        appUserEntity.getEmail(),
-        fullName,
-        subject,
-        null,
-        emailHtmlContent,
-        null,
-        null);
+        appName, appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
   }
 
   public void sendUserResetEmail(
       final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
+    final String appName = convertAppNameToTitleCase(appsEntity.getName());
     final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
     final String resetLink =
         String.format(
@@ -148,18 +151,19 @@ public class EmailService {
         fileReaderUtils
             .readFileContents("email/templates/email_reset_user.html")
             .replace("{reset_link}", resetLink)
-            .replace("{app_name}", appsEntity.getName());
+            .replace("{app_name}", appName);
     final String fullName =
         String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Reset", appsEntity.getName());
+    final String subject = String.format("[%s] User Reset", appName);
     sendEmail(
-        appsEntity.getName(),
-        appUserEntity.getEmail(),
-        fullName,
-        subject,
-        null,
-        emailHtmlContent,
-        null,
-        null);
+        appName, appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+  }
+
+  private String convertAppNameToTitleCase(final String appName) {
+    final String[] words = appName.replace('-', ' ').split("\\s+");
+    for (int i = 0; i < words.length; i++) {
+      words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase();
+    }
+    return String.join(" ", words);
   }
 }

@@ -185,7 +185,7 @@ CREATE INDEX idx_audit_apps_id ON audit_apps (app_id);
 
 -- admin table data
 INSERT INTO apps (id, name, description)
-VALUES ('3e4567e89b12', 'USER-MGMT-SYS', 'MANAGE APPS, USERS, ROLES AND PERMISSIONS');
+VALUES ('3e4567e89b12', 'USER MANAGEMENT SYSTEM', 'MANAGE APPS, USERS, ROLES AND PERMISSIONS');
 
 INSERT INTO app_permission (app_id, name, description)
 VALUES ('3e4567e89b12', 'PERMISSION_CREATE', 'CAN ADD PERMISSION');

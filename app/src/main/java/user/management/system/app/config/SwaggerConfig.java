@@ -19,6 +19,6 @@ public class SwaggerConfig {
     ClassPathResource openApiResource = new ClassPathResource("openapi.json");
     String openApiJson =
         StreamUtils.copyToString(openApiResource.getInputStream(), StandardCharsets.UTF_8);
-      return new OpenAPIV3Parser().readContents(openApiJson, null, null).getOpenAPI();
+    return new OpenAPIV3Parser().readContents(openApiJson, null, null).getOpenAPI();
   }
 }

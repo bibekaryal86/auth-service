@@ -354,6 +354,12 @@ public class AuditService {
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER, eventDesc);
   }
 
+  public void auditAppUserUpdateEmail(
+      final HttpServletRequest request, final AppUserEntity appUserEntity) {
+    final String eventDesc = String.format("Update User [%s] email", appUserEntity.getId());
+    auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER_EMAIL, eventDesc);
+  }
+
   public void auditAppUserUpdatePassword(
       final HttpServletRequest request, final AppUserEntity appUserEntity) {
     final String eventDesc = String.format("Update User [%s] password", appUserEntity.getId());

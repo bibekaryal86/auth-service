@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,6 +21,7 @@ import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.UserLoginRequest;
+import user.management.system.app.model.dto.UserUpdateEmailRequest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.service.AppUserService;
@@ -105,6 +108,28 @@ public class AppUserController {
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Update App User: [{}] | [{}]", id, appUserRequest, ex);
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
+  @PutMapping("{appId}/user/{id}/email")
+  public ResponseEntity<AppUserResponse> updateAppUserEmail(
+      @PathVariable final String appId,
+      @PathVariable final int id,
+      @Valid @RequestBody final UserUpdateEmailRequest userUpdateEmailRequest,
+      final HttpServletRequest request) {
+    try {
+      permissionCheck.canUserAccessAppUser("", id);
+      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      final AppsAppUserEntity appsAppUserEntity =
+          appsAppUserService.readAppsAppUser(appId, userUpdateEmailRequest.getOldEmail());
+      final AppUserEntity appUserEntity =
+          appUserService.updateAppUserEmail(
+              id, userUpdateEmailRequest, appsAppUserEntity.getApp(), baseUrl);
+      auditService.auditAppUserUpdateEmail(request, appUserEntity);
+      return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    } catch (Exception ex) {
+      log.error("Update App User Email: [{}] | [{}]", id, userUpdateEmailRequest, ex);
       return entityDtoConvertUtils.getResponseErrorAppUser(ex);
     }
   }

@@ -4,6 +4,7 @@ public class AuditEnums {
   public enum AuditUsers {
     CREATE_USER,
     UPDATE_USER,
+    UPDATE_USER_EMAIL,
     UPDATE_USER_PASSWORD,
     SOFT_DELETE_USER,
     HARD_DELETE_USER,
