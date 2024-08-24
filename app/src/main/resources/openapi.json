@@ -91,44 +91,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Not Found - App Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -178,54 +150,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Not Found - App Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -264,44 +201,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Not Found - App Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -343,44 +252,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authenticated"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Not Authorized or Not Validated"
           },
           "404": {
-            "description": "Not Found - User Not Found by specified ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - User Not Found by specified ID"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -431,54 +312,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authenticated"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Not Authorized or Not Validated"
           },
           "404": {
-            "description": "Not Found - User to update Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - User to update Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -518,44 +364,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authenticated"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Not Authorized or Not Validated"
           },
           "404": {
-            "description": "Not Found - User to soft delete Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - User to soft delete Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -608,44 +426,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authenticated"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Not Authorized or Not Validated"
           },
           "404": {
-            "description": "Not Found - User to update password Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - User to update password Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -687,44 +477,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Role Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -775,54 +537,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Role Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -862,44 +589,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Role Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -941,44 +640,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Permission Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1029,54 +700,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Permission Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1116,44 +752,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - User Not Authorized"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - User Forbidden or Not Validated"
           },
           "404": {
-            "description": "Not Found - Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Permission Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1205,44 +813,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Application or User Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1294,44 +874,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User Token not found for input refresh token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1383,44 +935,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User Token not found for input access token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1472,54 +996,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User Not Found for App",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1571,54 +1060,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid or missing data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Invalid or missing data"
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Application Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1659,54 +1113,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User or App to Link Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1747,44 +1166,16 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1825,54 +1216,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User or Role to Link Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -1913,54 +1269,19 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Role or Permission to Link Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2001,44 +1322,16 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2090,44 +1383,16 @@
             }
           },
           "400": {
-            "description": "Bad Request - Required Element Missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Bad Request - Required Element Missing"
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2256,44 +1521,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2335,44 +1572,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User to restore Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2414,44 +1623,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2493,44 +1674,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2560,14 +1713,7 @@
             }
           },
           "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Internal server error"
           }
         },
         "security": [
@@ -2597,14 +1743,7 @@
             }
           },
           "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Internal server error"
           }
         }
       }
@@ -2649,44 +1788,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Application or User Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2736,44 +1847,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Missing/Incorrect Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - Invalid Credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Application or User Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseStatusInfo"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2803,34 +1886,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2872,34 +1934,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -2940,34 +1981,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3017,44 +2037,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - App User Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3084,34 +2076,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3141,34 +2112,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3213,34 +2163,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3292,44 +2221,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3379,44 +2280,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3458,34 +2331,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3515,34 +2367,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3583,34 +2414,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3651,44 +2461,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found - User Not Found by specified Email",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3718,34 +2497,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3797,44 +2555,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Role Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3884,44 +2614,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Role Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -3963,34 +2665,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -4044,34 +2725,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRolePermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -4101,34 +2761,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -4158,34 +2797,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -4226,34 +2844,13 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -5096,44 +3693,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsAppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -5174,44 +3743,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - App Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppsResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -5253,44 +3794,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authenticated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Not Authorized or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - User to delete Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppUserResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -5332,44 +3845,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Role Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppRoleResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
@@ -5411,44 +3896,16 @@
             }
           },
           "401": {
-            "description": "Unauthorized - User Not Authorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Unauthorized - Missing/Incorrect Credentials"
           },
           "403": {
-            "description": "Forbidden - User Forbidden or Not Validated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Forbidden - Invalid Credentials"
           },
           "404": {
-            "description": "Not Found - Permission Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Not Found - Application or User Not Found"
           },
           "500": {
-            "description": "Internal Server Error - Other Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppPermissionResponse"
-                }
-              }
-            }
+            "description": "Internal Server Error - Other Errors"
           }
         },
         "security": [
