@@ -21,10 +21,9 @@ public class PermissionCheck {
   @Before("@annotation(checkPermission)")
   public void checkPermission(final CheckPermission checkPermission) {
     final String[] requiredPermissions = checkPermission.value();
-    final Authentication authentication = getAuthentication();
 
     try {
-      final AuthToken authToken = (AuthToken) authentication.getCredentials();
+      AuthToken authToken = getAuthentication();
       final boolean isPermitted = checkUserPermission(authToken, List.of(requiredPermissions));
 
       if (!isPermitted) {
@@ -36,10 +35,8 @@ public class PermissionCheck {
   }
 
   public void canUserAccessAppUser(final String email, final int id) {
-    final Authentication authentication = getAuthentication();
-
     try {
-      AuthToken authToken = (AuthToken) authentication.getCredentials();
+      AuthToken authToken = getAuthentication();
       boolean isSuperUser = checkSuperUser(authToken);
       boolean isPermitted = checkPermission(email, id, authToken);
 
@@ -53,10 +50,8 @@ public class PermissionCheck {
   }
 
   public List<AppUserEntity> filterAppUserListByAccess(List<AppUserEntity> appUserEntities) {
-    final Authentication authentication = getAuthentication();
-
     try {
-      AuthToken authToken = (AuthToken) authentication.getCredentials();
+      AuthToken authToken = getAuthentication();
       boolean isSuperUser = checkSuperUser(authToken);
 
       if (isSuperUser) {
@@ -74,7 +69,7 @@ public class PermissionCheck {
     }
   }
 
-  private Authentication getAuthentication() {
+  private AuthToken getAuthentication() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication == null
@@ -83,7 +78,12 @@ public class PermissionCheck {
       throw new CheckPermissionException("User not authenticated...");
     }
 
-    return authentication;
+    if (authentication.getCredentials() != null
+        && authentication.getCredentials() instanceof AuthToken authToken) {
+      return authToken;
+    }
+
+    throw new CheckPermissionException("User not authorized...");
   }
 
   private boolean checkUserPermission(

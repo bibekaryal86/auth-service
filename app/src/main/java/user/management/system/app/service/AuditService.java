@@ -1,5 +1,8 @@
 package user.management.system.app.service;
 
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_STANDARD;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -58,9 +61,9 @@ public class AuditService {
   private AppUserEntity getAppUserEntityById(int appUserId) {
     if (appUserId == 0) {
       final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      final AuthToken authToken = (AuthToken) authentication.getCredentials();
-
-      if (authToken != null) {
+      if (authentication != null
+          && authentication.getCredentials() != null
+          && authentication.getCredentials() instanceof AuthToken authToken) {
         appUserId = authToken.getUser().getId();
       }
     }
@@ -79,6 +82,11 @@ public class AuditService {
     return appRoleRepository.findById(appRoleId).orElse(null);
   }
 
+  private AppRoleEntity getAppRoleEntity(final boolean isGuestUser) {
+    final String roleName = isGuestUser ? APP_ROLE_NAME_GUEST : APP_ROLE_NAME_STANDARD;
+    return appRoleRepository.findByName(roleName).orElse(null);
+  }
+
   private AppsEntity getAppsEntity(final String appId) {
     return appsRepository.findById(appId).orElse(null);
   }
@@ -89,11 +97,11 @@ public class AuditService {
       final int appPermissionId,
       final AuditEnums.AuditPermissions eventType,
       final String eventDesc) {
-    if (appPermissionEntity == null) {
-      appPermissionEntity = getAppPermissionEntity(appPermissionId);
-    }
-
     try {
+      if (appPermissionEntity == null) {
+        appPermissionEntity = getAppPermissionEntity(appPermissionId);
+      }
+
       AuditAppPermissionEntity auditAppPermissionEntity = new AuditAppPermissionEntity();
       auditAppPermissionEntity.setAppPermission(appPermissionEntity);
       auditAppPermissionEntity.setEventData(appPermissionEntity);
@@ -108,7 +116,7 @@ public class AuditService {
     } catch (Exception ex) {
       log.error(
           "AuditAppPermissionException: [{}], [{}], [{}]",
-          appPermissionEntity.getId(),
+          appPermissionEntity == null ? appPermissionId : appPermissionEntity.getId(),
           eventType,
           eventDesc,
           ex);
@@ -121,11 +129,11 @@ public class AuditService {
       final String appId,
       final AuditEnums.AuditApps eventType,
       final String eventDesc) {
-    if (appsEntity == null) {
-      appsEntity = getAppsEntity(appId);
-    }
-
     try {
+      if (appsEntity == null) {
+        appsEntity = getAppsEntity(appId);
+      }
+
       AuditAppsEntity auditAppsEntity = new AuditAppsEntity();
       auditAppsEntity.setApp(appsEntity);
       auditAppsEntity.setEventData(appsEntity);
@@ -139,7 +147,11 @@ public class AuditService {
       auditAppsRepository.save(auditAppsEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditAppsException: [{}], [{}], [{}]", appsEntity.getId(), eventType, eventDesc, ex);
+          "AuditAppsException: [{}], [{}], [{}]",
+          appsEntity == null ? appId : appsEntity.getId(),
+          eventType,
+          eventDesc,
+          ex);
     }
   }
 
@@ -149,11 +161,11 @@ public class AuditService {
       final int appRoleId,
       final AuditEnums.AuditRoles eventType,
       final String eventDesc) {
-    if (appRoleEntity == null) {
-      appRoleEntity = getAppRoleEntity(appRoleId);
-    }
-
     try {
+      if (appRoleEntity == null) {
+        appRoleEntity = getAppRoleEntity(appRoleId);
+      }
+
       AuditAppRoleEntity auditAppRoleEntity = new AuditAppRoleEntity();
       auditAppRoleEntity.setAppRole(appRoleEntity);
       auditAppRoleEntity.setEventData(appRoleEntity);
@@ -168,7 +180,7 @@ public class AuditService {
     } catch (Exception ex) {
       log.error(
           "AuditAppRoleException: [{}], [{}], [{}]",
-          appRoleEntity.getId(),
+          appRoleEntity == null ? appRoleId : appRoleEntity.getId(),
           eventType,
           eventDesc,
           ex);
@@ -181,16 +193,16 @@ public class AuditService {
       final int appUserId,
       final AuditEnums.AuditUsers eventType,
       final String eventDesc) {
-    if (appUserEntity == null) {
-      appUserEntity = getAppUserEntityById(appUserId);
-    }
-
-    AppUserEntity createdBy = getAppUserEntityById(0);
-    if (createdBy == null) {
-      createdBy = appUserEntity;
-    }
-
     try {
+      if (appUserEntity == null) {
+        appUserEntity = getAppUserEntityById(appUserId);
+      }
+
+      AppUserEntity createdBy = getAppUserEntityById(0);
+      if (createdBy == null) {
+        createdBy = appUserEntity;
+      }
+
       AuditAppUserEntity auditAppUserEntity = new AuditAppUserEntity();
       auditAppUserEntity.setAppUser(appUserEntity);
       auditAppUserEntity.setEventData(appUserEntity);
@@ -205,7 +217,7 @@ public class AuditService {
     } catch (Exception ex) {
       log.error(
           "AuditAppUserException: [{}], [{}], [{}]",
-          appUserEntity.getId(),
+          appUserEntity == null ? appUserId : appUserEntity.getId(),
           eventType,
           eventDesc,
           ex);
@@ -322,10 +334,15 @@ public class AuditService {
   }
 
   public void auditAppUserCreate(
-      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity, final boolean isGuestUser) {
     final String eventDesc =
         String.format("Create User [%s] for app [%s]", appUserEntity.getId(), appId);
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.CREATE_USER, eventDesc);
+
+    // others
+    auditAppUserAssignApp(request, appId, appUserEntity);
+    auditAppUserAssignRole(request, appUserEntity, isGuestUser);
+    auditAppUserValidateInit(request, appId, appUserEntity);
   }
 
   public void auditAppUserUpdate(
@@ -473,6 +490,14 @@ public class AuditService {
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_VALIDATE_ERROR, eventDesc);
   }
 
+  private void auditAppUserAssignRole(final HttpServletRequest request, final AppUserEntity appUserEntity, final boolean isGuestUser) {
+    final AppRoleEntity appRoleEntity = getAppRoleEntity(isGuestUser);
+    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
+    appUserRoleEntity.setAppUser(appUserEntity);
+    appUserRoleEntity.setAppRole(appRoleEntity);
+    auditAppUserAssignRole(request, appUserRoleEntity);
+  }
+
   public void auditAppUserAssignRole(
       final HttpServletRequest request, final AppUserRoleEntity appUserRoleEntity) {
     final String eventDesc =
@@ -488,6 +513,17 @@ public class AuditService {
     final String eventDesc =
         String.format("Unassign Role [%s] from User [%s]", appRoleId, appUserId);
     auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.UNASSIGN_ROLE, eventDesc);
+  }
+
+  private void auditAppUserAssignApp(final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+    AppsEntity appsEntity = new AppsEntity();
+    appsEntity.setId(appId);
+
+    AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
+    appsAppUserEntity.setAppUser(appUserEntity);
+    appsAppUserEntity.setApp(appsEntity);
+
+    auditAppUserAssignApp(request, appsAppUserEntity);
   }
 
   public void auditAppUserAssignApp(

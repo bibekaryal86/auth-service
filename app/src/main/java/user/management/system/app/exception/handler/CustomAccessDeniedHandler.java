@@ -26,7 +26,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
     ResponseStatusInfo responseStatusInfo;
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication == null) {
       responseStatusInfo =

@@ -140,7 +140,7 @@ CREATE TABLE audit_app_role
     created_at  TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by  INTEGER,
     ip_address  VARCHAR(50)                                          NOT NULL,
-    user_agent  VARCHAR(100)                                         NOT NULL,
+    user_agent  VARCHAR(250)                                         NOT NULL,
     FOREIGN KEY (app_role_id) REFERENCES app_role (id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES app_user (id) ON DELETE SET NULL
 );

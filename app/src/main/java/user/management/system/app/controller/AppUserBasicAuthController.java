@@ -135,7 +135,7 @@ public class AppUserBasicAuthController {
       final AppsEntity appsEntity = appsService.readApp(appId);
       final AppUserEntity appUserEntity =
           appUserService.createAppUser(appsEntity, appUserRequest, baseUrl);
-      auditService.auditAppUserCreate(request, appId, appUserEntity);
+      auditService.auditAppUserCreate(request, appId, appUserEntity, appUserRequest.isGuestUser());
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Create App User: [{}] | [{}]", appId, appUserRequest, ex);
