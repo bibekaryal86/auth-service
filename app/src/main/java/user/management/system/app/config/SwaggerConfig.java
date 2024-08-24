@@ -19,10 +19,6 @@ public class SwaggerConfig {
     ClassPathResource openApiResource = new ClassPathResource("openapi.json");
     String openApiJson =
         StreamUtils.copyToString(openApiResource.getInputStream(), StandardCharsets.UTF_8);
-    OpenAPI openAPI = new OpenAPIV3Parser().readContents(openApiJson, null, null).getOpenAPI();
-
-    // remove schema from actuator, no need to display
-    openAPI.getComponents().getSchemas().remove("Link");
-    return openAPI;
+      return new OpenAPIV3Parser().readContents(openApiJson, null, null).getOpenAPI();
   }
 }

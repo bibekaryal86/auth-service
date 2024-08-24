@@ -45,7 +45,7 @@ management:
         exclude: shutdown
 
 springdoc:
-  # show-actuator: true
+  show-actuator: true
   swagger-ui:
     doc-expansion: none
 
