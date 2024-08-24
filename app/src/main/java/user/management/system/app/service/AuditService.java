@@ -334,7 +334,10 @@ public class AuditService {
   }
 
   public void auditAppUserCreate(
-      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity, final boolean isGuestUser) {
+      final HttpServletRequest request,
+      final String appId,
+      final AppUserEntity appUserEntity,
+      final boolean isGuestUser) {
     final String eventDesc =
         String.format("Create User [%s] for app [%s]", appUserEntity.getId(), appId);
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.CREATE_USER, eventDesc);
@@ -490,7 +493,10 @@ public class AuditService {
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.USER_VALIDATE_ERROR, eventDesc);
   }
 
-  private void auditAppUserAssignRole(final HttpServletRequest request, final AppUserEntity appUserEntity, final boolean isGuestUser) {
+  private void auditAppUserAssignRole(
+      final HttpServletRequest request,
+      final AppUserEntity appUserEntity,
+      final boolean isGuestUser) {
     final AppRoleEntity appRoleEntity = getAppRoleEntity(isGuestUser);
     AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
     appUserRoleEntity.setAppUser(appUserEntity);
@@ -515,7 +521,8 @@ public class AuditService {
     auditAppUser(request, null, appUserId, AuditEnums.AuditUsers.UNASSIGN_ROLE, eventDesc);
   }
 
-  private void auditAppUserAssignApp(final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
+  private void auditAppUserAssignApp(
+      final HttpServletRequest request, final String appId, final AppUserEntity appUserEntity) {
     AppsEntity appsEntity = new AppsEntity();
     appsEntity.setId(appId);
 

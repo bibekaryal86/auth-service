@@ -3,6 +3,9 @@ package user.management.system.app.util;
 import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -71,9 +74,11 @@ public class JwtUtils {
   }
 
   public static String encodeAuthCredentials(
-      final AppUserDto appUserDto, final long expirationMillis) {
+      final String appId, final AppUserDto appUserDto, final long expirationMillis) {
+    AuthToken authToken = appUserDto.toAuthToken();
+    authToken.setAppId(appId);
     Map<String, Object> tokenClaim = new HashMap<>();
-    tokenClaim.put("authToken", appUserDto.toAuthToken());
+    tokenClaim.put("authToken", authToken);
     return Jwts.builder()
         .claims(tokenClaim)
         .subject(appUserDto.getEmail())
@@ -93,13 +98,14 @@ public class JwtUtils {
               .parseSignedClaims(token)
               .getPayload()
               .getSubject();
+      final Claims claims =
+          Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+
       final AuthToken authToken =
-          Jwts.parser()
-              .verifyWith(getSigningKey())
-              .build()
-              .parseSignedClaims(token)
-              .getPayload()
-              .get("authToken", AuthToken.class);
+          new ObjectMapper()
+              .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+              .convertValue(claims.get("authToken"), AuthToken.class);
+
       return Map.of(subject, authToken);
     } catch (ExpiredJwtException e) {
       throw new JwtInvalidException("Auth Token has expired");

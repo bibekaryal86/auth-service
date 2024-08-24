@@ -285,23 +285,13 @@ public class AppUserBasicAuthController {
 
       Map<String, AuthToken> emailAuthToken =
           decodeAuthCredentials(appTokenRequest.getRefreshToken());
-      Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
-      String email = firstEntry.getKey();
-      AuthToken authToken = firstEntry.getValue();
-
       final AppTokenEntity appTokenEntity =
           appTokenService.readTokenByRefreshToken(appTokenRequest.getRefreshToken());
 
-      if (!Objects.equals(email, appTokenEntity.getUser().getEmail())) {
-        throw new JwtInvalidException("Identity Mismatch");
-      }
-
-      if (!Objects.equals(appId, authToken.getAppId())) {
-        throw new JwtInvalidException("App Mismatch");
-      }
+      checkValidToken(appId, emailAuthToken, appTokenEntity);
 
       final UserLoginResponse userLoginResponse =
-          appTokenService.saveToken(appTokenEntity.getId(), null, appTokenEntity.getUser());
+          appTokenService.saveToken(appTokenEntity.getId(), null, appTokenEntity.getUser(), appId);
       auditService.auditAppUserTokenRefreshSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.ok(userLoginResponse);
     } catch (Exception ex) {
@@ -376,23 +366,13 @@ public class AppUserBasicAuthController {
 
       Map<String, AuthToken> emailAuthToken =
           decodeAuthCredentials(appTokenRequest.getRefreshToken());
-      Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
-      String email = firstEntry.getKey();
-      AuthToken authToken = firstEntry.getValue();
-
       final AppTokenEntity appTokenEntity =
           appTokenService.readTokenByAccessToken(appTokenRequest.getAccessToken());
 
-      if (!Objects.equals(email, appTokenEntity.getUser().getEmail())) {
-        throw new JwtInvalidException("Identity Mismatch");
-      }
-
-      if (!Objects.equals(appId, authToken.getAppId())) {
-        throw new JwtInvalidException("App Mismatch");
-      }
+      checkValidToken(appId, emailAuthToken, appTokenEntity);
 
       appTokenService.saveToken(
-          appTokenEntity.getId(), LocalDateTime.now(), appTokenEntity.getUser());
+          appTokenEntity.getId(), LocalDateTime.now(), appTokenEntity.getUser(), appId);
 
       auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser());
       return ResponseEntity.noContent().build();
@@ -592,6 +572,27 @@ public class AppUserBasicAuthController {
       log.error("Reset App User Init: [{}], [{}]", appId, email, ex);
       auditService.auditAppUserResetFailure(request, appId, email, ex);
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
+    }
+  }
+
+  private void checkValidToken(
+      final String appId,
+      Map<String, AuthToken> emailAuthToken,
+      final AppTokenEntity appTokenEntity) {
+    Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
+    String email = firstEntry.getKey();
+    AuthToken authToken = firstEntry.getValue();
+
+    if (!Objects.equals(email, appTokenEntity.getUser().getEmail())) {
+      throw new JwtInvalidException("Identity Mismatch");
+    }
+
+    if (!Objects.equals(appId, authToken.getAppId())) {
+      throw new JwtInvalidException("App Mismatch");
+    }
+
+    if (appTokenEntity.getDeletedDate() != null) {
+      throw new JwtInvalidException("Deleted Token");
     }
   }
 }

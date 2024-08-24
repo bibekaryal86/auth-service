@@ -59,7 +59,7 @@ public class AppUserPasswordService {
       throw new UserNotAuthorizedException();
     }
 
-    return appTokenService.saveToken(null, null, appUserEntity);
+    return appTokenService.saveToken(null, null, appUserEntity, appId);
   }
 
   public AppUserEntity resetUser(final String appId, final UserLoginRequest userLoginRequest) {

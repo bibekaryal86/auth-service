@@ -48,23 +48,33 @@ public class AppTokenService {
   // not available
 
   public UserLoginResponse saveToken(
-      final Integer id, final LocalDateTime deletedDate, final AppUserEntity appUserEntity) {
+      final Integer id,
+      final LocalDateTime deletedDate,
+      final AppUserEntity appUserEntity,
+      final String appId) {
     log.debug("Save Token: [{}], [{}], [{}]", id, deletedDate, appUserEntity.getEmail());
+
+    if (id != null && deletedDate != null) {
+      appTokenRepository
+          .findById(id)
+          .ifPresent(
+              toDelete -> {
+                toDelete.setDeletedDate(deletedDate);
+                appTokenRepository.save(toDelete);
+              });
+      return UserLoginResponse.builder().build();
+    }
 
     final AppUserDto appUserDto =
         entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
 
     AppTokenEntity appTokenEntity = new AppTokenEntity();
     appTokenEntity.setUser(appUserEntity);
-    appTokenEntity.setAccessToken(getNewAccessToken(appUserDto));
-    appTokenEntity.setRefreshToken(getNewRefreshToken(appUserDto));
+    appTokenEntity.setAccessToken(getNewAccessToken(appId, appUserDto));
+    appTokenEntity.setRefreshToken(getNewRefreshToken(appId, appUserDto));
 
     if (id != null) {
       appTokenEntity.setId(id);
-
-      if (deletedDate != null) {
-        appTokenEntity.setDeletedDate(deletedDate);
-      }
     }
 
     appTokenEntity = appTokenRepository.save(appTokenEntity);
@@ -77,12 +87,12 @@ public class AppTokenService {
   }
 
   // 15 minutes
-  private String getNewAccessToken(final AppUserDto appUserDto) {
-    return encodeAuthCredentials(appUserDto, 1000 * 60 * 15);
+  private String getNewAccessToken(final String appId, final AppUserDto appUserDto) {
+    return encodeAuthCredentials(appId, appUserDto, 1000 * 60 * 15);
   }
 
   // 24 hours
-  private String getNewRefreshToken(final AppUserDto appUserDto) {
-    return encodeAuthCredentials(appUserDto, 1000 * 60 * 60 * 24);
+  private String getNewRefreshToken(final String appId, final AppUserDto appUserDto) {
+    return encodeAuthCredentials(appId, appUserDto, 1000 * 60 * 60 * 24);
   }
 }
