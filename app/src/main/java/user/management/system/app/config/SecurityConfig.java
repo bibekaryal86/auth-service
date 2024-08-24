@@ -41,10 +41,12 @@ public class SecurityConfig {
               boolean matches =
                   request
                       .getRequestURI()
-                      .matches("^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_app_users/|/error).*");
-//              if (matches) {
-//                System.out.println("noAuthSecurityFilterChain: " + request.getRequestURI());
-//              }
+                      .matches(
+                          "^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_app_users/|/error).*");
+              //              if (matches) {
+              //                System.out.println("noAuthSecurityFilterChain: " +
+              // request.getRequestURI());
+              //              }
               return matches;
             })
         // .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping",
@@ -65,9 +67,10 @@ public class SecurityConfig {
                   request
                       .getRequestURI()
                       .matches("^.*(?:/actuator/|/tests/reset|/basic_app_users/).*");
-//              if (matches) {
-//                System.out.println("basicAuthSecurityFilterChain: " + request.getRequestURI());
-//              }
+              //              if (matches) {
+              //                System.out.println("basicAuthSecurityFilterChain: " +
+              // request.getRequestURI());
+              //              }
               return matches;
             })
         // .securityMatcher("/api/v1/basic_app_users/**", "/actuator/**", "/tests/reset")
@@ -82,9 +85,10 @@ public class SecurityConfig {
   @Order(3)
   public SecurityFilterChain bearerAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-            .securityMatcher(request -> {
-                //System.out.println("bearerAuthSecurityFilterChain: " + request.getRequestURI());
-                return true;
+        .securityMatcher(
+            request -> {
+              // System.out.println("bearerAuthSecurityFilterChain: " + request.getRequestURI());
+              return true;
             })
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .addFilterBefore(
