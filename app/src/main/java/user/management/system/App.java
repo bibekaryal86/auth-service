@@ -34,10 +34,10 @@ public class App {
   }
 
   private static void validateInitArgs() {
-    Map<String, String> properties = getAllSystemEnvProperties();
-    List<String> requiredEnvProperties =
+    final Map<String, String> properties = getAllSystemEnvProperties();
+    final List<String> requiredEnvProperties =
         ENV_KEY_NAMES.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
-    List<String> errors =
+    final List<String> errors =
         requiredEnvProperties.stream().filter(key -> properties.get(key) == null).toList();
     if (!errors.isEmpty()) {
       throw new IllegalStateException(

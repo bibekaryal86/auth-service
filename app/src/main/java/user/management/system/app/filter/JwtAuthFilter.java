@@ -31,33 +31,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      @NotNull HttpServletRequest request,
-      @NotNull HttpServletResponse response,
-      @NotNull FilterChain filterChain)
+      @NotNull final HttpServletRequest request,
+      @NotNull final HttpServletResponse response,
+      @NotNull final FilterChain filterChain)
       throws ServletException, IOException {
-    String authorizationHeader = request.getHeader("Authorization");
+    final String authorizationHeader = request.getHeader("Authorization");
 
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      String token = authorizationHeader.substring(7);
+      final String token = authorizationHeader.substring(7);
 
       try {
-        Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(token);
+        final Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(token);
 
         if (emailAuthToken.size() != 1) {
           sendUnauthorizedResponse(response, "Malformed Auth Token");
           return;
         }
 
-        Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
-        String email = firstEntry.getKey();
-        AuthToken authToken = firstEntry.getValue();
+        final Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
+        final String email = firstEntry.getKey();
+        final AuthToken authToken = firstEntry.getValue();
 
         if (!validateUserEntity(email, authToken)) {
           sendUnauthorizedResponse(response, "Incorrect Auth Token");
           return;
         }
 
-        UsernamePasswordAuthenticationToken authentication =
+        final UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(email, authToken, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (JwtInvalidException ex) {
@@ -69,7 +69,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private void sendUnauthorizedResponse(final HttpServletResponse response, String errMsg)
+  private void sendUnauthorizedResponse(final HttpServletResponse response, final String errMsg)
       throws IOException {
     final ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg(errMsg).build();

@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ResponseStatusInfo> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
-    String errMsg =
+    final String errMsg =
         ex.getBindingResult().getAllErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining(", "));

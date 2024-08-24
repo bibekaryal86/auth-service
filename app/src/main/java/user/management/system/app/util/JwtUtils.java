@@ -34,7 +34,7 @@ public class JwtUtils {
 
   public static String encodeEmailAddress(final String email) {
     return Jwts.builder()
-        .claim("sub", email)
+        .claim("emailToken", email)
         .issuer("USER-MGMT-SYS")
         .issuedAt(Date.from(Instant.now()))
         .expiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
@@ -44,13 +44,13 @@ public class JwtUtils {
 
   public static String decodeEmailAddress(final String encodedEmail) {
     try {
-      String emailToken =
+      final String emailToken =
           Jwts.parser()
               .verifyWith(getSigningKey())
               .build()
               .parseSignedClaims(encodedEmail)
               .getPayload()
-              .get("sub", String.class);
+              .get("emailToken", String.class);
 
       if (emailToken == null) {
         throw new IllegalArgumentException("Incorrect Email Credentials");

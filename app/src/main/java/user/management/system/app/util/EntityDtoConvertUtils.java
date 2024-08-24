@@ -297,7 +297,7 @@ public class EntityDtoConvertUtils {
     if (appUserEntity == null) {
       return null;
     }
-    final AppUserDto appUserDto = new AppUserDto();
+    AppUserDto appUserDto = new AppUserDto();
     BeanUtils.copyProperties(appUserEntity, appUserDto, "password");
 
     if (isIncludeRoles) {
@@ -310,7 +310,7 @@ public class EntityDtoConvertUtils {
     }
 
     if (!CollectionUtils.isEmpty(appUserEntity.getAddresses())) {
-      List<AppUserAddressDto> appUserAddressDtos =
+      final List<AppUserAddressDto> appUserAddressDtos =
           convertEntitiesToDtosAppUserAddress(appUserEntity.getAddresses());
       appUserDto.setAddresses(appUserAddressDtos);
     }
@@ -339,10 +339,10 @@ public class EntityDtoConvertUtils {
     final List<AppRolePermissionEntity> appRolePermissionEntities =
         appRolePermissionService.readAppRolePermissions("", appRoleIds);
 
-    Map<Integer, List<AppUserRoleEntity>> userRolesMap =
+    final Map<Integer, List<AppUserRoleEntity>> userRolesMap =
         appUserRoleEntities.stream()
             .collect(Collectors.groupingBy(userRole -> userRole.getAppUser().getId()));
-    Map<Integer, List<AppRolePermissionEntity>> rolePermissionsMap =
+    final Map<Integer, List<AppRolePermissionEntity>> rolePermissionsMap =
         appRolePermissionEntities.stream()
             .collect(Collectors.groupingBy(rolePermission -> rolePermission.getAppRole().getId()));
 
@@ -556,8 +556,8 @@ public class EntityDtoConvertUtils {
     if (appsAppUserEntity == null) {
       return null;
     }
-    AppsDto appsDto = convertEntityToDtoApps(appsAppUserEntity.getApp());
-    AppUserDto appUserDto = convertEntityToDtoAppUser(appsAppUserEntity.getAppUser(), false);
+    final AppsDto appsDto = convertEntityToDtoApps(appsAppUserEntity.getApp());
+    final AppUserDto appUserDto = convertEntityToDtoAppUser(appsAppUserEntity.getAppUser(), false);
     return new AppsAppUserDto(appsDto, appUserDto);
   }
 
@@ -595,7 +595,7 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseResetUser(
       final String redirectUrl, final boolean isReset, final String email) {
-    String url = redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
+    final String url = redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(URI.create(url));
     return new ResponseEntity<>(headers, HttpStatus.FOUND);

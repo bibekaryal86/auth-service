@@ -17,7 +17,7 @@ public class SystemEnvPropertyUtils {
   static {
     Map<String, String> tempMap = new HashMap<>();
 
-    Properties systemProperties = System.getProperties();
+    final Properties systemProperties = System.getProperties();
     systemProperties.forEach(
         (key, value) -> {
           if (ENV_KEY_NAMES.contains(key.toString())) {
@@ -25,7 +25,7 @@ public class SystemEnvPropertyUtils {
           }
         });
 
-    Map<String, String> envVariables = System.getenv();
+    final Map<String, String> envVariables = System.getenv();
     envVariables.forEach(
         (key, value) -> {
           if (ENV_KEY_NAMES.contains(key)) {

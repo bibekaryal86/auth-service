@@ -62,11 +62,11 @@ public class CommonUtils {
     }
   }
 
-  public static <T> HttpStatus getHttpStatusForSingleResponse(T object) {
+  public static <T> HttpStatus getHttpStatusForSingleResponse(final T object) {
     return ObjectUtils.isEmpty(object) ? INTERNAL_SERVER_ERROR : OK;
   }
 
-  public static <T> ResponseStatusInfo getResponseStatusInfoForSingleResponse(T object) {
+  public static <T> ResponseStatusInfo getResponseStatusInfoForSingleResponse(final T object) {
     return ObjectUtils.isEmpty(object)
         ? ResponseStatusInfo.builder().errMsg(INTERNAL_SERVER_ERROR_MESSAGE).build()
         : null;

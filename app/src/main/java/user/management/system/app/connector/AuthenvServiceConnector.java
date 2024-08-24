@@ -57,7 +57,7 @@ public class AuthenvServiceConnector {
     final boolean isDevelopment = environment.matchesProfiles("development");
     final String envDetailsName =
         String.format("redirectUrls_%s", isDevelopment ? "development" : "production");
-    List<EnvDetails> envDetails = getUserMgmtSvcEnvProperties();
+    final List<EnvDetails> envDetails = getUserMgmtSvcEnvProperties();
     EnvDetails withRedirectUrls =
         envDetails.stream()
             .filter(envDetail -> envDetail.getName().equals(envDetailsName))

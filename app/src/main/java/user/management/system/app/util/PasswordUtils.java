@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 public class PasswordUtils {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  public String hashPassword(String plainPassword) {
+  public String hashPassword(final String plainPassword) {
     return bCryptPasswordEncoder.encode(plainPassword);
   }
 
-  public boolean verifyPassword(String plainPassword, String hashedPassword) {
+  public boolean verifyPassword(final String plainPassword, final String hashedPassword) {
     return bCryptPasswordEncoder.matches(plainPassword, hashedPassword);
   }
 }

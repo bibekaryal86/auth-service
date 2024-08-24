@@ -23,7 +23,7 @@ public class PermissionCheck {
     final String[] requiredPermissions = checkPermission.value();
 
     try {
-      AuthToken authToken = getAuthentication();
+      final AuthToken authToken = getAuthentication();
       final boolean isPermitted = checkUserPermission(authToken, List.of(requiredPermissions));
 
       if (!isPermitted) {
@@ -36,9 +36,9 @@ public class PermissionCheck {
 
   public void canUserAccessAppUser(final String email, final int id) {
     try {
-      AuthToken authToken = getAuthentication();
-      boolean isSuperUser = checkSuperUser(authToken);
-      boolean isPermitted = checkPermission(email, id, authToken);
+      final AuthToken authToken = getAuthentication();
+      final boolean isSuperUser = checkSuperUser(authToken);
+      final boolean isPermitted = checkPermission(email, id, authToken);
 
       if (!isSuperUser && !isPermitted) {
         throw new CheckPermissionException(
@@ -49,10 +49,10 @@ public class PermissionCheck {
     }
   }
 
-  public List<AppUserEntity> filterAppUserListByAccess(List<AppUserEntity> appUserEntities) {
+  public List<AppUserEntity> filterAppUserListByAccess(final List<AppUserEntity> appUserEntities) {
     try {
-      AuthToken authToken = getAuthentication();
-      boolean isSuperUser = checkSuperUser(authToken);
+      final AuthToken authToken = getAuthentication();
+      final boolean isSuperUser = checkSuperUser(authToken);
 
       if (isSuperUser) {
         return appUserEntities;
@@ -88,7 +88,7 @@ public class PermissionCheck {
 
   private boolean checkUserPermission(
       final AuthToken authToken, final List<String> requiredPermissions) {
-    boolean isSuperUser = checkSuperUser(authToken);
+    final boolean isSuperUser = checkSuperUser(authToken);
 
     if (isSuperUser) {
       return true;
