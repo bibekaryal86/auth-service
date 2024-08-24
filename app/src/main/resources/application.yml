@@ -45,10 +45,8 @@ management:
         exclude: shutdown
 
 springdoc:
-  show-actuator: true
+  # show-actuator: true
   swagger-ui:
-    disable-swagger-default-url: true
-    path: /swagger-ui
     doc-expansion: none
 
 # endpoints of authenv_service
