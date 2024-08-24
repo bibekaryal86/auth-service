@@ -36,7 +36,19 @@ public class SecurityConfig {
   @Order(1)
   public SecurityFilterChain noAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf(AbstractHttpConfigurer::disable)
-        .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping", "/api/v1/na_app_users/**")
+        .securityMatcher(
+            request -> {
+              boolean matches =
+                  request
+                      .getRequestURI()
+                      .matches("^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_app_users/|/error).*");
+//              if (matches) {
+//                System.out.println("noAuthSecurityFilterChain: " + request.getRequestURI());
+//              }
+              return matches;
+            })
+        // .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping",
+        // "/api/v1/na_app_users/**")
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,7 +59,18 @@ public class SecurityConfig {
   @Order(2)
   public SecurityFilterChain basicAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf(AbstractHttpConfigurer::disable)
-        .securityMatcher("/api/v1/basic_app_users/**", "/actuator/**", "/tests/reset")
+        .securityMatcher(
+            request -> {
+              boolean matches =
+                  request
+                      .getRequestURI()
+                      .matches("^.*(?:/actuator/|/tests/reset|/basic_app_users/).*");
+//              if (matches) {
+//                System.out.println("basicAuthSecurityFilterChain: " + request.getRequestURI());
+//              }
+              return matches;
+            })
+        // .securityMatcher("/api/v1/basic_app_users/**", "/actuator/**", "/tests/reset")
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -59,6 +82,10 @@ public class SecurityConfig {
   @Order(3)
   public SecurityFilterChain bearerAuthSecurityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
+            .securityMatcher(request -> {
+                //System.out.println("bearerAuthSecurityFilterChain: " + request.getRequestURI());
+                return true;
+            })
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .addFilterBefore(
             new JwtAuthFilter(appUserService), UsernamePasswordAuthenticationFilter.class)
