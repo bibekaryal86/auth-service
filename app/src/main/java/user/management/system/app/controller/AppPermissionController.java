@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -44,7 +46,7 @@ public class AppPermissionController {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.createAppPermission(appId, appPermissionRequest);
-      auditService.auditAppPermissionCreate(request, appId, appPermissionEntity);
+      runAsync(() -> auditService.auditAppPermissionCreate(request, appId, appPermissionEntity));
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       log.error("Create App Permission: [{}] | [{}]", appId, appPermissionRequest, ex);
@@ -100,7 +102,7 @@ public class AppPermissionController {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.updateAppPermission(id, appPermissionRequest);
-      auditService.auditAppPermissionUpdate(request, appPermissionEntity);
+      runAsync(() -> auditService.auditAppPermissionUpdate(request, appPermissionEntity));
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       log.error("Update App Permission: [{}] | [{}]", id, appPermissionRequest, ex);
@@ -114,7 +116,7 @@ public class AppPermissionController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appPermissionService.softDeleteAppPermission(id);
-      auditService.auditAppPermissionDeleteSoft(request, id);
+      runAsync(() -> auditService.auditAppPermissionDeleteSoft(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
       log.error("Soft Delete App Permission: [{}]", id, ex);
@@ -128,7 +130,7 @@ public class AppPermissionController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appPermissionService.hardDeleteAppPermission(id);
-      auditService.auditAppPermissionDeleteHard(request, id);
+      runAsync(() -> auditService.auditAppPermissionDeleteHard(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppPermission();
     } catch (Exception ex) {
       log.error("Hard Delete App Permission: [{}]", id, ex);
@@ -143,7 +145,7 @@ public class AppPermissionController {
     try {
       final AppPermissionEntity appPermissionEntity =
           appPermissionService.restoreSoftDeletedAppPermission(id);
-      auditService.auditAppPermissionRestore(request, id);
+      runAsync(() -> auditService.auditAppPermissionRestore(request, id));
       return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
     } catch (Exception ex) {
       log.error("Restore App Permission: [{}]", id, ex);

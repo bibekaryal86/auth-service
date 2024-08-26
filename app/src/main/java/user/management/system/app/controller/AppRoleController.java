@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +43,7 @@ public class AppRoleController {
       @Valid @RequestBody final AppRoleRequest appRoleRequest, final HttpServletRequest request) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.createAppRole(appRoleRequest);
-      auditService.auditAppRoleCreate(request, appRoleEntity);
+      runAsync(() -> auditService.auditAppRoleCreate(request, appRoleEntity));
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       log.error("Create App Role: [{}]", appRoleRequest, ex);
@@ -81,7 +83,7 @@ public class AppRoleController {
       final HttpServletRequest request) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.updateAppRole(id, appRoleRequest);
-      auditService.auditAppRoleUpdate(request, appRoleEntity);
+      runAsync(() -> auditService.auditAppRoleUpdate(request, appRoleEntity));
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       log.error("Update App Role: [{}] | [{}]", id, appRoleRequest, ex);
@@ -95,7 +97,7 @@ public class AppRoleController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appRoleService.softDeleteAppRole(id);
-      auditService.auditAppRoleDeleteSoft(request, id);
+      runAsync(() -> auditService.auditAppRoleDeleteSoft(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppRole();
     } catch (Exception ex) {
       log.error("Soft Delete App Role: [{}]", id, ex);
@@ -109,7 +111,7 @@ public class AppRoleController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appRoleService.hardDeleteAppRole(id);
-      auditService.auditAppRoleDeleteHard(request, id);
+      runAsync(() -> auditService.auditAppRoleDeleteHard(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppRole();
     } catch (Exception ex) {
       log.error("Hard Delete App Role: [{}]", id, ex);
@@ -123,7 +125,7 @@ public class AppRoleController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       final AppRoleEntity appRoleEntity = appRoleService.restoreSoftDeletedAppRole(id);
-      auditService.auditAppRoleRestore(request, id);
+      runAsync(() -> auditService.auditAppRoleRestore(request, id));
       return entityDtoConvertUtils.getResponseSingleAppRole(appRoleEntity);
     } catch (Exception ex) {
       log.error("Restore App Role: [{}]", id, ex);

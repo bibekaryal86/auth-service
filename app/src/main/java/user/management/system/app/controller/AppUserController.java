@@ -1,5 +1,6 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -107,7 +108,8 @@ public class AppUserController {
       if (!appUserRequest.getAddresses().isEmpty()) {
         appUserEntity = appUserService.readAppUser(appUserEntity.getId());
       }
-      auditService.auditAppUserUpdate(request, appUserEntity);
+      final AppUserEntity finalAppUserEntity = appUserEntity;
+      runAsync(() -> auditService.auditAppUserUpdate(request, finalAppUserEntity));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Update App User: [{}] | [{}]", id, appUserRequest, ex);
@@ -129,7 +131,7 @@ public class AppUserController {
       final AppUserEntity appUserEntity =
           appUserService.updateAppUserEmail(
               id, userUpdateEmailRequest, appsAppUserEntity.getApp(), baseUrl);
-      auditService.auditAppUserUpdateEmail(request, appUserEntity, appId);
+      runAsync(() -> auditService.auditAppUserUpdateEmail(request, appUserEntity, appId));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Update App User Email: [{}] | [{}]", id, userUpdateEmailRequest, ex);
@@ -146,7 +148,7 @@ public class AppUserController {
       permissionCheck.canUserAccessAppUser("", id);
       final AppUserEntity appUserEntity =
           appUserService.updateAppUserPassword(id, userLoginRequest);
-      auditService.auditAppUserUpdatePassword(request, appUserEntity);
+      runAsync(() -> auditService.auditAppUserUpdatePassword(request, appUserEntity));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Update App User Password: [{}] | [{}]", id, userLoginRequest, ex);
@@ -162,7 +164,7 @@ public class AppUserController {
     try {
       permissionCheck.canUserAccessAppUser("", userId);
       final AppUserEntity appUserEntity = appUserService.deleteAppUserAddress(userId, addressId);
-      auditService.auditAppUserDeleteAddress(request, appUserEntity);
+      runAsync(() -> auditService.auditAppUserDeleteAddress(request, appUserEntity));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Delete App User Address: [{}] | [{}]", userId, addressId, ex);
@@ -176,7 +178,7 @@ public class AppUserController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appUserService.softDeleteAppUser(id);
-      auditService.auditAppUserDeleteSoft(request, id);
+      runAsync(() -> auditService.auditAppUserDeleteSoft(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
       log.error("Soft Delete App User: [{}]", id, ex);
@@ -190,7 +192,7 @@ public class AppUserController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       appUserService.hardDeleteAppUser(id);
-      auditService.auditAppUserDeleteHard(request, id);
+      runAsync(() -> auditService.auditAppUserDeleteHard(request, id));
       return entityDtoConvertUtils.getResponseDeleteAppUser();
     } catch (Exception ex) {
       log.error("Hard Delete App User: [{}]", id, ex);
@@ -204,7 +206,7 @@ public class AppUserController {
       @PathVariable final int id, final HttpServletRequest request) {
     try {
       final AppUserEntity appUserEntity = appUserService.restoreSoftDeletedAppUser(id);
-      auditService.auditAppUserRestore(request, id);
+      runAsync(() -> auditService.auditAppUserRestore(request, id));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Restore App User: [{}]", id, ex);

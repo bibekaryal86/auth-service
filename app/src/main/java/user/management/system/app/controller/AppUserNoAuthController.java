@@ -1,5 +1,6 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static user.management.system.app.util.JwtUtils.decodeEmailAddressNoException;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -39,12 +40,12 @@ public class AppUserNoAuthController {
     try {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toValidate, true);
-      auditService.auditAppUserValidateExit(request, appId, appUserEntity);
+      runAsync(() -> auditService.auditAppUserValidateExit(request, appId, appUserEntity));
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, true);
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toValidate);
       log.error("Validate App User Exit: [{}], [{}]", appId, decodedEmail, ex);
-      auditService.auditAppUserValidateFailure(request, appId, decodedEmail, ex);
+      runAsync(() -> auditService.auditAppUserValidateFailure(request, appId, decodedEmail, ex));
       return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, false);
     }
   }
@@ -58,13 +59,13 @@ public class AppUserNoAuthController {
     try {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toReset, false);
-      auditService.auditAppUserResetExit(request, appId, appUserEntity);
+      runAsync(() -> auditService.auditAppUserResetExit(request, appId, appUserEntity));
       return entityDtoConvertUtils.getResponseResetUser(
           redirectUrl, true, appUserEntity.getEmail());
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toReset);
       log.error("Reset App User Exit: [{}], [{}]", appId, decodedEmail, ex);
-      auditService.auditAppUserResetFailure(request, appId, decodedEmail, ex);
+      runAsync(() -> auditService.auditAppUserResetFailure(request, appId, decodedEmail, ex));
       return entityDtoConvertUtils.getResponseResetUser(redirectUrl, false, "");
     }
   }

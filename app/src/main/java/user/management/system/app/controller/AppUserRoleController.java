@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +43,7 @@ public class AppUserRoleController {
     try {
       final AppUserRoleEntity appUserRoleEntity =
           appUserRoleService.createAppUserRole(appUserRoleRequest);
-      auditService.auditAppUserAssignRole(request, appUserRoleEntity);
+      runAsync(() -> auditService.auditAppUserAssignRole(request, appUserRoleEntity));
       return entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntity);
     } catch (Exception ex) {
       log.error("Create App User Role: [{}}", appUserRoleRequest, ex);
@@ -111,7 +113,7 @@ public class AppUserRoleController {
       final HttpServletRequest request) {
     try {
       appUserRoleService.deleteAppUserRole(userId, roleId);
-      auditService.auditAppUserUnassignRole(request, userId, roleId);
+      runAsync(() -> auditService.auditAppUserUnassignRole(request, userId, roleId));
       return entityDtoConvertUtils.getResponseDeleteAppUserRole();
     } catch (Exception ex) {
       log.error("Delete App User Role: [{}], [{}]", userId, roleId, ex);

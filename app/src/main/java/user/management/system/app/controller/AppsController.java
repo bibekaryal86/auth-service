@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +43,7 @@ public class AppsController {
       @Valid @RequestBody final AppsRequest appsRequest, final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.createApp(appsRequest);
-      auditService.auditAppsCreate(request, appsEntity);
+      runAsync(() -> auditService.auditAppsCreate(request, appsEntity));
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       log.error("Create App: [{}]", appsRequest, ex);
@@ -81,7 +83,7 @@ public class AppsController {
       final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.updateApps(id, appsRequest);
-      auditService.auditAppsUpdate(request, appsEntity);
+      runAsync(() -> auditService.auditAppsUpdate(request, appsEntity));
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       log.error("Update App: [{}] | [{}]", id, appsRequest, ex);
@@ -95,7 +97,7 @@ public class AppsController {
       @PathVariable final String id, final HttpServletRequest request) {
     try {
       appsService.softDeleteApps(id);
-      auditService.auditAppsDeleteSoft(request, id);
+      runAsync(() -> auditService.auditAppsDeleteSoft(request, id));
       return entityDtoConvertUtils.getResponseDeleteApps();
     } catch (Exception ex) {
       log.error("Soft Delete App: [{}]", id, ex);
@@ -109,7 +111,7 @@ public class AppsController {
       @PathVariable final String id, final HttpServletRequest request) {
     try {
       appsService.hardDeleteApps(id);
-      auditService.auditAppsDeleteHard(request, id);
+      runAsync(() -> auditService.auditAppsDeleteHard(request, id));
       return entityDtoConvertUtils.getResponseDeleteApps();
     } catch (Exception ex) {
       log.error("Hard Delete App: [{}]", id, ex);
@@ -123,7 +125,7 @@ public class AppsController {
       @PathVariable final String id, final HttpServletRequest request) {
     try {
       final AppsEntity appsEntity = appsService.restoreSoftDeletedApps(id);
-      auditService.auditAppsRestore(request, id);
+      runAsync(() -> auditService.auditAppsRestore(request, id));
       return entityDtoConvertUtils.getResponseSingleApps(appsEntity);
     } catch (Exception ex) {
       log.error("Restore App: [{}]", id, ex);

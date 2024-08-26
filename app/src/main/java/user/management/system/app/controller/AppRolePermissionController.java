@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +43,7 @@ public class AppRolePermissionController {
     try {
       final AppRolePermissionEntity appRolePermissionEntity =
           appRolePermissionService.createAppRolePermission(appRolePermissionRequest);
-      auditService.auditAppRoleAssignPermission(request, appRolePermissionEntity);
+      runAsync(() -> auditService.auditAppRoleAssignPermission(request, appRolePermissionEntity));
       return entityDtoConvertUtils.getResponseSingleAppRolePermission(appRolePermissionEntity);
     } catch (Exception ex) {
       log.error("Create App Role Permission: [{}]", appRolePermissionRequest, ex);
@@ -112,7 +114,7 @@ public class AppRolePermissionController {
       final HttpServletRequest request) {
     try {
       appRolePermissionService.deleteAppRolePermission(roleId, permissionId);
-      auditService.auditAppRoleUnassignPermission(request, roleId, permissionId);
+      runAsync(() -> auditService.auditAppRoleUnassignPermission(request, roleId, permissionId));
       return entityDtoConvertUtils.getResponseDeleteAppRolePermission();
     } catch (Exception ex) {
       log.error("Delete App Role Permission: [{}], [{}]", roleId, permissionId, ex);

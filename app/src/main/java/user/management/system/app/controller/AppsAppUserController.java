@@ -1,5 +1,7 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +43,7 @@ public class AppsAppUserController {
     try {
       final AppsAppUserEntity appsAppUserEntity =
           appsAppUserService.createAppsAppUser(appsAppUserRequest);
-      auditService.auditAppUserAssignApp(request, appsAppUserEntity);
+      runAsync(() -> auditService.auditAppUserAssignApp(request, appsAppUserEntity));
       return entityDtoConvertUtils.getResponseSingleAppsAppUser(appsAppUserEntity);
     } catch (Exception ex) {
       log.error("Create Apps App User: [{}]", appsAppUserRequest, ex);
@@ -112,7 +114,7 @@ public class AppsAppUserController {
       final HttpServletRequest request) {
     try {
       appsAppUserService.deleteAppsAppUser(appId, appUserEmail);
-      auditService.auditAppUserUnassignApp(request, appUserEmail, appId);
+      runAsync(() -> auditService.auditAppUserUnassignApp(request, appUserEmail, appId));
       return entityDtoConvertUtils.getResponseDeleteAppsAppUser();
     } catch (Exception ex) {
       log.error("Delete Apps App User: [{}], [{}]", appId, appUserEmail, ex);

@@ -1,5 +1,6 @@
 package user.management.system.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static user.management.system.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static user.management.system.app.util.JwtUtils.decodeAuthCredentials;
 
@@ -68,7 +69,10 @@ public class AppUserBasicAuthController {
       final AppsEntity appsEntity = appsService.readApp(appId);
       final AppUserEntity appUserEntity =
           appUserService.createAppUser(appsEntity, appUserRequest, baseUrl);
-      auditService.auditAppUserCreate(request, appId, appUserEntity, appUserRequest.isGuestUser());
+      runAsync(
+          () ->
+              auditService.auditAppUserCreate(
+                  request, appId, appUserEntity, appUserRequest.isGuestUser()));
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Create App User: [{}] | [{}]", appId, appUserRequest, ex);
@@ -84,11 +88,17 @@ public class AppUserBasicAuthController {
     try {
       final UserLoginResponse userLoginResponse =
           appUserPasswordService.loginUser(appId, userLoginRequest);
-      auditService.auditAppUserLoginSuccess(request, appId, userLoginResponse.getUser().getId());
+      runAsync(
+          () ->
+              auditService.auditAppUserLoginSuccess(
+                  request, appId, userLoginResponse.getUser().getId()));
       return ResponseEntity.ok(userLoginResponse);
     } catch (Exception ex) {
       log.error("Login App User: [{}] | [{}]", appId, userLoginRequest, ex);
-      auditService.auditAppUserLoginFailure(request, appId, userLoginRequest.getEmail(), ex);
+      runAsync(
+          () ->
+              auditService.auditAppUserLoginFailure(
+                  request, appId, userLoginRequest.getEmail(), ex));
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
   }
@@ -112,12 +122,17 @@ public class AppUserBasicAuthController {
 
       final UserLoginResponse userLoginResponse =
           appTokenService.saveToken(appTokenEntity.getId(), null, appTokenEntity.getUser(), appId);
-      auditService.auditAppUserTokenRefreshSuccess(request, appId, appTokenEntity.getUser());
+      runAsync(
+          () ->
+              auditService.auditAppUserTokenRefreshSuccess(
+                  request, appId, appTokenEntity.getUser()));
       return ResponseEntity.ok(userLoginResponse);
     } catch (Exception ex) {
       log.error("Refresh Token: [{}] | [{}]", appId, appTokenRequest, ex);
-      auditService.auditAppUserTokenRefreshFailure(
-          request, appId, appTokenRequest.getAppUserId(), ex);
+      runAsync(
+          () ->
+              auditService.auditAppUserTokenRefreshFailure(
+                  request, appId, appTokenRequest.getAppUserId(), ex));
       return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
     }
   }
@@ -142,11 +157,15 @@ public class AppUserBasicAuthController {
       appTokenService.saveToken(
           appTokenEntity.getId(), LocalDateTime.now(), appTokenEntity.getUser(), appId);
 
-      auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser());
+      runAsync(
+          () -> auditService.auditAppUserLogoutSuccess(request, appId, appTokenEntity.getUser()));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Logout: [{}] | [{}]", appId, appTokenRequest, ex);
-      auditService.auditAppUserLogoutFailure(request, appId, appTokenRequest.getAppUserId(), ex);
+      runAsync(
+          () ->
+              auditService.auditAppUserLogoutFailure(
+                  request, appId, appTokenRequest.getAppUserId(), ex));
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -158,11 +177,14 @@ public class AppUserBasicAuthController {
       final HttpServletRequest request) {
     try {
       final AppUserEntity appUserEntity = appUserPasswordService.resetUser(appId, userLoginRequest);
-      auditService.auditAppUserResetSuccess(request, appId, appUserEntity);
+      runAsync(() -> auditService.auditAppUserResetSuccess(request, appId, appUserEntity));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Reset App User: [{}] | [{}]", appId, userLoginRequest, ex);
-      auditService.auditAppUserResetFailure(request, appId, userLoginRequest.getEmail(), ex);
+      runAsync(
+          () ->
+              auditService.auditAppUserResetFailure(
+                  request, appId, userLoginRequest.getEmail(), ex));
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -177,11 +199,14 @@ public class AppUserBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendUserValidationEmail(
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
-      auditService.auditAppUserValidateInit(request, appId, appsAppUserEntity.getAppUser());
+      runAsync(
+          () ->
+              auditService.auditAppUserValidateInit(
+                  request, appId, appsAppUserEntity.getAppUser()));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Validate App User Init: [{}], [{}]", appId, email, ex);
-      auditService.auditAppUserValidateFailure(request, appId, email, ex);
+      runAsync(() -> auditService.auditAppUserValidateFailure(request, appId, email, ex));
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
@@ -196,11 +221,12 @@ public class AppUserBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendUserResetEmail(
           appsAppUserEntity.getApp(), appsAppUserEntity.getAppUser(), baseUrl);
-      auditService.auditAppUserResetInit(request, appId, appsAppUserEntity.getAppUser());
+      runAsync(
+          () -> auditService.auditAppUserResetInit(request, appId, appsAppUserEntity.getAppUser()));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Reset App User Init: [{}], [{}]", appId, email, ex);
-      auditService.auditAppUserResetFailure(request, appId, email, ex);
+      runAsync(() -> auditService.auditAppUserResetFailure(request, appId, email, ex));
       return entityDtoConvertUtils.getResponseErrorResponseStatusInfo(ex);
     }
   }
