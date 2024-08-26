@@ -103,7 +103,10 @@ public class AppUserController {
       final HttpServletRequest request) {
     try {
       permissionCheck.canUserAccessAppUser("", id);
-      final AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
+      AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
+      if (!appUserRequest.getAddresses().isEmpty()) {
+        appUserEntity = appUserService.readAppUser(appUserEntity.getId());
+      }
       auditService.auditAppUserUpdate(request, appUserEntity);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {

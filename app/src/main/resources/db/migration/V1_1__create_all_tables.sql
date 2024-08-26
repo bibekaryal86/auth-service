@@ -33,7 +33,8 @@ CREATE TABLE app_user_address
     state        VARCHAR(5)                                           NOT NULL,
     country      VARCHAR(100)                                         NOT NULL,
     postal_code  VARCHAR(10)                                          NOT NULL,
-    FOREIGN KEY (app_user_id) REFERENCES app_user (id)
+    FOREIGN KEY (app_user_id) REFERENCES app_user (id),
+    CONSTRAINT uc_app_user_address UNIQUE (app_user_id, address_type)
 );
 
 CREATE TABLE app_token

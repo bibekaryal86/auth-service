@@ -45,6 +45,9 @@ public class PermissionCheck {
             "User does not have required permissions to user entity...");
       }
     } catch (Exception ex) {
+      if (ex instanceof CheckPermissionException) {
+        throw ex;
+      }
       throw new CheckPermissionException(ex.getMessage());
     }
   }
