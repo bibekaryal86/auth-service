@@ -129,7 +129,7 @@ public class AppUserController {
       final AppUserEntity appUserEntity =
           appUserService.updateAppUserEmail(
               id, userUpdateEmailRequest, appsAppUserEntity.getApp(), baseUrl);
-      auditService.auditAppUserUpdateEmail(request, appUserEntity);
+      auditService.auditAppUserUpdateEmail(request, appUserEntity, appId);
       return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
     } catch (Exception ex) {
       log.error("Update App User Email: [{}] | [{}]", id, userUpdateEmailRequest, ex);

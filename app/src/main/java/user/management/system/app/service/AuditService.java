@@ -355,9 +355,10 @@ public class AuditService {
   }
 
   public void auditAppUserUpdateEmail(
-      final HttpServletRequest request, final AppUserEntity appUserEntity) {
+      final HttpServletRequest request, final AppUserEntity appUserEntity, final String appId) {
     final String eventDesc = String.format("Update User [%s] email", appUserEntity.getId());
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER_EMAIL, eventDesc);
+    auditAppUserValidateInit(request, appId, appUserEntity);
   }
 
   public void auditAppUserUpdatePassword(
