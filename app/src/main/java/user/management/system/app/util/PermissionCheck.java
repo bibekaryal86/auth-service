@@ -30,6 +30,9 @@ public class PermissionCheck {
         throw new CheckPermissionException("User does not have required permissions...");
       }
     } catch (Exception ex) {
+      if (ex instanceof CheckPermissionException) {
+        throw ex;
+      }
       throw new CheckPermissionException(ex.getMessage());
     }
   }
