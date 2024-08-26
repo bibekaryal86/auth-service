@@ -154,6 +154,22 @@ public class AppUserController {
     }
   }
 
+  @DeleteMapping("/user/{userId}/address/{addressId}")
+  public ResponseEntity<AppUserResponse> deleteAppUserAddress(
+      @PathVariable final int userId,
+      @PathVariable final int addressId,
+      final HttpServletRequest request) {
+    try {
+      permissionCheck.canUserAccessAppUser("", userId);
+      final AppUserEntity appUserEntity = appUserService.deleteAppUserAddress(userId, addressId);
+      auditService.auditAppUserDeleteAddress(request, appUserEntity);
+      return entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    } catch (Exception ex) {
+      log.error("Delete App User Address: [{}] | [{}]", userId, addressId, ex);
+      return entityDtoConvertUtils.getResponseErrorAppUser(ex);
+    }
+  }
+
   @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE USER")
   @DeleteMapping("/user/{id}")
   public ResponseEntity<AppUserResponse> softDeleteAppUser(

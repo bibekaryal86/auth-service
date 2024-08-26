@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppUserRoleRequest;
 import user.management.system.app.model.entity.AppRoleEntity;
@@ -107,6 +108,7 @@ public class AppUserRoleService {
   // not provided
 
   // DELETE
+  @Transactional
   public void deleteAppUserRole(final int appUserId, final int appRoleId) {
     log.info("Delete App User Role: [{}], [{}]", appUserId, appRoleId);
     final AppUserRoleEntity appUserRoleEntity = readAppUserRole(appUserId, appRoleId);

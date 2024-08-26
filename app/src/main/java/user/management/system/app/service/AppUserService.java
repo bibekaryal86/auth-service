@@ -151,6 +151,19 @@ public class AppUserService {
     return updateAppUser(appUserEntity);
   }
 
+  @Transactional
+  public AppUserEntity deleteAppUserAddress(final int userId, final int addressId) {
+    log.info("Delete App User Address: [{}], [{}]", userId, addressId);
+    final AppUserEntity appUserEntity = readAppUser(userId);
+    final AppUserAddressEntity appUserAddressEntity =
+        appUserEntity.getAddresses().stream()
+            .filter(address -> address.getId() == addressId)
+            .findFirst()
+            .orElseThrow(() -> new ElementNotFoundException("User Address", "id"));
+    appUserEntity.getAddresses().remove(appUserAddressEntity);
+    return appUserEntity;
+  }
+
   // DELETE
   public AppUserEntity softDeleteAppUser(final int id) {
     log.info("Soft Delete App User: [{}]", id);
@@ -159,6 +172,7 @@ public class AppUserService {
     return appUserRepository.save(appUserEntity);
   }
 
+  @Transactional
   public void hardDeleteAppUser(final int id) {
     log.info("Hard Delete App User: [{}]", id);
     final AppUserEntity appUserEntity = readAppUser(id);

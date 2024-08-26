@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppsAppUserRequest;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -67,6 +68,7 @@ public class AppsAppUserService {
   // not provided
 
   // DELETE
+  @Transactional
   public void deleteAppsAppUser(final String appId, final String appUserEmail) {
     log.info("Delete App Role Permission: [{}], [{}]", appId, appUserEmail);
     final AppsAppUserEntity appsAppUserEntity = readAppsAppUser(appId, appUserEmail);

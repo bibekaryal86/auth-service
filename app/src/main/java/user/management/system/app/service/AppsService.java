@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppsRequest;
 import user.management.system.app.model.entity.AppsEntity;
@@ -64,6 +65,7 @@ public class AppsService {
   }
 
   @CacheEvict(value = "apps", allEntries = true, beforeInvocation = true)
+  @Transactional
   public void hardDeleteApps(final String id) {
     log.info("Hard Delete Apps: [{}]", id);
     final AppsEntity appEntity = readApp(id);

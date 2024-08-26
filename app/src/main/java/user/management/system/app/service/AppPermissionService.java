@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppPermissionRequest;
 import user.management.system.app.model.entity.AppPermissionEntity;
@@ -64,6 +65,7 @@ public class AppPermissionService {
     return appPermissionRepository.save(appPermissionEntity);
   }
 
+  @Transactional
   public void hardDeleteAppPermission(final int id) {
     log.info("Hard Delete App Permission: [{}]", id);
     final AppPermissionEntity appPermissionEntity = readAppPermission(id);

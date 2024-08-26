@@ -595,7 +595,8 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseResetUser(
       final String redirectUrl, final boolean isReset, final String email) {
-    final String url = redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
+    final String url =
+        redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(URI.create(url));
     return new ResponseEntity<>(headers, HttpStatus.FOUND);

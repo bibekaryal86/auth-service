@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppRoleRequest;
 import user.management.system.app.model.entity.AppRoleEntity;
@@ -63,6 +64,7 @@ public class AppRoleService {
   }
 
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
+  @Transactional
   public void hardDeleteAppRole(final int id) {
     log.info("Hard Delete App Role: [{}]", id);
     final AppRoleEntity appRoleEntity = readAppRole(id);

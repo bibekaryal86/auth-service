@@ -366,6 +366,14 @@ public class AuditService {
     auditAppUser(request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER_PASSWORD, eventDesc);
   }
 
+  public void auditAppUserDeleteAddress(
+      final HttpServletRequest request, final AppUserEntity appUserEntity) {
+    final String eventDesc =
+        String.format("Update User [%s] deleted an address", appUserEntity.getId());
+    auditAppUser(
+        request, appUserEntity, 0, AuditEnums.AuditUsers.UPDATE_USER_DELETE_ADDRESS, eventDesc);
+  }
+
   public void auditAppUserDeleteSoft(final HttpServletRequest request, final int id) {
     final String eventDesc = String.format("Soft Delete User [%s]", id);
     auditAppUser(request, null, id, AuditEnums.AuditUsers.SOFT_DELETE_USER, eventDesc);
