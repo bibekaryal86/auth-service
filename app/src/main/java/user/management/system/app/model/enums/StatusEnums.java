@@ -18,4 +18,10 @@ public class StatusEnums {
     FAILED_LOGIN, // user could not log in (eg: invalid credentials)
     INVALID_AUTH // user has invalid JWT token
   }
+
+  public enum AddressTypes {
+    MAILING,
+    BILLING,
+    SHIPPING
+  }
 }
