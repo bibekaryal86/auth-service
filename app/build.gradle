@@ -45,8 +45,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.0'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testImplementation 'org.flywaydb:flyway-core:10.15.0'
 }
 
 java {
@@ -60,6 +64,10 @@ repositories {
 
 bootJar {
     archiveFileName = 'user-mgmt-sys.jar'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 application {
@@ -80,6 +88,8 @@ spotless {
 
 flyway {
     url = 'jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres'
+    locations = ['classpath:db/migration']
+    schemas = ['public']
     // user = 'some.user'
     // password = 'some.password'
     // username and password provided as environment variables
