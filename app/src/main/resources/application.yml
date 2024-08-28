@@ -1,10 +1,41 @@
 spring:
   application:
     name: user-management-system
+  datasource:
+    url: jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 10000
+      idle-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+      connection-init-sql: SELECT 1
+      leak-detection-threshold: 30000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        boot:
+          allow_jdbc_metadata_access: true
+        show_sql: false # set false here, control from logback.xml
+        format_sql: false
+        hbm2ddl:
+          auto: validate
+    open-in-view: false
+  jta:
+    enabled: true
 
 server:
   servlet:
-    context-path: /user-mgmt-system
+    context-path: /ums
 
 management:
   endpoints:
@@ -12,3 +43,13 @@ management:
       exposure:
         include: '*'
         exclude: shutdown
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    doc-expansion: none
+
+# endpoints of authenv_service
+endpoint:
+  authenv_service:
+    get_properties: https://authenv-service.appspot.com/authenv-service/env-props/app_usermgmtsvc

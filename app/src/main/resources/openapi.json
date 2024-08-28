@@ -1,0 +1,3693 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "User Management System",
+    "description": "Create and Manage Users, Roles and Permissions",
+    "contact": {
+      "name": "Bibek Aryal"
+    },
+    "license": {
+      "name": "Personal Use Only"
+    },
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/ums",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Apps Management",
+      "description": "Create, View and Manage Apps"
+    },
+    {
+      "name": "Users Management",
+      "description": "Create, View and Manage Users"
+    },
+    {
+      "name": "Apps Users Management",
+      "description": "View, Assign and Unassign Users from Apps"
+    },
+    {
+      "name": "Roles Management",
+      "description": "Create, View and Manage Roles"
+    },
+    {
+      "name": "Users Roles Management",
+      "description": "View, Assign and Unassign Users from Roles"
+    },
+    {
+      "name": "Permissions Management",
+      "description": "Create, View and Manage Permissions"
+    },
+    {
+      "name": "Roles Permissions Management",
+      "description": "View, Assign and Unassign Permissions from Roles"
+    },
+    {
+      "name": "Tests",
+      "description": "Miscellaneous"
+    },
+    {
+      "name": "Actuator",
+      "description": "Monitor and interact",
+      "externalDocs": {
+        "description": "Spring Boot Actuator Web API Documentation",
+        "url": "https://docs.spring.io/spring-boot/docs/current/actuator-api/html/"
+      }
+    }
+  ],
+  "paths": {
+    "/api/v1/apps/app/{id}": {
+      "get": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Get app by ID",
+        "description": "Retrieves a specific app by its unique ID",
+        "operationId": "readApp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - App Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Update an app by ID",
+        "description": "Updates an existing app identified by its unique ID",
+        "operationId": "updateApp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the app to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "App updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - App Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Soft delete an app by ID",
+        "description": "Marks an app as deleted without permanently removing it, identified by its unique ID",
+        "operationId": "softDeleteApp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app to soft delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App soft deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - App Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/user/{id}": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Retrieve app user by user ID",
+        "description": "Fetches details of a specific app user by user ID.",
+        "operationId": "readAppUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the specified app user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authenticated"
+          },
+          "403": {
+            "description": "Forbidden - User Not Authorized or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - User Not Found by specified ID"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Update app user details",
+        "description": "Updates details of a specific app user by ID.",
+        "operationId": "updateAppUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated details of the app user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Updated details of the app user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authenticated"
+          },
+          "403": {
+            "description": "Forbidden - User Not Authorized or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - User to update Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Soft delete an app user",
+        "description": "Marks a permission as deleted without permanently removing it, identified by its unique ID",
+        "operationId": "softDeleteAppUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user to soft delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User soft deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authenticated"
+          },
+          "403": {
+            "description": "Forbidden - User Not Authorized or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - User to soft delete Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/user/{id}/password": {
+      "put": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Update app user password",
+        "description": "Updates the password for a specific app user by ID.",
+        "operationId": "updateAppUserPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "New password details for the app user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Updated app user details with new password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authenticated"
+          },
+          "403": {
+            "description": "Forbidden - User Not Authorized or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - User to update password Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles/role/{id}": {
+      "get": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Get role by ID",
+        "description": "Retrieves a specific role by its unique ID",
+        "operationId": "readAppRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the role to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Role Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Update a role by ID",
+        "description": "Updates an existing role identified by its unique ID",
+        "operationId": "updateAppRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the role to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the role to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Role Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Soft delete a role by ID",
+        "description": "Marks a role as deleted without permanently removing it, identified by its unique ID",
+        "operationId": "softDeleteAppRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the role to soft delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role soft deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Role Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions/permission/{id}": {
+      "get": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Get permission by ID",
+        "description": "Retrieves a specific permission by its unique ID",
+        "operationId": "readAppPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the permission to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Permission Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Update a permission by ID",
+        "description": "Updates an existing permission identified by its unique ID",
+        "operationId": "updateAppPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the permission to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the permission to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppPermissionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Permission updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Permission Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Soft delete a permission by ID",
+        "description": "Marks a permission as deleted without permanently removing it, identified by its unique ID",
+        "operationId": "softDeleteAppPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the permission to soft delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission soft deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - User Not Authorized"
+          },
+          "403": {
+            "description": "Forbidden - User Forbidden or Not Validated"
+          },
+          "404": {
+            "description": "Not Found - Permission Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/reset": {
+      "post": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Reset user password",
+        "description": "Resets the password for a user associated with the specified application ID",
+        "operationId": "resetAppUser",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the user's password is being reset",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the user for whom the password will be reset",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Password reset successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseStatusInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/refresh": {
+      "post": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Refresh authentication token",
+        "description": "Refreshes auth token for the specified application ID and returns access and refresh tokens",
+        "operationId": "refreshToken",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the token is being refreshed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Token request details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Refresh successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/logout": {
+      "post": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Logout user from an application",
+        "description": "Logs out user by removing tokens from the system",
+        "operationId": "logout",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application from which user is logging out",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Logout request details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/login": {
+      "post": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Login a user for an application",
+        "description": "Authenticates a user for the specified application ID and returns access and refresh tokens",
+        "operationId": "loginAppUser",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the user is logging in",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User login details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/create": {
+      "post": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Create a new user for an application",
+        "description": "Creates a new user for the specified application ID",
+        "operationId": "createAppUser",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the user is created",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the user to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing data"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user/apps_user": {
+      "post": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Assign User to an App",
+        "description": "Adds a User to an App",
+        "operationId": "createAppsAppUser",
+        "requestBody": {
+          "description": "Details of user and app to be linked",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppsAppUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User assigned successfully to app",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps/app": {
+      "post": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Create a new app",
+        "description": "Creates a new app",
+        "operationId": "createApp",
+        "requestBody": {
+          "description": "Details of the app to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "App created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users_roles/user_role": {
+      "post": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Assign Role to a User",
+        "description": "Adds a Role to a User",
+        "operationId": "createAppUserRole",
+        "requestBody": {
+          "description": "Details of user and role to be linked",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppUserRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Role assigned successfully to user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles_permissions/role_permission": {
+      "post": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Assign Permission to a Role",
+        "description": "Adds a Permission to a Role",
+        "operationId": "createAppRolePermission",
+        "requestBody": {
+          "description": "Details of permission and role to be linked",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRolePermissionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Permission assigned successfully to role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles/role": {
+      "post": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Create a new role",
+        "description": "Creates a new role",
+        "operationId": "createAppRole",
+        "requestBody": {
+          "description": "Details of the role to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Role created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions/{appId}/permission": {
+      "post": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Create a new permission for an application",
+        "description": "Creates a new permission for the specified application ID",
+        "operationId": "createAppPermission",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the permission is created",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the permission to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppPermissionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Permission created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Required Element Missing"
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/actuator/loggers/{name}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint 'loggers-name'",
+        "operationId": "loggers-name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint 'loggers-name'",
+        "operationId": "loggers-name_2",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL",
+                  "OFF"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/apps/app/{id}/restore": {
+      "patch": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Restore a soft-deleted app by ID",
+        "description": "Restores an app that was previously soft-deleted, identified by its unique ID",
+        "operationId": "restoreApp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app to restore",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App restored successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/user/{id}/restore": {
+      "patch": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Restore a soft-deleted app user",
+        "description": "Restores a soft-deleted app user by ID",
+        "operationId": "restoreAppUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user to restore",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User restored successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles/role/{id}/restore": {
+      "patch": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Restore a soft-deleted role by ID",
+        "description": "Restores a role that was previously soft-deleted, identified by its unique ID",
+        "operationId": "restoreAppRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the role to restore",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role restored successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions/permission/{id}/restore": {
+      "patch": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Restore a soft-deleted permission by ID",
+        "description": "Restores a permission that was previously soft-deleted, identified by its unique ID",
+        "operationId": "restoreAppPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the permission to restore",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission restored successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/tests/reset": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Reset Caches",
+        "description": "Clears application caches",
+        "operationId": "resetCaches",
+        "responses": {
+          "200": {
+            "description": "Successful reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/tests/ping": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Ping test",
+        "description": "Returns a successful ping response",
+        "operationId": "pingTest",
+        "responses": {
+          "200": {
+            "description": "Successful ping response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/validate_init": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Send user validation email",
+        "description": "Sends an email to validate the user associated with the specified application ID",
+        "operationId": "validateAppUserInit",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the user validation email is sent",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email address of the user to validate",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Validation email sent successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseStatusInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/basic_app_users/user/{appId}/reset_init": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Send password reset email",
+        "description": "Sends an email to reset the password for the user associated with the specified application ID",
+        "operationId": "resetAppUserInit",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which the password reset email is sent",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email address of the user to reset password",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Password reset email sent successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseStatusInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Basic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user": {
+      "get": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Get all apps and users linked",
+        "description": "Retrieves all linked apps and users available in the system",
+        "operationId": "readAppsAppUsers",
+        "responses": {
+          "200": {
+            "description": "Apps Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user/user/{appUserId}": {
+      "get": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Get linked apps and users by user ID",
+        "description": "Retrieves all apps and users associated with the specified user ID",
+        "operationId": "readAppsAppUsersByUserId",
+        "parameters": [
+          {
+            "name": "appUserId",
+            "in": "path",
+            "description": "ID of the user for which apps users are retrieved",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apps Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user/app/{appId}": {
+      "get": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Get linked apps and users by app ID",
+        "description": "Retrieves all apps and users associated with the specified app ID",
+        "operationId": "readAppsAppUsersByAppId",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the app for which apps users are retrieved",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apps Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user/app/{appId}/user/{appUserEmail}": {
+      "get": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Get a linked app user by app ID and user email",
+        "description": "Retrieves a specific app user its app ID and user email",
+        "operationId": "readAppsAppUsersByAppIdAndUserEmail",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the app in linked app user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appUserEmail",
+            "in": "path",
+            "description": "Email of the User in linked app user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App User retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps": {
+      "get": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Get all apps",
+        "description": "Retrieves all apps available in the system",
+        "operationId": "readApps",
+        "responses": {
+          "200": {
+            "description": "Apps retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users_roles": {
+      "get": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Get all users and roles linked",
+        "description": "Retrieves all linked users and roles available in the system",
+        "operationId": "readAppUserRoles",
+        "responses": {
+          "200": {
+            "description": "Users Roles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users_roles/users/{userIds}": {
+      "get": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Get linked users and roles by a list of user IDs",
+        "description": "Retrieves all users and roles associated with the specified user IDs",
+        "operationId": "readAppUserRolesByUserIds",
+        "parameters": [
+          {
+            "name": "userIds",
+            "in": "path",
+            "description": "IDs of the users for which users roles are retrieved",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apps Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users_roles/user_role/{userId}/{roleId}": {
+      "get": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Get a linked user role by user ID and role ID",
+        "description": "Retrieves a specific user role by its user ID and role ID",
+        "operationId": "readAppUserRole",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user in linked user role",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID of the role in linked user role",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Role retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Unassign Role from User",
+        "description": "Removes a Role from User",
+        "operationId": "deleteAppUserRole",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the User in linked user role",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID of the Role in linked user role",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role unassigned successfully from user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users_roles/user/{userId}": {
+      "get": {
+        "tags": [
+          "Users Roles Management"
+        ],
+        "summary": "Get linked users and roles by user ID",
+        "description": "Retrieves all users and roles associated with the specified user ID",
+        "operationId": "readAppUserRolesByUserId",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user for which users roles are retrieved",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users Roles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Retrieve all app users",
+        "description": "Fetches a list of all app users available in the system",
+        "operationId": "readAppUsers",
+        "responses": {
+          "200": {
+            "description": "List of app users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/{appId}": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Retrieve app users by application ID",
+        "description": "Fetches a list of app users associated with a specific application ID",
+        "operationId": "readAppUsersByAppId",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of app users associated with the specified application ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/user/email/{email}": {
+      "get": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Retrieve app user by email",
+        "description": "Fetches details of a specific app user by email.",
+        "operationId": "readAppUserByEmail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "Email of the app user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the specified app user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles_permissions": {
+      "get": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Get all roles and permissions linked",
+        "description": "Retrieves all linked roles and permissions available in the system",
+        "operationId": "readAppRolePermissions",
+        "responses": {
+          "200": {
+            "description": "Roles Permissions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles_permissions/role_permission/{roleId}/{permissionId}": {
+      "get": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Get a linked role permission role by role ID and permission ID",
+        "description": "Retrieves a specific role permission by its role ID and permission ID",
+        "operationId": "readAppRolePermission",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID of the role in linked role permission",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "permissionId",
+            "in": "path",
+            "description": "ID of the permission in linked role permission",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role Permission retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Unassign Permission from a Role",
+        "description": "Removes a Permission from a Role",
+        "operationId": "deleteAppRolePermission",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID of the role in linked role permission",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "permissionId",
+            "in": "path",
+            "description": "ID of the permission in linked role permission",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission unassigned successfully from role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles_permissions/role/{roleId}": {
+      "get": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Get linked roles and permissions by role ID",
+        "description": "Retrieves all roles and permissions associated with the specified role ID",
+        "operationId": "readAppRolePermissionsByRoleId",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID of the role for which roles permissions are retrieved",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles Permissions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles_permissions/app/{appId}/roles/{roleIds}": {
+      "get": {
+        "tags": [
+          "Roles Permissions Management"
+        ],
+        "summary": "Get linked roles and permissions by role ID and app ID",
+        "description": "Retrieves all roles and permissions associated with the specified role ID for a given application ID",
+        "operationId": "readAppRolePermissionsByRoleIds",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which roles permissions are retrieved",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleIds",
+            "in": "path",
+            "description": "IDs of the roles for which roles permissions are retrieved",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles Permissions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRolePermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles": {
+      "get": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Get all roles",
+        "description": "Retrieves all roles available in the system",
+        "operationId": "readAppRoles",
+        "responses": {
+          "200": {
+            "description": "Roles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions": {
+      "get": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Get all permissions",
+        "description": "Retrieves all permissions available in the system",
+        "operationId": "readAppPermissions",
+        "responses": {
+          "200": {
+            "description": "Permissions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions/app/{appId}": {
+      "get": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Get permissions by application ID",
+        "description": "Retrieves all permissions associated with the specified application ID",
+        "operationId": "readAppPermissionsByAppId",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the application for which permissions are retrieved",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permissions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps_app_user/apps_user/{appId}/{appUserEmail}": {
+      "delete": {
+        "tags": [
+          "Apps Users Management"
+        ],
+        "summary": "Unassign User from an App",
+        "description": "Removes a User from an App",
+        "operationId": "deleteAppsAppUser",
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "ID of the Application in linked app user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appUserEmail",
+            "in": "path",
+            "description": "Email of the User in linked app user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User unassigned successfully from app",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/apps/app/{id}/hard": {
+      "delete": {
+        "tags": [
+          "Apps Management"
+        ],
+        "summary": "Hard delete an app by ID",
+        "description": "Permanently removes an app identified by its unique ID",
+        "operationId": "hardDeleteApp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app to hard delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App hard deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_users/user/{id}/hard": {
+      "delete": {
+        "tags": [
+          "Users Management"
+        ],
+        "summary": "Hard delete an app user",
+        "description": "Permanently removes a specific app user by ID",
+        "operationId": "hardDeleteAppUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the app user to hard delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User hard deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_roles/role/{id}/hard": {
+      "delete": {
+        "tags": [
+          "Roles Management"
+        ],
+        "summary": "Hard delete a role by ID",
+        "description": "Permanently removes a role identified by its unique ID",
+        "operationId": "hardDeleteAppRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the role to hard delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role hard deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/app_permissions/permission/{id}/hard": {
+      "delete": {
+        "tags": [
+          "Permissions Management"
+        ],
+        "summary": "Hard delete a permission by ID",
+        "description": "Permanently removes a permission identified by its unique ID",
+        "operationId": "hardDeleteAppPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the permission to hard delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission hard deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppPermissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing/Incorrect Credentials"
+          },
+          "403": {
+            "description": "Forbidden - Invalid Credentials"
+          },
+          "404": {
+            "description": "Not Found - Application or User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error - Other Errors"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppsRequest": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "AppsDto": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "AppsResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "apps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppsDto"
+            }
+          }
+        }
+      },
+      "ResponseCrudInfo": {
+        "type": "object",
+        "properties": {
+          "insertedRowsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedRowsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deletedRowsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "restoredRowsCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ResponsePageInfo": {
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "perPage": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ResponseStatusInfo": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errMsg": {
+            "type": "string"
+          }
+        }
+      },
+      "AppUserAddressDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "addressType": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          }
+        }
+      },
+      "AppUserRequest": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "guestUser": {
+            "type": "boolean"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppUserAddressDto"
+            }
+          }
+        }
+      },
+      "AppPermissionDto": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appId": {
+            "type": "string"
+          }
+        }
+      },
+      "AppRoleDto": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppPermissionDto"
+            }
+          }
+        }
+      },
+      "AppUserDto": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "guestUser": {
+            "type": "boolean"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppUserAddressDto"
+            }
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppRoleDto"
+            }
+          },
+          "validated": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AppUserResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppUserDto"
+            }
+          }
+        }
+      },
+      "UserLoginRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AppRoleRequest": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "AppRoleResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppRoleDto"
+            }
+          }
+        }
+      },
+      "AppPermissionRequest": {
+        "required": [
+          "description",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "AppPermissionResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppPermissionDto"
+            }
+          }
+        }
+      },
+      "AppTokenRequest": {
+        "type": "object",
+        "properties": {
+          "appUserId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AppUserDto"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "atoken": {
+            "type": "string"
+          },
+          "rtoken": {
+            "type": "string"
+          }
+        }
+      },
+      "AppsAppUserRequest": {
+        "required": [
+          "appId"
+        ],
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AppsAppUserDto": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "$ref": "#/components/schemas/AppsDto"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AppUserDto"
+          }
+        }
+      },
+      "AppsAppUserResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "appsUsers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppsAppUserDto"
+            }
+          }
+        }
+      },
+      "AppUserRoleRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AppUserRoleDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AppUserDto"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AppRoleDto"
+          }
+        }
+      },
+      "AppUserRoleResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "usersRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppUserRoleDto"
+            }
+          }
+        }
+      },
+      "AppRolePermissionRequest": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissionId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AppRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/AppRoleDto"
+          },
+          "permission": {
+            "$ref": "#/components/schemas/AppPermissionDto"
+          }
+        }
+      },
+      "AppRolePermissionResponse": {
+        "type": "object",
+        "properties": {
+          "responseCrudInfo": {
+            "$ref": "#/components/schemas/ResponseCrudInfo"
+          },
+          "responsePageInfo": {
+            "$ref": "#/components/schemas/ResponsePageInfo"
+          },
+          "responseStatusInfo": {
+            "$ref": "#/components/schemas/ResponseStatusInfo"
+          },
+          "rolesPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppRolePermissionDto"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Token": {
+        "type": "http",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      },
+      "Basic": {
+        "type": "http",
+        "scheme": "Basic"
+      }
+    }
+  }
+}
