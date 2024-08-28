@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SystemEnvPropertyUtils {
 
-  private static Map<String, String> propertiesMap;
+  private static final Map<String, String> propertiesMap;
 
   static {
     Map<String, String> tempMap = new HashMap<>();
@@ -47,13 +47,4 @@ public class SystemEnvPropertyUtils {
   public static Map<String, String> getAllSystemEnvProperties() {
     return propertiesMap;
   }
-
-    /**
-     * Deprecated to be used in test classes only
-     */
-    @Deprecated
-    public static void reloadProperties() {
-        propertiesMap = new HashMap<>();
-        getAllSystemEnvProperties();
-    }
 }
