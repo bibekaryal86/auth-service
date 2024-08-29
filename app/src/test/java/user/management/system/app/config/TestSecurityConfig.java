@@ -7,9 +7,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import user.management.system.app.service.AppUserService;
 
 @Configuration
-public class SecurityConfigTest extends SecurityConfigBase {
+public class TestSecurityConfig extends SecurityConfigBase {
 
-  protected SecurityConfigTest(final AppUserService appUserService) {
+  protected TestSecurityConfig(final AppUserService appUserService) {
     super(appUserService);
   }
 

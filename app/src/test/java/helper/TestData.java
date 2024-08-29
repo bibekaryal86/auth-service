@@ -1,10 +1,14 @@
-package user.management.system;
+package helper;
 
 import static user.management.system.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import user.management.system.app.model.client.EnvDetails;
 
 public class TestData {
 
@@ -20,5 +24,12 @@ public class TestData {
             System.setProperty(env, env);
           }
         });
+  }
+
+  public static List<EnvDetails> getEnvDetailsResponse() throws JsonProcessingException {
+    String fixtureAsString =
+        FixtureReader.readFixture("authenv-service_getPropertiesResponse.json");
+    return ObjectMapperProvider.objectMapper()
+        .readValue(fixtureAsString, new TypeReference<List<EnvDetails>>() {});
   }
 }

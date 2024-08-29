@@ -1,4 +1,4 @@
-package user.management.system;
+package helper;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.extension.AfterAllCallback;
