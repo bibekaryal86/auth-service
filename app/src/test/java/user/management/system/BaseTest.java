@@ -11,5 +11,5 @@ import user.management.system.app.config.TestSecurityConfig;
 @SpringBootTest
 @ActiveProfiles("springboottest")
 @ExtendWith(BaseTestExtension.class)
-@Import({TestSecurityConfig.class, TestDatasourceConfig.class})
+@Import({TestDatasourceConfig.class, TestSecurityConfig.class})
 public abstract class BaseTest {}

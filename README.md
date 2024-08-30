@@ -15,6 +15,9 @@
 
 * Remaining (thoughts)
   * Unit and Integration tests
+    * Parameterized tests
+    * Integration test for AuthEnvServiceConnector without mocking WebClient
+    * Add test for cacheable
   * Update Dockerfile to make it multi stage build
     * Run tests and build jar file
     * Then only copy the freshly created jar file
