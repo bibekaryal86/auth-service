@@ -2,6 +2,7 @@ package user.management.system.app.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,12 +20,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import user.management.system.BaseTest;
 
-public class AuthEnvServiceConnectorTest {
+public class AuthEnvServiceConnectorTest extends BaseTest {
 
+  private AuthenvServiceConnector authenvServiceConnector;
   private MockWebServer server;
   private Environment environment;
-  private AuthenvServiceConnector authenvServiceConnector;
   private final String responseJsonFileName = "authenv-service_getPropertiesResponse.json";
 
   @BeforeEach
@@ -82,5 +85,19 @@ public class AuthEnvServiceConnectorTest {
     Map<String, String> result = authenvServiceConnector.getRedirectUrls();
     assertNotNull(result);
     assertEquals(Collections.emptyMap(), result);
+  }
+
+  @Test
+  void testGetRedirectUrls_Unauthorized() {
+    when(environment.matchesProfiles("development")).thenReturn(true);
+    server.enqueue(
+            new MockResponse()
+                    .setResponseCode(401)
+                    .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+    );
+    assertThrows(WebClientResponseException.Unauthorized.class, () -> {
+      authenvServiceConnector.getRedirectUrls();
+    });
+    assertEquals(1, server.getRequestCount());
   }
 }

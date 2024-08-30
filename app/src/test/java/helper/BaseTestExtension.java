@@ -13,7 +13,7 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
   private static int flywayCleanCount = 0;
 
   @Override
-  public void beforeAll(ExtensionContext extensionContext) throws Exception {
+  public void beforeAll(ExtensionContext extensionContext) {
     if (!isSetupDone) {
       TestData.setSystemEnvPropertyTestData();
       isSetupDone = true;
@@ -21,14 +21,14 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
   }
 
   @Override
-  public void afterAll(ExtensionContext extensionContext) throws Exception {
+  public void afterAll(ExtensionContext extensionContext) {
     flywayCleanCount++;
     ApplicationContext applicationContext = SpringExtension.getApplicationContext(extensionContext);
     Flyway flyway = applicationContext.getBean(Flyway.class);
     flyway.clean();
 
     if (flywayCleanCount > 1) {
-      throw new IllegalStateException("afterAll should only be executed once!");
+      throw new IllegalStateException(String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount));
     }
   }
 }
