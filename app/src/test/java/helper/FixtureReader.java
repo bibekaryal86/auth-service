@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FixtureReader {
 
-  public static String readFixture(String fileWhichExistsInResources) {
+  public static String readFixture(final String fileWhichExistsInResources) {
     // ../ exists because FixtureReader lives in helper package
     URL url = FixtureReader.class.getResource("../fixtures/" + fileWhichExistsInResources);
 

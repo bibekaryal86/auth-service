@@ -31,7 +31,10 @@ public class TestClassesFinder {
   }
 
   private static void processDirectory(
-      File directory, String packageName, List<String> testClasses, int level) {
+      final File directory,
+      final String packageName,
+      final List<String> testClasses,
+      final int level) {
     if (level > 3) return; // Limit recursion to 2 levels
 
     File[] files = directory.listFiles();
