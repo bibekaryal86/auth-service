@@ -1,5 +1,6 @@
 package helper;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -10,8 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
 
   private static boolean isSetupDone = false;
-  private static int flywayCleanCount = 0;
-  private static int allTestClassesCount = TestClassesFinder.findTestClasses().size();
+  private static final AtomicInteger flywayCleanCount = new AtomicInteger(0);
+  private static final AtomicInteger allTestClassesCount =
+      new AtomicInteger(TestClassesFinder.findTestClasses().size());
 
   @Override
   public void beforeAll(final ExtensionContext extensionContext) {
@@ -23,24 +25,24 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
   public void afterAll(final ExtensionContext extensionContext) {
-    allTestClassesCount--;
+    allTestClassesCount.decrementAndGet();
 
-    if (allTestClassesCount == 0) {
-      flywayCleanCount++;
+    if (allTestClassesCount.get() == 0) {
+      flywayCleanCount.incrementAndGet();
       ApplicationContext applicationContext =
           SpringExtension.getApplicationContext(extensionContext);
       Flyway flyway = applicationContext.getBean(Flyway.class);
       flyway.clean();
     }
 
-    if (flywayCleanCount > 1) {
+    if (flywayCleanCount.get() > 1) {
       throw new IllegalStateException(
-          String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount));
+          String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount.get()));
     }
 
-    if (allTestClassesCount < 0) {
+    if (allTestClassesCount.get() < 0) {
       throw new IllegalStateException(
-          String.format("AllTestClassesCount is less than 0: [%s]", allTestClassesCount));
+          String.format("AllTestClassesCount is less than 0: [%s]", allTestClassesCount.get()));
     }
   }
 }
