@@ -13,7 +13,7 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
   private static int flywayCleanCount = 0;
 
   @Override
-  public void beforeAll(ExtensionContext extensionContext) {
+  public void beforeAll(final ExtensionContext extensionContext) {
     if (!isSetupDone) {
       TestData.setSystemEnvPropertyTestData();
       isSetupDone = true;
@@ -21,7 +21,7 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
   }
 
   @Override
-  public void afterAll(ExtensionContext extensionContext) {
+  public void afterAll(final ExtensionContext extensionContext) {
     flywayCleanCount++;
     ApplicationContext applicationContext = SpringExtension.getApplicationContext(extensionContext);
     Flyway flyway = applicationContext.getBean(Flyway.class);
