@@ -11,6 +11,7 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
 
   private static boolean isSetupDone = false;
   private static int flywayCleanCount = 0;
+  private static int allTestClassesCount = TestClassesFinder.findTestClasses().size();
 
   @Override
   public void beforeAll(final ExtensionContext extensionContext) {
@@ -22,13 +23,24 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
   public void afterAll(final ExtensionContext extensionContext) {
-    flywayCleanCount++;
-    ApplicationContext applicationContext = SpringExtension.getApplicationContext(extensionContext);
-    Flyway flyway = applicationContext.getBean(Flyway.class);
-    flyway.clean();
+    allTestClassesCount--;
+
+    if (allTestClassesCount == 0) {
+      flywayCleanCount++;
+      ApplicationContext applicationContext =
+          SpringExtension.getApplicationContext(extensionContext);
+      Flyway flyway = applicationContext.getBean(Flyway.class);
+      flyway.clean();
+    }
 
     if (flywayCleanCount > 1) {
-      throw new IllegalStateException(String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount));
+      throw new IllegalStateException(
+          String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount));
+    }
+
+    if (allTestClassesCount < 0) {
+      throw new IllegalStateException(
+          String.format("AllTestClassesCount is less than 0: [%s]", allTestClassesCount));
     }
   }
 }

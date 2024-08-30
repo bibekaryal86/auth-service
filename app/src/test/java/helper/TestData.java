@@ -31,10 +31,10 @@ public class TestData {
     String fixtureAsString =
         FixtureReader.readFixture("authenv-service_getPropertiesResponse.json");
     try {
-        return ObjectMapperProvider.objectMapper()
-                .readValue(fixtureAsString, new TypeReference<>() {});
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
     } catch (JsonProcessingException ex) {
-        return Collections.emptyList();
+      return Collections.emptyList();
     }
   }
 }

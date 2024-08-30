@@ -66,8 +66,8 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
     server.enqueue(
         new MockResponse()
             .setResponseCode(200)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
     Map<String, String> result = authenvServiceConnector.getRedirectUrls();
 
     assertNotNull(result);
@@ -80,8 +80,8 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
     server.enqueue(
         new MockResponse()
             .setResponseCode(200)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .setBody("[]"));
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("[]"));
     Map<String, String> result = authenvServiceConnector.getRedirectUrls();
     assertNotNull(result);
     assertEquals(Collections.emptyMap(), result);
@@ -91,13 +91,14 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
   void testGetRedirectUrls_Unauthorized() {
     when(environment.matchesProfiles("development")).thenReturn(true);
     server.enqueue(
-            new MockResponse()
-                    .setResponseCode(401)
-                    .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-    );
-    assertThrows(WebClientResponseException.Unauthorized.class, () -> {
-      authenvServiceConnector.getRedirectUrls();
-    });
+        new MockResponse()
+            .setResponseCode(401)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    assertThrows(
+        WebClientResponseException.Unauthorized.class,
+        () -> {
+          authenvServiceConnector.getRedirectUrls();
+        });
     assertEquals(1, server.getRequestCount());
   }
 }
