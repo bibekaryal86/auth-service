@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.model.dto.AppRolePermissionRequest;
 import user.management.system.app.model.entity.AppPermissionEntity;
@@ -55,11 +56,11 @@ public class AppRolePermissionService {
   public List<AppRolePermissionEntity> readAppRolePermissions(
       final String appId, final List<Integer> appRoleIds) {
     log.debug("Read App Role Permissions: [{}], [{}]", appId, appRoleIds);
-    if (appId == null) {
-      return appRolePermissionRepository.findByAppRoleIdInOrderByAppPermissionNameAsc(appRoleIds);
+    if (StringUtils.hasText(appId)) {
+      return appRolePermissionRepository
+          .findByAppPermissionAppIdAndAppRoleIdInOrderByAppPermissionNameAsc(appId, appRoleIds);
     }
-    return appRolePermissionRepository
-        .findByAppPermissionAppIdAndAppRoleIdInOrderByAppPermissionNameAsc(appId, appRoleIds);
+    return appRolePermissionRepository.findByAppRoleIdInOrderByAppPermissionNameAsc(appRoleIds);
   }
 
   public AppRolePermissionEntity readAppRolePermission(

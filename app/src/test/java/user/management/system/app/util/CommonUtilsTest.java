@@ -35,7 +35,7 @@ public class CommonUtilsTest extends BaseTest {
   @Mock private HttpServletRequest request;
 
   @Test
-  void testGetBaseUrlForLinkInEmailWithHttp() {
+  void testGetBaseUrlForLinkInEmail_WithHttp() {
     when(request.getScheme()).thenReturn("http");
     when(request.getServerName()).thenReturn("localhost");
     when(request.getServerPort()).thenReturn(8080);
@@ -46,7 +46,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetBaseUrlForLinkInEmailWithHttps() {
+  void testGetBaseUrlForLinkInEmail_WithHttps() {
     when(request.getScheme()).thenReturn("https");
     when(request.getServerName()).thenReturn("example.com");
     when(request.getServerPort()).thenReturn(443);
@@ -77,7 +77,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetHttpStatusAndResponseStatusInfoForSingleResponse_objectIsNull() {
+  void testGetHttpStatusAndResponseStatusInfoForSingleResponse_ObjectIsNull() {
     HttpStatus status = CommonUtils.getHttpStatusForSingleResponse(null);
     ResponseStatusInfo responseStatusInfo =
         CommonUtils.getResponseStatusInfoForSingleResponse(null);
@@ -87,7 +87,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetHttpStatusAndResponseStatusInfoForSingleResponse_objectIsNotNull() {
+  void testGetHttpStatusAndResponseStatusInfoForSingleResponse_ObjectIsNotNull() {
     HttpStatus status = CommonUtils.getHttpStatusForSingleResponse(new Object());
     ResponseStatusInfo responseStatusInfo =
         CommonUtils.getResponseStatusInfoForSingleResponse(new Object());
@@ -106,7 +106,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testConvertResponseStatusInfoToJson_messageIsNull() {
+  void testConvertResponseStatusInfoToJson_MessageIsNull() {
     ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg("No errors").build();
     String result = CommonUtils.convertResponseStatusInfoToJson(responseStatusInfo);
