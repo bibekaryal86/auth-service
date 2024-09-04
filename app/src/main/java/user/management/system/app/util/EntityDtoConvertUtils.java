@@ -377,7 +377,7 @@ public class EntityDtoConvertUtils {
         .toList();
   }
 
-  public AppUserAddressDto convertEntityToDtoAppUserAddress(
+  private AppUserAddressDto convertEntityToDtoAppUserAddress(
       final AppUserAddressEntity appUserAddressEntity) {
     if (appUserAddressEntity == null) {
       return null;
@@ -387,7 +387,7 @@ public class EntityDtoConvertUtils {
     return appUserAddressDto;
   }
 
-  public List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
+  private List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
       final List<AppUserAddressEntity> appUserAddressEntities) {
     if (CollectionUtils.isEmpty(appUserAddressEntities)) {
       return Collections.emptyList();
