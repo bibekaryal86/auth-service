@@ -337,7 +337,7 @@ public class EntityDtoConvertUtils {
             .map(appUserRoleEntity -> appUserRoleEntity.getAppRole().getId())
             .toList();
     final List<AppRolePermissionEntity> appRolePermissionEntities =
-        appRolePermissionService.readAppRolePermissions("", appRoleIds);
+        appRolePermissionService.readAppRolePermissions(null, appRoleIds);
 
     final Map<Integer, List<AppUserRoleEntity>> userRolesMap =
         appUserRoleEntities.stream()
