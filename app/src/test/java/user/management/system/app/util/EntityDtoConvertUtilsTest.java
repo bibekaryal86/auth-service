@@ -9,11 +9,13 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
+import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.model.dto.AppRoleDto;
 import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserDto;
@@ -67,24 +71,81 @@ public class EntityDtoConvertUtilsTest {
 
   @Test
   void testGetResponseSingleAppUser_NonNullEntity() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppUser(appUserEntities.getFirst());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertEquals(1, response.getBody().getUsers().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUser_EmptyList() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUser(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUser_NonEmptyList() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertEquals(3, response.getBody().getUsers().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeleteAppUser() {
+    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseDeleteAppUser();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseCrudInfo());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseErrorAppUser() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppUser(new UserNotAuthorizedException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+  }
+
+  @Test
+  void testConvertEntityToDtoAppUser_NullEntity() {
+    assertNull(entityDtoConvertUtils.convertEntityToDtoAppUser(null, true));
+  }
+
+  @Test
+  void testConvertEntityToDtoAppUser_NonNullEntity() {
     when(appUserRoleService.readAppUserRoles(eq(1)))
         .thenReturn(List.of(appUserRoleEntities.getFirst()));
     when(appRolePermissionService.readAppRolePermissions(any(), anyList()))
         .thenReturn(appRolePermissionEntities);
 
     AppUserEntity appUserEntity = appUserEntities.getFirst();
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseSingleAppUser(appUserEntity);
+    AppUserDto appUserDto = entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
+    assertNotNull(appUserDto);
 
-    // check response entity
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertEquals(1, response.getBody().getUsers().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    // check response dto against entity
-    AppUserDto appUserDto = response.getBody().getUsers().getFirst();
+    // check dto against entity
     assertEquals(appUserDto.getId(), appUserEntity.getId());
     assertEquals(appUserDto.getEmail(), appUserEntity.getEmail());
     assertEquals(appUserDto.getCreatedDate(), appUserEntity.getCreatedDate());
@@ -122,38 +183,25 @@ public class EntityDtoConvertUtilsTest {
   }
 
   @Test
-  void testGetResponseMultipleAppUser_EmptyList() {
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseMultipleAppUser(Collections.emptyList());
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertTrue(response.getBody().getUsers().isEmpty());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+  void testConvertEntitiesToDtosAppUser_EmptyList() {
+    assertTrue(
+        entityDtoConvertUtils
+            .convertEntitiesToDtosAppUser(Collections.emptyList(), true)
+            .isEmpty());
   }
 
   @Test
-  void testGetResponseMultipleAppUser_NonEmptyList() {
+  void testConvertEntitiesToDtosAppUser_NonEmptyList() {
     when(appUserRoleService.readAppUserRoles(anyList())).thenReturn(appUserRoleEntities);
     when(appRolePermissionService.readAppRolePermissions(eq(null), anyList()))
         .thenReturn(appRolePermissionEntities);
 
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+    List<AppUserDto> appUserDtos =
+        entityDtoConvertUtils.convertEntitiesToDtosAppUser(appUserEntities, true);
 
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertEquals(3, response.getBody().getUsers().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(appUserDtos);
+    assertEquals(3, appUserDtos.size());
 
-    verify(appUserRoleService, times(1))
-        .readAppUserRoles(appUserEntities.stream().map(AppUserEntity::getId).toList());
-    verify(appRolePermissionService, times(1))
-        .readAppRolePermissions(null, appUserEntities.stream().map(AppUserEntity::getId).toList());
-
-    List<AppUserDto> appUserDtos = response.getBody().getUsers();
     for (int i = 0; i < appUserEntities.size(); i++) {
       final int finalI = i + 1;
       Optional<AppUserEntity> appUserEntity =
@@ -167,6 +215,71 @@ public class EntityDtoConvertUtilsTest {
       assertEquals(appUserEntity.get().getEmail(), appUserDto.get().getEmail());
       assertEquals(appUserEntity.get().getCreatedDate(), appUserDto.get().getCreatedDate());
       assertNull(appUserDto.get().getPassword());
+
+      // check addresses
+      List<AppUserAddressEntity> appUserAddressEntities = appUserEntity.get().getAddresses();
+      List<AppUserAddressDto> appUserAddressDtos = appUserDto.get().getAddresses();
+
+      if (CollectionUtils.isEmpty(appUserAddressEntities)) {
+        assertNull(appUserAddressDtos);
+      } else {
+        assertEquals(appUserAddressEntities.size(), appUserAddressDtos.size());
+
+        Optional<AppUserAddressEntity> appUserAddressEntity =
+            appUserAddressEntities.stream().filter(x -> x.getId() == finalI).findFirst();
+        Optional<AppUserAddressDto> appUserAddressDto =
+            appUserAddressDtos.stream().filter(y -> y.getId() == finalI).findFirst();
+
+        assertTrue(appUserAddressEntity.isPresent());
+        assertTrue(appUserAddressDto.isPresent());
+        assertEquals(appUserAddressEntity.get().getId(), appUserAddressDto.get().getId());
+        assertEquals(
+            appUserAddressEntity.get().getAddressType(), appUserAddressDto.get().getAddressType());
+        assertEquals(appUserAddressEntity.get().getStreet(), appUserAddressDto.get().getStreet());
+      }
+
+      // check roles and permissions
+      List<AppRoleDto> appRoleDtos = appUserDto.get().getRoles();
+      assertEquals(1, appRoleDtos.size());
+      assertEquals(1, appRoleDtos.getFirst().getPermissions().size());
+
+      AppUserRoleEntity appUserRoleEntity =
+          appUserRoleEntities.stream()
+              .filter(x -> Objects.equals(x.getAppUser().getId(), appUserDto.get().getId()))
+              .findFirst()
+              .orElse(null);
+      assertNotNull(appUserRoleEntity);
+      assertEquals(appRoleDtos.getFirst().getId(), appUserRoleEntity.getAppRole().getId());
+
+      AppRolePermissionEntity appRolePermissionEntity =
+          appRolePermissionEntities.stream()
+              .filter(y -> Objects.equals(y.getAppRole().getId(), appRoleDtos.getFirst().getId()))
+              .findFirst()
+              .orElse(null);
+      assertNotNull(appRolePermissionEntity);
+      assertEquals(
+          appRoleDtos.getFirst().getPermissions().getFirst().getId(),
+          appRolePermissionEntity.getAppPermission().getId());
     }
+
+    // verify services called
+    verify(appUserRoleService, times(1))
+        .readAppUserRoles(appUserEntities.stream().map(AppUserEntity::getId).toList());
+    verify(appRolePermissionService, times(1))
+        .readAppRolePermissions(null, appUserEntities.stream().map(AppUserEntity::getId).toList());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppUser_NonEmptyList_NotIncludeRoles() {
+    List<AppUserDto> appUserDtos =
+        entityDtoConvertUtils.convertEntitiesToDtosAppUser(appUserEntities, false);
+    assertNotNull(appUserDtos);
+    assertEquals(3, appUserDtos.size());
+
+    for (AppUserDto appUserDto : appUserDtos) {
+      assertNull(appUserDto.getRoles());
+    }
+
+    verifyNoInteractions(appUserRoleService, appRolePermissionService);
   }
 }
