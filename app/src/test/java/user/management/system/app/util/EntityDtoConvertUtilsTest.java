@@ -44,6 +44,7 @@ import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
+import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.service.AppUserRoleService;
@@ -63,6 +64,7 @@ public class EntityDtoConvertUtilsTest {
   private static List<AppUserEntity> appUserEntities;
   private static List<AppUserRoleEntity> appUserRoleEntities;
   private static List<AppRolePermissionEntity> appRolePermissionEntities;
+  private static List<AppsAppUserEntity> appsAppUserEntities;
 
   @BeforeAll
   static void setUpBeforeAll() {
@@ -72,6 +74,7 @@ public class EntityDtoConvertUtilsTest {
     appUserEntities = TestData.getAppUserEntities();
     appUserRoleEntities = TestData.getAppUserRoleEntities();
     appRolePermissionEntities = TestData.getAppRolePermissionEntities();
+    appsAppUserEntities = TestData.getAppsAppUserEntities();
   }
 
   @Test
@@ -381,6 +384,20 @@ public class EntityDtoConvertUtilsTest {
     // verify services called
     verify(appRolePermissionService, times(1))
         .readAppRolePermissions(null, appRoleEntities.stream().map(AppRoleEntity::getId).toList());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppRole_NonEmptyList_NotIncludeRoles() {
+    List<AppRoleDto> appRoleDtos =
+            entityDtoConvertUtils.convertEntitiesToDtosAppRole(appRoleEntities, false);
+    assertNotNull(appRoleDtos);
+    assertEquals(3, appRoleDtos.size());
+
+    for (AppRoleDto appRoleDto : appRoleDtos) {
+      assertNull(appRoleDto.getPermissions());
+    }
+
+    verifyNoInteractions(appRolePermissionService);
   }
 
   @Test

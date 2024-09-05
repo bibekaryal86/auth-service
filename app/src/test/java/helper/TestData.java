@@ -127,7 +127,7 @@ public class TestData {
     return appRolePermissionEntities;
   }
 
-  public static List<AppsAppUserEntity> getAppsAppUserEntity() {
+  public static List<AppsAppUserEntity> getAppsAppUserEntities() {
     List<AppsEntity> appsEntities = getAppsEntities();
     List<AppUserEntity> appUserEntities = getAppUserEntities();
     List<AppsAppUserEntity> appsAppUserEntities = new ArrayList<>();
