@@ -26,14 +26,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.exception.UserNotAuthorizedException;
+import user.management.system.app.model.dto.AppPermissionDto;
+import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.AppRoleDto;
 import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.AppsDto;
 import user.management.system.app.model.dto.AppsResponse;
+import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -52,6 +56,7 @@ public class EntityDtoConvertUtilsTest {
   @InjectMocks private EntityDtoConvertUtils entityDtoConvertUtils;
 
   private static List<AppsEntity> appsEntities;
+  private static List<AppPermissionEntity> appPermissionEntities;
   private static List<AppUserEntity> appUserEntities;
   private static List<AppUserRoleEntity> appUserRoleEntities;
   private static List<AppRolePermissionEntity> appRolePermissionEntities;
@@ -59,6 +64,7 @@ public class EntityDtoConvertUtilsTest {
   @BeforeAll
   static void setUpBeforeAll() {
     appsEntities = TestData.getAppsEntities();
+    appPermissionEntities = TestData.getAppPermissionEntities();
     appUserEntities = TestData.getAppUserEntities();
     appUserRoleEntities = TestData.getAppUserRoleEntities();
     appRolePermissionEntities = TestData.getAppRolePermissionEntities();
@@ -82,10 +88,7 @@ public class EntityDtoConvertUtilsTest {
 
   @Test
   void testConvertEntitiesToDtosApps_EmptyList() {
-    assertTrue(
-            entityDtoConvertUtils
-                    .convertEntitiesToDtosApps(Collections.emptyList())
-                    .isEmpty());
+    assertTrue(entityDtoConvertUtils.convertEntitiesToDtosApps(Collections.emptyList()).isEmpty());
   }
 
   @Test
@@ -94,10 +97,15 @@ public class EntityDtoConvertUtilsTest {
     assertNotNull(appsDtos);
     assertEquals(appsDtos.size(), appsEntities.size());
 
-    for (int i=0; i<appsEntities.size(); i++) {
-      final int finalI = i+1;
-      AppsEntity appsEntity = appsEntities.stream().filter(x -> x.getId().equals("app-"+finalI)).findFirst().orElse(null);
-      AppsDto appsDto = appsDtos.stream().filter(x -> x.getId().equals("app-"+finalI)).findFirst().orElse(null);
+    for (int i = 0; i < appsEntities.size(); i++) {
+      final int finalI = i + 1;
+      AppsEntity appsEntity =
+          appsEntities.stream()
+              .filter(x -> x.getId().equals("app-" + finalI))
+              .findFirst()
+              .orElse(null);
+      AppsDto appsDto =
+          appsDtos.stream().filter(x -> x.getId().equals("app-" + finalI)).findFirst().orElse(null);
       assertNotNull(appsEntity);
       assertNotNull(appsDto);
 
@@ -110,7 +118,8 @@ public class EntityDtoConvertUtilsTest {
   @Test
   void testGetResponseErrorApps() {
     ResponseEntity<AppsResponse> response =
-            entityDtoConvertUtils.getResponseErrorApps(new ElementNotFoundException("something", "anything"));
+        entityDtoConvertUtils.getResponseErrorApps(
+            new ElementNotFoundException("something", "anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -145,7 +154,7 @@ public class EntityDtoConvertUtilsTest {
   @Test
   void testGetResponseSingleApps_NonNullEntity() {
     ResponseEntity<AppsResponse> response =
-            entityDtoConvertUtils.getResponseSingleApps(appsEntities.getFirst());
+        entityDtoConvertUtils.getResponseSingleApps(appsEntities.getFirst());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -157,7 +166,7 @@ public class EntityDtoConvertUtilsTest {
   @Test
   void testGetResponseMultipleApps_EmptyList() {
     ResponseEntity<AppsResponse> response =
-            entityDtoConvertUtils.getResponseMultipleApps(Collections.emptyList());
+        entityDtoConvertUtils.getResponseMultipleApps(Collections.emptyList());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -169,12 +178,133 @@ public class EntityDtoConvertUtilsTest {
   @Test
   void testGetResponseMultipleApps_NonEmptyList() {
     ResponseEntity<AppsResponse> response =
-            entityDtoConvertUtils.getResponseMultipleApps(appsEntities);
+        entityDtoConvertUtils.getResponseMultipleApps(appsEntities);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getApps());
     assertEquals(3, response.getBody().getApps().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testConvertEntityToDtoAppPermission_NullEntity() {
+    assertNull(entityDtoConvertUtils.convertEntityToDtoAppPermission(null));
+  }
+
+  @Test
+  void testConvertEntityToDtoAppPermission_NonNullEntity() {
+    AppPermissionEntity appPermissionEntity = appPermissionEntities.getFirst();
+    AppPermissionDto appPermissionDto =
+        entityDtoConvertUtils.convertEntityToDtoAppPermission(appPermissionEntity);
+
+    assertNotNull(appPermissionDto);
+    assertEquals(appPermissionEntity.getId(), appPermissionDto.getId());
+    assertEquals(appPermissionEntity.getName(), appPermissionDto.getName());
+    assertEquals(appPermissionEntity.getDescription(), appPermissionDto.getDescription());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppPermission_EmptyList() {
+    assertTrue(
+        entityDtoConvertUtils
+            .convertEntitiesToDtosAppPermission(Collections.emptyList())
+            .isEmpty());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppPermission_NonEmptyList() {
+    List<AppPermissionDto> appPermissionDtos =
+        entityDtoConvertUtils.convertEntitiesToDtosAppPermission(appPermissionEntities);
+    assertNotNull(appPermissionDtos);
+    assertEquals(appPermissionDtos.size(), appPermissionEntities.size());
+
+    for (int i = 0; i < appPermissionEntities.size(); i++) {
+      final int finalI = i + 1;
+      AppPermissionEntity appPermissionEntity =
+          appPermissionEntities.stream().filter(x -> x.getId() == finalI).findFirst().orElse(null);
+      AppPermissionDto appPermissionDto =
+          appPermissionDtos.stream().filter(x -> x.getId() == finalI).findFirst().orElse(null);
+      assertNotNull(appPermissionEntity);
+      assertNotNull(appPermissionDto);
+
+      assertEquals(appPermissionEntity.getId(), appPermissionDto.getId());
+      assertEquals(appPermissionEntity.getName(), appPermissionDto.getName());
+      assertEquals(appPermissionEntity.getDescription(), appPermissionDto.getDescription());
+    }
+  }
+
+  @Test
+  void testGetResponseErrorAppPermission() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppPermission(
+            new ElementMissingException("something", "anything"));
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertTrue(response.getBody().getPermissions().isEmpty());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeleteAppPermission() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseDeleteAppPermission();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseCrudInfo());
+    assertTrue(response.getBody().getPermissions().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseSingleAppPermission_NullEntity() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppPermission(null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPermissions());
+    assertTrue(response.getBody().getPermissions().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSingleAppPermission_NonNullEntity() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntities.getFirst());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPermissions());
+    assertEquals(1, response.getBody().getPermissions().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppPermission_EmptyList() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppPermission(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPermissions());
+    assertTrue(response.getBody().getPermissions().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppPermission_NonEmptyList() {
+    ResponseEntity<AppPermissionResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPermissions());
+    assertEquals(3, response.getBody().getPermissions().size());
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 
