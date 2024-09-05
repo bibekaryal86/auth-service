@@ -40,6 +40,8 @@ import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
 import user.management.system.app.model.dto.AppUserRoleDto;
 import user.management.system.app.model.dto.AppUserRoleResponse;
+import user.management.system.app.model.dto.AppsAppUserDto;
+import user.management.system.app.model.dto.AppsAppUserResponse;
 import user.management.system.app.model.dto.AppsDto;
 import user.management.system.app.model.dto.AppsResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
@@ -963,6 +965,133 @@ public class EntityDtoConvertUtilsTest {
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getUsersRoles());
     assertEquals(3, response.getBody().getUsersRoles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testConvertEntityToDtoAppsAppUser_NullEntity() {
+    assertNull(entityDtoConvertUtils.convertEntityToDtoAppsAppUser(null));
+  }
+
+  @Test
+  void testConvertEntityToDtoAppsAppUser_NonNullEntity() {
+    AppsAppUserEntity appsAppUserEntity = appsAppUserEntities.getFirst();
+    AppsAppUserDto appsAppUserDto =
+        entityDtoConvertUtils.convertEntityToDtoAppsAppUser(appsAppUserEntity);
+    assertNotNull(appsAppUserDto);
+
+    // check dto against entity
+    assertEquals(appsAppUserDto.getAssignedDate(), appsAppUserEntity.getAssignedDate());
+    assertEquals(appsAppUserDto.getApp().getId(), appsAppUserEntity.getApp().getId());
+    assertEquals(appsAppUserDto.getUser().getId(), appsAppUserEntity.getAppUser().getId());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppsAppUser_EmptyList() {
+    assertTrue(
+        entityDtoConvertUtils.convertEntitiesToDtosAppsAppUser(Collections.emptyList()).isEmpty());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppsAppUser_NonEmptyList() {
+    List<AppsAppUserDto> appsAppUserDtos =
+        entityDtoConvertUtils.convertEntitiesToDtosAppsAppUser(appsAppUserEntities);
+
+    assertNotNull(appsAppUserDtos);
+    assertEquals(3, appsAppUserDtos.size());
+
+    for (int i = 0; i < appsAppUserEntities.size(); i++) {
+      final int finalI = i + 1;
+      AppsAppUserEntity appsAppUserEntity =
+          appsAppUserEntities.stream()
+              .filter(x -> x.getAppUser().getId() == finalI)
+              .findFirst()
+              .orElse(null);
+      AppsAppUserDto appsAppUserDto =
+          appsAppUserDtos.stream()
+              .filter(x -> x.getUser().getId() == finalI)
+              .findFirst()
+              .orElse(null);
+
+      assertNotNull(appsAppUserEntity);
+      assertNotNull(appsAppUserDto);
+      assertEquals(appsAppUserEntity.getApp().getId(), appsAppUserDto.getApp().getId());
+      assertEquals(appsAppUserEntity.getAppUser().getId(), appsAppUserDto.getUser().getId());
+      assertEquals(appsAppUserEntity.getAssignedDate(), appsAppUserDto.getAssignedDate());
+    }
+  }
+
+  @Test
+  void testGetResponseErrorAppsAppUser() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppsAppUser(
+            new NullPointerException("something was null"));
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertTrue(response.getBody().getAppsUsers().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeleteAppsAppUser() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseDeleteAppsAppUser();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseCrudInfo());
+    assertTrue(response.getBody().getAppsUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseSingleAppsAppUser_NullEntity() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppsAppUser(null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getAppsUsers());
+    assertTrue(response.getBody().getAppsUsers().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSingleAppsAppUser_NonNullEntity() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppsAppUser(appsAppUserEntities.getFirst());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getAppsUsers());
+    assertEquals(1, response.getBody().getAppsUsers().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppsAppUser_EmptyList() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppsAppUser(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getAppsUsers());
+    assertTrue(response.getBody().getAppsUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppsAppUser_NonEmptyList() {
+    ResponseEntity<AppsAppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppsAppUser(appsAppUserEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getAppsUsers());
+    assertEquals(3, response.getBody().getAppsUsers().size());
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 }
