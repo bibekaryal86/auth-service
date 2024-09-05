@@ -848,6 +848,9 @@ public class EntityDtoConvertUtilsTest {
 
   @Test
   void testConvertEntityToDtoAppUserRole_NonNullEntity() {
+    when(appRolePermissionService.readAppRolePermissions(eq(1)))
+        .thenReturn(List.of(appRolePermissionEntities.getFirst()));
+
     AppUserRoleEntity appUserRoleEntity = appUserRoleEntities.getFirst();
     AppUserRoleDto appUserRoleDto =
         entityDtoConvertUtils.convertEntityToDtoAppUserRole(appUserRoleEntity);
@@ -857,6 +860,12 @@ public class EntityDtoConvertUtilsTest {
     assertEquals(appUserRoleDto.getAssignedDate(), appUserRoleEntity.getAssignedDate());
     assertEquals(appUserRoleDto.getRole().getId(), appUserRoleEntity.getAppRole().getId());
     assertEquals(appUserRoleDto.getUser().getId(), appUserRoleEntity.getAppUser().getId());
+
+    // check permissions
+    assertEquals(1, appUserRoleDto.getRole().getPermissions().size());
+    assertEquals(
+        appRolePermissionEntities.getFirst().getAppPermission().getId(),
+        appUserRoleDto.getRole().getPermissions().getFirst().getId());
   }
 
   @Test
@@ -867,6 +876,11 @@ public class EntityDtoConvertUtilsTest {
 
   @Test
   void testConvertEntitiesToDtosAppUserRole_NonEmptyList() {
+    for (int i = 0; i < appRolePermissionEntities.size(); i++) {
+      when(appRolePermissionService.readAppRolePermissions(eq(i + 1)))
+          .thenReturn(List.of(appRolePermissionEntities.get(i)));
+    }
+
     List<AppUserRoleDto> appUserRoleDtos =
         entityDtoConvertUtils.convertEntitiesToDtosAppUserRole(appUserRoleEntities);
 
@@ -891,6 +905,16 @@ public class EntityDtoConvertUtilsTest {
       assertEquals(appUserRoleEntity.getAppRole().getId(), appUserRoleDto.getRole().getId());
       assertEquals(appUserRoleEntity.getAppUser().getId(), appUserRoleDto.getUser().getId());
       assertEquals(appUserRoleEntity.getAssignedDate(), appUserRoleDto.getAssignedDate());
+
+      AppRolePermissionEntity appRolePermissionEntity =
+          appRolePermissionEntities.stream()
+              .filter(y -> Objects.equals(y.getAppRole().getId(), appUserRoleDto.getRole().getId()))
+              .findFirst()
+              .orElse(null);
+      assertNotNull(appRolePermissionEntity);
+      assertEquals(
+          appUserRoleDto.getRole().getPermissions().getFirst().getId(),
+          appRolePermissionEntity.getAppPermission().getId());
     }
   }
 
