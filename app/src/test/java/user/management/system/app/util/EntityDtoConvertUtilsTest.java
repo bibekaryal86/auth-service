@@ -2,6 +2,7 @@ package user.management.system.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -87,6 +88,7 @@ public class EntityDtoConvertUtilsTest {
     assertEquals(appUserDto.getId(), appUserEntity.getId());
     assertEquals(appUserDto.getEmail(), appUserEntity.getEmail());
     assertEquals(appUserDto.getCreatedDate(), appUserEntity.getCreatedDate());
+    assertNull(appUserDto.getPassword());
 
     // check addresses
     List<AppUserAddressEntity> appUserAddressEntities = appUserEntity.getAddresses();
@@ -164,6 +166,7 @@ public class EntityDtoConvertUtilsTest {
       assertEquals(appUserEntity.get().getId(), appUserDto.get().getId());
       assertEquals(appUserEntity.get().getEmail(), appUserDto.get().getEmail());
       assertEquals(appUserEntity.get().getCreatedDate(), appUserDto.get().getCreatedDate());
+      assertNull(appUserDto.get().getPassword());
     }
   }
 }
