@@ -38,6 +38,8 @@ import user.management.system.app.model.dto.AppRoleResponse;
 import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserResponse;
+import user.management.system.app.model.dto.AppUserRoleDto;
+import user.management.system.app.model.dto.AppUserRoleResponse;
 import user.management.system.app.model.dto.AppsDto;
 import user.management.system.app.model.dto.AppsResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
@@ -704,7 +706,7 @@ public class EntityDtoConvertUtilsTest {
 
   @Test
   void testConvertEntityToDtoAppRolePermission_NullEntity() {
-    assertNull(entityDtoConvertUtils.convertEntityToDtoAppPermission(null));
+    assertNull(entityDtoConvertUtils.convertEntityToDtoAppRolePermission(null));
   }
 
   @Test
@@ -834,6 +836,133 @@ public class EntityDtoConvertUtilsTest {
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getRolesPermissions());
     assertEquals(3, response.getBody().getRolesPermissions().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testConvertEntityToDtoAppUserRole_NullEntity() {
+    assertNull(entityDtoConvertUtils.convertEntityToDtoAppUserRole(null));
+  }
+
+  @Test
+  void testConvertEntityToDtoAppUserRole_NonNullEntity() {
+    AppUserRoleEntity appUserRoleEntity = appUserRoleEntities.getFirst();
+    AppUserRoleDto appUserRoleDto =
+        entityDtoConvertUtils.convertEntityToDtoAppUserRole(appUserRoleEntity);
+    assertNotNull(appUserRoleDto);
+
+    // check dto against entity
+    assertEquals(appUserRoleDto.getAssignedDate(), appUserRoleEntity.getAssignedDate());
+    assertEquals(appUserRoleDto.getRole().getId(), appUserRoleEntity.getAppRole().getId());
+    assertEquals(appUserRoleDto.getUser().getId(), appUserRoleEntity.getAppUser().getId());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppUserRole_EmptyList() {
+    assertTrue(
+        entityDtoConvertUtils.convertEntitiesToDtosAppUserRole(Collections.emptyList()).isEmpty());
+  }
+
+  @Test
+  void testConvertEntitiesToDtosAppUserRole_NonEmptyList() {
+    List<AppUserRoleDto> appUserRoleDtos =
+        entityDtoConvertUtils.convertEntitiesToDtosAppUserRole(appUserRoleEntities);
+
+    assertNotNull(appUserRoleDtos);
+    assertEquals(3, appUserRoleDtos.size());
+
+    for (int i = 0; i < appUserRoleEntities.size(); i++) {
+      final int finalI = i + 1;
+      AppUserRoleEntity appUserRoleEntity =
+          appUserRoleEntities.stream()
+              .filter(x -> x.getAppRole().getId() == finalI)
+              .findFirst()
+              .orElse(null);
+      AppUserRoleDto appUserRoleDto =
+          appUserRoleDtos.stream()
+              .filter(x -> x.getRole().getId() == finalI)
+              .findFirst()
+              .orElse(null);
+
+      assertNotNull(appUserRoleEntity);
+      assertNotNull(appUserRoleDto);
+      assertEquals(appUserRoleEntity.getAppRole().getId(), appUserRoleDto.getRole().getId());
+      assertEquals(appUserRoleEntity.getAppUser().getId(), appUserRoleDto.getUser().getId());
+      assertEquals(appUserRoleEntity.getAssignedDate(), appUserRoleDto.getAssignedDate());
+    }
+  }
+
+  @Test
+  void testGetResponseErrorAppUserRole() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppUserRole(
+            new NullPointerException("something was null"));
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertTrue(response.getBody().getUsersRoles().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeleteAppUserRole() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseDeleteAppUserRole();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseCrudInfo());
+    assertTrue(response.getBody().getUsersRoles().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseSingleAppUserRole_NullEntity() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppUserRole(null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsersRoles());
+    assertTrue(response.getBody().getUsersRoles().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSingleAppUserRole_NonNullEntity() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppUserRole(appUserRoleEntities.getFirst());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsersRoles());
+    assertEquals(1, response.getBody().getUsersRoles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUserRole_EmptyList() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUserRole(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsersRoles());
+    assertTrue(response.getBody().getUsersRoles().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUserRole_NonEmptyList() {
+    ResponseEntity<AppUserRoleResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUserRole(appUserRoleEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsersRoles());
+    assertEquals(3, response.getBody().getUsersRoles().size());
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 }
