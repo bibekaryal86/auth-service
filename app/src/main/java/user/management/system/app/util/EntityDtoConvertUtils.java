@@ -444,7 +444,8 @@ public class EntityDtoConvertUtils {
     AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole(), false);
     AppPermissionDto appPermissionDto =
         convertEntityToDtoAppPermission(appRolePermissionEntity.getAppPermission());
-    return new AppRolePermissionDto(appRoleDto, appPermissionDto);
+    return new AppRolePermissionDto(
+        appRoleDto, appPermissionDto, appRolePermissionEntity.getAssignedDate());
   }
 
   public List<AppRolePermissionDto> convertEntitiesToDtosAppRolePermission(
@@ -502,7 +503,7 @@ public class EntityDtoConvertUtils {
     }
     final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser(), false);
     final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), true);
-    return new AppUserRoleDto(appUserDto, appRoleDto);
+    return new AppUserRoleDto(appUserDto, appRoleDto, appUserRoleEntity.getAssignedDate());
   }
 
   public List<AppUserRoleDto> convertEntitiesToDtosAppUserRole(
@@ -558,7 +559,7 @@ public class EntityDtoConvertUtils {
     }
     final AppsDto appsDto = convertEntityToDtoApps(appsAppUserEntity.getApp());
     final AppUserDto appUserDto = convertEntityToDtoAppUser(appsAppUserEntity.getAppUser(), false);
-    return new AppsAppUserDto(appsDto, appUserDto);
+    return new AppsAppUserDto(appsDto, appUserDto, appsAppUserEntity.getAssignedDate());
   }
 
   public List<AppsAppUserDto> convertEntitiesToDtosAppsAppUser(
