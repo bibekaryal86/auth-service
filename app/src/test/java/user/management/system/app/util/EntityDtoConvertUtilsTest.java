@@ -3,6 +3,7 @@ package user.management.system.app.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -28,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
+import user.management.system.app.exception.UserForbiddenException;
 import user.management.system.app.exception.UserNotAuthorizedException;
 import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppPermissionResponse;
@@ -44,6 +46,8 @@ import user.management.system.app.model.dto.AppsAppUserDto;
 import user.management.system.app.model.dto.AppsAppUserResponse;
 import user.management.system.app.model.dto.AppsDto;
 import user.management.system.app.model.dto.AppsResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
+import user.management.system.app.model.dto.UserLoginResponse;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -1117,5 +1121,102 @@ public class EntityDtoConvertUtilsTest {
     assertNotNull(response.getBody().getAppsUsers());
     assertEquals(3, response.getBody().getAppsUsers().size());
     assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseErrorAppUserLogin() {
+    ResponseEntity<UserLoginResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppUserLogin(new UserNotAuthorizedException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertNull(response.getBody().getAToken());
+    assertNull(response.getBody().getRToken());
+    assertNull(response.getBody().getUser());
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseErrorResponseStatusInfo() {
+    ResponseEntity<ResponseStatusInfo> response =
+        entityDtoConvertUtils.getResponseErrorResponseStatusInfo(new UserForbiddenException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getErrMsg());
+    assertNull(response.getBody().getMessage());
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseValidateUser_Validated() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isValidated = true;
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseValidateUser(redirectUrl, isValidated);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_validated=true", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseValidateUser_NotValidated() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isValidated = false;
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseValidateUser(redirectUrl, isValidated);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_validated=false", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseValidateUser_EmptyRedirectUrl() {
+    assertThrows(
+        IllegalStateException.class, () -> entityDtoConvertUtils.getResponseValidateUser("", true));
+  }
+
+  @Test
+  void testGetResponseResetUser_Reset() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isReset = true;
+    String email = "user@example.com";
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseResetUser(redirectUrl, isReset, email);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_reset=true&to_reset=" + email,
+        response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseResetUser_NotReset() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isReset = false;
+    String email = "";
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseResetUser(redirectUrl, isReset, email);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(redirectUrl + "?is_reset=false", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseResetUser_EmptyRedirectUrl() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseResetUser("", true, "some@email.com"));
   }
 }

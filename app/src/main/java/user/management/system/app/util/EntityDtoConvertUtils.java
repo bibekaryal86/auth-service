@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.AppRoleDto;
@@ -588,6 +589,10 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseValidateUser(
       final String redirectUrl, final boolean isValidated) {
+    if (!StringUtils.hasText(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(
         URI.create(redirectUrl + (isValidated ? "?is_validated=true" : "?is_validated=false")));
@@ -596,6 +601,10 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseResetUser(
       final String redirectUrl, final boolean isReset, final String email) {
+    if (!StringUtils.hasText(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
     final String url =
         redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
     HttpHeaders headers = new HttpHeaders();
