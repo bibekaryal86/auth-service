@@ -59,77 +59,6 @@ public class EntityDtoConvertUtilsTest {
   }
 
   @Test
-  void testGetResponseSingleAppUser_NullEntity() {
-    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseSingleAppUser(null);
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertTrue(response.getBody().getUsers().isEmpty());
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseSingleAppUser_NonNullEntity() {
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseSingleAppUser(appUserEntities.getFirst());
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertEquals(1, response.getBody().getUsers().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseMultipleAppUser_EmptyList() {
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseMultipleAppUser(Collections.emptyList());
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertTrue(response.getBody().getUsers().isEmpty());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseMultipleAppUser_NonEmptyList() {
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getUsers());
-    assertEquals(3, response.getBody().getUsers().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseDeleteAppUser() {
-    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseDeleteAppUser();
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseCrudInfo());
-    assertTrue(response.getBody().getUsers().isEmpty());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
-  }
-
-  @Test
-  void testGetResponseErrorAppUser() {
-    ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseErrorAppUser(new UserNotAuthorizedException());
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseStatusInfo());
-    assertTrue(response.getBody().getUsers().isEmpty());
-    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-  }
-
-  @Test
   void testConvertEntityToDtoAppUser_NullEntity() {
     assertNull(entityDtoConvertUtils.convertEntityToDtoAppUser(null, true));
   }
@@ -281,5 +210,76 @@ public class EntityDtoConvertUtilsTest {
     }
 
     verifyNoInteractions(appUserRoleService, appRolePermissionService);
+  }
+
+  @Test
+  void testGetResponseErrorAppUser() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseErrorAppUser(new UserNotAuthorizedException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeleteAppUser() {
+    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseDeleteAppUser();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseCrudInfo());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, response.getBody().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseSingleAppUser_NullEntity() {
+    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseSingleAppUser(null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSingleAppUser_NonNullEntity() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseSingleAppUser(appUserEntities.getFirst());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertEquals(1, response.getBody().getUsers().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUser_EmptyList() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUser(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertTrue(response.getBody().getUsers().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultipleAppUser_NonEmptyList() {
+    ResponseEntity<AppUserResponse> response =
+        entityDtoConvertUtils.getResponseMultipleAppUser(appUserEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getUsers());
+    assertEquals(3, response.getBody().getUsers().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 }
