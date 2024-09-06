@@ -1,5 +1,7 @@
 package user.management.system.app.util;
 
+import static helper.TestData.TEST_APP_ID;
+import static helper.TestData.TEST_EMAIL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,9 +22,7 @@ import user.management.system.app.model.token.AuthToken;
 public class JwtUtilsTest {
 
   private static final String TEST_SECRET_KEY = "test_secret_key_for_jwt_testing_purposes_only";
-  private static final String EMAIL = "test@example.com";
   private static final String INVALID_TOKEN = "invalid.token.string";
-  private static final String APP_ID = "test-app-id";
   private static final AppUserDto appUserDto = new AppUserDto();
 
   @BeforeAll
@@ -36,15 +36,15 @@ public class JwtUtilsTest {
 
   @Test
   public void testEncodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(TEST_EMAIL);
     assertNotNull(encodedEmail);
   }
 
   @Test
   public void testDecodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(TEST_EMAIL);
     String decodedEmail = JwtUtils.decodeEmailAddress(encodedEmail);
-    assertEquals(EMAIL, decodedEmail);
+    assertEquals(TEST_EMAIL, decodedEmail);
   }
 
   @Test
@@ -66,13 +66,13 @@ public class JwtUtilsTest {
 
   @Test
   void testEncodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 3600000L);
     assertNotNull(token);
   }
 
   @Test
   void testDecodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 3600000L);
     Map<String, AuthToken> result = JwtUtils.decodeAuthCredentials(token);
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -92,7 +92,7 @@ public class JwtUtilsTest {
 
   @Test
   void testDecodeAuthCredentials_ExpiredToken() throws InterruptedException {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 1000);
+    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 1000);
     Thread.sleep(1000);
     JwtInvalidException exception =
         assertThrows(

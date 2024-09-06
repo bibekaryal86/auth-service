@@ -22,8 +22,16 @@ import user.management.system.app.model.entity.AppUserRoleId;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserId;
 import user.management.system.app.model.entity.AppsEntity;
+import user.management.system.app.model.enums.StatusEnums;
+import user.management.system.app.model.token.AuthToken;
+import user.management.system.app.model.token.AuthTokenPermission;
+import user.management.system.app.model.token.AuthTokenRole;
+import user.management.system.app.model.token.AuthTokenUser;
 
 public class TestData {
+
+  public static final String TEST_APP_ID = "app-1";
+  public static final String TEST_EMAIL = "firstlast@one.com";
 
   public static Map<String, String> getSystemEnvPropertyTestData() {
     return ENV_KEY_NAMES.stream()
@@ -143,5 +151,21 @@ public class TestData {
     }
 
     return appsAppUserEntities;
+  }
+
+  public static AuthToken getAuthToken() {
+    return AuthToken.builder()
+        .appId(TEST_APP_ID)
+        .user(
+            AuthTokenUser.builder()
+                .id(1)
+                .email(TEST_EMAIL)
+                .isDeleted(false)
+                .isValidated(true)
+                .status(StatusEnums.AppUserStatus.ACTIVE.name())
+                .build())
+        .roles(List.of(AuthTokenRole.builder().id(1).name("Role One").build()))
+        .permissions(List.of(AuthTokenPermission.builder().id(1).name("Permission One").build()))
+        .build();
   }
 }
