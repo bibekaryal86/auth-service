@@ -117,14 +117,15 @@ public class PermissionCheckTest {
   @Test
   void testCanUserAccessAppUser_Failure() {
     CheckPermissionException exception =
-            assertThrows(
-                    CheckPermissionException.class,
-                    () -> {
-                      permissionCheck.canUserAccessAppUser("some@email.com", 99);
-                    });
+        assertThrows(
+            CheckPermissionException.class,
+            () -> {
+              permissionCheck.canUserAccessAppUser("some@email.com", 99);
+            });
 
     assertEquals(
-            "Permission Denied: User does not have required permissions to user entity...", exception.getMessage());
+        "Permission Denied: User does not have required permissions to user entity...",
+        exception.getMessage());
   }
 
   @Test
