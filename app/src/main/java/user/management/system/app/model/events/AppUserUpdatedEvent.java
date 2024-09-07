@@ -6,12 +6,12 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 
 @Getter
-public class AppUserEmailUpdatedEvent extends ApplicationEvent {
+public class AppUserUpdatedEvent extends ApplicationEvent {
   private final AppUserEntity appUserEntity;
   private final AppsEntity appsEntity;
   private final String baseUrl;
 
-  public AppUserEmailUpdatedEvent(
+  public AppUserUpdatedEvent(
       final Object source,
       final AppUserEntity appUserEntity,
       final AppsEntity appsEntity,

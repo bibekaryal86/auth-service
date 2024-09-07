@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
-import user.management.system.app.model.events.AppUserEmailUpdatedEvent;
+import user.management.system.app.model.events.AppUserUpdatedEvent;
 import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
@@ -111,10 +111,10 @@ public class EmailService {
   }
 
   @EventListener
-  public void handleUserEmailUpdated(final AppUserEmailUpdatedEvent appUserEmailUpdatedEvent) {
-    final AppsEntity appsEntity = appUserEmailUpdatedEvent.getAppsEntity();
-    final AppUserEntity appUserEntity = appUserEmailUpdatedEvent.getAppUserEntity();
-    final String baseUrl = appUserEmailUpdatedEvent.getBaseUrl();
+  public void handleUserEmailUpdated(final AppUserUpdatedEvent appUserUpdatedEvent) {
+    final AppsEntity appsEntity = appUserUpdatedEvent.getAppsEntity();
+    final AppUserEntity appUserEntity = appUserUpdatedEvent.getAppUserEntity();
+    final String baseUrl = appUserUpdatedEvent.getBaseUrl();
     log.info("Handle User Email Updated: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
     sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
   }

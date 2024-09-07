@@ -1,5 +1,8 @@
 package user.management.system.app.service;
 
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_STANDARD;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +20,20 @@ import user.management.system.app.model.dto.AppUserAddressDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.dto.UserUpdateEmailRequest;
+import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppUserAddressEntity;
 import user.management.system.app.model.entity.AppUserEntity;
+import user.management.system.app.model.entity.AppUserRoleEntity;
+import user.management.system.app.model.entity.AppUserRoleId;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserId;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
-import user.management.system.app.model.events.AppUserEmailUpdatedEvent;
+import user.management.system.app.model.events.AppUserUpdatedEvent;
+import user.management.system.app.repository.AppRoleRepository;
 import user.management.system.app.repository.AppUserAddressRepository;
 import user.management.system.app.repository.AppUserRepository;
+import user.management.system.app.repository.AppUserRoleRepository;
 import user.management.system.app.repository.AppsAppUserRepository;
 import user.management.system.app.util.PasswordUtils;
 
@@ -37,6 +45,8 @@ public class AppUserService {
   private final AppUserRepository appUserRepository;
   private final AppUserAddressRepository appUserAddressRepository;
   private final AppsAppUserRepository appsAppUserRepository;
+  private final AppRoleRepository appRoleRepository;
+  private final AppUserRoleRepository appUserRoleRepository;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -70,10 +80,18 @@ public class AppUserService {
     appsAppUserEntity.setId(new AppsAppUserId(appsEntity.getId(), appUserEntity.getId()));
     appsAppUserRepository.save(appsAppUserEntity);
 
-    // @see EmailService, AppUserRoleService
+    // save app role
+    final AppRoleEntity appRoleEntity = getAppRoleEntityToCreate(appUserRequest.isGuestUser());
+    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
+    appUserRoleEntity.setAppUser(appUserEntity);
+    appUserRoleEntity.setAppRole(appRoleEntity);
+    appUserRoleEntity.setAssignedDate(LocalDateTime.now());
+    appUserRoleEntity.setId(new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId()));
+    appUserRoleRepository.save(appUserRoleEntity);
+
+    // @see EmailService
     applicationEventPublisher.publishEvent(
-        new AppUserCreatedEvent(
-            this, appUserEntity, appsEntity, appUserRequest.isGuestUser(), baseUrlForEmail));
+        new AppUserCreatedEvent(this, appUserEntity, appsEntity, baseUrlForEmail));
     return appUserEntity;
   }
 
@@ -82,6 +100,13 @@ public class AppUserService {
     if (!StringUtils.hasText(appUserRequest.getPassword())) {
       throw new ElementMissingException("User", "password");
     }
+  }
+
+  private AppRoleEntity getAppRoleEntityToCreate(final boolean isGuestUser) {
+    final String roleName = isGuestUser ? APP_ROLE_NAME_GUEST : APP_ROLE_NAME_STANDARD;
+    return appRoleRepository
+        .findByName(roleName)
+        .orElseThrow(() -> new ElementNotFoundException("Role", roleName));
   }
 
   // READ
@@ -139,7 +164,7 @@ public class AppUserService {
     final AppUserEntity appUserEntityUpdated = updateAppUser(appUserEntity);
     // @see EmailService
     applicationEventPublisher.publishEvent(
-        new AppUserEmailUpdatedEvent(this, appUserEntity, appsEntity, baseUrlForEmail));
+        new AppUserUpdatedEvent(this, appUserEntity, appsEntity, baseUrlForEmail));
     return appUserEntityUpdated;
   }
 
