@@ -380,8 +380,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     for (AppRoleDto appRoleDto : appRoleDtos) {
       assertNull(appRoleDto.getPermissions());
     }
-
-    //verifyNoInteractions(appRolePermissionService);
   }
 
   @Test
