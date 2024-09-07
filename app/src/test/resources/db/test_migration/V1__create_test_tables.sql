@@ -164,7 +164,7 @@ CREATE TABLE audit_app_user
 -- create indexes
 CREATE UNIQUE INDEX idx_app_user_phone ON app_user (phone) WHERE phone IS NOT NULL;
 
--- create data
+-- create data (data should match the data in /fixtures)
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-1', 'App One', 'App Description One', null);
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-2', 'App Two', 'App Description Two', null);
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-3', 'App Three', 'App Description Three', null);
