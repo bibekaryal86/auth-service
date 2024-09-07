@@ -61,8 +61,8 @@ public class AppPermissionServiceTest extends BaseTest {
     // throws not found exception after delete
     ElementNotFoundException exception =
         assertThrows(
-            ElementNotFoundException.class, () -> appPermissionService.readAppPermission(10001));
-    assertEquals("Permission Not Found for [10001]", exception.getMessage());
+            ElementNotFoundException.class, () -> appPermissionService.readAppPermission(id));
+    assertEquals(String.format("Permission Not Found for [%s]", id), exception.getMessage());
   }
 
   @Test
