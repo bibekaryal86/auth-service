@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import user.management.system.BaseTest;
@@ -67,14 +66,11 @@ public class AppPermissionServiceTest extends BaseTest {
 
   @Test
   void testReadAppPermissions() {
-    List<AppPermissionEntity> appPermissionEntities = appPermissionService.readAppPermissions();
-    assertEquals(6, appPermissionEntities.size());
+    assertEquals(6, appPermissionService.readAppPermissions().size());
   }
 
   @Test
   void testReadAppPermissions_ByAppId() {
-    List<AppPermissionEntity> appPermissionEntities =
-        appPermissionService.readAppPermissions("app-99");
-    assertEquals(3, appPermissionEntities.size());
+    assertEquals(3, appPermissionService.readAppPermissions("app-99").size());
   }
 }

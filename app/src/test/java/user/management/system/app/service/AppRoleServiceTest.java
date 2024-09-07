@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import user.management.system.BaseTest;
@@ -62,7 +61,6 @@ public class AppRoleServiceTest extends BaseTest {
 
   @Test
   void testReadAppRoles() {
-    List<AppRoleEntity> appRoleEntities = appRoleService.readAppRoles();
-    assertEquals(6, appRoleEntities.size());
+    assertEquals(6, appRoleService.readAppRoles().size());
   }
 }
