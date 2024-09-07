@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,11 @@ public class AppTokenRepositoryTest extends BaseTest {
     appUserEntity.setId(4);
     appTokenEntity.setUser(appUserEntity);
     appTokenRepository.save(appTokenEntity);
+  }
+
+  @AfterAll
+  static void tearDown(@Autowired AppTokenRepository appTokenRepository) {
+    appTokenRepository.deleteAll();
   }
 
   @Test
