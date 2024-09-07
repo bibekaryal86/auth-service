@@ -163,3 +163,40 @@ CREATE TABLE audit_app_user
 
 -- create indexes
 CREATE UNIQUE INDEX idx_app_user_phone ON app_user (phone) WHERE phone IS NOT NULL;
+
+-- create data
+INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-1', 'App One', 'App Description One', null);
+INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-2', 'App Two', 'App Description Two', null);
+INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-3', 'App Three', 'App Description Three', null);
+
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First One', 'Last One', 'firstlast@one.com', null, 'password-one', 'ACTIVE', true, null);
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First Two', 'Last Two', 'firstlast@two.com', null, 'password-two', 'ACTIVE', true, null);
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First Three', 'Last Three', 'firstlast@three.com', null, 'password-three', 'ACTIVE', true, null);
+
+INSERT INTO app_user_address (app_user_id, address_type, street, city, state, country, postal_code)
+VALUES (1, 'MAILING', 'Street One One', 'City One One', 'ON', 'US', '12569');
+INSERT INTO app_user_address (app_user_id, address_type, street, city, state, country, postal_code)
+VALUES (1, 'SHIPPING', 'Street One Two', 'City One Two', 'ON', 'US', '12569');
+
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role One', 'Role Description One', null);
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Two', 'Role Description Two', null);
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Three', 'Role Description Three', null);
+
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-1', 'Permission One', 'Permission Description One', null);
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-2', 'Permission Two', 'Permission Description Two', null);
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-3', 'Permission Three', 'Permission Description Three', null);
+
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (1, 1, CURRENT_TIMESTAMP);
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (2, 2, CURRENT_TIMESTAMP);
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (3, 3, CURRENT_TIMESTAMP);
+
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (1, 1, CURRENT_TIMESTAMP);
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (2, 2, CURRENT_TIMESTAMP);
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (3, 3, CURRENT_TIMESTAMP);
+
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-1', 1, CURRENT_TIMESTAMP);
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-2', 2, CURRENT_TIMESTAMP);
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-3', 3, CURRENT_TIMESTAMP);

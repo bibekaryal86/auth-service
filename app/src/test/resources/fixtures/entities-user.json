@@ -12,20 +12,20 @@
       {
         "id": 1,
         "addressType": "MAILING",
-        "appUserId": 2,
-        "street": "Street Two One",
-        "city": "City Two One",
-        "state": "TW",
+        "appUserId": 1,
+        "street": "Street One One",
+        "city": "City One One",
+        "state": "ON",
         "country": "US",
         "postalCode": "12569"
       },
       {
         "id": 2,
         "addressType": "SHIPPING",
-        "appUserId": 2,
-        "street": "Street Two Two",
-        "city": "City Two Two",
-        "state": "TW",
+        "appUserId": 1,
+        "street": "Street One Two",
+        "city": "City One Two",
+        "state": "ON",
         "country": "US",
         "postalCode": "12569"
       }

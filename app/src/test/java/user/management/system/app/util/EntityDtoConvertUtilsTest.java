@@ -5,13 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import helper.TestData;
 import java.util.Collections;
@@ -21,7 +14,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -55,14 +47,8 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
-import user.management.system.app.service.AppRolePermissionService;
-import user.management.system.app.service.AppUserRoleService;
 
 public class EntityDtoConvertUtilsTest extends BaseTest {
-
-  @MockBean private AppUserRoleService appUserRoleService;
-
-  @MockBean private AppRolePermissionService appRolePermissionService;
 
   @Autowired private EntityDtoConvertUtils entityDtoConvertUtils;
 
@@ -330,9 +316,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntityToDtoAppRole_NonNullEntity() {
-    when(appRolePermissionService.readAppRolePermissions(eq(1)))
-        .thenReturn(List.of(appRolePermissionEntities.getFirst()));
-
     AppRoleEntity appRoleEntity = appRoleEntities.getFirst();
     AppRoleDto appRoleDto = entityDtoConvertUtils.convertEntityToDtoAppRole(appRoleEntity, true);
 
@@ -357,9 +340,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntitiesToDtosAppRole_NonEmptyList() {
-    when(appRolePermissionService.readAppRolePermissions(eq(null), anyList()))
-        .thenReturn(appRolePermissionEntities);
-
     List<AppRoleDto> appRoleDtos =
         entityDtoConvertUtils.convertEntitiesToDtosAppRole(appRoleEntities, true);
     assertNotNull(appRoleDtos);
@@ -388,10 +368,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
           appRoleDtos.getFirst().getPermissions().getFirst().getId(),
           appRolePermissionEntity.getAppPermission().getId());
     }
-
-    // verify services called
-    verify(appRolePermissionService, times(1))
-        .readAppRolePermissions(null, appRoleEntities.stream().map(AppRoleEntity::getId).toList());
   }
 
   @Test
@@ -405,7 +381,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
       assertNull(appRoleDto.getPermissions());
     }
 
-    verifyNoInteractions(appRolePermissionService);
+    //verifyNoInteractions(appRolePermissionService);
   }
 
   @Test
@@ -486,11 +462,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntityToDtoAppUser_NonNullEntity() {
-    when(appUserRoleService.readAppUserRoles(eq(1)))
-        .thenReturn(List.of(appUserRoleEntities.getFirst()));
-    when(appRolePermissionService.readAppRolePermissions(any(), anyList()))
-        .thenReturn(appRolePermissionEntities);
-
     AppUserEntity appUserEntity = appUserEntities.getFirst();
     AppUserDto appUserDto = entityDtoConvertUtils.convertEntityToDtoAppUser(appUserEntity, true);
     assertNotNull(appUserDto);
@@ -530,10 +501,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertEquals(
         appRolePermissionEntities.getFirst().getAppPermission().getId(),
         appRoleDtos.getFirst().getPermissions().getFirst().getId());
-
-    // verify services called
-    verify(appUserRoleService, times(1)).readAppUserRoles(1);
-    verify(appRolePermissionService, times(1)).readAppRolePermissions(null, List.of(1));
   }
 
   @Test
@@ -546,10 +513,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntitiesToDtosAppUser_NonEmptyList() {
-    when(appUserRoleService.readAppUserRoles(anyList())).thenReturn(appUserRoleEntities);
-    when(appRolePermissionService.readAppRolePermissions(eq(null), anyList()))
-        .thenReturn(appRolePermissionEntities);
-
     List<AppUserDto> appUserDtos =
         entityDtoConvertUtils.convertEntitiesToDtosAppUser(appUserEntities, true);
 
@@ -615,12 +578,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
           appRoleDtos.getFirst().getPermissions().getFirst().getId(),
           appRolePermissionEntity.getAppPermission().getId());
     }
-
-    // verify services called
-    verify(appUserRoleService, times(1))
-        .readAppUserRoles(appUserEntities.stream().map(AppUserEntity::getId).toList());
-    verify(appRolePermissionService, times(1))
-        .readAppRolePermissions(null, appUserEntities.stream().map(AppUserEntity::getId).toList());
   }
 
   @Test
@@ -633,8 +590,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     for (AppUserDto appUserDto : appUserDtos) {
       assertNull(appUserDto.getRoles());
     }
-
-    verifyNoInteractions(appUserRoleService, appRolePermissionService);
   }
 
   @Test
@@ -850,9 +805,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntityToDtoAppUserRole_NonNullEntity() {
-    when(appRolePermissionService.readAppRolePermissions(eq(1)))
-        .thenReturn(List.of(appRolePermissionEntities.getFirst()));
-
     AppUserRoleEntity appUserRoleEntity = appUserRoleEntities.getFirst();
     AppUserRoleDto appUserRoleDto =
         entityDtoConvertUtils.convertEntityToDtoAppUserRole(appUserRoleEntity);
@@ -878,11 +830,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testConvertEntitiesToDtosAppUserRole_NonEmptyList() {
-    for (int i = 0; i < appRolePermissionEntities.size(); i++) {
-      when(appRolePermissionService.readAppRolePermissions(eq(i + 1)))
-          .thenReturn(List.of(appRolePermissionEntities.get(i)));
-    }
-
     List<AppUserRoleDto> appUserRoleDtos =
         entityDtoConvertUtils.convertEntitiesToDtosAppUserRole(appUserRoleEntities);
 
