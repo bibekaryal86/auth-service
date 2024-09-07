@@ -168,6 +168,8 @@ CREATE UNIQUE INDEX idx_app_user_phone ON app_user (phone) WHERE phone IS NOT NU
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-1', 'App One', 'App Description One', null);
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-2', 'App Two', 'App Description Two', null);
 INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-3', 'App Three', 'App Description Three', null);
+-- not in fixtures
+INSERT INTO apps (id, name, description, deleted_date) VALUES ('app-99', 'App Ninety Nine', 'App Description Ninety Nine', null);
 
 INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
 VALUES ('First One', 'Last One', 'firstlast@one.com', null, 'password-one', 'ACTIVE', true, null);
@@ -175,6 +177,13 @@ INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_
 VALUES ('First Two', 'Last Two', 'firstlast@two.com', null, 'password-two', 'ACTIVE', true, null);
 INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
 VALUES ('First Three', 'Last Three', 'firstlast@three.com', null, 'password-three', 'ACTIVE', true, null);
+-- not in fixtures
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First Ninety Nine1', 'Last Ninety Nine1', 'firstlast@ninetynine1.com', null, 'password-ninetynine1', 'ACTIVE', true, null);
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First Ninety Nine2', 'Last Ninety Nine2', 'firstlast@ninetynine2.com', null, 'password-ninetynine2', 'ACTIVE', true, null);
+INSERT INTO app_user (first_name, last_name, email, phone, password, status, is_validated, deleted_date)
+VALUES ('First Ninety Nine3', 'Last Ninety Nine3', 'firstlast@ninetynine3.com', null, 'password-ninetynine3', 'ACTIVE', true, null);
 
 INSERT INTO app_user_address (app_user_id, address_type, street, city, state, country, postal_code)
 VALUES (1, 'MAILING', 'Street One One', 'City One One', 'ON', 'US', '12569');
@@ -184,19 +193,39 @@ VALUES (1, 'SHIPPING', 'Street One Two', 'City One Two', 'ON', 'US', '12569');
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role One', 'Role Description One', null);
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Two', 'Role Description Two', null);
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Three', 'Role Description Three', null);
+-- not in fixtures
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role A', 'Role Description A', null);
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Z', 'Role Description Z', null);
+INSERT INTO app_role (name, description, deleted_date) VALUES ('Role V', 'Role Description V', null);
 
 INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-1', 'Permission One', 'Permission Description One', null);
 INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-2', 'Permission Two', 'Permission Description Two', null);
 INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-3', 'Permission Three', 'Permission Description Three', null);
+-- not in fixtures
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-99', 'Permission A', 'Permission Description A', null);
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-99', 'Permission Z', 'Permission Description Z', null);
+INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-99', 'Permission V', 'Permission Description V', null);
 
 INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (1, 1, CURRENT_TIMESTAMP);
 INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (2, 2, CURRENT_TIMESTAMP);
 INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (3, 3, CURRENT_TIMESTAMP);
+-- not in fixtures
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (4, 4, CURRENT_TIMESTAMP);
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (4, 5, CURRENT_TIMESTAMP);
+INSERT INTO app_user_role (app_user_id, app_role_id, assigned_date) VALUES (4, 6, CURRENT_TIMESTAMP);
 
 INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (1, 1, CURRENT_TIMESTAMP);
 INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (2, 2, CURRENT_TIMESTAMP);
 INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (3, 3, CURRENT_TIMESTAMP);
+-- not in fixtures
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (4, 4, CURRENT_TIMESTAMP);
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (4, 5, CURRENT_TIMESTAMP);
+INSERT INTO app_role_permission (app_role_id, app_permission_id, assigned_date) VALUES (4, 6, CURRENT_TIMESTAMP);
 
 INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-1', 1, CURRENT_TIMESTAMP);
 INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-2', 2, CURRENT_TIMESTAMP);
 INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-3', 3, CURRENT_TIMESTAMP);
+-- not in fixtures
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-99', 4, CURRENT_TIMESTAMP);
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-99', 5, CURRENT_TIMESTAMP);
+INSERT INTO app_user_app (app_id, app_user_id, assigned_date) VALUES ('app-99', 6, CURRENT_TIMESTAMP);
