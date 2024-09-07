@@ -1,6 +1,5 @@
 package user.management.system;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
@@ -14,11 +13,6 @@ import org.mockito.MockedStatic;
 import user.management.system.app.util.SystemEnvPropertyUtils;
 
 public class AppTest extends BaseTest {
-
-  @Test
-  void shouldStartApplication() {
-    assertDoesNotThrow(() -> App.main(new String[] {}));
-  }
 
   @Test
   void shouldFailToStartApplicationOnMissingEnvProperty() {

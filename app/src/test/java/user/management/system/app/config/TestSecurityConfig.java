@@ -1,12 +1,12 @@
 package user.management.system.app.config;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import user.management.system.app.service.AppUserService;
 
-@Configuration
+@TestConfiguration
 public class TestSecurityConfig extends SecurityConfigBase {
 
   protected TestSecurityConfig(final AppUserService appUserService) {
