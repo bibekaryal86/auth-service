@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,19 +34,27 @@ public class TestDatasourceConfig {
 
   @Bean
   public Flyway flyway(final DataSource dataSource) {
-    return Flyway.configure()
-        .dataSource(dataSource)
-        .locations("classpath:db/test_migration")
-        .baselineOnMigrate(true)
-        .cleanDisabled(false)
-        .load();
+    Flyway flyway =
+        Flyway.configure()
+            .dataSource(dataSource)
+            .locations("classpath:db/test_migration")
+            .baselineOnMigrate(true)
+            .cleanDisabled(false)
+            .load();
+
+    flyway.clean();
+    flyway.migrate();
+
+    return flyway;
   }
 
-  @Bean
-  public FlywayMigrationInitializer flywayMigrationInitializer(final Flyway flyway) {
-    // This bean ensures Flyway runs automatically on startup
-    return new FlywayMigrationInitializer(flyway);
-  }
+  // no longer required as clean/migrate handled in flyway bean itself
+  //  @Bean
+  //  public org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer
+  // flywayMigrationInitializer(final Flyway flyway) {
+  //    // This bean ensures Flyway runs automatically on startup
+  //    return new org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer(flyway);
+  //  }
 
   @Bean
   public Map<String, Object> jpaProperties(final JpaProperties jpaProperties) {

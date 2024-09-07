@@ -197,6 +197,8 @@ INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Three', 'Ro
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role A', 'Role Description A', null);
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Z', 'Role Description Z', null);
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role V', 'Role Description V', null);
+INSERT INTO app_role (name, description, deleted_date) VALUES ('GUEST', 'GUEST ROLE FOR CREATE USER', null);
+
 
 INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-1', 'Permission One', 'Permission Description One', null);
 INSERT INTO app_permission (app_id, name, description, deleted_date) VALUES ('app-2', 'Permission Two', 'Permission Description Two', null);

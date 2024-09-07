@@ -61,6 +61,6 @@ public class AppRoleServiceTest extends BaseTest {
 
   @Test
   void testReadAppRoles() {
-    assertEquals(6, appRoleService.readAppRoles().size());
+    assertEquals(7, appRoleService.readAppRoles().size());
   }
 }
