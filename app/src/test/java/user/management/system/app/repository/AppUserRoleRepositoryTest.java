@@ -20,9 +20,9 @@ public class AppUserRoleRepositoryTest extends BaseTest {
 
     assertNotNull(appUserRoleEntities);
     assertEquals(3, appUserRoleEntities.size());
-    assertEquals(appUserRoleEntities.get(0).getAppRole().getName(), "Role A");
-    assertEquals(appUserRoleEntities.get(1).getAppRole().getName(), "Role V");
-    assertEquals(appUserRoleEntities.get(2).getAppRole().getName(), "Role Z");
+    assertEquals("Role A", appUserRoleEntities.get(0).getAppRole().getName());
+    assertEquals("Role V", appUserRoleEntities.get(1).getAppRole().getName());
+    assertEquals("Role Z", appUserRoleEntities.get(2).getAppRole().getName());
   }
 
   @Test
@@ -32,10 +32,9 @@ public class AppUserRoleRepositoryTest extends BaseTest {
 
     assertNotNull(appUserRoleEntities);
     assertEquals(4, appUserRoleEntities.size());
-
-    assertEquals(appUserRoleEntities.get(0).getAppRole().getName(), "Role A");
-    assertEquals(appUserRoleEntities.get(1).getAppRole().getName(), "Role One");
-    assertEquals(appUserRoleEntities.get(2).getAppRole().getName(), "Role V");
-    assertEquals(appUserRoleEntities.get(3).getAppRole().getName(), "Role Z");
+    assertEquals("Role A", appUserRoleEntities.get(0).getAppRole().getName());
+    assertEquals("Role One", appUserRoleEntities.get(1).getAppRole().getName());
+    assertEquals("Role V", appUserRoleEntities.get(2).getAppRole().getName());
+    assertEquals("Role Z", appUserRoleEntities.get(3).getAppRole().getName());
   }
 }

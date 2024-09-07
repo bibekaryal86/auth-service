@@ -20,9 +20,8 @@ public class AppPermissionRepositoryTest extends BaseTest {
 
     assertNotNull(permissions);
     assertEquals(3, permissions.size());
-
-    assertEquals(permissions.get(0).getName(), "Permission A");
-    assertEquals(permissions.get(1).getName(), "Permission V");
-    assertEquals(permissions.get(2).getName(), "Permission Z");
+    assertEquals("Permission A", permissions.get(0).getName());
+    assertEquals("Permission V", permissions.get(1).getName());
+    assertEquals("Permission Z", permissions.get(2).getName());
   }
 }

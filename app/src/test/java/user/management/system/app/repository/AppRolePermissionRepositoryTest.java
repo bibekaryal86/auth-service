@@ -20,10 +20,9 @@ public class AppRolePermissionRepositoryTest extends BaseTest {
 
     assertNotNull(rolePermissionEntities);
     assertEquals(3, rolePermissionEntities.size());
-
-    assertEquals(rolePermissionEntities.get(0).getAppPermission().getName(), "Permission A");
-    assertEquals(rolePermissionEntities.get(1).getAppPermission().getName(), "Permission V");
-    assertEquals(rolePermissionEntities.get(2).getAppPermission().getName(), "Permission Z");
+    assertEquals("Permission A", rolePermissionEntities.get(0).getAppPermission().getName());
+    assertEquals("Permission V", rolePermissionEntities.get(1).getAppPermission().getName());
+    assertEquals("Permission Z", rolePermissionEntities.get(2).getAppPermission().getName());
   }
 
   @Test
@@ -33,11 +32,10 @@ public class AppRolePermissionRepositoryTest extends BaseTest {
 
     assertNotNull(rolePermissionEntities);
     assertEquals(4, rolePermissionEntities.size());
-
-    assertEquals(rolePermissionEntities.get(0).getAppPermission().getName(), "Permission A");
-    assertEquals(rolePermissionEntities.get(1).getAppPermission().getName(), "Permission One");
-    assertEquals(rolePermissionEntities.get(2).getAppPermission().getName(), "Permission V");
-    assertEquals(rolePermissionEntities.get(3).getAppPermission().getName(), "Permission Z");
+    assertEquals("Permission A", rolePermissionEntities.get(0).getAppPermission().getName());
+    assertEquals("Permission One", rolePermissionEntities.get(1).getAppPermission().getName());
+    assertEquals("Permission V", rolePermissionEntities.get(2).getAppPermission().getName());
+    assertEquals("Permission Z", rolePermissionEntities.get(3).getAppPermission().getName());
   }
 
   @Test
@@ -49,9 +47,8 @@ public class AppRolePermissionRepositoryTest extends BaseTest {
 
     assertNotNull(rolePermissionEntities);
     assertEquals(3, rolePermissionEntities.size());
-
-    assertEquals(rolePermissionEntities.get(0).getAppPermission().getName(), "Permission A");
-    assertEquals(rolePermissionEntities.get(1).getAppPermission().getName(), "Permission V");
-    assertEquals(rolePermissionEntities.get(2).getAppPermission().getName(), "Permission Z");
+    assertEquals("Permission A", rolePermissionEntities.get(0).getAppPermission().getName());
+    assertEquals("Permission V", rolePermissionEntities.get(1).getAppPermission().getName());
+    assertEquals("Permission Z", rolePermissionEntities.get(2).getAppPermission().getName());
   }
 }

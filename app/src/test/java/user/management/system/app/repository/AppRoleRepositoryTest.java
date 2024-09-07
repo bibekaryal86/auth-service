@@ -18,6 +18,6 @@ public class AppRoleRepositoryTest extends BaseTest {
     Optional<AppRoleEntity> appRoleEntityOptional = appRoleRepository.findByName("Role A");
 
     assertTrue(appRoleEntityOptional.isPresent());
-    assertEquals(appRoleEntityOptional.get().getDescription(), "Role Description A");
+    assertEquals("Role Description A", appRoleEntityOptional.get().getDescription());
   }
 }

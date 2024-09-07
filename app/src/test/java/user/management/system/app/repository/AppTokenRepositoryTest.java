@@ -38,7 +38,7 @@ public class AppTokenRepositoryTest extends BaseTest {
         appTokenRepository.findByAccessToken("some-access-token");
 
     assertTrue(appTokenEntityOptional.isPresent());
-    assertEquals(appTokenEntityOptional.get().getRefreshToken(), "some-refresh-token");
+    assertEquals("some-refresh-token", appTokenEntityOptional.get().getRefreshToken());
   }
 
   @Test
@@ -47,6 +47,6 @@ public class AppTokenRepositoryTest extends BaseTest {
         appTokenRepository.findByRefreshToken("some-refresh-token");
 
     assertTrue(appTokenEntityOptional.isPresent());
-    assertEquals(appTokenEntityOptional.get().getAccessToken(), "some-access-token");
+    assertEquals("some-access-token", appTokenEntityOptional.get().getAccessToken());
   }
 }

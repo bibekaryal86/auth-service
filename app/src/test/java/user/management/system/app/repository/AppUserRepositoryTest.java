@@ -19,6 +19,6 @@ public class AppUserRepositoryTest extends BaseTest {
         appUserRepository.findByEmail("firstlast@ninetynine1.com");
 
     assertTrue(appUserEntityOptional.isPresent());
-    assertEquals(appUserEntityOptional.get().getPassword(), "password-ninetynine1");
+    assertEquals("password-ninetynine1", appUserEntityOptional.get().getPassword());
   }
 }

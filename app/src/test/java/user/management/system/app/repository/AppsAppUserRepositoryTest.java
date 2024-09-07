@@ -22,14 +22,14 @@ public class AppsAppUserRepositoryTest extends BaseTest {
         appsAppUserRepository.findByAppIdAndAppUserEmail("app-99", "firstlast@ninetynine1.com");
 
     assertTrue(appsAppUserEntityOptional.isPresent());
-    assertEquals(appsAppUserEntityOptional.get().getApp().getId(), "app-99");
+    assertEquals("app-99", appsAppUserEntityOptional.get().getApp().getId());
     assertEquals(
-        appsAppUserEntityOptional.get().getAppUser().getPassword(), "password-ninetynine1");
+        "password-ninetynine1", appsAppUserEntityOptional.get().getAppUser().getPassword());
     assertEquals(
-        appsAppUserEntityOptional.get().getId(),
         new AppsAppUserId(
             appsAppUserEntityOptional.get().getApp().getId(),
-            appsAppUserEntityOptional.get().getAppUser().getId()));
+            appsAppUserEntityOptional.get().getAppUser().getId()),
+        appsAppUserEntityOptional.get().getId());
   }
 
   @Test
@@ -39,10 +39,9 @@ public class AppsAppUserRepositoryTest extends BaseTest {
 
     assertNotNull(appsAppUserEntities);
     assertEquals(3, appsAppUserEntities.size());
-
-    assertEquals(appsAppUserEntities.get(0).getAppUser().getLastName(), "Last Ninety Nine3");
-    assertEquals(appsAppUserEntities.get(1).getAppUser().getLastName(), "Last Ninety Nine2");
-    assertEquals(appsAppUserEntities.get(2).getAppUser().getLastName(), "Last Ninety Nine1");
+    assertEquals("Last Ninety Nine3", appsAppUserEntities.get(0).getAppUser().getLastName());
+    assertEquals("Last Ninety Nine2", appsAppUserEntities.get(1).getAppUser().getLastName());
+    assertEquals("Last Ninety Nine1", appsAppUserEntities.get(2).getAppUser().getLastName());
   }
 
   @Test
@@ -52,7 +51,6 @@ public class AppsAppUserRepositoryTest extends BaseTest {
 
     assertNotNull(appsAppUserEntities);
     assertEquals(1, appsAppUserEntities.size());
-
-    assertEquals(appsAppUserEntities.getFirst().getAppUser().getLastName(), "Last Ninety Nine1");
+    assertEquals("Last Ninety Nine1", appsAppUserEntities.get(2).getAppUser().getLastName());
   }
 }

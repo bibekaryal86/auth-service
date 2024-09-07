@@ -39,9 +39,9 @@ public class AppPermissionServiceTest extends BaseTest {
     // read
     appPermissionEntity = appPermissionService.readAppPermission(id);
     assertNotNull(appPermissionEntity);
-    assertEquals(appPermissionEntity.getAppId(), "app-99");
-    assertEquals(appPermissionEntity.getName(), "P Name 101");
-    assertEquals(appPermissionEntity.getDescription(), "P Desc 101 Updated");
+    assertEquals("app-99", appPermissionEntity.getAppId());
+    assertEquals("P Name 101", appPermissionEntity.getName());
+    assertEquals("P Desc 101 Updated", appPermissionEntity.getDescription());
     assertNull(appPermissionEntity.getDeletedDate());
 
     // soft delete

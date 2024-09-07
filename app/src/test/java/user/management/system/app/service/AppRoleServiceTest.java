@@ -36,8 +36,8 @@ public class AppRoleServiceTest extends BaseTest {
     // read
     appRoleEntity = appRoleService.readAppRole(id);
     assertNotNull(appRoleEntity);
-    assertEquals(appRoleEntity.getName(), "R Name 101");
-    assertEquals(appRoleEntity.getDescription(), "R Desc 101 Updated");
+    assertEquals("R Name 101", appRoleEntity.getName());
+    assertEquals("R Desc 101 Updated", appRoleEntity.getDescription());
     assertNull(appRoleEntity.getDeletedDate());
 
     // soft delete
