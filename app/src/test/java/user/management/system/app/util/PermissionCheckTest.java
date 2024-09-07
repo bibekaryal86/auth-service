@@ -1,6 +1,5 @@
 package user.management.system.app.util;
 
-import static helper.TestData.TEST_EMAIL;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,6 +30,8 @@ import user.management.system.app.model.token.AuthTokenRole;
 
 @ExtendWith(MockitoExtension.class)
 public class PermissionCheckTest extends BaseTest {
+
+  private static final String TEST_EMAIL = "firstlast@one.com";
 
   private static Authentication authentication;
   private static AuthToken authToken;
@@ -84,10 +85,7 @@ public class PermissionCheckTest extends BaseTest {
 
     CheckPermissionException exception =
         assertThrows(
-            CheckPermissionException.class,
-            () -> {
-              permissionCheck.checkPermission(checkPermission);
-            });
+            CheckPermissionException.class, () -> permissionCheck.checkPermission(checkPermission));
 
     assertEquals(
         "Permission Denied: User does not have required permissions...", exception.getMessage());
@@ -120,9 +118,7 @@ public class PermissionCheckTest extends BaseTest {
     CheckPermissionException exception =
         assertThrows(
             CheckPermissionException.class,
-            () -> {
-              permissionCheck.canUserAccessAppUser("some@email.com", 99);
-            });
+            () -> permissionCheck.canUserAccessAppUser("some@email.com", 99));
 
     assertEquals(
         "Permission Denied: User does not have required permissions to user entity...",
@@ -156,8 +152,6 @@ public class PermissionCheckTest extends BaseTest {
 
     assertThrows(
         CheckPermissionException.class,
-        () -> {
-          permissionCheck.filterAppUserListByAccess(appUserEntities);
-        });
+        () -> permissionCheck.filterAppUserListByAccess(appUserEntities));
   }
 }

@@ -31,9 +31,6 @@ import user.management.system.app.model.token.AuthTokenUser;
 
 public class TestData {
 
-  public static final String TEST_APP_ID = "app-1";
-  public static final String TEST_EMAIL = "firstlast@one.com";
-
   public static Map<String, String> getSystemEnvPropertyTestData() {
     return ENV_KEY_NAMES.stream()
         .collect(Collectors.toMap(someKeyName -> someKeyName, someKeyName -> someKeyName));
@@ -157,11 +154,11 @@ public class TestData {
 
   public static AuthToken getAuthToken() {
     return AuthToken.builder()
-        .appId(TEST_APP_ID)
+        .appId("app-1")
         .user(
             AuthTokenUser.builder()
                 .id(1)
-                .email(TEST_EMAIL)
+                .email("firstlast@one.com")
                 .isDeleted(false)
                 .isValidated(true)
                 .status(StatusEnums.AppUserStatus.ACTIVE.name())

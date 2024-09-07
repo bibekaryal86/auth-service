@@ -1,7 +1,5 @@
 package user.management.system.app.util;
 
-import static helper.TestData.TEST_APP_ID;
-import static helper.TestData.TEST_EMAIL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,6 +19,8 @@ import user.management.system.app.model.token.AuthToken;
 
 public class JwtUtilsTest extends BaseTest {
 
+  private static final String TEST_APP_ID = "app-1";
+  private static final String TEST_EMAIL = "firstlast@one.com";
   private static final String INVALID_TOKEN = "invalid.token.string";
   private static final AppUserDto appUserDto = new AppUserDto();
 
