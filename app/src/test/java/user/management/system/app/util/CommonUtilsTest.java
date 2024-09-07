@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import user.management.system.BaseTest;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotActiveException;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -29,7 +30,7 @@ import user.management.system.app.exception.UserNotValidatedException;
 import user.management.system.app.model.dto.ResponseStatusInfo;
 
 @ExtendWith(MockitoExtension.class)
-public class CommonUtilsTest {
+public class CommonUtilsTest extends BaseTest {
 
   @Mock private HttpServletRequest request;
 

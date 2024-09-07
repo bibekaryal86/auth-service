@@ -1,6 +1,7 @@
 package helper;
 
 import static user.management.system.app.util.ConstantUtils.ENV_KEY_NAMES;
+import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +46,7 @@ public class TestData {
             System.setProperty(env, env);
           }
         });
+    System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
   }
 
   public static List<EnvDetails> getEnvDetailsResponse() {

@@ -21,8 +21,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import user.management.system.BaseTest;
 
-public class AuthEnvServiceConnectorTest {
+public class AuthEnvServiceConnectorTest extends BaseTest {
 
   private AuthenvServiceConnector authenvServiceConnector;
   private MockWebServer server;

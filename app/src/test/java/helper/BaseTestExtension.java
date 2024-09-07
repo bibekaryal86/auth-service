@@ -19,12 +19,6 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
   public void beforeAll(final ExtensionContext extensionContext) {
     if (!isSetupDone) {
       TestData.setSystemEnvPropertyTestData();
-
-      ApplicationContext applicationContext =
-          SpringExtension.getApplicationContext(extensionContext);
-      Flyway flyway = applicationContext.getBean(Flyway.class);
-      flyway.migrate();
-
       isSetupDone = true;
     }
   }

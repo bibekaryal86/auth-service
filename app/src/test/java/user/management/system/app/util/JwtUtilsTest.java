@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
 
 import helper.TestData;
 import java.util.ArrayList;
@@ -14,21 +13,19 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
+import user.management.system.BaseTest;
 import user.management.system.app.exception.JwtInvalidException;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.token.AuthToken;
 
-public class JwtUtilsTest {
+public class JwtUtilsTest extends BaseTest {
 
-  private static final String TEST_SECRET_KEY = "test_secret_key_for_jwt_testing_purposes_only";
   private static final String INVALID_TOKEN = "invalid.token.string";
   private static final AppUserDto appUserDto = new AppUserDto();
 
   @BeforeAll
   public static void setUp() {
-    System.setProperty(ENV_SECRET_KEY, TEST_SECRET_KEY);
-
     AppUserEntity appUserEntity = TestData.getAppUserEntities().getFirst();
     BeanUtils.copyProperties(appUserEntity, appUserDto, "password", "addresses");
     appUserDto.setRoles(new ArrayList<>());

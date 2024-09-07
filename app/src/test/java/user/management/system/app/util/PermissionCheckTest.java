@@ -22,6 +22,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import user.management.system.BaseTest;
 import user.management.system.app.exception.CheckPermissionException;
 import user.management.system.app.model.annotation.CheckPermission;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -29,7 +30,7 @@ import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.model.token.AuthTokenRole;
 
 @ExtendWith(MockitoExtension.class)
-public class PermissionCheckTest {
+public class PermissionCheckTest extends BaseTest {
 
   private static Authentication authentication;
   private static AuthToken authToken;

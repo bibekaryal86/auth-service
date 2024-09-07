@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import user.management.system.BaseTest;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotFoundException;
 import user.management.system.app.exception.UserForbiddenException;
@@ -60,7 +61,7 @@ import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.service.AppUserRoleService;
 
 @ExtendWith(MockitoExtension.class)
-public class EntityDtoConvertUtilsTest {
+public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Mock private AppUserRoleService appUserRoleService;
 
