@@ -9,19 +9,16 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import user.management.system.BaseTest;
 
-@ExtendWith(MockitoExtension.class)
 public class PasswordUtilsTest extends BaseTest {
 
-  @Mock private BCryptPasswordEncoder bCryptPasswordEncoder;
+  @MockBean private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  @InjectMocks private PasswordUtils passwordUtils;
+  @Autowired private PasswordUtils passwordUtils;
 
   @Test
   public void testHashPassword() {

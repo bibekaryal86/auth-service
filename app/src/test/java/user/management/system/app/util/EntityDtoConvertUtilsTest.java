@@ -20,10 +20,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -60,14 +58,13 @@ import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.service.AppRolePermissionService;
 import user.management.system.app.service.AppUserRoleService;
 
-@ExtendWith(MockitoExtension.class)
 public class EntityDtoConvertUtilsTest extends BaseTest {
 
-  @Mock private AppUserRoleService appUserRoleService;
+  @MockBean private AppUserRoleService appUserRoleService;
 
-  @Mock private AppRolePermissionService appRolePermissionService;
+  @MockBean private AppRolePermissionService appRolePermissionService;
 
-  @InjectMocks private EntityDtoConvertUtils entityDtoConvertUtils;
+  @Autowired private EntityDtoConvertUtils entityDtoConvertUtils;
 
   private static List<AppsEntity> appsEntities;
   private static List<AppPermissionEntity> appPermissionEntities;
