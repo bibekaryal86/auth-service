@@ -51,6 +51,6 @@ public class AppsAppUserRepositoryTest extends BaseTest {
 
     assertNotNull(appsAppUserEntities);
     assertEquals(1, appsAppUserEntities.size());
-    assertEquals("Last Ninety Nine1", appsAppUserEntities.get(2).getAppUser().getLastName());
+    assertEquals("Last Ninety Nine1", appsAppUserEntities.getFirst().getAppUser().getLastName());
   }
 }
