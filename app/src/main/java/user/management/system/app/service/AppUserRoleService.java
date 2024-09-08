@@ -41,7 +41,7 @@ public class AppUserRoleService {
   // READ
   public List<AppUserRoleEntity> readAppUserRoles() {
     log.debug("Read App User Roles...");
-    return appUserRoleRepository.findAll(Sort.by(Sort.Direction.ASC, "appUser.name"));
+    return appUserRoleRepository.findAll(Sort.by(Sort.Direction.ASC, "appUser.lastName"));
   }
 
   public List<AppUserRoleEntity> readAppUserRoles(final int appUserId) {
