@@ -35,7 +35,7 @@ public class AppTokenServiceTest extends BaseTest {
     appTokenEntity.setAccessToken("some-access-token");
     appTokenEntity.setRefreshToken("some-refresh-token");
     appTokenEntity.setUser(appUserEntity);
-    appTokenEntity = appTokenRepository.save(appTokenEntity);
+    appTokenRepository.save(appTokenEntity);
 
     appTokenEntity = new AppTokenEntity();
     appTokenEntity.setAccessToken("some-access-token-1");
