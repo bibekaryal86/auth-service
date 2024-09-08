@@ -13,10 +13,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -28,7 +26,6 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.model.token.AuthTokenRole;
 
-@ExtendWith(MockitoExtension.class)
 public class PermissionCheckTest extends BaseTest {
 
   private static final String TEST_EMAIL = "firstlast@one.com";
@@ -39,7 +36,8 @@ public class PermissionCheckTest extends BaseTest {
 
   @Mock private SecurityContext securityContext;
 
-  @InjectMocks private PermissionCheck permissionCheck;
+  @Autowired
+  private PermissionCheck permissionCheck;
 
   @BeforeAll
   public static void setupAll() {

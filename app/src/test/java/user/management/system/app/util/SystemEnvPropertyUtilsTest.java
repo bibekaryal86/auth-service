@@ -9,11 +9,8 @@ import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import user.management.system.BaseTest;
 
-@ExtendWith(MockitoExtension.class)
 public class SystemEnvPropertyUtilsTest extends BaseTest {
 
   @Test
