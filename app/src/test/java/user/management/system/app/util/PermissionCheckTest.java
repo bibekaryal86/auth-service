@@ -36,8 +36,7 @@ public class PermissionCheckTest extends BaseTest {
 
   @Mock private SecurityContext securityContext;
 
-  @Autowired
-  private PermissionCheck permissionCheck;
+  @Autowired private PermissionCheck permissionCheck;
 
   @BeforeAll
   public static void setupAll() {
