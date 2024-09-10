@@ -369,8 +369,10 @@ public class AuditServiceTest extends BaseTest {
 
     List<AuditAppUserEntity> actualEntities = entityCaptor.getAllValues();
     assertEquals(2, actualEntities.size());
-    assertEquals(AuditEnums.AuditUsers.UPDATE_USER_EMAIL.name(), actualEntities.get(0).getEventType());
-    assertEquals(AuditEnums.AuditUsers.USER_VALIDATE_INIT.name(), actualEntities.get(1).getEventType());
+    assertEquals(
+        AuditEnums.AuditUsers.UPDATE_USER_EMAIL.name(), actualEntities.get(0).getEventType());
+    assertEquals(
+        AuditEnums.AuditUsers.USER_VALIDATE_INIT.name(), actualEntities.get(1).getEventType());
   }
 
   @Test
