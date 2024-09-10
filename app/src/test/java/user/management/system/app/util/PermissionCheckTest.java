@@ -39,13 +39,13 @@ public class PermissionCheckTest extends BaseTest {
   @Autowired private PermissionCheck permissionCheck;
 
   @BeforeAll
-  public static void setupAll() {
+  public static void setUpBeforeAll() {
     authToken = TestData.getAuthToken();
     appUserEntities = TestData.getAppUserEntities();
   }
 
   @BeforeEach
-  public void setUpEach() {
+  public void setUpBeforeEach() {
     SecurityContextHolder.setContext(securityContext);
     authentication = new TestingAuthenticationToken(TEST_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);

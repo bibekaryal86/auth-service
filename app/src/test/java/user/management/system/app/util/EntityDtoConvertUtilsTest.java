@@ -61,7 +61,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   private static List<AppsAppUserEntity> appsAppUserEntities;
 
   @BeforeAll
-  static void setUpBeforeAll() {
+  static void setUp() {
     appsEntities = TestData.getAppsEntities();
     appPermissionEntities = TestData.getAppPermissionEntities();
     appRoleEntities = TestData.getAppRoleEntities();

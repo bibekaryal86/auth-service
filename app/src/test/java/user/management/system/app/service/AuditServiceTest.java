@@ -87,7 +87,7 @@ public class AuditServiceTest extends BaseTest {
   }
 
   @AfterEach
-  void tearDownAfterEach() {
+  void tearDown() {
     reset(request);
     reset(securityContext);
     reset(auditAppPermissionRepository);

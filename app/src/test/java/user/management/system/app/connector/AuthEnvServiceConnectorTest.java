@@ -31,7 +31,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
   private final String responseJsonFileName = "authenv-service_getPropertiesResponse.json";
 
   @BeforeEach
-  void setup() throws Exception {
+  void setUp() throws Exception {
     server = new MockWebServer();
     server.start(0);
     String getPropertiesUrl = String.format("%s/getProperties", server.url("/"));
