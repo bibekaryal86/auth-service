@@ -32,4 +32,6 @@ public abstract class BaseTest {
           .encodeToString(
               String.format("%s:%s", ENV_SELF_USERNAME, ENV_SELF_PASSWORD)
                   .getBytes(StandardCharsets.UTF_8));
+
+  protected static final String APP_ID = "app-1";
 }

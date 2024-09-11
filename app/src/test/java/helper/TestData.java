@@ -167,4 +167,12 @@ public class TestData {
         .permissions(List.of(AuthTokenPermission.builder().id(1).name("Permission One").build()))
         .build();
   }
+
+  public static AuthToken getAuthTokenWithPermission(final String permissionName) {
+    AuthToken authToken = getAuthToken();
+    List<AuthTokenPermission> authTokenPermissions = authToken.getPermissions();
+    authTokenPermissions.add(AuthTokenPermission.builder().id(99).name(permissionName).build());
+    authToken.setPermissions(authTokenPermissions);
+    return authToken;
+  }
 }
