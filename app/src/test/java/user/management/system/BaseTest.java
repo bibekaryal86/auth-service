@@ -4,6 +4,7 @@ import static user.management.system.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static user.management.system.app.util.ConstantUtils.ENV_SELF_USERNAME;
 
 import helper.BaseTestExtension;
+import helper.TestData;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import user.management.system.app.config.TestConfigs;
 import user.management.system.app.config.TestDatasourceConfig;
 import user.management.system.app.config.TestSecurityConfig;
+import user.management.system.app.util.JwtUtils;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("springboottest")
@@ -27,12 +29,14 @@ public abstract class BaseTest {
 
   @Autowired protected WebTestClient webTestClient;
 
+  protected static final String APP_ID = "app-1";
+  protected static final String DECODED_EMAIL = "firstlast@one.com";
+
   protected String basicAuthCredentialsForTest =
       Base64.getEncoder()
           .encodeToString(
               String.format("%s:%s", ENV_SELF_USERNAME, ENV_SELF_PASSWORD)
                   .getBytes(StandardCharsets.UTF_8));
 
-  protected static final String APP_ID = "app-1";
-  protected static final String DECODED_EMAIL = "firstlast@one.com";
+  protected String bearerAuthCredentialsForTest = JwtUtils.encodeAuthCredentials(APP_ID, TestData.getAppUserDto(), 1000 * 60 * 15);
 }

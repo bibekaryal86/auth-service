@@ -12,7 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.beans.BeanUtils;
 import user.management.system.app.model.client.EnvDetails;
+import user.management.system.app.model.dto.AppPermissionDto;
+import user.management.system.app.model.dto.AppRoleDto;
+import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -170,9 +174,26 @@ public class TestData {
 
   public static AuthToken getAuthTokenWithPermission(final String permissionName) {
     AuthToken authToken = getAuthToken();
-    List<AuthTokenPermission> authTokenPermissions = authToken.getPermissions();
+    List<AuthTokenPermission> authTokenPermissions = new ArrayList<>(authToken.getPermissions());
     authTokenPermissions.add(AuthTokenPermission.builder().id(99).name(permissionName).build());
     authToken.setPermissions(authTokenPermissions);
     return authToken;
+  }
+
+  public static AppUserDto getAppUserDto() {
+    AppUserEntity appUserEntity = getAppUserEntities().getFirst();
+    AppRoleEntity appRoleEntity = getAppRoleEntities().getFirst();
+    AppPermissionEntity appPermissionEntity = getAppPermissionEntities().getFirst();
+
+    AppUserDto appUserDto = new AppUserDto();
+    BeanUtils.copyProperties(appUserEntity, appUserDto, "password", "addresses");
+    AppRoleDto appRoleDto = new AppRoleDto();
+    BeanUtils.copyProperties(appRoleEntity, appRoleDto);
+    AppPermissionDto appPermissionDto = new AppPermissionDto();
+    BeanUtils.copyProperties(appPermissionEntity, appPermissionDto);
+    appRoleDto.setPermissions(List.of(appPermissionDto));
+    appUserDto.setRoles(List.of(appRoleDto));
+
+    return appUserDto;
   }
 }
