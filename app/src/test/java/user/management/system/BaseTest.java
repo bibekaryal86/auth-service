@@ -34,4 +34,5 @@ public abstract class BaseTest {
                   .getBytes(StandardCharsets.UTF_8));
 
   protected static final String APP_ID = "app-1";
+  protected static final String DECODED_EMAIL = "firstlast@one.com";
 }

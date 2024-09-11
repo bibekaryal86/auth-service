@@ -19,7 +19,6 @@ import user.management.system.app.util.JwtUtils;
 
 public class AppUserNoAuthControllerTest extends BaseTest {
 
-  private static final String DECODED_EMAIL = "firstlast@one.com";
   private static final String REDIRECT_URL = "https://app-1-redirect-url.com/home/";
   private static String encodedEmail;
 
