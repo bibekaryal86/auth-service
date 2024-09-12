@@ -174,14 +174,6 @@ public class TestData {
         .build();
   }
 
-  public static AuthToken getAuthTokenWithPermission(final String permissionName) {
-    AuthToken authToken = getAuthToken();
-    List<AuthTokenPermission> authTokenPermissions = new ArrayList<>(authToken.getPermissions());
-    authTokenPermissions.add(AuthTokenPermission.builder().id(99).name(permissionName).build());
-    authToken.setPermissions(authTokenPermissions);
-    return authToken;
-  }
-
   public static AppUserDto getAppUserDto() {
     AppUserEntity appUserEntity = getAppUserEntities().getFirst();
     AppRoleEntity appRoleEntity = getAppRoleEntities().getFirst();
@@ -218,12 +210,6 @@ public class TestData {
     BeanUtils.copyProperties(appUserDtoInput, appUserDtoOutput, "roles");
 
     List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDtoInput.getRoles());
-
-    for (AppRoleDto appRoleDto : appRoleDtos) {
-      List<AppPermissionDto> appPermissionDtos = new ArrayList<>(appRoleDto.getPermissions());
-      appRoleDto.setPermissions(appPermissionDtos);
-    }
-
     AppPermissionDto appPermissionDto = new AppPermissionDto(-1, appId, permissionName, permissionName);
     List<AppPermissionDto> appPermissionDtos = new ArrayList<>(appRoleDtos.getFirst().getPermissions());
     appPermissionDtos.add(appPermissionDto);
