@@ -210,8 +210,10 @@ public class TestData {
     BeanUtils.copyProperties(appUserDtoInput, appUserDtoOutput, "roles");
 
     List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDtoInput.getRoles());
-    AppPermissionDto appPermissionDto = new AppPermissionDto(-1, appId, permissionName, permissionName);
-    List<AppPermissionDto> appPermissionDtos = new ArrayList<>(appRoleDtos.getFirst().getPermissions());
+    AppPermissionDto appPermissionDto =
+        new AppPermissionDto(-1, appId, permissionName, permissionName);
+    List<AppPermissionDto> appPermissionDtos =
+        new ArrayList<>(appRoleDtos.getFirst().getPermissions());
     appPermissionDtos.add(appPermissionDto);
     appRoleDtos.getFirst().setPermissions(appPermissionDtos);
 

@@ -464,9 +464,11 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse.getResponseCrudInfo());
     assertEquals(1, appPermissionResponse.getResponseCrudInfo().getDeletedRowsCount());
 
-    ArgumentCaptor<HttpServletRequest> requestCaptor = ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, times(1))
+        .auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }
 
@@ -492,9 +494,11 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse.getResponseCrudInfo());
     assertEquals(1, appPermissionResponse.getResponseCrudInfo().getDeletedRowsCount());
 
-    ArgumentCaptor<HttpServletRequest> requestCaptor = ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, times(1))
+        .auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }
 
@@ -550,9 +554,11 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse.getResponseCrudInfo());
     assertEquals(1, appPermissionResponse.getResponseCrudInfo().getDeletedRowsCount());
 
-    ArgumentCaptor<HttpServletRequest> requestCaptor = ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppPermissionDeleteHard(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, times(1))
+        .auditAppPermissionDeleteHard(requestCaptor.capture(), idCaptor.capture());
     assertEquals(appPermissionId, idCaptor.getValue());
   }
 
@@ -606,9 +612,11 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse.getPermissions());
     assertEquals(1, appPermissionResponse.getPermissions().size());
 
-    ArgumentCaptor<HttpServletRequest> requestCaptor = ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppPermissionRestore(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, times(1))
+        .auditAppPermissionRestore(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }
 
