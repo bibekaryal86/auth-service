@@ -1,5 +1,6 @@
 package helper;
 
+import static user.management.system.app.util.ConstantUtils.APP_ROLE_NAME_SUPERUSER;
 import static user.management.system.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static user.management.system.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static user.management.system.app.util.ConstantUtils.ENV_SERVER_PORT;
@@ -32,6 +33,7 @@ import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.model.token.AuthTokenPermission;
 import user.management.system.app.model.token.AuthTokenRole;
 import user.management.system.app.model.token.AuthTokenUser;
+import user.management.system.app.util.JwtUtils;
 
 public class TestData {
 
@@ -195,5 +197,30 @@ public class TestData {
     appUserDto.setRoles(List.of(appRoleDto));
 
     return appUserDto;
+  }
+
+  public static AppUserDto getAppUserDtoWithSuperUserRole(final AppUserDto appUserDto) {
+    AppRoleDto appRoleDto = new AppRoleDto(-1, APP_ROLE_NAME_SUPERUSER, APP_ROLE_NAME_SUPERUSER);
+    appRoleDto.setPermissions(Collections.emptyList());
+    List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDto.getRoles());
+    appRoleDtos.add(appRoleDto);
+    appUserDto.setRoles(appRoleDtos);
+    return appUserDto;
+  }
+
+  public static AppUserDto getAppUserDtoWithPermission(
+      final String appId, final AppUserDto appUserDto, final String permissionName) {
+    AppPermissionDto appPermissionDto =
+        new AppPermissionDto(-1, appId, permissionName, permissionName);
+    List<AppPermissionDto> appPermissionDtos =
+        new ArrayList<>(appUserDto.getRoles().getFirst().getPermissions());
+    appPermissionDtos.add(appPermissionDto);
+    appUserDto.getRoles().getFirst().setPermissions(appPermissionDtos);
+    return appUserDto;
+  }
+
+  public static String getBearerAuthCredentialsForTest(
+      final String appId, final AppUserDto appUserDto) {
+    return JwtUtils.encodeAuthCredentials(appId, appUserDto, 1000 * 60 * 15);
   }
 }
