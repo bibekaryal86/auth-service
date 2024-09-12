@@ -68,6 +68,18 @@ public class AppPermissionController {
   }
 
   @CheckPermission("PERMISSION_READ")
+  @GetMapping("/permission/{id}")
+  public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
+    try {
+      final AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
+      return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
+    } catch (Exception ex) {
+      log.error("Read App Permission: [{}]", id, ex);
+      return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
+    }
+  }
+
+  @CheckPermission("PERMISSION_READ")
   @GetMapping("/app/{appId}")
   public ResponseEntity<AppPermissionResponse> readAppPermissionsByAppId(
       @PathVariable final String appId) {
@@ -77,18 +89,6 @@ public class AppPermissionController {
       return entityDtoConvertUtils.getResponseMultipleAppPermission(appPermissionEntities);
     } catch (Exception ex) {
       log.error("Read App Permissions By App ID: [{}]", appId, ex);
-      return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
-    }
-  }
-
-  @CheckPermission("PERMISSION_READ")
-  @GetMapping("/permission/{id}")
-  public ResponseEntity<AppPermissionResponse> readAppPermission(@PathVariable final int id) {
-    try {
-      final AppPermissionEntity appPermissionEntity = appPermissionService.readAppPermission(id);
-      return entityDtoConvertUtils.getResponseSingleAppPermission(appPermissionEntity);
-    } catch (Exception ex) {
-      log.error("Read App Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorAppPermission(ex);
     }
   }
