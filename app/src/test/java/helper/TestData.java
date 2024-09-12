@@ -199,24 +199,38 @@ public class TestData {
     return appUserDto;
   }
 
-  public static AppUserDto getAppUserDtoWithSuperUserRole(final AppUserDto appUserDto) {
+  public static AppUserDto getAppUserDtoWithSuperUserRole(final AppUserDto appUserDtoInput) {
+    AppUserDto appUserDtoOutput = new AppUserDto();
+    BeanUtils.copyProperties(appUserDtoInput, appUserDtoOutput, "roles");
+
     AppRoleDto appRoleDto = new AppRoleDto(-1, APP_ROLE_NAME_SUPERUSER, APP_ROLE_NAME_SUPERUSER);
     appRoleDto.setPermissions(Collections.emptyList());
-    List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDto.getRoles());
+    List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDtoInput.getRoles());
     appRoleDtos.add(appRoleDto);
-    appUserDto.setRoles(appRoleDtos);
-    return appUserDto;
+
+    appUserDtoOutput.setRoles(appRoleDtos);
+    return appUserDtoOutput;
   }
 
   public static AppUserDto getAppUserDtoWithPermission(
-      final String appId, final AppUserDto appUserDto, final String permissionName) {
-    AppPermissionDto appPermissionDto =
-        new AppPermissionDto(-1, appId, permissionName, permissionName);
-    List<AppPermissionDto> appPermissionDtos =
-        new ArrayList<>(appUserDto.getRoles().getFirst().getPermissions());
+      final String appId, final String permissionName, final AppUserDto appUserDtoInput) {
+    AppUserDto appUserDtoOutput = new AppUserDto();
+    BeanUtils.copyProperties(appUserDtoInput, appUserDtoOutput, "roles");
+
+    List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDtoInput.getRoles());
+
+    for (AppRoleDto appRoleDto : appRoleDtos) {
+      List<AppPermissionDto> appPermissionDtos = new ArrayList<>(appRoleDto.getPermissions());
+      appRoleDto.setPermissions(appPermissionDtos);
+    }
+
+    AppPermissionDto appPermissionDto = new AppPermissionDto(-1, appId, permissionName, permissionName);
+    List<AppPermissionDto> appPermissionDtos = new ArrayList<>(appRoleDtos.getFirst().getPermissions());
     appPermissionDtos.add(appPermissionDto);
-    appUserDto.getRoles().getFirst().setPermissions(appPermissionDtos);
-    return appUserDto;
+    appRoleDtos.getFirst().setPermissions(appPermissionDtos);
+
+    appUserDtoOutput.setRoles(appRoleDtos);
+    return appUserDtoOutput;
   }
 
   public static String getBearerAuthCredentialsForTest(

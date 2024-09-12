@@ -52,7 +52,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testCreateAppPermission_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_CREATE");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_CREATE", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
     AppPermissionRequest appPermissionRequest =
@@ -144,7 +144,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testReadAppPermissions_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_READ");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_READ", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -207,7 +207,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testReadAppPermission_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_READ");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_READ", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -277,7 +277,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testReadAppPermissionsByAppId_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_READ");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_READ", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -357,7 +357,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testUpdateAppPermission_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_CREATE");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_UPDATE", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -444,7 +444,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testSoftDeleteAppPermission_Success() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_DELETE");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_DELETE", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -570,7 +570,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testHardDeleteAppPermission_FailureWithAuthNoSuperUser() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_DELETE");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_DELETE", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
@@ -626,7 +626,7 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testRestoreAppPermission_FailureWithAuthNoSuperUser() {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, appUserDtoNoPermission, "PERMISSION_DELETE");
+        TestData.getAppUserDtoWithPermission(APP_ID, "PERMISSION_DELETE", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
