@@ -154,7 +154,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreateAppRole_FailureWithAuthButNoPermission() {
+  void testCreateAppRolePermission_FailureWithAuthButNoPermission() {
     AppRolePermissionRequest appRolePermissionRequest =
         new AppRolePermissionRequest(APP_ROLE_ID, APP_PERMISSION_ID);
     webTestClient
