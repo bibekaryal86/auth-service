@@ -17,10 +17,8 @@
   * Tests
     * Controller Tests
       * Check failures
-        * Exceptions (eg: for unique constraints)
         * Invalid input (eg: UserLoginRequest without password)
-      * Verify audit service being called
-    * Audit Service Tests
+    * In Repository Tests, add tests for unique constraints
   * Update Dockerfile to make it multi stage build
     * Run tests and build jar file
     * Then only copy the freshly created jar file
