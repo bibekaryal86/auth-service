@@ -79,7 +79,7 @@ public class AppRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreateAppRole_Success_NoRole_ButSuperUser() {
+  void testCreateAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithRole =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
@@ -161,7 +161,7 @@ public class AppRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadAppRoles_Success_NoRole_ButSuperUser() {
+  void testReadAppRoles_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithRole =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
@@ -225,7 +225,7 @@ public class AppRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadAppRole_Success_NoRole_ButSuperUser() {
+  void testReadAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithRole =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
@@ -298,7 +298,7 @@ public class AppRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testUpdateAppRole_Success_NoRole_ButSuperUser() {
+  void testUpdateAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithRole =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
@@ -384,7 +384,7 @@ public class AppRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeleteAppRole_Success_NoRole_ButSuperUser() {
+  void testSoftDeleteAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithRole =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
