@@ -52,7 +52,7 @@ public class AppRoleControllerTest extends BaseTest {
   void testCreateAppRole_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_CREATE", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
     AppRoleRequest appRoleRequest = new AppRoleRequest("Role Create", "Role Create Test");
 
@@ -61,7 +61,7 @@ public class AppRoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/app_roles/role")
             .bodyValue(appRoleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -81,7 +81,7 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testCreateAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleRequest appRoleRequest = new AppRoleRequest("Role Create", "Role Create Test");
@@ -91,7 +91,7 @@ public class AppRoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/app_roles/role")
             .bodyValue(appRoleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -140,14 +140,14 @@ public class AppRoleControllerTest extends BaseTest {
   void testReadAppRoles_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_READ", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .get()
             .uri("/api/v1/app_roles")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -163,14 +163,14 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testReadAppRoles_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .get()
             .uri("/api/v1/app_roles")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -203,14 +203,14 @@ public class AppRoleControllerTest extends BaseTest {
   void testReadAppRole_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_READ", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .get()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -227,14 +227,14 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testReadAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .get()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -273,7 +273,7 @@ public class AppRoleControllerTest extends BaseTest {
   void testUpdateAppRole_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_UPDATE", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleRequest appRoleRequest = new AppRoleRequest("Role One", "Role One Updated 1");
@@ -283,7 +283,7 @@ public class AppRoleControllerTest extends BaseTest {
             .put()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
             .bodyValue(appRoleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -300,7 +300,7 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testUpdateAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleRequest appRoleRequest = new AppRoleRequest("Role One", "Role One Updated 2");
@@ -310,7 +310,7 @@ public class AppRoleControllerTest extends BaseTest {
             .put()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
             .bodyValue(appRoleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -356,14 +356,14 @@ public class AppRoleControllerTest extends BaseTest {
   void testSoftDeleteAppRole_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_DELETE", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -386,14 +386,14 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testSoftDeleteAppRole_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/app_roles/role/%s", APP_ROLE_ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -445,14 +445,14 @@ public class AppRoleControllerTest extends BaseTest {
     int appRoleId = appRoleRepository.save(appRoleEntity).getId();
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/app_roles/role/%s/hard", appRoleId))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -487,13 +487,13 @@ public class AppRoleControllerTest extends BaseTest {
   void testHardDeleteAppRole_FailureWithAuthNoSuperUser() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_DELETE", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     webTestClient
         .delete()
         .uri(String.format("/api/v1/app_roles/role/%s/hard", APP_ROLE_ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -503,14 +503,14 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testRestoreAppRole_Success_WithSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     AppRoleResponse appRoleResponse =
         webTestClient
             .patch()
             .uri(String.format("/api/v1/app_roles/role/%s/restore", APP_ROLE_ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -544,13 +544,13 @@ public class AppRoleControllerTest extends BaseTest {
   void testRestoreAppRole_FailureWithAuthNoSuperUser() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "ROLE_DELETE", appUserDtoNoPermission);
-    String bearerAuthCredentialsWithRole =
+    String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
 
     webTestClient
         .patch()
         .uri(String.format("/api/v1/app_roles/role/%s/restore", APP_ROLE_ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
