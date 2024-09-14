@@ -17,10 +17,9 @@ public class AppsAppUserServiceTest extends BaseTest {
 
   @Test
   void testAppsAppUserService_CRUD() {
-    String appId = "app-1";
     int userId = 6;
     String userEmail = "firstlast@ninetynine3.com";
-    AppsAppUserRequest appsAppUserRequest = new AppsAppUserRequest(appId, userId);
+    AppsAppUserRequest appsAppUserRequest = new AppsAppUserRequest(APP_ID, userId);
 
     // create
     AppsAppUserEntity appsAppUserEntity = appsAppUserService.createAppsAppUser(appsAppUserRequest);
@@ -30,7 +29,7 @@ public class AppsAppUserServiceTest extends BaseTest {
     // update, not available
 
     // read
-    appsAppUserEntity = appsAppUserService.readAppsAppUser(appId, userEmail);
+    appsAppUserEntity = appsAppUserService.readAppsAppUser(APP_ID, userEmail);
     assertNotNull(appsAppUserEntity);
     assertNotNull(appsAppUserEntity.getId());
     assertEquals("App Description One", appsAppUserEntity.getApp().getDescription());
@@ -38,15 +37,15 @@ public class AppsAppUserServiceTest extends BaseTest {
     assertNotNull(appsAppUserEntity.getAssignedDate());
 
     // hard delete
-    appsAppUserService.deleteAppsAppUser(appId, userEmail);
+    appsAppUserService.deleteAppsAppUser(APP_ID, userEmail);
 
     // throws not found exception after delete
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> appsAppUserService.readAppsAppUser(appId, userEmail));
+            () -> appsAppUserService.readAppsAppUser(APP_ID, userEmail));
     assertEquals(
-        String.format("Apps App User Not Found for [%s,%s]", appId, userEmail),
+        String.format("Apps App User Not Found for [%s,%s]", APP_ID, userEmail),
         exception.getMessage());
   }
 

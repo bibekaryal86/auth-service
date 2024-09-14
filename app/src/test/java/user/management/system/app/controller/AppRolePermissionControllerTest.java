@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -469,25 +468,12 @@ public class AppRolePermissionControllerTest extends BaseTest {
   @Test
   void testDeleteAppRolePermission_Success() {
     // setup
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setName("Role Permission Delete");
-    appRoleEntity.setDescription("Role Permission Delete Test");
-    appRoleEntity = appRoleRepository.save(appRoleEntity);
-
-    AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
-    appPermissionEntity.setAppId("app-99");
-    appPermissionEntity.setName("Permission Role Delete");
-    appPermissionEntity.setDescription("Permission Role Delete Test");
-    appPermissionEntity = appPermissionRepository.save(appPermissionEntity);
-
-    AppRolePermissionId appRolePermissionId =
-        new AppRolePermissionId(appRoleEntity.getId(), appPermissionEntity.getId());
-    AppRolePermissionEntity appRolePermissionEntity = new AppRolePermissionEntity();
-    appRolePermissionEntity.setAppRole(appRoleEntity);
-    appRolePermissionEntity.setAppPermission(appPermissionEntity);
-    appRolePermissionEntity.setAssignedDate(LocalDateTime.now());
-    appRolePermissionEntity.setId(appRolePermissionId);
-    appRolePermissionRepository.save(appRolePermissionEntity);
+    AppRoleEntity appRoleEntity = appRoleRepository.save(TestData.getNewAppRoleEntity());
+    AppPermissionEntity appPermissionEntity =
+        appPermissionRepository.save(TestData.getNewAppPermissionEntity());
+    AppRolePermissionEntity appRolePermissionEntity =
+        appRolePermissionRepository.save(
+            TestData.getNewAppRolePermissionEntity(appRoleEntity, appPermissionEntity));
 
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(
@@ -525,7 +511,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
     assertEquals(appPermissionEntity.getId(), permissionIdCaptor.getValue());
 
     // cleanup
-    appRolePermissionRepository.deleteById(appRolePermissionId);
+    appRolePermissionRepository.deleteById(appRolePermissionEntity.getId());
     appRoleRepository.deleteById(appRoleEntity.getId());
     appPermissionRepository.deleteById(appPermissionEntity.getId());
   }
@@ -533,25 +519,12 @@ public class AppRolePermissionControllerTest extends BaseTest {
   @Test
   void testDeleteAppRolePermission_Success_NoPermission_ButSuperUser() {
     // setup
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setName("Role Permission Delete");
-    appRoleEntity.setDescription("Role Permission Delete Test");
-    appRoleEntity = appRoleRepository.save(appRoleEntity);
-
-    AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
-    appPermissionEntity.setAppId("app-99");
-    appPermissionEntity.setName("Permission Role Delete");
-    appPermissionEntity.setDescription("Permission Role Delete Test");
-    appPermissionEntity = appPermissionRepository.save(appPermissionEntity);
-
-    AppRolePermissionId appRolePermissionId =
-        new AppRolePermissionId(appRoleEntity.getId(), appPermissionEntity.getId());
-    AppRolePermissionEntity appRolePermissionEntity = new AppRolePermissionEntity();
-    appRolePermissionEntity.setAppRole(appRoleEntity);
-    appRolePermissionEntity.setAppPermission(appPermissionEntity);
-    appRolePermissionEntity.setAssignedDate(LocalDateTime.now());
-    appRolePermissionEntity.setId(appRolePermissionId);
-    appRolePermissionRepository.save(appRolePermissionEntity);
+    AppRoleEntity appRoleEntity = appRoleRepository.save(TestData.getNewAppRoleEntity());
+    AppPermissionEntity appPermissionEntity =
+        appPermissionRepository.save(TestData.getNewAppPermissionEntity());
+    AppRolePermissionEntity appRolePermissionEntity =
+        appRolePermissionRepository.save(
+            TestData.getNewAppRolePermissionEntity(appRoleEntity, appPermissionEntity));
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -587,7 +560,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
     assertEquals(appPermissionEntity.getId(), permissionIdCaptor.getValue());
 
     // cleanup
-    appRolePermissionRepository.deleteById(appRolePermissionId);
+    appRolePermissionRepository.deleteById(appRolePermissionEntity.getId());
     appRoleRepository.deleteById(appRoleEntity.getId());
     appPermissionRepository.deleteById(appPermissionEntity.getId());
   }

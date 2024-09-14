@@ -28,8 +28,6 @@ import user.management.system.app.model.token.AuthTokenRole;
 
 public class PermissionCheckTest extends BaseTest {
 
-  private static final String TEST_EMAIL = "firstlast@one.com";
-
   private static Authentication authentication;
   private static AuthToken authToken;
   private static List<AppUserEntity> appUserEntities;
@@ -47,7 +45,8 @@ public class PermissionCheckTest extends BaseTest {
   @BeforeEach
   public void setUpBeforeEach() {
     SecurityContextHolder.setContext(securityContext);
-    authentication = new TestingAuthenticationToken(TEST_EMAIL, authToken, Collections.emptyList());
+    authentication =
+        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
   }
 
@@ -65,7 +64,8 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
-    authentication = new TestingAuthenticationToken(TEST_EMAIL, authToken, Collections.emptyList());
+    authentication =
+        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
 
     CheckPermission checkPermission = mock(CheckPermission.class);
     when(checkPermission.value())
@@ -90,7 +90,7 @@ public class PermissionCheckTest extends BaseTest {
 
   @Test
   void testCanUserAccessAppUser_Email() {
-    assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser(TEST_EMAIL, 0));
+    assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser(APP_USER_EMAIL, 0));
   }
 
   @Test
@@ -103,7 +103,8 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
-    authentication = new TestingAuthenticationToken(TEST_EMAIL, authToken, Collections.emptyList());
+    authentication =
+        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser("some@email.com", 99));
@@ -135,7 +136,8 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
-    authentication = new TestingAuthenticationToken(TEST_EMAIL, authToken, Collections.emptyList());
+    authentication =
+        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     List<AppUserEntity> appUserEntitiesFiltered =

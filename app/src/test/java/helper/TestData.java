@@ -73,6 +73,17 @@ public class TestData {
     }
   }
 
+  public static AppUserEntity getNewAppUserEntity() {
+    AppUserEntity appUserEntity = new AppUserEntity();
+    appUserEntity.setFirstName("New App User F");
+    appUserEntity.setLastName("New App User L");
+    appUserEntity.setEmail("new_app@user.com");
+    appUserEntity.setPassword("some-password");
+    appUserEntity.setStatus("ACTIVE");
+    appUserEntity.setIsValidated(true);
+    return appUserEntity;
+  }
+
   public static List<AppRoleEntity> getAppRoleEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-role.json");
     try {
@@ -81,6 +92,13 @@ public class TestData {
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
+  }
+
+  public static AppRoleEntity getNewAppRoleEntity() {
+    AppRoleEntity appRoleEntity = new AppRoleEntity();
+    appRoleEntity.setName("New Role");
+    appRoleEntity.setDescription("New Role Entity for Test");
+    return appRoleEntity;
   }
 
   public static List<AppPermissionEntity> getAppPermissionEntities() {
@@ -93,6 +111,14 @@ public class TestData {
     }
   }
 
+  public static AppPermissionEntity getNewAppPermissionEntity() {
+    AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
+    appPermissionEntity.setAppId("app-99");
+    appPermissionEntity.setName("New Permission");
+    appPermissionEntity.setDescription("New Permission Entity for Test");
+    return appPermissionEntity;
+  }
+
   public static List<AppsEntity> getAppsEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-apps.json");
     try {
@@ -101,6 +127,14 @@ public class TestData {
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
+  }
+
+  public static AppsEntity getNewAppsEntity() {
+    AppsEntity appsEntity = new AppsEntity();
+    appsEntity.setId("app-1001");
+    appsEntity.setName("New App");
+    appsEntity.setDescription("New App Entity for Test");
+    return appsEntity;
   }
 
   public static List<AppUserRoleEntity> getAppUserRoleEntities() {
@@ -119,6 +153,16 @@ public class TestData {
     }
 
     return appUserRoleEntities;
+  }
+
+  public static AppUserRoleEntity getNewAppUserRoleEntity(
+      AppUserEntity appUserEntity, AppRoleEntity appRoleEntity) {
+    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
+    appUserRoleEntity.setId(new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId()));
+    appUserRoleEntity.setAppUser(appUserEntity);
+    appUserRoleEntity.setAppRole(appRoleEntity);
+    appUserRoleEntity.setAssignedDate(LocalDateTime.now());
+    return appUserRoleEntity;
   }
 
   public static List<AppRolePermissionEntity> getAppRolePermissionEntities() {
@@ -140,6 +184,17 @@ public class TestData {
     return appRolePermissionEntities;
   }
 
+  public static AppRolePermissionEntity getNewAppRolePermissionEntity(
+      AppRoleEntity appRoleEntity, AppPermissionEntity appPermissionEntity) {
+    AppRolePermissionEntity appRolePermissionEntity = new AppRolePermissionEntity();
+    appRolePermissionEntity.setAppRole(appRoleEntity);
+    appRolePermissionEntity.setAppPermission(appPermissionEntity);
+    appRolePermissionEntity.setAssignedDate(LocalDateTime.now());
+    appRolePermissionEntity.setId(
+        new AppRolePermissionId(appRoleEntity.getId(), appPermissionEntity.getId()));
+    return appRolePermissionEntity;
+  }
+
   public static List<AppsAppUserEntity> getAppsAppUserEntities() {
     List<AppsEntity> appsEntities = getAppsEntities();
     List<AppUserEntity> appUserEntities = getAppUserEntities();
@@ -156,6 +211,16 @@ public class TestData {
     }
 
     return appsAppUserEntities;
+  }
+
+  public static AppsAppUserEntity getNewAppsAppUserEntity(
+      AppsEntity appsEntity, AppUserEntity appUserEntity) {
+    AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
+    appsAppUserEntity.setId(new AppsAppUserId(appsEntity.getId(), appUserEntity.getId()));
+    appsAppUserEntity.setApp(appsEntity);
+    appsAppUserEntity.setAppUser(appUserEntity);
+    appsAppUserEntity.setAssignedDate(LocalDateTime.now());
+    return appsAppUserEntity;
   }
 
   public static AuthToken getAuthToken() {

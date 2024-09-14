@@ -310,11 +310,7 @@ public class AppsControllerTest extends BaseTest {
   @Test
   void testHardDeleteApp_Success() {
     // setup
-    AppsEntity appsEntity = new AppsEntity();
-    appsEntity.setId("app-1001");
-    appsEntity.setName("App Test");
-    appsEntity.setDescription("App Test Delete");
-    appsEntity = appsRepository.save(appsEntity);
+    AppsEntity appsEntity = appsRepository.save(TestData.getNewAppsEntity());
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =

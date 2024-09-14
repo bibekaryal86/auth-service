@@ -439,10 +439,7 @@ public class AppRoleControllerTest extends BaseTest {
   @Test
   void testHardDeleteAppRole_Success_WithSuperUser() {
     // setup
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setName("Role Delete");
-    appRoleEntity.setDescription("Role Delete Test");
-    int appRoleId = appRoleRepository.save(appRoleEntity).getId();
+    AppRoleEntity appRoleEntity = appRoleRepository.save(TestData.getNewAppRoleEntity());
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -451,7 +448,7 @@ public class AppRoleControllerTest extends BaseTest {
     AppRoleResponse appRoleResponse =
         webTestClient
             .delete()
-            .uri(String.format("/api/v1/app_roles/role/%s/hard", appRoleId))
+            .uri(String.format("/api/v1/app_roles/role/%s/hard", appRoleEntity.getId()))
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -469,7 +466,7 @@ public class AppRoleControllerTest extends BaseTest {
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
     verify(auditService, times(1))
         .auditAppRoleDeleteHard(requestCaptor.capture(), idCaptor.capture());
-    assertEquals(appRoleId, idCaptor.getValue());
+    assertEquals(appRoleEntity.getId(), idCaptor.getValue());
   }
 
   @Test

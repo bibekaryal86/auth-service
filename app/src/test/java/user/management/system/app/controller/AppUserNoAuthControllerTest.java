@@ -27,7 +27,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
 
   @BeforeAll
   static void setUpBeforeAll() {
-    encodedEmail = JwtUtils.encodeEmailAddress(DECODED_EMAIL);
+    encodedEmail = JwtUtils.encodeEmailAddress(APP_USER_EMAIL);
   }
 
   @BeforeEach
@@ -63,7 +63,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", APP_ID, DECODED_EMAIL))
+                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", APP_ID, APP_USER_EMAIL))
         .exchange()
         .expectStatus()
         .is3xxRedirection()
@@ -85,7 +85,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectStatus()
         .is3xxRedirection()
         .expectHeader()
-        .location(REDIRECT_URL + "?is_reset=true&to_reset=" + DECODED_EMAIL);
+        .location(REDIRECT_URL + "?is_reset=true&to_reset=" + APP_USER_EMAIL);
 
     verify(authenvServiceConnector, times(1)).getRedirectUrls();
     verify(auditService, times(1)).auditAppUserResetExit(any(), any(), any());
@@ -97,7 +97,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", APP_ID, DECODED_EMAIL))
+                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", APP_ID, APP_USER_EMAIL))
         .exchange()
         .expectStatus()
         .is3xxRedirection()

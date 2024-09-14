@@ -19,8 +19,6 @@ import user.management.system.app.model.token.AuthToken;
 
 public class JwtUtilsTest extends BaseTest {
 
-  private static final String TEST_APP_ID = "app-1";
-  private static final String TEST_EMAIL = "firstlast@one.com";
   private static final String INVALID_TOKEN = "invalid.token.string";
   private static final AppUserDto appUserDto = new AppUserDto();
 
@@ -33,15 +31,15 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   public void testEncodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(TEST_EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(APP_USER_EMAIL);
     assertNotNull(encodedEmail);
   }
 
   @Test
   public void testDecodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(TEST_EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(APP_USER_EMAIL);
     String decodedEmail = JwtUtils.decodeEmailAddress(encodedEmail);
-    assertEquals(TEST_EMAIL, decodedEmail);
+    assertEquals(APP_USER_EMAIL, decodedEmail);
   }
 
   @Test
@@ -63,13 +61,13 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   void testEncodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
     assertNotNull(token);
   }
 
   @Test
   void testDecodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
     Map<String, AuthToken> result = JwtUtils.decodeAuthCredentials(token);
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -89,7 +87,7 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   void testDecodeAuthCredentials_ExpiredToken() throws InterruptedException {
-    String token = JwtUtils.encodeAuthCredentials(TEST_APP_ID, appUserDto, 1000);
+    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 1000);
     Thread.sleep(1000);
     JwtInvalidException exception =
         assertThrows(

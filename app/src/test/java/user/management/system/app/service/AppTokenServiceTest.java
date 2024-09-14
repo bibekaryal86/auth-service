@@ -81,7 +81,7 @@ public class AppTokenServiceTest extends BaseTest {
   @Test
   void testSaveToken_Create() {
     UserLoginResponse userLoginResponse =
-        appTokenService.saveToken(null, null, appUserEntity, "app-1");
+        appTokenService.saveToken(null, null, appUserEntity, "APP_ID");
 
     assertNotNull(userLoginResponse);
     assertNotNull(userLoginResponse.getAToken());
@@ -93,7 +93,7 @@ public class AppTokenServiceTest extends BaseTest {
   @Test
   void testSaveToken_Update() {
     UserLoginResponse userLoginResponse =
-        appTokenService.saveToken(id, null, appUserEntity, "app-1");
+        appTokenService.saveToken(id, null, appUserEntity, "APP_ID");
     assertNotNull(userLoginResponse);
     assertNotNull(userLoginResponse.getAToken());
     assertNotNull(userLoginResponse.getRToken());
@@ -105,7 +105,7 @@ public class AppTokenServiceTest extends BaseTest {
   @Test
   void testSaveToken_Delete() {
     UserLoginResponse userLoginResponse =
-        appTokenService.saveToken(id, LocalDateTime.now(), appUserEntity, "app-1");
+        appTokenService.saveToken(id, LocalDateTime.now(), appUserEntity, "APP_ID");
     assertNotNull(userLoginResponse);
     assertNull(userLoginResponse.getAToken());
     assertNull(userLoginResponse.getRToken());

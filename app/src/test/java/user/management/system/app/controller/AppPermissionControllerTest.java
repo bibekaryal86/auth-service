@@ -528,11 +528,8 @@ public class AppPermissionControllerTest extends BaseTest {
   @Test
   void testHardDeleteAppPermission_Success_WithSuperUser() {
     // setup
-    AppPermissionEntity appPermissionEntity = new AppPermissionEntity();
-    appPermissionEntity.setAppId("app-99");
-    appPermissionEntity.setName("Permission Delete");
-    appPermissionEntity.setDescription("Permission Delete Test");
-    int appPermissionId = appPermissionRepository.save(appPermissionEntity).getId();
+    AppPermissionEntity appPermissionEntity =
+        appPermissionRepository.save(TestData.getNewAppPermissionEntity());
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -541,7 +538,9 @@ public class AppPermissionControllerTest extends BaseTest {
     AppPermissionResponse appPermissionResponse =
         webTestClient
             .delete()
-            .uri(String.format("/api/v1/app_permissions/permission/%s/hard", appPermissionId))
+            .uri(
+                String.format(
+                    "/api/v1/app_permissions/permission/%s/hard", appPermissionEntity.getId()))
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -559,7 +558,7 @@ public class AppPermissionControllerTest extends BaseTest {
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
     verify(auditService, times(1))
         .auditAppPermissionDeleteHard(requestCaptor.capture(), idCaptor.capture());
-    assertEquals(appPermissionId, idCaptor.getValue());
+    assertEquals(appPermissionEntity.getId(), idCaptor.getValue());
   }
 
   @Test

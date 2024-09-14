@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import helper.TestData;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -325,28 +324,10 @@ public class AppsAppUserControllerTest extends BaseTest {
   @Test
   void testDeleteAppsAppUser_Success() {
     // setup
-    AppsEntity appsEntity = new AppsEntity();
-    appsEntity.setId("app-1001");
-    appsEntity.setName("App 1001");
-    appsEntity.setDescription("Apps App User Delete Test");
-    appsEntity = appsRepository.save(appsEntity);
-
-    AppUserEntity appUserEntity = new AppUserEntity();
-    appUserEntity.setFirstName("F Name 1001");
-    appUserEntity.setLastName("L Name 1001");
-    appUserEntity.setEmail("apps_app_user@entity.com");
-    appUserEntity.setPassword("some-password");
-    appUserEntity.setStatus("ACTIVE");
-    appUserEntity.setIsValidated(true);
-    appUserEntity = appUserRepository.save(appUserEntity);
-
-    AppsAppUserId appsAppUserId = new AppsAppUserId(appsEntity.getId(), appUserEntity.getId());
-    AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
-    appsAppUserEntity.setId(appsAppUserId);
-    appsAppUserEntity.setApp(appsEntity);
-    appsAppUserEntity.setAppUser(appUserEntity);
-    appsAppUserEntity.setAssignedDate(LocalDateTime.now());
-    appsAppUserRepository.save(appsAppUserEntity);
+    AppsEntity appsEntity = appsRepository.save(TestData.getNewAppsEntity());
+    AppUserEntity appUserEntity = appUserRepository.save(TestData.getNewAppUserEntity());
+    AppsAppUserEntity appsAppUserEntity =
+        appsAppUserRepository.save(TestData.getNewAppsAppUserEntity(appsEntity, appUserEntity));
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -374,7 +355,7 @@ public class AppsAppUserControllerTest extends BaseTest {
     verify(auditService, times(1)).auditAppUserUnassignApp(any(), any(), any());
 
     // cleanup
-    appsAppUserRepository.deleteById(appsAppUserId);
+    appsAppUserRepository.deleteById(appsAppUserEntity.getId());
     appUserRepository.deleteById(appUserEntity.getId());
     appsRepository.deleteById(appsEntity.getId());
   }

@@ -3,6 +3,7 @@ package user.management.system.app.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.events.AppUserUpdatedEvent;
 import user.management.system.app.repository.AppUserRepository;
 import user.management.system.app.service.AuditService;
+import user.management.system.app.util.PasswordUtils;
 
 public class AppUserControllerTest extends BaseTest {
 
@@ -40,6 +42,7 @@ public class AppUserControllerTest extends BaseTest {
   @MockBean private ApplicationEventPublisher applicationEventPublisher;
 
   @Autowired private AppUserRepository appUserRepository;
+  @Autowired private PasswordUtils passwordUtils;
 
   @BeforeAll
   static void setUpBeforeAll() {
@@ -235,7 +238,7 @@ public class AppUserControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .get()
-            .uri(String.format("/api/v1/app_users/user/email/%s", "firstlast@one.com"))
+            .uri(String.format("/api/v1/app_users/user/email/%s", APP_USER_EMAIL))
             .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
             .exchange()
             .expectStatus()
@@ -257,7 +260,7 @@ public class AppUserControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .get()
-            .uri(String.format("/api/v1/app_users/user/email/%s", "firstlast@one.com"))
+            .uri(String.format("/api/v1/app_users/user/email/%s", APP_USER_EMAIL))
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -277,7 +280,7 @@ public class AppUserControllerTest extends BaseTest {
   void testReadAppUserByEmail_FailureWithNoBearerAuth() {
     webTestClient
         .get()
-        .uri(String.format("/api/v1/app_users/user/%s", "firstlast@one.com"))
+        .uri(String.format("/api/v1/app_users/user/%s", APP_USER_EMAIL))
         .exchange()
         .expectStatus()
         .isUnauthorized();
@@ -401,7 +404,7 @@ public class AppUserControllerTest extends BaseTest {
   @Test
   void testUpdateAppUserEmail_Success() {
     UserUpdateEmailRequest userUpdateEmailRequest =
-        new UserUpdateEmailRequest("firstlast@one.com", "lastfirst@one.com");
+        new UserUpdateEmailRequest(APP_USER_EMAIL, "lastfirst@one.com");
 
     AppUserResponse appUserResponse =
         webTestClient
@@ -430,16 +433,16 @@ public class AppUserControllerTest extends BaseTest {
     // reset
     AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
     assertNotNull(appUserEntity);
-    appUserEntity.setEmail("firstlast@one.com");
+    appUserEntity.setEmail(APP_USER_EMAIL);
     appUserEntity = appUserRepository.save(appUserEntity);
     assertNotNull(appUserEntity);
-    assertEquals("firstlast@one.com", appUserEntity.getEmail());
+    assertEquals(APP_USER_EMAIL, appUserEntity.getEmail());
   }
 
   @Test
   void testUpdateAppUserEmail_Success_SuperUser() {
     UserUpdateEmailRequest userUpdateEmailRequest =
-        new UserUpdateEmailRequest("firstlast@one.com", "lastfirst@one.com");
+        new UserUpdateEmailRequest(APP_USER_EMAIL, "lastfirst@one.com");
 
     AppUserResponse appUserResponse =
         webTestClient
@@ -468,10 +471,10 @@ public class AppUserControllerTest extends BaseTest {
     // reset
     AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
     assertNotNull(appUserEntity);
-    appUserEntity.setEmail("firstlast@one.com");
+    appUserEntity.setEmail(APP_USER_EMAIL);
     appUserEntity = appUserRepository.save(appUserEntity);
     assertNotNull(appUserEntity);
-    assertEquals("firstlast@one.com", appUserEntity.getEmail());
+    assertEquals(APP_USER_EMAIL, appUserEntity.getEmail());
   }
 
   @Test
@@ -509,8 +512,7 @@ public class AppUserControllerTest extends BaseTest {
 
   @Test
   void testUpdateAppUserPassword_Success() {
-    UserLoginRequest userLoginRequest =
-        new UserLoginRequest("firstlast@one.com", "password-one-new");
+    UserLoginRequest userLoginRequest = new UserLoginRequest(APP_USER_EMAIL, "password-one-new");
 
     AppUserResponse appUserResponse =
         webTestClient
@@ -532,13 +534,17 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
+    AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
+    assertNotNull(appUserEntity);
+    assertNotNull(appUserEntity.getPassword());
+    assertTrue(passwordUtils.verifyPassword("password-one-new", appUserEntity.getPassword()));
+
     verify(auditService, times(1)).auditAppUserUpdatePassword(any(), any());
   }
 
   @Test
   void testUpdateAppUserPassword_Success_SuperUser() {
-    UserLoginRequest userLoginRequest =
-        new UserLoginRequest("firstlast@one.com", "password-one-new");
+    UserLoginRequest userLoginRequest = new UserLoginRequest(APP_USER_EMAIL, "password-new-one");
 
     AppUserResponse appUserResponse =
         webTestClient
@@ -560,13 +566,17 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
+    AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
+    assertNotNull(appUserEntity);
+    assertNotNull(appUserEntity.getPassword());
+    assertTrue(passwordUtils.verifyPassword("password-new-one", appUserEntity.getPassword()));
+
     verify(auditService, times(1)).auditAppUserUpdatePassword(any(), any());
   }
 
   @Test
   void testUpdateAppUserPassword_FailureWithNoBearerAuth() {
-    UserLoginRequest userLoginRequest =
-        new UserLoginRequest("firstlast@one.com", "password-one-fail");
+    UserLoginRequest userLoginRequest = new UserLoginRequest(APP_USER_EMAIL, "password-one-fail");
 
     webTestClient
         .put()
@@ -581,8 +591,7 @@ public class AppUserControllerTest extends BaseTest {
 
   @Test
   void testUpdateAppUserPassword_FailureWithDifferentUserId() {
-    UserLoginRequest userLoginRequest =
-        new UserLoginRequest("firstlast@one.com", "password-one-fail");
+    UserLoginRequest userLoginRequest = new UserLoginRequest(APP_USER_EMAIL, "password-one-fail");
 
     webTestClient
         .put()

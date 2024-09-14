@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -431,27 +430,10 @@ public class AppUserRoleControllerTest extends BaseTest {
   @Test
   void testDeleteAppUserRole_Success() {
     // setup
-    AppUserEntity appUserEntity = new AppUserEntity();
-    appUserEntity.setFirstName("F Name 1001");
-    appUserEntity.setLastName("L Name 1001");
-    appUserEntity.setEmail("app-user-role@entity.com");
-    appUserEntity.setPassword("some-password");
-    appUserEntity.setStatus("ACTIVE");
-    appUserEntity.setIsValidated(true);
-    appUserEntity = appUserRepository.save(appUserEntity);
-
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setName("User Role Delete");
-    appRoleEntity.setDescription("User Role Delete Test");
-    appRoleEntity = appRoleRepository.save(appRoleEntity);
-
-    AppUserRoleId appUserRoleId = new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId());
-    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
-    appUserRoleEntity.setId(appUserRoleId);
-    appUserRoleEntity.setAppUser(appUserEntity);
-    appUserRoleEntity.setAppRole(appRoleEntity);
-    appUserRoleEntity.setAssignedDate(LocalDateTime.now());
-    appUserRoleRepository.save(appUserRoleEntity);
+    AppUserEntity appUserEntity = appUserRepository.save(TestData.getNewAppUserEntity());
+    AppRoleEntity appRoleEntity = appRoleRepository.save(TestData.getNewAppRoleEntity());
+    AppUserRoleEntity appUserRoleEntity =
+        appUserRoleRepository.save(TestData.getNewAppUserRoleEntity(appUserEntity, appRoleEntity));
 
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(APP_ID, "USER_ROLE_UNASSIGN", appUserDtoNoPermission);
@@ -488,7 +470,7 @@ public class AppUserRoleControllerTest extends BaseTest {
     assertEquals(appRoleEntity.getId(), roleIdCaptor.getValue());
 
     // cleanup
-    appUserRoleRepository.deleteById(appUserRoleId);
+    appUserRoleRepository.deleteById(appUserRoleEntity.getId());
     appUserRepository.deleteById(appUserEntity.getId());
     appRoleRepository.deleteById(appRoleEntity.getId());
   }
@@ -496,27 +478,10 @@ public class AppUserRoleControllerTest extends BaseTest {
   @Test
   void testDeleteAppUserRole_Success_NoPermission_ButSuperUser() {
     // setup
-    AppUserEntity appUserEntity = new AppUserEntity();
-    appUserEntity.setFirstName("F Name 1001");
-    appUserEntity.setLastName("L Name 1001");
-    appUserEntity.setEmail("app-user-role@entity.com");
-    appUserEntity.setPassword("some-password");
-    appUserEntity.setStatus("ACTIVE");
-    appUserEntity.setIsValidated(true);
-    appUserEntity = appUserRepository.save(appUserEntity);
-
-    AppRoleEntity appRoleEntity = new AppRoleEntity();
-    appRoleEntity.setName("User Role Delete");
-    appRoleEntity.setDescription("User Role Delete Test");
-    appRoleEntity = appRoleRepository.save(appRoleEntity);
-
-    AppUserRoleId appUserRoleId = new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId());
-    AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
-    appUserRoleEntity.setId(appUserRoleId);
-    appUserRoleEntity.setAppUser(appUserEntity);
-    appUserRoleEntity.setAppRole(appRoleEntity);
-    appUserRoleEntity.setAssignedDate(LocalDateTime.now());
-    appUserRoleRepository.save(appUserRoleEntity);
+    AppUserEntity appUserEntity = appUserRepository.save(TestData.getNewAppUserEntity());
+    AppRoleEntity appRoleEntity = appRoleRepository.save(TestData.getNewAppRoleEntity());
+    AppUserRoleEntity appUserRoleEntity =
+        appUserRoleRepository.save(TestData.getNewAppUserRoleEntity(appUserEntity, appRoleEntity));
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -552,7 +517,7 @@ public class AppUserRoleControllerTest extends BaseTest {
     assertEquals(appRoleEntity.getId(), roleIdCaptor.getValue());
 
     // cleanup
-    appUserRoleRepository.deleteById(appUserRoleId);
+    appUserRoleRepository.deleteById(appUserRoleEntity.getId());
     appUserRepository.deleteById(appUserEntity.getId());
     appRoleRepository.deleteById(appRoleEntity.getId());
   }
