@@ -189,6 +189,8 @@ INSERT INTO app_user_address (app_user_id, address_type, street, city, state, co
 VALUES (1, 'MAILING', 'Street One One', 'City One One', 'ON', 'US', '12569');
 INSERT INTO app_user_address (app_user_id, address_type, street, city, state, country, postal_code)
 VALUES (1, 'SHIPPING', 'Street One Two', 'City One Two', 'ON', 'US', '12569');
+INSERT INTO app_user_address (app_user_id, address_type, street, city, state, country, postal_code)
+VALUES (2, 'MAILING', 'Street Two One', 'City Two One', 'TW', 'US', '96521');
 
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role One', 'Role Description One', null);
 INSERT INTO app_role (name, description, deleted_date) VALUES ('Role Two', 'Role Description Two', null);

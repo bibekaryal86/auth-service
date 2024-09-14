@@ -545,6 +545,14 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
         Optional<AppUserAddressDto> appUserAddressDto =
             appUserAddressDtos.stream().filter(y -> y.getId() == finalI).findFirst();
 
+        // adjustment for app user with id = 2, because address has id of 3
+        if (finalI == 2 && (appUserAddressEntity.isEmpty() && appUserAddressDto.isEmpty())) {
+          appUserAddressEntity =
+              appUserAddressEntities.stream().filter(x -> x.getId() == finalI + 1).findFirst();
+          appUserAddressDto =
+              appUserAddressDtos.stream().filter(y -> y.getId() == finalI + 1).findFirst();
+        }
+
         assertTrue(appUserAddressEntity.isPresent());
         assertTrue(appUserAddressDto.isPresent());
         assertEquals(appUserAddressEntity.get().getId(), appUserAddressDto.get().getId());

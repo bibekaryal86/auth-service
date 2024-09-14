@@ -11,13 +11,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import helper.TestData;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.util.CollectionUtils;
 import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
@@ -602,6 +605,236 @@ public class AppUserControllerTest extends BaseTest {
         .expectStatus()
         .isForbidden();
 
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testDeleteAppUserAddress_Success() {
+    AppUserResponse appUserResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/app_users/user/%s/address/%s", APP_USER_ID, 1))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AppUserResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(appUserResponse);
+    assertNotNull(appUserResponse.getUsers());
+    assertEquals(1, appUserResponse.getUsers().size());
+    assertEquals(1, appUserResponse.getUsers().getFirst().getAddresses().size());
+    assertEquals(APP_USER_ID, appUserResponse.getUsers().getFirst().getId());
+    // make sure password is not returned with DTO
+    assertNull(appUserResponse.getUsers().getFirst().getPassword());
+
+    verify(auditService, times(1)).auditAppUserDeleteAddress(any(), any());
+  }
+
+  @Test
+  void testDeleteAppUserAddress_Success_SuperUser() {
+    AppUserResponse appUserResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/app_users/user/%s/address/%s", 2, 3))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AppUserResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(appUserResponse);
+    assertNotNull(appUserResponse.getUsers());
+    assertEquals(1, appUserResponse.getUsers().size());
+    assertEquals(2, appUserResponse.getUsers().getFirst().getId());
+    // make sure password is not returned with DTO
+    assertNull(appUserResponse.getUsers().getFirst().getPassword());
+    assertTrue(CollectionUtils.isEmpty(appUserResponse.getUsers().getFirst().getAddresses()));
+
+    verify(auditService, times(1)).auditAppUserDeleteAddress(any(), any());
+  }
+
+  @Test
+  void testDeleteAppUserAddress_FailureWithNoBearerAuth() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s/address/%s", APP_USER_ID, 2))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testDeleteAppUserAddress_FailureWithDifferentUserId() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s/address/%s", 2, 2))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testSoftDeleteAppUser_Success() {
+    appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+
+    AppUserResponse appUserResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/app_users/user/%s", APP_USER_ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AppUserResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(appUserResponse);
+    assertNotNull(appUserResponse.getResponseCrudInfo());
+    assertEquals(1, appUserResponse.getResponseCrudInfo().getDeletedRowsCount());
+
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+    verify(auditService, times(1))
+        .auditAppUserDeleteSoft(requestCaptor.capture(), idCaptor.capture());
+    assertEquals(APP_USER_ID, idCaptor.getValue());
+  }
+
+  @Test
+  void testSoftDeleteApp_FailureWithNoBearerAuth() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s", APP_USER_ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testSoftDeleteAppUser_FailureWithAuthButNoSuperUser() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s", APP_USER_ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testHardDeleteAppUser_Success() {
+    // setup
+    AppUserEntity appUserEntity = appUserRepository.save(TestData.getNewAppUserEntity());
+
+    appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+
+    AppUserResponse appUserResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/app_users/user/%s/hard", appUserEntity.getId()))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AppUserResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(appUserResponse);
+    assertNotNull(appUserResponse.getResponseCrudInfo());
+    assertEquals(1, appUserResponse.getResponseCrudInfo().getDeletedRowsCount());
+
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+    verify(auditService, times(1))
+        .auditAppUserDeleteHard(requestCaptor.capture(), idCaptor.capture());
+    assertEquals(appUserEntity.getId(), idCaptor.getValue());
+  }
+
+  @Test
+  void testHardDeleteAppUser_FailureWithNoBearerAuth() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s/hard", APP_USER_ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testHardDeleteApp_FailureWithAuthButNoSuperUser() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/app_users/user/%s/hard", APP_USER_ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRestoreAppUser_Success() {
+    AppUserResponse appUserResponse =
+        webTestClient
+            .patch()
+            .uri(String.format("/api/v1/app_users/user/%s/restore", APP_USER_ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AppUserResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(appUserResponse);
+    assertNotNull(appUserResponse.getUsers());
+    assertEquals(1, appUserResponse.getUsers().size());
+
+    ArgumentCaptor<HttpServletRequest> requestCaptor =
+        ArgumentCaptor.forClass(HttpServletRequest.class);
+    ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+    verify(auditService, times(1)).auditAppUserRestore(requestCaptor.capture(), idCaptor.capture());
+    assertEquals(APP_USER_ID, idCaptor.getValue());
+  }
+
+  @Test
+  void testRestoreApp_FailureWithNoBearerAuth() {
+    webTestClient
+        .patch()
+        .uri(String.format("/api/v1/app_users/user/%s/restore", APP_USER_ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRestoreApp_FailureWithAuthButNoSuperUser() {
+    webTestClient
+        .patch()
+        .uri(String.format("/api/v1/app_users/user/%s/restore", APP_USER_ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
     verifyNoInteractions(auditService);
   }
 }
