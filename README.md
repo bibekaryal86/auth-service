@@ -14,9 +14,6 @@
 
 
 * Remaining (thoughts)
-  * Tests
-    * In Repository Tests, add tests for unique constraints
-      * For eg: phone number unique, join tables, etc
   * Update Dockerfile to make it multi stage build
     * Run tests and build jar file
     * Then only copy the freshly created jar file
