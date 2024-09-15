@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -15,20 +14,14 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @EnableConfigurationProperties(JpaProperties.class)
 public class TestDatasourceConfig {
 
-  @Value("${TEST_DB_USERNAME}")
-  private String testDbUsername;
-
-  @Value("${TEST_DB_PASSWORD}")
-  private String testDbPassword;
-
   @Bean
   public DataSource dataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName("org.postgresql.Driver");
+    dataSource.setDriverClassName("org.h2.Driver");
     dataSource.setUrl(
-        "jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres_test");
-    dataSource.setUsername(testDbUsername);
-    dataSource.setPassword(testDbPassword);
+        "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL"); // In-memory H2 with PostgreSQL
+    dataSource.setUsername("sa");
+    dataSource.setPassword("");
     return dataSource;
   }
 
@@ -59,6 +52,7 @@ public class TestDatasourceConfig {
   @Bean
   public Map<String, Object> jpaProperties(final JpaProperties jpaProperties) {
     Map<String, Object> properties = new HashMap<>(jpaProperties.getProperties());
+    properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect"); // Set H2 dialect
     properties.put("hibernate.hbm2ddl.auto", "validate");
     properties.put("hibernate.show_sql", true);
     properties.put("hibernate.open-in-view", false);

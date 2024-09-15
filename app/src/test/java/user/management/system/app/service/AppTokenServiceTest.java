@@ -88,6 +88,12 @@ public class AppTokenServiceTest extends BaseTest {
     assertNotNull(userLoginResponse.getRToken());
     assertNotNull(userLoginResponse.getUser());
     assertEquals(appUserEntity.getId(), userLoginResponse.getUser().getId());
+
+    // cleanup
+    AppTokenEntity appTokenEntity =
+        appTokenRepository.findByAccessToken(userLoginResponse.getAToken()).orElse(null);
+    assertNotNull(appTokenEntity);
+    appTokenRepository.deleteById(appTokenEntity.getId());
   }
 
   @Test
