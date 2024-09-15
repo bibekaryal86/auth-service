@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -149,7 +149,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         ArgumentCaptor.forClass(AppUserEntity.class);
     ArgumentCaptor<Boolean> guestUserCaptor = ArgumentCaptor.forClass(Boolean.class);
 
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserCreate(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -234,7 +234,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserLoginSuccess(
             requestCaptor.capture(), appIdCaptor.capture(), idCaptor.capture());
   }
@@ -261,7 +261,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     assertNull(userLoginResponse.getAToken());
     assertNull(userLoginResponse.getUser());
 
-    verify(auditService, times(1)).auditAppUserLoginFailure(any(), any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserLoginFailure(any(), any(), any(), any());
   }
 
   @Test
@@ -327,7 +327,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     assertNotNull(userLoginResponse.getUser());
     assertEquals(appUserEntity.getId(), userLoginResponse.getUser().getId());
 
-    verify(auditService, times(1)).auditAppUserTokenRefreshSuccess(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserTokenRefreshSuccess(any(), any(), any());
   }
 
   @Test
@@ -359,7 +359,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserTokenRefreshFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -398,7 +398,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserTokenRefreshFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -438,7 +438,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserTokenRefreshFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -482,7 +482,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserTokenRefreshFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -548,7 +548,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isNoContent();
-    verify(auditService, times(1)).auditAppUserLogoutSuccess(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserLogoutSuccess(any(), any(), any());
   }
 
   @Test
@@ -577,7 +577,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserLogoutFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -612,7 +612,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserLogoutFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -649,7 +649,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserLogoutFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -690,7 +690,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     ArgumentCaptor<String> appIdCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserLogoutFailure(
             requestCaptor.capture(),
             appIdCaptor.capture(),
@@ -754,7 +754,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNoContent();
 
-    verify(auditService, times(1)).auditAppUserResetSuccess(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserResetSuccess(any(), any(), any());
 
     // reset
     userLoginRequest = new UserLoginRequest(NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
@@ -842,8 +842,8 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNoContent();
 
-    verify(auditService, times(1)).auditAppUserValidateInit(any(), any(), any());
-    verify(emailService, times(1))
+    verify(auditService, after(100).times(1)).auditAppUserValidateInit(any(), any(), any());
+    verify(emailService, after(100).times(1))
         .sendUserValidationEmail(
             any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
@@ -872,8 +872,9 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     assertNotNull(responseStatusInfo);
     assertTrue(responseStatusInfo.getErrMsg().contains("something happened"));
 
-    verify(auditService, times(1)).auditAppUserValidateFailure(any(), any(), any(), any());
-    verify(emailService, times(1))
+    verify(auditService, after(100).times(1))
+        .auditAppUserValidateFailure(any(), any(), any(), any());
+    verify(emailService, after(100).times(1))
         .sendUserValidationEmail(
             any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
@@ -907,8 +908,8 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNoContent();
 
-    verify(auditService, times(1)).auditAppUserResetInit(any(), any(), any());
-    verify(emailService, times(1))
+    verify(auditService, after(100).times(1)).auditAppUserResetInit(any(), any(), any());
+    verify(emailService, after(100).times(1))
         .sendUserResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 
@@ -936,8 +937,8 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     assertNotNull(responseStatusInfo);
     assertTrue(responseStatusInfo.getErrMsg().contains("something happened"));
 
-    verify(auditService, times(1)).auditAppUserResetFailure(any(), any(), any(), any());
-    verify(emailService, times(1))
+    verify(auditService, after(100).times(1)).auditAppUserResetFailure(any(), any(), any(), any());
+    verify(emailService, after(100).times(1))
         .sendUserResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 

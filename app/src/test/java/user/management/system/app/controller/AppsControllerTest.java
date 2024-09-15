@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -67,7 +67,7 @@ public class AppsControllerTest extends BaseTest {
     assertNotNull(appsResponse);
     assertNotNull(appsResponse.getApps());
     assertEquals(1, appsResponse.getApps().size());
-    verify(auditService, times(1)).auditAppsCreate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppsCreate(any(), any());
 
     // cleanup
     appsRepository.deleteById(appsResponse.getApps().getFirst().getId());
@@ -250,7 +250,7 @@ public class AppsControllerTest extends BaseTest {
     assertNotNull(appsResponse);
     assertNotNull(appsResponse.getApps());
     assertEquals(1, appsResponse.getApps().size());
-    verify(auditService, times(1)).auditAppsUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppsUpdate(any(), any());
   }
 
   @Test
@@ -306,7 +306,7 @@ public class AppsControllerTest extends BaseTest {
     assertNotNull(appsResponse);
     assertNotNull(appsResponse.getResponseCrudInfo());
     assertEquals(1, appsResponse.getResponseCrudInfo().getDeletedRowsCount());
-    verify(auditService, times(1)).auditAppsDeleteSoft(any(), any());
+    verify(auditService, after(100).times(1)).auditAppsDeleteSoft(any(), any());
   }
 
   @Test
@@ -361,7 +361,7 @@ public class AppsControllerTest extends BaseTest {
     assertNotNull(appsResponse);
     assertNotNull(appsResponse.getResponseCrudInfo());
     assertEquals(1, appsResponse.getResponseCrudInfo().getDeletedRowsCount());
-    verify(auditService, times(1)).auditAppsDeleteHard(any(), any());
+    verify(auditService, after(100).times(1)).auditAppsDeleteHard(any(), any());
   }
 
   @Test
@@ -413,7 +413,7 @@ public class AppsControllerTest extends BaseTest {
     assertNotNull(appsResponse);
     assertNotNull(appsResponse.getApps());
     assertEquals(1, appsResponse.getApps().size());
-    verify(auditService, times(1)).auditAppsRestore(any(), any());
+    verify(auditService, after(100).times(1)).auditAppsRestore(any(), any());
   }
 
   @Test

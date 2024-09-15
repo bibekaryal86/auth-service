@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -76,7 +76,7 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse);
     assertNotNull(appPermissionResponse.getPermissions());
     assertEquals(1, appPermissionResponse.getPermissions().size());
-    verify(auditService, times(1)).auditAppPermissionCreate(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppPermissionCreate(any(), any(), any());
 
     // cleanup
     appPermissionRepository.deleteById(appPermissionResponse.getPermissions().getFirst().getId());
@@ -107,7 +107,7 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse);
     assertNotNull(appPermissionResponse.getPermissions());
     assertEquals(1, appPermissionResponse.getPermissions().size());
-    verify(auditService, times(1)).auditAppPermissionCreate(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppPermissionCreate(any(), any(), any());
 
     // cleanup
     appPermissionRepository.deleteById(appPermissionResponse.getPermissions().getFirst().getId());
@@ -406,7 +406,7 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse);
     assertNotNull(appPermissionResponse.getPermissions());
     assertEquals(1, appPermissionResponse.getPermissions().size());
-    verify(auditService, times(1)).auditAppPermissionUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppPermissionUpdate(any(), any());
   }
 
   @Test
@@ -434,7 +434,7 @@ public class AppPermissionControllerTest extends BaseTest {
     assertNotNull(appPermissionResponse);
     assertNotNull(appPermissionResponse.getPermissions());
     assertEquals(1, appPermissionResponse.getPermissions().size());
-    verify(auditService, times(1)).auditAppPermissionUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppPermissionUpdate(any(), any());
   }
 
   @Test
@@ -493,7 +493,7 @@ public class AppPermissionControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }
@@ -523,7 +523,7 @@ public class AppPermissionControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppPermissionDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }
@@ -582,7 +582,7 @@ public class AppPermissionControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppPermissionDeleteHard(requestCaptor.capture(), idCaptor.capture());
     assertEquals(appPermissionEntity.getId(), idCaptor.getValue());
   }
@@ -640,7 +640,7 @@ public class AppPermissionControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppPermissionRestore(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_PERMISSION_ID, idCaptor.getValue());
   }

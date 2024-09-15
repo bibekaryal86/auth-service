@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -95,7 +95,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
     assertEquals(
         appPermissionId,
         appRolePermissionResponse.getRolesPermissions().getFirst().getPermission().getId());
-    verify(auditService, times(1)).auditAppRoleAssignPermission(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleAssignPermission(any(), any());
 
     // cleanup
     appRolePermissionRepository.deleteById(new AppRolePermissionId(appRoleId, appPermissionId));
@@ -134,7 +134,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
     assertEquals(
         appPermissionId,
         appRolePermissionResponse.getRolesPermissions().getFirst().getPermission().getId());
-    verify(auditService, times(1)).auditAppRoleAssignPermission(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleAssignPermission(any(), any());
 
     // cleanup
     appRolePermissionRepository.deleteById(new AppRolePermissionId(appRoleId, appPermissionId));
@@ -530,7 +530,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> roleIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Integer> permissionIdCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppRoleUnassignPermission(
             requestCaptor.capture(), roleIdCaptor.capture(), permissionIdCaptor.capture());
     assertEquals(appRoleEntity.getId(), roleIdCaptor.getValue());
@@ -579,7 +579,7 @@ public class AppRolePermissionControllerTest extends BaseTest {
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> roleIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Integer> permissionIdCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppRoleUnassignPermission(
             requestCaptor.capture(), roleIdCaptor.capture(), permissionIdCaptor.capture());
     assertEquals(appRoleEntity.getId(), roleIdCaptor.getValue());

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -82,7 +82,7 @@ public class AppsAppUserControllerTest extends BaseTest {
     assertEquals(1, appsAppUserResponse.getAppsUsers().size());
     assertEquals(APP_ID, appsAppUserResponse.getAppsUsers().getFirst().getApp().getId());
     assertEquals(appUserId, appsAppUserResponse.getAppsUsers().getFirst().getUser().getId());
-    verify(auditService, times(1)).auditAppUserAssignApp(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserAssignApp(any(), any());
 
     // cleanup
     appsAppUserRepository.deleteById(new AppsAppUserId(APP_ID, appUserId));
@@ -382,7 +382,7 @@ public class AppsAppUserControllerTest extends BaseTest {
     assertNotNull(appsAppUserResponse.getResponseCrudInfo());
     assertEquals(1, appsAppUserResponse.getResponseCrudInfo().getDeletedRowsCount());
 
-    verify(auditService, times(1)).auditAppUserUnassignApp(any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserUnassignApp(any(), any(), any());
 
     // cleanup
     appsAppUserRepository.deleteById(appsAppUserEntity.getId());

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -330,7 +330,7 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
-    verify(auditService, times(1)).auditAppUserUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserUpdate(any(), any());
   }
 
   @Test
@@ -363,7 +363,7 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
-    verify(auditService, times(1)).auditAppUserUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserUpdate(any(), any());
   }
 
   @Test
@@ -457,8 +457,9 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
-    verify(auditService, times(1)).auditAppUserUpdateEmail(any(), any(), any());
-    verify(applicationEventPublisher, times(1)).publishEvent(any(AppUserUpdatedEvent.class));
+    verify(auditService, after(100).times(1)).auditAppUserUpdateEmail(any(), any(), any());
+    verify(applicationEventPublisher, after(100).times(1))
+        .publishEvent(any(AppUserUpdatedEvent.class));
 
     // reset
     AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
@@ -495,8 +496,9 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
-    verify(auditService, times(1)).auditAppUserUpdateEmail(any(), any(), any());
-    verify(applicationEventPublisher, times(1)).publishEvent(any(AppUserUpdatedEvent.class));
+    verify(auditService, after(100).times(1)).auditAppUserUpdateEmail(any(), any(), any());
+    verify(applicationEventPublisher, after(100).times(1))
+        .publishEvent(any(AppUserUpdatedEvent.class));
 
     // reset
     AppUserEntity appUserEntity = appUserRepository.findById(APP_USER_ID).orElse(null);
@@ -591,7 +593,7 @@ public class AppUserControllerTest extends BaseTest {
     assertNotNull(appUserEntity.getPassword());
     assertTrue(passwordUtils.verifyPassword("password-one-new", appUserEntity.getPassword()));
 
-    verify(auditService, times(1)).auditAppUserUpdatePassword(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserUpdatePassword(any(), any());
   }
 
   @Test
@@ -623,7 +625,7 @@ public class AppUserControllerTest extends BaseTest {
     assertNotNull(appUserEntity.getPassword());
     assertTrue(passwordUtils.verifyPassword("password-new-one", appUserEntity.getPassword()));
 
-    verify(auditService, times(1)).auditAppUserUpdatePassword(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserUpdatePassword(any(), any());
   }
 
   @Test
@@ -701,7 +703,7 @@ public class AppUserControllerTest extends BaseTest {
     // make sure password is not returned with DTO
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
 
-    verify(auditService, times(1)).auditAppUserDeleteAddress(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserDeleteAddress(any(), any());
   }
 
   @Test
@@ -726,7 +728,7 @@ public class AppUserControllerTest extends BaseTest {
     assertNull(appUserResponse.getUsers().getFirst().getPassword());
     assertTrue(CollectionUtils.isEmpty(appUserResponse.getUsers().getFirst().getAddresses()));
 
-    verify(auditService, times(1)).auditAppUserDeleteAddress(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserDeleteAddress(any(), any());
   }
 
   @Test
@@ -777,7 +779,7 @@ public class AppUserControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_USER_ID, idCaptor.getValue());
   }
@@ -833,7 +835,7 @@ public class AppUserControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserDeleteHard(requestCaptor.capture(), idCaptor.capture());
     assertEquals(appUserEntity.getId(), idCaptor.getValue());
   }
@@ -882,7 +884,8 @@ public class AppUserControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppUserRestore(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, after(100).times(1))
+        .auditAppUserRestore(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_USER_ID, idCaptor.getValue());
   }
 

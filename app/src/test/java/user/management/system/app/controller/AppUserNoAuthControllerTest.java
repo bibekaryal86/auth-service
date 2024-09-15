@@ -1,8 +1,8 @@
 package user.management.system.app.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,8 +53,8 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_validated=true");
 
-    verify(authenvServiceConnector, times(1)).getRedirectUrls();
-    verify(auditService, times(1)).auditAppUserValidateExit(any(), any(), any());
+    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(auditService, after(100).times(1)).auditAppUserValidateExit(any(), any(), any());
   }
 
   @Test
@@ -70,8 +70,9 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_validated=false");
 
-    verify(authenvServiceConnector, times(1)).getRedirectUrls();
-    verify(auditService, times(1)).auditAppUserValidateFailure(any(), any(), any(), any());
+    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(auditService, after(100).times(1))
+        .auditAppUserValidateFailure(any(), any(), any(), any());
   }
 
   @Test
@@ -87,8 +88,8 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_reset=true&to_reset=" + APP_USER_EMAIL);
 
-    verify(authenvServiceConnector, times(1)).getRedirectUrls();
-    verify(auditService, times(1)).auditAppUserResetExit(any(), any(), any());
+    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(auditService, after(100).times(1)).auditAppUserResetExit(any(), any(), any());
   }
 
   @Test
@@ -104,7 +105,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_reset=false");
 
-    verify(authenvServiceConnector, times(1)).getRedirectUrls();
-    verify(auditService, times(1)).auditAppUserResetFailure(any(), any(), any(), any());
+    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(auditService, after(100).times(1)).auditAppUserResetFailure(any(), any(), any(), any());
   }
 }

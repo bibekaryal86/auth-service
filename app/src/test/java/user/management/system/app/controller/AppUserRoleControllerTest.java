@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -90,7 +90,7 @@ public class AppUserRoleControllerTest extends BaseTest {
     assertEquals(1, appUserRoleResponse.getUsersRoles().size());
     assertEquals(appUserId, appUserRoleResponse.getUsersRoles().getFirst().getUser().getId());
     assertEquals(appRoleId, appUserRoleResponse.getUsersRoles().getFirst().getRole().getId());
-    verify(auditService, times(1)).auditAppUserAssignRole(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserAssignRole(any(), any());
 
     // cleanup
     appUserRoleRepository.deleteById(new AppUserRoleId(appUserId, appRoleId));
@@ -125,7 +125,7 @@ public class AppUserRoleControllerTest extends BaseTest {
     assertEquals(1, appUserRoleResponse.getUsersRoles().size());
     assertEquals(appUserId, appUserRoleResponse.getUsersRoles().getFirst().getUser().getId());
     assertEquals(appRoleId, appUserRoleResponse.getUsersRoles().getFirst().getRole().getId());
-    verify(auditService, times(1)).auditAppUserAssignRole(any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserAssignRole(any(), any());
 
     // cleanup
     appUserRoleRepository.deleteById(new AppUserRoleId(appUserId, appRoleId));
@@ -489,7 +489,7 @@ public class AppUserRoleControllerTest extends BaseTest {
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Integer> roleIdCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserUnassignRole(
             requestCaptor.capture(), userIdCaptor.capture(), roleIdCaptor.capture());
     assertEquals(appUserEntity.getId(), userIdCaptor.getValue());
@@ -536,7 +536,7 @@ public class AppUserRoleControllerTest extends BaseTest {
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> userIdCaptor = ArgumentCaptor.forClass(Integer.class);
     ArgumentCaptor<Integer> roleIdCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppUserUnassignRole(
             requestCaptor.capture(), userIdCaptor.capture(), roleIdCaptor.capture());
     assertEquals(appUserEntity.getId(), userIdCaptor.getValue());

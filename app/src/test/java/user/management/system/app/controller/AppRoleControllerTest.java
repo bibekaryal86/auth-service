@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -74,7 +74,7 @@ public class AppRoleControllerTest extends BaseTest {
     assertNotNull(appRoleResponse);
     assertNotNull(appRoleResponse.getRoles());
     assertEquals(1, appRoleResponse.getRoles().size());
-    verify(auditService, times(1)).auditAppRoleCreate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleCreate(any(), any());
 
     // cleanup
     appRoleRepository.deleteById(appRoleResponse.getRoles().getFirst().getId());
@@ -104,7 +104,7 @@ public class AppRoleControllerTest extends BaseTest {
     assertNotNull(appRoleResponse);
     assertNotNull(appRoleResponse.getRoles());
     assertEquals(1, appRoleResponse.getRoles().size());
-    verify(auditService, times(1)).auditAppRoleCreate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleCreate(any(), any());
 
     // cleanup
     appRoleRepository.deleteById(appRoleResponse.getRoles().getFirst().getId());
@@ -320,7 +320,7 @@ public class AppRoleControllerTest extends BaseTest {
     assertNotNull(appRoleResponse);
     assertNotNull(appRoleResponse.getRoles());
     assertEquals(1, appRoleResponse.getRoles().size());
-    verify(auditService, times(1)).auditAppRoleUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleUpdate(any(), any());
   }
 
   @Test
@@ -347,7 +347,7 @@ public class AppRoleControllerTest extends BaseTest {
     assertNotNull(appRoleResponse);
     assertNotNull(appRoleResponse.getRoles());
     assertEquals(1, appRoleResponse.getRoles().size());
-    verify(auditService, times(1)).auditAppRoleUpdate(any(), any());
+    verify(auditService, after(100).times(1)).auditAppRoleUpdate(any(), any());
   }
 
   @Test
@@ -404,7 +404,7 @@ public class AppRoleControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppRoleDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_ROLE_ID, idCaptor.getValue());
   }
@@ -434,7 +434,7 @@ public class AppRoleControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppRoleDeleteSoft(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_ROLE_ID, idCaptor.getValue());
   }
@@ -490,7 +490,7 @@ public class AppRoleControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1))
+    verify(auditService, after(100).times(1))
         .auditAppRoleDeleteHard(requestCaptor.capture(), idCaptor.capture());
     assertEquals(appRoleEntity.getId(), idCaptor.getValue());
   }
@@ -548,7 +548,8 @@ public class AppRoleControllerTest extends BaseTest {
     ArgumentCaptor<HttpServletRequest> requestCaptor =
         ArgumentCaptor.forClass(HttpServletRequest.class);
     ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-    verify(auditService, times(1)).auditAppRoleRestore(requestCaptor.capture(), idCaptor.capture());
+    verify(auditService, after(100).times(1))
+        .auditAppRoleRestore(requestCaptor.capture(), idCaptor.capture());
     assertEquals(APP_ROLE_ID, idCaptor.getValue());
   }
 
