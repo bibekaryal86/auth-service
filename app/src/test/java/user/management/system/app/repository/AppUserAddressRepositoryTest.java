@@ -18,7 +18,7 @@ public class AppUserAddressRepositoryTest extends BaseTest {
 
   @Test
   void testUniqueConstraints() {
-      AppUserEntity appUserEntity = TestData.getAppUserEntities().getFirst();
+    AppUserEntity appUserEntity = TestData.getAppUserEntities().getFirst();
     AppUserAddressEntity appUserAddressEntity = appUserEntity.getAddresses().getFirst();
     appUserAddressEntity.setId(null);
     appUserAddressEntity.setAppUser(appUserEntity);
