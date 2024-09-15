@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import user.management.system.app.exception.CheckPermissionException;
 import user.management.system.app.exception.ElementMissingException;
 import user.management.system.app.exception.ElementNotActiveException;
 import user.management.system.app.exception.ElementNotFoundException;
@@ -52,7 +53,8 @@ public class CommonUtils {
     } else if (exception instanceof UserForbiddenException
         || exception instanceof UserNotValidatedException
         || exception instanceof ElementNotActiveException
-        || exception instanceof UserNotActiveException) {
+        || exception instanceof UserNotActiveException
+        || exception instanceof CheckPermissionException) {
       return FORBIDDEN;
     } else if (exception instanceof UserNotAuthorizedException
         || exception instanceof JwtInvalidException) {

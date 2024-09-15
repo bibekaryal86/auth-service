@@ -41,7 +41,7 @@ public class PermissionCheck {
     try {
       final AuthToken authToken = getAuthentication();
       final boolean isSuperUser = checkSuperUser(authToken);
-      final boolean isPermitted = checkPermission(email, id, authToken);
+      final boolean isPermitted = checkUserIdEmail(email, id, authToken);
 
       if (!isSuperUser && !isPermitted) {
         throw new CheckPermissionException(
@@ -110,7 +110,7 @@ public class PermissionCheck {
         .anyMatch(authTokenRole -> authTokenRole.getName().equals(APP_ROLE_NAME_SUPERUSER));
   }
 
-  private boolean checkPermission(final String email, final int id, final AuthToken authToken) {
+  private boolean checkUserIdEmail(final String email, final int id, final AuthToken authToken) {
     return Objects.equals(email, authToken.getUser().getEmail())
         || Objects.equals(id, authToken.getUser().getId());
   }

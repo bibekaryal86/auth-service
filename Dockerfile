@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 RUN adduser --system --group springdocker
 USER springdocker:springdocker
 ARG JAR_FILE=app/build/libs/user-mgmt-sys.jar

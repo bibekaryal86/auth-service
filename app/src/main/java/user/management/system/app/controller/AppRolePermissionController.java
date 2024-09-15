@@ -80,7 +80,7 @@ public class AppRolePermissionController {
 
   @CheckPermission({"ROLE_READ", "PERMISSION_READ"})
   @GetMapping("/app/{appId}/roles/{roleIds}")
-  public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByRoleIds(
+  public ResponseEntity<AppRolePermissionResponse> readAppRolePermissionsByAppIdAndRoleIds(
       @PathVariable final String appId, @PathVariable final List<Integer> roleIds) {
     try {
       final List<AppRolePermissionEntity> appRolePermissionEntities =

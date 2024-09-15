@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Role One",
+    "description": "Role Description One",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  },
+  {
+    "id": 2,
+    "name": "Role Two",
+    "description": "Role Description Two",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  },
+  {
+    "id": 3,
+    "name": "Role Three",
+    "description": "Role Description Three",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768"
+  }
+]

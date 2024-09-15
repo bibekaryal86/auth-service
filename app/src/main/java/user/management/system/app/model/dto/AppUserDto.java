@@ -2,8 +2,11 @@ package user.management.system.app.model.dto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
+import org.springframework.util.CollectionUtils;
 import user.management.system.app.model.token.AuthToken;
 import user.management.system.app.model.token.AuthTokenPermission;
 import user.management.system.app.model.token.AuthTokenRole;
@@ -175,28 +178,34 @@ public class AppUserDto extends AppUserRequest {
             .build();
 
     List<AuthTokenRole> roles =
-        this.getRoles().stream()
-            .map(
-                appRoleDto ->
-                    AuthTokenRole.builder()
-                        .id(appRoleDto.getId())
-                        .name(appRoleDto.getName())
-                        .build())
-            .toList();
+        CollectionUtils.isEmpty(this.getRoles())
+            ? Collections.emptyList()
+            : this.getRoles().stream()
+                .map(
+                    appRoleDto ->
+                        AuthTokenRole.builder()
+                            .id(appRoleDto.getId())
+                            .name(appRoleDto.getName())
+                            .build())
+                .toList();
 
     List<AuthTokenPermission> permissions =
-        this.getRoles().stream()
-            .flatMap(
-                appRoleDto ->
-                    appRoleDto.getPermissions().stream()
-                        .map(
-                            appPermissionDto ->
-                                AuthTokenPermission.builder()
-                                    .id(appPermissionDto.getId())
-                                    .name(appPermissionDto.getName())
-                                    .roleId(appRoleDto.getId())
-                                    .build()))
-            .toList();
+        CollectionUtils.isEmpty(this.getRoles())
+            ? Collections.emptyList()
+            : this.getRoles().stream()
+                .flatMap(
+                    appRoleDto ->
+                        CollectionUtils.isEmpty(appRoleDto.getPermissions())
+                            ? Stream.empty()
+                            : appRoleDto.getPermissions().stream()
+                                .map(
+                                    appPermissionDto ->
+                                        AuthTokenPermission.builder()
+                                            .id(appPermissionDto.getId())
+                                            .name(appPermissionDto.getName())
+                                            .roleId(appRoleDto.getId())
+                                            .build()))
+                .toList();
     return AuthToken.builder().user(user).roles(roles).permissions(permissions).build();
   }
 }

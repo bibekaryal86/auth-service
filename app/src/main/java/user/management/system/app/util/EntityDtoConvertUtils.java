@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.AppRoleDto;
@@ -337,7 +338,7 @@ public class EntityDtoConvertUtils {
             .map(appUserRoleEntity -> appUserRoleEntity.getAppRole().getId())
             .toList();
     final List<AppRolePermissionEntity> appRolePermissionEntities =
-        appRolePermissionService.readAppRolePermissions("", appRoleIds);
+        appRolePermissionService.readAppRolePermissions(null, appRoleIds);
 
     final Map<Integer, List<AppUserRoleEntity>> userRolesMap =
         appUserRoleEntities.stream()
@@ -377,7 +378,7 @@ public class EntityDtoConvertUtils {
         .toList();
   }
 
-  public AppUserAddressDto convertEntityToDtoAppUserAddress(
+  private AppUserAddressDto convertEntityToDtoAppUserAddress(
       final AppUserAddressEntity appUserAddressEntity) {
     if (appUserAddressEntity == null) {
       return null;
@@ -387,7 +388,7 @@ public class EntityDtoConvertUtils {
     return appUserAddressDto;
   }
 
-  public List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
+  private List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
       final List<AppUserAddressEntity> appUserAddressEntities) {
     if (CollectionUtils.isEmpty(appUserAddressEntities)) {
       return Collections.emptyList();
@@ -444,7 +445,8 @@ public class EntityDtoConvertUtils {
     AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole(), false);
     AppPermissionDto appPermissionDto =
         convertEntityToDtoAppPermission(appRolePermissionEntity.getAppPermission());
-    return new AppRolePermissionDto(appRoleDto, appPermissionDto);
+    return new AppRolePermissionDto(
+        appRoleDto, appPermissionDto, appRolePermissionEntity.getAssignedDate());
   }
 
   public List<AppRolePermissionDto> convertEntitiesToDtosAppRolePermission(
@@ -502,7 +504,7 @@ public class EntityDtoConvertUtils {
     }
     final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser(), false);
     final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), true);
-    return new AppUserRoleDto(appUserDto, appRoleDto);
+    return new AppUserRoleDto(appUserDto, appRoleDto, appUserRoleEntity.getAssignedDate());
   }
 
   public List<AppUserRoleDto> convertEntitiesToDtosAppUserRole(
@@ -558,7 +560,7 @@ public class EntityDtoConvertUtils {
     }
     final AppsDto appsDto = convertEntityToDtoApps(appsAppUserEntity.getApp());
     final AppUserDto appUserDto = convertEntityToDtoAppUser(appsAppUserEntity.getAppUser(), false);
-    return new AppsAppUserDto(appsDto, appUserDto);
+    return new AppsAppUserDto(appsDto, appUserDto, appsAppUserEntity.getAssignedDate());
   }
 
   public List<AppsAppUserDto> convertEntitiesToDtosAppsAppUser(
@@ -587,6 +589,10 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseValidateUser(
       final String redirectUrl, final boolean isValidated) {
+    if (!StringUtils.hasText(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(
         URI.create(redirectUrl + (isValidated ? "?is_validated=true" : "?is_validated=false")));
@@ -595,6 +601,10 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<Void> getResponseResetUser(
       final String redirectUrl, final boolean isReset, final String email) {
+    if (!StringUtils.hasText(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
     final String url =
         redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
     HttpHeaders headers = new HttpHeaders();

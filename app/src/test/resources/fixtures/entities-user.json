@@ -1,0 +1,76 @@
+[
+  {
+    "id": 1,
+    "firstName": "First One",
+    "lastName": "Last One",
+    "email": "firstlast@one.com",
+    "phone": null,
+    "password": "password-one",
+    "status": "ACTIVE",
+    "isValidated": true,
+    "addresses": [
+      {
+        "id": 1,
+        "addressType": "MAILING",
+        "appUserId": 1,
+        "street": "Street One One",
+        "city": "City One One",
+        "state": "ON",
+        "country": "US",
+        "postalCode": "12569"
+      },
+      {
+        "id": 2,
+        "addressType": "SHIPPING",
+        "appUserId": 1,
+        "street": "Street One Two",
+        "city": "City One Two",
+        "state": "ON",
+        "country": "US",
+        "postalCode": "12569"
+      }
+    ],
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  },
+  {
+    "id": 2,
+    "firstName": "First Two",
+    "lastName": "Last Two",
+    "email": "firstlast@two.com",
+    "phone": "9876543210",
+    "password": "password-two",
+    "status": "ACTIVE",
+    "isValidated": false,
+    "addresses": [
+      {
+        "id": 3,
+        "addressType": "MAILING",
+        "appUserId": 1,
+        "street": "Street Two One",
+        "city": "City Two One",
+        "state": "TW",
+        "country": "US",
+        "postalCode": "96521"
+      }
+    ],
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768"
+  },
+  {
+    "id": 3,
+    "firstName": "First Three",
+    "lastName": "Last Three",
+    "email": "firstlast@three.com",
+    "phone": null,
+    "password": "password-three",
+    "status": "ACTIVE",
+    "isValidated": true,
+    "addresses": null,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  }
+]

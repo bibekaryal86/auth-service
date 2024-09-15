@@ -15,7 +15,9 @@ import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
+import user.management.system.app.model.entity.AppUserRoleId;
 import user.management.system.app.model.entity.AppsAppUserEntity;
+import user.management.system.app.model.entity.AppsAppUserId;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.entity.AuditAppPermissionEntity;
 import user.management.system.app.model.entity.AuditAppRoleEntity;
@@ -516,6 +518,7 @@ public class AuditService {
     AppUserRoleEntity appUserRoleEntity = new AppUserRoleEntity();
     appUserRoleEntity.setAppUser(appUserEntity);
     appUserRoleEntity.setAppRole(appRoleEntity);
+    appUserRoleEntity.setId(new AppUserRoleId(appUserEntity.getId(), appRoleEntity.getId()));
     auditAppUserAssignRole(request, appUserRoleEntity);
   }
 
@@ -544,6 +547,7 @@ public class AuditService {
     AppsAppUserEntity appsAppUserEntity = new AppsAppUserEntity();
     appsAppUserEntity.setAppUser(appUserEntity);
     appsAppUserEntity.setApp(appsEntity);
+    appsAppUserEntity.setId(new AppsAppUserId(appId, appUserEntity.getId()));
 
     auditAppUserAssignApp(request, appsAppUserEntity);
   }

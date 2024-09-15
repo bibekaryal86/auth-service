@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +58,7 @@ public class AppUserController {
     }
   }
 
-  @GetMapping("/{appId}")
+  @GetMapping("/app/{appId}")
   public ResponseEntity<AppUserResponse> readAppUsersByAppId(@PathVariable final String appId) {
     try {
       final List<AppsAppUserEntity> appsAppUserEntities =
@@ -105,7 +106,7 @@ public class AppUserController {
     try {
       permissionCheck.canUserAccessAppUser("", id);
       AppUserEntity appUserEntity = appUserService.updateAppUser(id, appUserRequest);
-      if (!appUserRequest.getAddresses().isEmpty()) {
+      if (!CollectionUtils.isEmpty(appUserRequest.getAddresses())) {
         appUserEntity = appUserService.readAppUser(appUserEntity.getId());
       }
       final AppUserEntity finalAppUserEntity = appUserEntity;
@@ -117,7 +118,7 @@ public class AppUserController {
     }
   }
 
-  @PutMapping("{appId}/user/{id}/email")
+  @PutMapping("/app/{appId}/user/{id}/email")
   public ResponseEntity<AppUserResponse> updateAppUserEmail(
       @PathVariable final String appId,
       @PathVariable final int id,

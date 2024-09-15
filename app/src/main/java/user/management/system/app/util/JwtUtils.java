@@ -58,7 +58,7 @@ public class JwtUtils {
 
       return emailToken;
     } catch (ExpiredJwtException e) {
-      throw new JwtInvalidException("Email Token has expired");
+      throw new JwtInvalidException("Expired Email Credentials");
     } catch (JwtException e) {
       throw new JwtInvalidException("Invalid Email Credentials");
     }
@@ -108,7 +108,7 @@ public class JwtUtils {
 
       return Map.of(subject, authToken);
     } catch (ExpiredJwtException e) {
-      throw new JwtInvalidException("Auth Token has expired");
+      throw new JwtInvalidException("Expired Auth Credentials");
     } catch (JwtException e) {
       throw new JwtInvalidException("Invalid Auth Credentials");
     }

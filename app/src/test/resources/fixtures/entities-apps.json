@@ -1,0 +1,26 @@
+[
+  {
+    "id": "app-1",
+    "name": "App One",
+    "description": "App Description One",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  },
+  {
+    "id": "app-2",
+    "name": "App Two",
+    "description": "App Description Two",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768"
+  },
+  {
+    "id": "app-3",
+    "name": "App Three",
+    "description": "App Description Three",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  }
+]

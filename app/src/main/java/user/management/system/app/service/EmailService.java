@@ -1,12 +1,9 @@
 package user.management.system.app.service;
 
 import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
-import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PRIVATE_KEY;
-import static user.management.system.app.util.ConstantUtils.ENV_MAILJET_PUBLIC_KEY;
 import static user.management.system.app.util.JwtUtils.encodeEmailAddress;
 import static user.management.system.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
-import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
@@ -22,7 +19,7 @@ import org.springframework.util.StringUtils;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.model.events.AppUserCreatedEvent;
-import user.management.system.app.model.events.AppUserEmailUpdatedEvent;
+import user.management.system.app.model.events.AppUserUpdatedEvent;
 import user.management.system.app.util.FileReaderUtils;
 
 @Slf4j
@@ -31,14 +28,7 @@ import user.management.system.app.util.FileReaderUtils;
 public class EmailService {
 
   private final FileReaderUtils fileReaderUtils;
-
-  private MailjetClient mailjetClient() {
-    return new MailjetClient(
-        ClientOptions.builder()
-            .apiKey(getSystemEnvProperty(ENV_MAILJET_PUBLIC_KEY))
-            .apiSecretKey(getSystemEnvProperty(ENV_MAILJET_PRIVATE_KEY))
-            .build());
-  }
+  private final MailjetClient mailjetClient;
 
   public void sendEmail(
       final String appName,
@@ -89,7 +79,7 @@ public class EmailService {
           new MailjetRequest(Emailv31.resource)
               .property(Emailv31.MESSAGES, new JSONArray().put(message));
 
-      final MailjetResponse response = mailjetClient().post(request);
+      final MailjetResponse response = mailjetClient.post(request);
 
       if (response.getStatus() == 200) {
         log.info("Send Email Response Success...");
@@ -111,10 +101,10 @@ public class EmailService {
   }
 
   @EventListener
-  public void handleUserEmailUpdated(final AppUserEmailUpdatedEvent appUserEmailUpdatedEvent) {
-    final AppsEntity appsEntity = appUserEmailUpdatedEvent.getAppsEntity();
-    final AppUserEntity appUserEntity = appUserEmailUpdatedEvent.getAppUserEntity();
-    final String baseUrl = appUserEmailUpdatedEvent.getBaseUrl();
+  public void handleUserEmailUpdated(final AppUserUpdatedEvent appUserUpdatedEvent) {
+    final AppsEntity appsEntity = appUserUpdatedEvent.getAppsEntity();
+    final AppUserEntity appUserEntity = appUserUpdatedEvent.getAppUserEntity();
+    final String baseUrl = appUserUpdatedEvent.getBaseUrl();
     log.info("Handle User Email Updated: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
     sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
   }
