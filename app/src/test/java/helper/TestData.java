@@ -18,6 +18,7 @@ import user.management.system.app.model.client.EnvDetails;
 import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppRoleDto;
 import user.management.system.app.model.dto.AppUserDto;
+import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -254,6 +255,19 @@ public class TestData {
     appUserDto.setRoles(List.of(appRoleDto));
 
     return appUserDto;
+  }
+
+  public static AppUserRequest getAppUserRequest(String password) {
+    AppUserEntity appUserEntity = getNewAppUserEntity();
+    return new AppUserRequest(
+        appUserEntity.getFirstName(),
+        appUserEntity.getLastName(),
+        appUserEntity.getEmail(),
+        appUserEntity.getPhone(),
+        password == null ? appUserEntity.getPassword() : password,
+        appUserEntity.getStatus(),
+        true,
+        null);
   }
 
   public static AppUserDto getAppUserDtoWithSuperUserRole(final AppUserDto appUserDtoInput) {

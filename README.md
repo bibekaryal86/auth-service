@@ -19,7 +19,7 @@
       * Check failures
         * Invalid input (eg: UserLoginRequest without password)
     * In Repository Tests, add tests for unique constraints
-    * Move setup data in tests for TestData (for create/delete tests)
+      * For eg: phone number unique, join tables, etc
   * Update Dockerfile to make it multi stage build
     * Run tests and build jar file
     * Then only copy the freshly created jar file
