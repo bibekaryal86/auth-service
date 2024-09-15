@@ -15,9 +15,6 @@
 
 * Remaining (thoughts)
   * Tests
-    * Controller Tests
-      * Check failures
-        * Invalid input (eg: UserLoginRequest without password)
     * In Repository Tests, add tests for unique constraints
       * For eg: phone number unique, join tables, etc
   * Update Dockerfile to make it multi stage build

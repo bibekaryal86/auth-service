@@ -2,6 +2,7 @@ package user.management.system.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppsAppUserRequest;
 import user.management.system.app.model.dto.AppsAppUserResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserEntity;
 import user.management.system.app.model.entity.AppsAppUserId;
@@ -116,6 +118,34 @@ public class AppsAppUserControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testCreateAppsAppUser_Failure_BadRequest() {
+    appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+
+    AppsAppUserRequest appsAppUserRequest = new AppsAppUserRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri("/api/v1/apps_app_user/apps_user")
+            .bodyValue(appsAppUserRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("AppID is required")
+            && responseStatusInfo.getErrMsg().contains("UserID is required"));
     verifyNoInteractions(auditService);
   }
 

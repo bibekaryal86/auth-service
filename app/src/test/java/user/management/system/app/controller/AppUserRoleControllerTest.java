@@ -2,6 +2,7 @@ package user.management.system.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -22,6 +23,7 @@ import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRoleRequest;
 import user.management.system.app.model.dto.AppUserRoleResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppUserRoleEntity;
@@ -153,6 +155,30 @@ public class AppUserRoleControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testCreateAppUserRole_Failure_BadRequest() {
+    AppUserRoleRequest appUserRoleRequest = new AppUserRoleRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri("/api/v1/app_users_roles/user_role")
+            .bodyValue(appUserRoleRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("UserID is required")
+            && responseStatusInfo.getErrMsg().contains("RoleID is required"));
     verifyNoInteractions(auditService);
   }
 

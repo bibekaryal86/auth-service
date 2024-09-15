@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppTokenRequest {
-  @Positive(message = "REQUIRED!")
+  @Positive(message = "REQUIRED")
   private int appUserId;
 
   @ToString.Exclude private String accessToken;

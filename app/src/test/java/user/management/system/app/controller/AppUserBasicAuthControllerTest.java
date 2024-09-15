@@ -181,6 +181,32 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
   }
 
   @Test
+  void testCreateAppUser_Failure_BadRequest() {
+    AppUserRequest appUserRequest = new AppUserRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/basic_app_users/user/%s/create", appsEntity.getId()))
+            .bodyValue(appUserRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("First Name is required")
+            && responseStatusInfo.getErrMsg().contains("Last Name is required")
+            && responseStatusInfo.getErrMsg().contains("Email is required")
+            && responseStatusInfo.getErrMsg().contains("Status is required"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testLoginAppUser_Success() {
     UserLoginRequest userLoginRequest =
         new UserLoginRequest(NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
@@ -249,6 +275,28 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testLoginAppUser_Failure_BadRequest() {
+    UserLoginRequest userLoginRequest = new UserLoginRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/basic_app_users/user/%s/login", appsEntity.getId()))
+            .bodyValue(userLoginRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
     verifyNoInteractions(auditService);
   }
 
@@ -464,6 +512,28 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
   }
 
   @Test
+  void testRefreshToken_Failure_BadRequest() {
+    AppTokenRequest appTokenRequest = new AppTokenRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/basic_app_users/user/%s/refresh", appsEntity.getId()))
+            .bodyValue(appTokenRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testLogout_Success() {
     AppTokenRequest appTokenRequest =
         new AppTokenRequest(
@@ -650,6 +720,28 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
   }
 
   @Test
+  void testLogout_Failure_BadRequest() {
+    AppTokenRequest appTokenRequest = new AppTokenRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/basic_app_users/user/%s/refresh", appsEntity.getId()))
+            .bodyValue(appTokenRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testResetAppUser_Success() {
     UserLoginRequest userLoginRequest =
         new UserLoginRequest(NEW_USER_NEW_EMAIL, "new-user-newer-password");
@@ -695,7 +787,6 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseStatusInfo);
-    System.out.println(responseStatusInfo.getErrMsg());
     assertTrue(responseStatusInfo.getErrMsg().contains("User Not Found"));
 
     verify(auditService).auditAppUserResetFailure(any(), any(), any(), any());
@@ -712,6 +803,28 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testResetAppUser_Failure_BadRequest() {
+    UserLoginRequest userLoginRequest = new UserLoginRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/basic_app_users/user/%s/reset", appsEntity.getId()))
+            .bodyValue(userLoginRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
     verifyNoInteractions(auditService);
   }
 
@@ -757,7 +870,6 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseStatusInfo);
-    System.out.println(responseStatusInfo.getErrMsg());
     assertTrue(responseStatusInfo.getErrMsg().contains("something happened"));
 
     verify(auditService, times(1)).auditAppUserValidateFailure(any(), any(), any(), any());
@@ -822,7 +934,6 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseStatusInfo);
-    System.out.println(responseStatusInfo.getErrMsg());
     assertTrue(responseStatusInfo.getErrMsg().contains("something happened"));
 
     verify(auditService, times(1)).auditAppUserResetFailure(any(), any(), any(), any());

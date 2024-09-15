@@ -2,6 +2,7 @@ package user.management.system.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -21,6 +22,7 @@ import user.management.system.app.model.dto.AppPermissionDto;
 import user.management.system.app.model.dto.AppPermissionRequest;
 import user.management.system.app.model.dto.AppPermissionResponse;
 import user.management.system.app.model.dto.AppUserDto;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.repository.AppPermissionRepository;
 import user.management.system.app.service.AuditService;
@@ -138,6 +140,30 @@ public class AppPermissionControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testCreateAppPermission_Failure_BadRequest() {
+    AppPermissionRequest appPermissionRequest = new AppPermissionRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/app_permissions/%s/permission", APP_ID))
+            .bodyValue(appPermissionRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("Name is required")
+            && responseStatusInfo.getErrMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 

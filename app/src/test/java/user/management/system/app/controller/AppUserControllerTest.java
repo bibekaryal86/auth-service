@@ -25,6 +25,7 @@ import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRequest;
 import user.management.system.app.model.dto.AppUserResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.dto.UserLoginRequest;
 import user.management.system.app.model.dto.UserUpdateEmailRequest;
 import user.management.system.app.model.entity.AppUserEntity;
@@ -405,6 +406,32 @@ public class AppUserControllerTest extends BaseTest {
   }
 
   @Test
+  void testUpdateAppUser_Failure_BadRequest() {
+    AppUserRequest appUserRequest = new AppUserRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .put()
+            .uri(String.format("/api/v1/app_users/user/%s", 2))
+            .bodyValue(appUserRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("First Name is required")
+            && responseStatusInfo.getErrMsg().contains("Last Name is required")
+            && responseStatusInfo.getErrMsg().contains("Email is required")
+            && responseStatusInfo.getErrMsg().contains("Status is required"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testUpdateAppUserEmail_Success() {
     UserUpdateEmailRequest userUpdateEmailRequest =
         new UserUpdateEmailRequest(APP_USER_EMAIL, "lastfirst@one.com");
@@ -514,6 +541,28 @@ public class AppUserControllerTest extends BaseTest {
   }
 
   @Test
+  void testUpdateAppUserEmail_Failure_BadRequest() {
+    UserUpdateEmailRequest userUpdateEmailRequest = new UserUpdateEmailRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .put()
+            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, 2))
+            .bodyValue(userUpdateEmailRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testUpdateAppUserPassword_Success() {
     UserLoginRequest userLoginRequest = new UserLoginRequest(APP_USER_EMAIL, "password-one-new");
 
@@ -605,6 +654,28 @@ public class AppUserControllerTest extends BaseTest {
         .expectStatus()
         .isForbidden();
 
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testUpdateAppUserPassword_Failure_BadRequest() {
+    UserLoginRequest userLoginRequest = new UserLoginRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .put()
+            .uri(String.format("/api/v1/app_users/user/%s/password", 2))
+            .bodyValue(userLoginRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(responseStatusInfo.getErrMsg().contains("REQUIRED"));
     verifyNoInteractions(auditService);
   }
 

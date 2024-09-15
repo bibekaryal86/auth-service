@@ -2,6 +2,7 @@ package user.management.system.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,7 @@ import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppsRequest;
 import user.management.system.app.model.dto.AppsResponse;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppsEntity;
 import user.management.system.app.repository.AppsRepository;
 import user.management.system.app.service.AuditService;
@@ -100,6 +102,34 @@ public class AppsControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testCreateApp_Failure_BadRequest() {
+    appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+
+    AppsRequest appsRequest = new AppsRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri("/api/v1/apps/app")
+            .bodyValue(appsRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("Name is required")
+            && responseStatusInfo.getErrMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 

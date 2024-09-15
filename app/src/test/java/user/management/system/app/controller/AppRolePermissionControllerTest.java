@@ -2,6 +2,7 @@ package user.management.system.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -22,6 +23,7 @@ import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppRolePermissionRequest;
 import user.management.system.app.model.dto.AppRolePermissionResponse;
 import user.management.system.app.model.dto.AppUserDto;
+import user.management.system.app.model.dto.ResponseStatusInfo;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
 import user.management.system.app.model.entity.AppRolePermissionEntity;
@@ -164,6 +166,30 @@ public class AppRolePermissionControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testCreateAppRolePermission_Failure_BadRequest() {
+    AppRolePermissionRequest appRolePermissionRequest = new AppRolePermissionRequest();
+    ResponseStatusInfo responseStatusInfo =
+        webTestClient
+            .post()
+            .uri("/api/v1/app_roles_permissions/role_permission")
+            .bodyValue(appRolePermissionRequest)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseStatusInfo.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseStatusInfo);
+    assertNotNull(responseStatusInfo.getErrMsg());
+    assertTrue(
+        responseStatusInfo.getErrMsg().contains("RoleID is required")
+            && responseStatusInfo.getErrMsg().contains("PermissionID is required"));
     verifyNoInteractions(auditService);
   }
 
