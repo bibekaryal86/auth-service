@@ -8,6 +8,8 @@
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
   * Clear database (DELETES EVERYTHING)
     * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
+  * Flyway migration is configured to not trigger automatically, it only validates
+    * So migration command needs to be given manually
 
 
 * Remaining (thoughts)
