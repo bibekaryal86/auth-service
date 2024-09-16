@@ -789,7 +789,7 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
     assertNotNull(responseStatusInfo);
     assertTrue(responseStatusInfo.getErrMsg().contains("User Not Found"));
 
-    verify(auditService).auditAppUserResetFailure(any(), any(), any(), any());
+    verify(auditService, after(100).times(1)).auditAppUserResetFailure(any(), any(), any(), any());
   }
 
   @Test
