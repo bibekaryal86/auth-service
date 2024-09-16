@@ -1,13 +1,16 @@
+# Build
+FROM gradle:8.10-jdk21-alpine AS build
+WORKDIR /app
+COPY app/build.gradle .
+COPY app/src /app/src
+RUN gradle --no-daemon clean build
+
+# Deploy
 FROM eclipse-temurin:21-jre-alpine
-RUN adduser --system --group springdocker
+RUN addgroup -S springdocker
+RUN adduser -S springdocker -G springdocker
 USER springdocker:springdocker
-ARG JAR_FILE=app/build/libs/user-mgmt-sys.jar
-COPY ${JAR_FILE} user-mgmt-sys.jar
-ENTRYPOINT ["java","-jar", \
-#"-DPORT=8080", \
-#"-DSPRING_PROFILES_ACTIVE=docker", \
-#"-DTZ=America/Denver", \
-#"-DVAR1=some_var", \
-#"-DVAR2=another_var", \
-"/user-mgmt-sys.jar"]
-# ENV variables to add in docker-compose.yml
+WORKDIR /app
+COPY --from=build /app/build/libs/user-mgmt-sys.jar .
+EXPOSE 8080
+ENTRYPOINT ["java","-jar", "user-mgmt-sys.jar"]
