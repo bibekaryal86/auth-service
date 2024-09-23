@@ -14,3 +14,4 @@ WORKDIR /app
 COPY --from=build /app/build/libs/user-mgmt-sys.jar .
 EXPOSE 8080
 ENTRYPOINT ["java","-jar", "user-mgmt-sys.jar"]
+# provide environment variables in docker-compose
