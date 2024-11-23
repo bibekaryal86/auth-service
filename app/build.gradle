@@ -15,7 +15,7 @@ plugins {
 }
 
 dependencies {
-    def springVersion = "3.3.6"
+    def springVersion = "3.4.0"
     def junitVersion = "5.11.3"
     def jjwtVersion = "0.12.6"
     
