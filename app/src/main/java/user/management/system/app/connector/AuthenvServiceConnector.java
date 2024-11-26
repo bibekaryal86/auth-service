@@ -35,7 +35,7 @@ public class AuthenvServiceConnector {
   }
 
   private List<EnvDetails> getUserMgmtSvcEnvProperties() {
-    final String url = UriComponentsBuilder.fromHttpUrl(getPropertiesUrl).toUriString();
+    final String url = UriComponentsBuilder.fromUriString(getPropertiesUrl).toUriString();
     final String credentials =
         getSystemEnvProperty(ENV_AUTHENV_USERNAME)
             + ":"

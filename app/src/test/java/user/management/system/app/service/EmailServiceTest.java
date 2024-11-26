@@ -18,7 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.model.entity.AppUserEntity;
 import user.management.system.app.model.entity.AppsEntity;
@@ -28,9 +28,9 @@ import user.management.system.app.util.FileReaderUtils;
 
 public class EmailServiceTest extends BaseTest {
 
-  @MockBean private FileReaderUtils fileReaderUtils;
+  @MockitoBean private FileReaderUtils fileReaderUtils;
 
-  @MockBean private MailjetClient mailjetClient;
+  @MockitoBean private MailjetClient mailjetClient;
 
   @Autowired private EmailService emailService;
 

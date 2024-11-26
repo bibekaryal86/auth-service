@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.model.entity.AppPermissionEntity;
 import user.management.system.app.model.entity.AppRoleEntity;
@@ -54,10 +54,10 @@ public class AuditServiceTest extends BaseTest {
 
   @Mock private HttpServletRequest request;
   @Mock private SecurityContext securityContext;
-  @MockBean private AuditAppPermissionRepository auditAppPermissionRepository;
-  @MockBean private AuditAppRoleRepository auditAppRoleRepository;
-  @MockBean private AuditAppUserRepository auditAppUserRepository;
-  @MockBean private AuditAppsRepository auditAppsRepository;
+  @MockitoBean private AuditAppPermissionRepository auditAppPermissionRepository;
+  @MockitoBean private AuditAppRoleRepository auditAppRoleRepository;
+  @MockitoBean private AuditAppUserRepository auditAppUserRepository;
+  @MockitoBean private AuditAppsRepository auditAppsRepository;
 
   @Autowired private AuditService auditService;
 
