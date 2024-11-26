@@ -18,7 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppUserRoleRequest;
@@ -42,7 +42,7 @@ public class AppUserRoleControllerTest extends BaseTest {
   private static AppUserDto appUserDtoWithPermission;
   private static String bearerAuthCredentialsNoPermission;
 
-  @MockBean private AuditService auditService;
+  @MockitoBean private AuditService auditService;
 
   @Autowired private AppUserRoleRepository appUserRoleRepository;
   @Autowired private AppUserRepository appUserRepository;

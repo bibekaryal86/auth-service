@@ -7,14 +7,14 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 
 public class AppTestControllerTest extends BaseTest {
 
-  @MockBean private CacheManager cacheManager;
+  @MockitoBean private CacheManager cacheManager;
 
   @Test
   public void testPingTest() {

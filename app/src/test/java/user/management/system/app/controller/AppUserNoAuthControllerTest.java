@@ -11,7 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.connector.AuthenvServiceConnector;
 import user.management.system.app.service.AuditService;
@@ -22,8 +22,8 @@ public class AppUserNoAuthControllerTest extends BaseTest {
   private static final String REDIRECT_URL = "https://app-1-redirect-url.com/home/";
   private static String encodedEmail;
 
-  @MockBean private AuditService auditService;
-  @MockBean private AuthenvServiceConnector authenvServiceConnector;
+  @MockitoBean private AuditService auditService;
+  @MockitoBean private AuthenvServiceConnector authenvServiceConnector;
 
   @BeforeAll
   static void setUpBeforeAll() {

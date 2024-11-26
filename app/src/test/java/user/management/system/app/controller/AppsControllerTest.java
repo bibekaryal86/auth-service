@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppUserDto;
 import user.management.system.app.model.dto.AppsRequest;
@@ -29,7 +29,7 @@ public class AppsControllerTest extends BaseTest {
   private static AppUserDto appUserDtoNoPermission;
   private static AppUserDto appUserDtoWithPermission;
 
-  @MockBean private AuditService auditService;
+  @MockitoBean private AuditService auditService;
 
   @Autowired private AppsRepository appsRepository;
 

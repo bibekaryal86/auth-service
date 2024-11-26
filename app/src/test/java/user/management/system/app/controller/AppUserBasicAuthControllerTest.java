@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import user.management.system.BaseTest;
 import user.management.system.app.model.dto.AppTokenRequest;
 import user.management.system.app.model.dto.AppUserDto;
@@ -56,9 +56,9 @@ public class AppUserBasicAuthControllerTest extends BaseTest {
   private static AppsEntity appsEntity;
   private static AppTokenEntity appTokenEntity;
 
-  @MockBean private AuditService auditService;
-  @MockBean private EmailService emailService;
-  @MockBean private ApplicationEventPublisher applicationEventPublisher;
+  @MockitoBean private AuditService auditService;
+  @MockitoBean private EmailService emailService;
+  @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
 
   @Autowired private AppUserRepository appUserRepository;
   @Autowired private AppsAppUserRepository appsAppUserRepository;
