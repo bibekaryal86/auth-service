@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
-import auth.service.app.connector.AuthenvServiceConnector;
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.service.AuditService;
 import auth.service.app.util.JwtUtils;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
   private static String encodedEmail;
 
   @MockitoBean private AuditService auditService;
-  @MockitoBean private AuthenvServiceConnector authenvServiceConnector;
+  @MockitoBean private EnvServiceConnector envServiceConnector;
 
   @BeforeAll
   static void setUpBeforeAll() {
@@ -32,12 +32,12 @@ public class AppUserNoAuthControllerTest extends BaseTest {
 
   @BeforeEach
   void setUpBeforeEach() {
-    when(authenvServiceConnector.getRedirectUrls()).thenReturn(Map.of(APP_ID, REDIRECT_URL));
+    when(envServiceConnector.getRedirectUrls()).thenReturn(Map.of(APP_ID, REDIRECT_URL));
   }
 
   @AfterEach
   void tearDown() {
-    reset(auditService, authenvServiceConnector);
+    reset(auditService, envServiceConnector);
   }
 
   @Test
@@ -53,7 +53,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_validated=true");
 
-    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
     verify(auditService, after(100).times(1)).auditAppUserValidateExit(any(), any(), any());
   }
 
@@ -70,7 +70,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_validated=false");
 
-    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
     verify(auditService, after(100).times(1))
         .auditAppUserValidateFailure(any(), any(), any(), any());
   }
@@ -88,7 +88,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_reset=true&to_reset=" + APP_USER_EMAIL);
 
-    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
     verify(auditService, after(100).times(1)).auditAppUserResetExit(any(), any(), any());
   }
 
@@ -105,7 +105,7 @@ public class AppUserNoAuthControllerTest extends BaseTest {
         .expectHeader()
         .location(REDIRECT_URL + "?is_reset=false");
 
-    verify(authenvServiceConnector, after(100).times(1)).getRedirectUrls();
+    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
     verify(auditService, after(100).times(1)).auditAppUserResetFailure(any(), any(), any(), any());
   }
 }

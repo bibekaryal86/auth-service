@@ -25,10 +25,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 public class AuthEnvServiceConnectorTest extends BaseTest {
 
-  private AuthenvServiceConnector authenvServiceConnector;
+  private EnvServiceConnector envServiceConnector;
   private MockWebServer server;
   private Environment environment;
-  private final String responseJsonFileName = "authenv-service_getPropertiesResponse.json";
+  private final String responseJsonFileName = "env-service_getPropertiesResponse.json";
 
   @BeforeEach
   void setUp() throws Exception {
@@ -37,13 +37,13 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
     String getPropertiesUrl = String.format("%s/getProperties", server.url("/"));
     WebClient webClient = WebClient.builder().baseUrl(server.url("/").toString()).build();
     environment = mock(Environment.class);
-    authenvServiceConnector = new AuthenvServiceConnector(getPropertiesUrl, webClient, environment);
+    envServiceConnector = new EnvServiceConnector(getPropertiesUrl, webClient, environment);
   }
 
   @AfterEach
   void tearDown() throws Exception {
     server.shutdown();
-    authenvServiceConnector.evictRedirectUrlCache();
+    envServiceConnector.evictRedirectUrlCache();
   }
 
   @Test
@@ -54,7 +54,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
             .setResponseCode(200)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
-    Map<String, String> result = authenvServiceConnector.getRedirectUrls();
+    Map<String, String> result = envServiceConnector.getRedirectUrls();
 
     assertNotNull(result);
     assertEquals(TestData.getEnvDetailsResponse().getFirst().getMapValue(), result);
@@ -68,7 +68,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
             .setResponseCode(200)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
-    Map<String, String> result = authenvServiceConnector.getRedirectUrls();
+    Map<String, String> result = envServiceConnector.getRedirectUrls();
 
     assertNotNull(result);
     assertEquals(TestData.getEnvDetailsResponse().get(1).getMapValue(), result);
@@ -82,7 +82,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
             .setResponseCode(200)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .setBody("[]"));
-    Map<String, String> result = authenvServiceConnector.getRedirectUrls();
+    Map<String, String> result = envServiceConnector.getRedirectUrls();
     assertNotNull(result);
     assertEquals(Collections.emptyMap(), result);
   }
@@ -97,7 +97,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
     assertThrows(
         WebClientResponseException.Unauthorized.class,
         () -> {
-          authenvServiceConnector.getRedirectUrls();
+          envServiceConnector.getRedirectUrls();
         });
     assertEquals(1, server.getRequestCount());
   }

@@ -54,8 +54,7 @@ public class TestData {
   }
 
   public static List<EnvDetails> getEnvDetailsResponse() {
-    String fixtureAsString =
-        FixtureReader.readFixture("authenv-service_getPropertiesResponse.json");
+    String fixtureAsString = FixtureReader.readFixture("env-service_getPropertiesResponse.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});

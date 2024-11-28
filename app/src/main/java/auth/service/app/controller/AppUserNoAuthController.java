@@ -3,7 +3,7 @@ package auth.service.app.controller;
 import static auth.service.app.util.JwtUtils.decodeEmailAddressNoException;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
-import auth.service.app.connector.AuthenvServiceConnector;
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.entity.AppUserEntity;
 import auth.service.app.service.AppUserPasswordService;
 import auth.service.app.service.AuditService;
@@ -28,7 +28,7 @@ public class AppUserNoAuthController {
 
   private final AppUserPasswordService appUserPasswordService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
-  private final AuthenvServiceConnector authenvServiceConnector;
+  private final EnvServiceConnector envServiceConnector;
   private final AuditService auditService;
 
   @GetMapping("/{appId}/validate_exit")
@@ -36,7 +36,7 @@ public class AppUserNoAuthController {
       @PathVariable final String appId,
       @RequestParam final String toValidate,
       final HttpServletRequest request) {
-    final String redirectUrl = authenvServiceConnector.getRedirectUrls().getOrDefault(appId, "");
+    final String redirectUrl = envServiceConnector.getRedirectUrls().getOrDefault(appId, "");
     try {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toValidate, true);
@@ -55,7 +55,7 @@ public class AppUserNoAuthController {
       @PathVariable final String appId,
       @RequestParam final String toReset,
       final HttpServletRequest request) {
-    final String redirectUrl = authenvServiceConnector.getRedirectUrls().getOrDefault(appId, "");
+    final String redirectUrl = envServiceConnector.getRedirectUrls().getOrDefault(appId, "");
     try {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toReset, false);

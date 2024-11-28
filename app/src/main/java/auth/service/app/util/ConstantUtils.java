@@ -17,8 +17,8 @@ public class ConstantUtils {
   public static final String ENV_MAILJET_PUBLIC_KEY = "MJ_PUBLIC";
   public static final String ENV_MAILJET_PRIVATE_KEY = "MJ_PRIVATE";
   public static final String ENV_MAILJET_EMAIL_ADDRESS = "MJ_EMAIL";
-  public static final String ENV_AUTHENV_USERNAME = "AUTHENV_USERNAME";
-  public static final String ENV_AUTHENV_PASSWORD = "AUTHENV_PASSWORD";
+  public static final String ENV_ENVSVC_USERNAME = "ENVSVC_USERNAME";
+  public static final String ENV_ENVSVC_PASSWORD = "ENVSVC_PASSWORD";
   public static final List<String> ENV_KEY_NAMES =
       List.of(
           ENV_SERVER_PORT,
@@ -30,8 +30,8 @@ public class ConstantUtils {
           ENV_MAILJET_PUBLIC_KEY,
           ENV_MAILJET_PRIVATE_KEY,
           ENV_MAILJET_EMAIL_ADDRESS,
-          ENV_AUTHENV_USERNAME,
-          ENV_AUTHENV_PASSWORD);
+          ENV_ENVSVC_USERNAME,
+          ENV_ENVSVC_PASSWORD);
 
   // ROLE NAMES
   public static final String APP_ROLE_NAME_GUEST = "GUEST";

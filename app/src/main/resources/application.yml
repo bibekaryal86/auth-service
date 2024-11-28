@@ -51,5 +51,5 @@ springdoc:
 
 # endpoints of authenv_service
 endpoint:
-  authenv_service:
-    get_properties: https://authenv-service.appspot.com/authenv-service/env-props/app_usermgmtsvc
+  env_service:
+    get_properties: https://envsvc.appspot.com/envsvc/api/v1/authservice

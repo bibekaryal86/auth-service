@@ -1,6 +1,6 @@
 package auth.service.app.config;
 
-import auth.service.app.connector.AuthenvServiceConnector;
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.service.AppRoleService;
 import auth.service.app.service.AppsService;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class ScheduleConfig {
 
   private final CacheManager cacheManager;
-  private final AuthenvServiceConnector authenvServiceConnector;
+  private final EnvServiceConnector envServiceConnector;
   private final AppsService appsService;
   private final AppRoleService appRoleService;
 
@@ -38,7 +38,7 @@ public class ScheduleConfig {
 
     Thread.sleep(5000);
 
-    CompletableFuture.runAsync(authenvServiceConnector::getRedirectUrls);
+    CompletableFuture.runAsync(envServiceConnector::getRedirectUrls);
     CompletableFuture.runAsync(appsService::readApps);
     CompletableFuture.runAsync(appRoleService::readAppRoles);
   }

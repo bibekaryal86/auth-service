@@ -1,7 +1,7 @@
 package auth.service.app.connector;
 
-import static auth.service.app.util.ConstantUtils.ENV_AUTHENV_PASSWORD;
-import static auth.service.app.util.ConstantUtils.ENV_AUTHENV_USERNAME;
+import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_PASSWORD;
+import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_USERNAME;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import auth.service.app.model.client.EnvDetails;
@@ -19,14 +19,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
-public class AuthenvServiceConnector {
+public class EnvServiceConnector {
 
   private final String getPropertiesUrl;
   private final WebClient webClient;
   private final Environment environment;
 
-  public AuthenvServiceConnector(
-      @Value("${endpoint.authenv_service.get_properties}") final String getPropertiesUrl,
+  public EnvServiceConnector(
+      @Value("${endpoint.env_service.get_properties}") final String getPropertiesUrl,
       @Qualifier("webClient") final WebClient webClient,
       final Environment environment) {
     this.getPropertiesUrl = getPropertiesUrl;
@@ -34,12 +34,10 @@ public class AuthenvServiceConnector {
     this.environment = environment;
   }
 
-  private List<EnvDetails> getUserMgmtSvcEnvProperties() {
+  private List<EnvDetails> getAuthServiceEnvProperties() {
     final String url = UriComponentsBuilder.fromUriString(getPropertiesUrl).toUriString();
     final String credentials =
-        getSystemEnvProperty(ENV_AUTHENV_USERNAME)
-            + ":"
-            + getSystemEnvProperty(ENV_AUTHENV_PASSWORD);
+        getSystemEnvProperty(ENV_ENVSVC_USERNAME) + ":" + getSystemEnvProperty(ENV_ENVSVC_PASSWORD);
     final String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
     return webClient
@@ -58,7 +56,7 @@ public class AuthenvServiceConnector {
     final boolean isDevelopment = environment.matchesProfiles("development");
     final String envDetailsName =
         String.format("redirectUrls_%s", isDevelopment ? "development" : "production");
-    final List<EnvDetails> envDetails = getUserMgmtSvcEnvProperties();
+    final List<EnvDetails> envDetails = getAuthServiceEnvProperties();
     EnvDetails withRedirectUrls =
         envDetails.stream()
             .filter(envDetail -> envDetail.getName().equals(envDetailsName))
