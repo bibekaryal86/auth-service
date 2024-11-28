@@ -65,7 +65,7 @@ repositories {
 }
 
 bootJar {
-    archiveFileName = 'user-mgmt-sys.jar'
+    archiveFileName = 'auth-service.jar'
 }
 
 test {
@@ -73,7 +73,7 @@ test {
 }
 
 application {
-    mainClass = 'user.management.system.App'
+    mainClass = 'auth.service.App'
 }
 
 configurations {

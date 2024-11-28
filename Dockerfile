@@ -11,7 +11,7 @@ RUN addgroup -S springdocker
 RUN adduser -S springdocker -G springdocker
 USER springdocker:springdocker
 WORKDIR /app
-COPY --from=build /app/build/libs/user-mgmt-sys.jar .
+COPY --from=build /app/build/libs/auth-service.jar .
 EXPOSE 8080
-ENTRYPOINT ["java","-jar", "user-mgmt-sys.jar"]
+ENTRYPOINT ["java","-jar", "auth-service.jar"]
 # provide environment variables in docker-compose

@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "User Management System",
+    "title": "Auth Service",
     "description": "Create and Manage Users, Roles and Permissions",
     "contact": {
       "name": "Bibek Aryal"

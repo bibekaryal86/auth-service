@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TestClassesFinder {
   public static List<String> findTestClasses() {
-    final String packageName = "user.management.system";
+    final String packageName = "auth.service";
     try {
       List<String> testClasses = new ArrayList<>();
       ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
