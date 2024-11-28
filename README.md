@@ -1,4 +1,4 @@
-# user-management-system
+# auth-service
 
 * Database
   * postgres:

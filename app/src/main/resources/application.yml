@@ -1,6 +1,6 @@
 spring:
   application:
-    name: user-management-system
+    name: auth-service
   datasource:
     url: jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres
     username: ${DB_USERNAME}
