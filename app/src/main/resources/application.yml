@@ -49,7 +49,7 @@ springdoc:
   swagger-ui:
     doc-expansion: none
 
-# endpoints of authenv_service
+# endpoints of env service
 endpoint:
   env_service:
     get_properties: https://envsvc.appspot.com/envsvc/api/v1/authservice
