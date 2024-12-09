@@ -33,10 +33,6 @@ spring:
   jta:
     enabled: true
 
-server:
-  servlet:
-    context-path: /ums
-
 management:
   endpoints:
     web:
