@@ -1,7 +1,7 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_STANDARD;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_STANDARD;
 
 import auth.service.app.model.entity.AppPermissionEntity;
 import auth.service.app.model.entity.AppRoleEntity;
@@ -85,7 +85,7 @@ public class AuditService {
   }
 
   private AppRoleEntity getAppRoleEntity(final boolean isGuestUser) {
-    final String roleName = isGuestUser ? APP_ROLE_NAME_GUEST : APP_ROLE_NAME_STANDARD;
+    final String roleName = isGuestUser ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
     return appRoleRepository.findByName(roleName).orElse(null);
   }
 

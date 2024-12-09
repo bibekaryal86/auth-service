@@ -1,6 +1,6 @@
 package helper;
 
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_SUPERUSER;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
 import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
@@ -273,7 +273,7 @@ public class TestData {
     AppUserDto appUserDtoOutput = new AppUserDto();
     BeanUtils.copyProperties(appUserDtoInput, appUserDtoOutput, "roles");
 
-    AppRoleDto appRoleDto = new AppRoleDto(-1, APP_ROLE_NAME_SUPERUSER, APP_ROLE_NAME_SUPERUSER);
+    AppRoleDto appRoleDto = new AppRoleDto(-1, ROLE_NAME_SUPERUSER, ROLE_NAME_SUPERUSER);
     appRoleDto.setPermissions(Collections.emptyList());
     List<AppRoleDto> appRoleDtos = new ArrayList<>(appUserDtoInput.getRoles());
     appRoleDtos.add(appRoleDto);

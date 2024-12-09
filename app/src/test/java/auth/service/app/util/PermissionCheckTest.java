@@ -63,7 +63,7 @@ public class PermissionCheckTest extends BaseTest {
   void testCheckPermission_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
         new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
 
@@ -102,7 +102,7 @@ public class PermissionCheckTest extends BaseTest {
   void testCanUserAccessAppUser_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
         new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -135,7 +135,7 @@ public class PermissionCheckTest extends BaseTest {
   void testFilterAppUserListByAccess_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.APP_ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
         new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);

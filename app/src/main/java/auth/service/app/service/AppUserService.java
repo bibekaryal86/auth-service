@@ -1,7 +1,7 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_STANDARD;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_STANDARD;
 
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
@@ -103,7 +103,7 @@ public class AppUserService {
   }
 
   private AppRoleEntity getAppRoleEntityToCreate(final boolean isGuestUser) {
-    final String roleName = isGuestUser ? APP_ROLE_NAME_GUEST : APP_ROLE_NAME_STANDARD;
+    final String roleName = isGuestUser ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
     return appRoleRepository
         .findByName(roleName)
         .orElseThrow(() -> new ElementNotFoundException("Role", roleName));

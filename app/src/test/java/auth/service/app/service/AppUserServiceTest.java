@@ -1,6 +1,6 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_GUEST;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -127,7 +127,7 @@ public class AppUserServiceTest extends BaseTest {
         appUserRoleRepository.findByIdAppUserIdOrderByAppRoleNameAsc(appUserEntity.getId());
     assertNotNull(appUserRoleEntities);
     assertEquals(1, appUserRoleEntities.size());
-    assertEquals(APP_ROLE_NAME_GUEST, appUserRoleEntities.getFirst().getAppRole().getName());
+    assertEquals(ROLE_NAME_GUEST, appUserRoleEntities.getFirst().getAppRole().getName());
 
     // verify application event publisher called
     verify(applicationEventPublisher, times(1)).publishEvent(any(AppUserCreatedEvent.class));
