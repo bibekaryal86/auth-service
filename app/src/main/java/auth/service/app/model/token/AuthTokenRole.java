@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthTokenRole {
-  private Integer id;
-  private String name;
+  private Long id;
+  private String roleName;
 }

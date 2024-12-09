@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthTokenRoleNew {
+public class AuthTokenPlatform {
   private Long id;
-  private String roleName;
+  private String permissionName;
 }

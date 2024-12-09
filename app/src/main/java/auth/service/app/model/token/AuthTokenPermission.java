@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthTokenPermission {
-  private Integer id;
-  private Integer roleId;
-  private String name;
+  private Long id;
+  private String permissionName;
 }
