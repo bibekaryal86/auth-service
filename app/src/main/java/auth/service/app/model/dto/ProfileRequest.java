@@ -1,12 +1,11 @@
 package auth.service.app.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.List;
 
 @Getter
 @ToString
@@ -24,8 +23,7 @@ public class ProfileRequest {
 
   private String phone;
 
-  @ToString.Exclude
-  private String password;
+  @ToString.Exclude private String password;
 
   @NotBlank(message = "Status is required")
   private Long statusId;

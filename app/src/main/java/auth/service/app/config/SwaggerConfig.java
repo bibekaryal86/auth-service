@@ -13,12 +13,12 @@ public class SwaggerConfig {
   @Bean
   public OpenAPI openAPI() {
     return new OpenAPI()
-            .info(
-                    new Info()
-                            .title("Auth Service")
-                            .description("Manage apps, users, roles and permissions")
-                            .contact(new Contact().name("Bibek Aryal"))
-                            .license(new License().name("Personal Use Only"))
-                            .version("1.0.1"));
+        .info(
+            new Info()
+                .title("Auth Service")
+                .description("Manage apps, users, roles and permissions")
+                .contact(new Contact().name("Bibek Aryal"))
+                .license(new License().name("Personal Use Only"))
+                .version("1.0.1"));
   }
 }
