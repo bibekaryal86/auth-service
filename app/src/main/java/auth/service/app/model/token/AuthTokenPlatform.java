@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthTokenPlatform {
   private Long id;
-  private String permissionName;
+  private String platformName;
 }
