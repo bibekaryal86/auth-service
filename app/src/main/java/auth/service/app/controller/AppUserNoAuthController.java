@@ -41,12 +41,12 @@ public class AppUserNoAuthController {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toValidate, true);
       runAsync(() -> auditService.auditAppUserValidateExit(request, appId, appUserEntity));
-      return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, true);
+      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, true);
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toValidate);
       log.error("Validate App User Exit: [{}], [{}]", appId, decodedEmail, ex);
       runAsync(() -> auditService.auditAppUserValidateFailure(request, appId, decodedEmail, ex));
-      return entityDtoConvertUtils.getResponseValidateUser(redirectUrl, false);
+      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, false);
     }
   }
 
@@ -60,13 +60,13 @@ public class AppUserNoAuthController {
       final AppUserEntity appUserEntity =
           appUserPasswordService.validateAndResetUser(appId, toReset, false);
       runAsync(() -> auditService.auditAppUserResetExit(request, appId, appUserEntity));
-      return entityDtoConvertUtils.getResponseResetUser(
+      return entityDtoConvertUtils.getResponseResetProfile(
           redirectUrl, true, appUserEntity.getEmail());
     } catch (Exception ex) {
       final String decodedEmail = decodeEmailAddressNoException(toReset);
       log.error("Reset App User Exit: [{}], [{}]", appId, decodedEmail, ex);
       runAsync(() -> auditService.auditAppUserResetFailure(request, appId, decodedEmail, ex));
-      return entityDtoConvertUtils.getResponseResetUser(redirectUrl, false, "");
+      return entityDtoConvertUtils.getResponseResetProfile(redirectUrl, false, "");
     }
   }
 }

@@ -99,7 +99,7 @@ public class AppUserBasicAuthController {
           () ->
               auditService.auditAppUserLoginFailure(
                   request, appId, userLoginRequest.getEmail(), ex));
-      return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
+      return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
 
@@ -133,7 +133,7 @@ public class AppUserBasicAuthController {
           () ->
               auditService.auditAppUserTokenRefreshFailure(
                   request, appId, appTokenRequest.getAppUserId(), ex));
-      return entityDtoConvertUtils.getResponseErrorAppUserLogin(ex);
+      return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
 

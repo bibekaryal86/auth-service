@@ -1075,9 +1075,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseErrorAppUserLogin() {
+  void testGetResponseErrorProfilePassword() {
     ResponseEntity<UserLoginResponse> response =
-        entityDtoConvertUtils.getResponseErrorAppUserLogin(new UserNotAuthorizedException());
+        entityDtoConvertUtils.getResponseErrorProfilePassword(new UserNotAuthorizedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1101,11 +1101,11 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseValidateUser_Validated() {
+  void testGetResponseValidateProfile_Validated() {
     String redirectUrl = "https://example.com/redirect";
     boolean isValidated = true;
     ResponseEntity<Void> response =
-        entityDtoConvertUtils.getResponseValidateUser(redirectUrl, isValidated);
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
@@ -1115,11 +1115,11 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseValidateUser_NotValidated() {
+  void testGetResponseValidateProfile_NotValidated() {
     String redirectUrl = "https://example.com/redirect";
     boolean isValidated = false;
     ResponseEntity<Void> response =
-        entityDtoConvertUtils.getResponseValidateUser(redirectUrl, isValidated);
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
@@ -1129,9 +1129,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseValidateUser_EmptyRedirectUrl() {
+  void testGetResponseValidateProfile_EmptyRedirectUrl() {
     assertThrows(
-        IllegalStateException.class, () -> entityDtoConvertUtils.getResponseValidateUser("", true));
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseValidateProfile("", true));
   }
 
   @Test
@@ -1140,7 +1141,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     boolean isReset = true;
     String email = "user@example.com";
     ResponseEntity<Void> response =
-        entityDtoConvertUtils.getResponseResetUser(redirectUrl, isReset, email);
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
@@ -1156,7 +1157,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     boolean isReset = false;
     String email = "";
     ResponseEntity<Void> response =
-        entityDtoConvertUtils.getResponseResetUser(redirectUrl, isReset, email);
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
@@ -1165,9 +1166,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseResetUser_EmptyRedirectUrl() {
+  void testGetResponseResetProfile_EmptyRedirectUrl() {
     assertThrows(
         IllegalStateException.class,
-        () -> entityDtoConvertUtils.getResponseResetUser("", true, "some@email.com"));
+        () -> entityDtoConvertUtils.getResponseResetProfile("", true, "some@email.com"));
   }
 }

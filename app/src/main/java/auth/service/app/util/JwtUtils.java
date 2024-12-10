@@ -77,7 +77,8 @@ public class JwtUtils {
     }
   }
 
-  public static String encodeAuthCredentials(final PlatformDto platform, final ProfileDto profile, final long expirationMillis) {
+  public static String encodeAuthCredentials(
+      final PlatformDto platform, final ProfileDto profile, final long expirationMillis) {
     AuthToken authToken = profile.toAuthToken(platform);
     Map<String, Object> tokenClaim = new HashMap<>();
     tokenClaim.put(TOKEN_CLAIM_AUTH, authToken);

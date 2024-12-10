@@ -65,8 +65,7 @@ public class PermissionCheck {
       }
 
       return profileEntities.stream()
-          .filter(
-              profile -> checkUserIdEmail(profile.getEmail(), profile.getId(), authToken))
+          .filter(profile -> checkUserIdEmail(profile.getEmail(), profile.getId(), authToken))
           .toList();
     } catch (Exception ex) {
       throw new CheckPermissionException(ex.getMessage());
@@ -100,7 +99,8 @@ public class PermissionCheck {
 
     return authToken.getPermissions().stream()
         .anyMatch(
-            authTokenPermission -> requiredPermissions.contains(authTokenPermission.getPermissionName()));
+            authTokenPermission ->
+                requiredPermissions.contains(authTokenPermission.getPermissionName()));
   }
 
   private boolean checkSuperUser(final AuthToken authToken) {

@@ -1,9 +1,9 @@
 package helper;
 
-import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
 import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
 
 import auth.service.app.model.client.EnvDetails;
 import auth.service.app.model.dto.AppPermissionDto;
