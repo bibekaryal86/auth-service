@@ -5,9 +5,9 @@ import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
 
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.model.entity.AppUserEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
-import auth.service.app.service.AppUserService;
+import auth.service.app.service.ProfileService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final AppUserService appUserService;
+  private final ProfileService profileService;
 
   @Override
   protected void doFilterInternal(
@@ -82,7 +82,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   }
 
   private boolean validateUserEntity(final String email, final AuthToken authToken) {
-    final AppUserEntity appUserEntity = appUserService.readAppUser(email);
-    return Objects.equals(appUserEntity.getEmail(), authToken.getUser().getEmail());
+    final ProfileEntity profileEntity = profileService.readProfileByEmail(email);
+    return Objects.equals(profileEntity.getEmail(), authToken.getProfile().getEmail());
   }
 }

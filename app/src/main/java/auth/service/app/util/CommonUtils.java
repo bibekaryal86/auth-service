@@ -13,11 +13,11 @@ import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.exception.UserForbiddenException;
-import auth.service.app.exception.UserLockedException;
-import auth.service.app.exception.UserNotActiveException;
-import auth.service.app.exception.UserNotAuthorizedException;
-import auth.service.app.exception.UserNotValidatedException;
+import auth.service.app.exception.ProfileForbiddenException;
+import auth.service.app.exception.ProfileLockedException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -51,14 +51,14 @@ public class CommonUtils {
       return NOT_FOUND;
     } else if (exception instanceof ElementMissingException) {
       return BAD_REQUEST;
-    } else if (exception instanceof UserForbiddenException
-        || exception instanceof UserNotValidatedException
+    } else if (exception instanceof ProfileForbiddenException
+        || exception instanceof ProfileNotValidatedException
         || exception instanceof ElementNotActiveException
-        || exception instanceof UserNotActiveException
-        || exception instanceof UserLockedException
+        || exception instanceof ProfileNotActiveException
+        || exception instanceof ProfileLockedException
         || exception instanceof CheckPermissionException) {
       return FORBIDDEN;
-    } else if (exception instanceof UserNotAuthorizedException
+    } else if (exception instanceof ProfileNotAuthorizedException
         || exception instanceof JwtInvalidException) {
       return UNAUTHORIZED;
     } else {

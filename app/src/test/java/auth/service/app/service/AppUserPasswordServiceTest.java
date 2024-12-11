@@ -10,9 +10,9 @@ import static org.mockito.Mockito.times;
 
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementNotActiveException;
-import auth.service.app.exception.UserNotActiveException;
-import auth.service.app.exception.UserNotAuthorizedException;
-import auth.service.app.exception.UserNotValidatedException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.UserLoginRequest;
 import auth.service.app.model.dto.UserLoginResponse;
 import auth.service.app.model.entity.AppUserEntity;
@@ -137,9 +137,9 @@ public class AppUserPasswordServiceTest extends BaseTest {
 
   @Test
   void testLoginUser_Failure() {
-    UserNotAuthorizedException exception =
+    ProfileNotAuthorizedException exception =
         assertThrows(
-            UserNotAuthorizedException.class,
+            ProfileNotAuthorizedException.class,
             () ->
                 appUserPasswordService.loginUser(
                     appId, new UserLoginRequest(USER_EMAIL, NEW_PASSWORD)));
@@ -194,9 +194,9 @@ public class AppUserPasswordServiceTest extends BaseTest {
     appUserEntity.setIsValidated(false);
     appUserRepository.save(appUserEntity);
 
-    UserNotValidatedException exception =
+    ProfileNotValidatedException exception =
         assertThrows(
-            UserNotValidatedException.class,
+            ProfileNotValidatedException.class,
             () -> appUserPasswordService.loginUser(appId, userLoginRequest));
     assertEquals(
         "User not validated, please check your email for instructions to validate account!",
@@ -215,9 +215,9 @@ public class AppUserPasswordServiceTest extends BaseTest {
     appUserEntity.setStatus("PENDING");
     appUserRepository.save(appUserEntity);
 
-    UserNotActiveException exception =
+    ProfileNotActiveException exception =
         assertThrows(
-            UserNotActiveException.class,
+            ProfileNotActiveException.class,
             () -> appUserPasswordService.loginUser(appId, userLoginRequest));
     assertEquals(
         "User is not active, please revalidate or reset your account!", exception.getMessage());

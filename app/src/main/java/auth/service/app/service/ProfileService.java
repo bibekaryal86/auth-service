@@ -8,10 +8,10 @@ import static auth.service.app.util.JwtUtils.decodeEmailAddress;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.exception.UserLockedException;
-import auth.service.app.exception.UserNotActiveException;
-import auth.service.app.exception.UserNotAuthorizedException;
-import auth.service.app.exception.UserNotValidatedException;
+import auth.service.app.exception.ProfileLockedException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -237,16 +237,16 @@ public class ProfileService {
     }
 
     if (!profileEntity.getIsValidated()) {
-      throw new UserNotValidatedException();
+      throw new ProfileNotValidatedException();
     }
 
     if (!Objects.equals(
         profileEntity.getStatusType().getStatusName().toUpperCase(), PROFILE_STATUS_NAME_ACTIVE)) {
-      throw new UserNotActiveException();
+      throw new ProfileNotActiveException();
     }
 
     if (profileEntity.getLoginAttempts() > 5) {
-      throw new UserLockedException();
+      throw new ProfileLockedException();
     }
 
     final boolean isLoginSuccess =
@@ -254,7 +254,7 @@ public class ProfileService {
             profilePasswordRequest.getPassword(), profileEntity.getPassword());
 
     if (!isLoginSuccess) {
-      throw new UserNotAuthorizedException();
+      throw new ProfileNotAuthorizedException();
     }
 
     return tokenService.saveToken(null, null, platformEntity, profileEntity);

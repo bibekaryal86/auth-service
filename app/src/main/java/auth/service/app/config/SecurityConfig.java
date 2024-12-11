@@ -4,7 +4,7 @@ import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
-import auth.service.app.service.AppUserService;
+import auth.service.app.service.ProfileService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -19,8 +19,8 @@ public class SecurityConfig extends SecurityConfigBase {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public SecurityConfig(
-      final BCryptPasswordEncoder bCryptPasswordEncoder, final AppUserService appUserService) {
-    super(appUserService);
+      final BCryptPasswordEncoder bCryptPasswordEncoder, final ProfileService profileService) {
+    super(profileService);
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
   }
 

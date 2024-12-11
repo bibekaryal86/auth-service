@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.exception.UserForbiddenException;
-import auth.service.app.exception.UserNotAuthorizedException;
+import auth.service.app.exception.ProfileForbiddenException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.model.dto.AppPermissionDto;
 import auth.service.app.model.dto.AppPermissionResponse;
 import auth.service.app.model.dto.AppRoleDto;
@@ -601,7 +601,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseErrorAppUser() {
     ResponseEntity<AppUserResponse> response =
-        entityDtoConvertUtils.getResponseErrorAppUser(new UserNotAuthorizedException());
+        entityDtoConvertUtils.getResponseErrorAppUser(new ProfileNotAuthorizedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1077,7 +1077,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseErrorProfilePassword() {
     ResponseEntity<UserLoginResponse> response =
-        entityDtoConvertUtils.getResponseErrorProfilePassword(new UserNotAuthorizedException());
+        entityDtoConvertUtils.getResponseErrorProfilePassword(new ProfileNotAuthorizedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1091,7 +1091,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseErrorResponseStatusInfo() {
     ResponseEntity<ResponseStatusInfo> response =
-        entityDtoConvertUtils.getResponseErrorResponseStatusInfo(new UserForbiddenException());
+        entityDtoConvertUtils.getResponseErrorResponseStatusInfo(new ProfileForbiddenException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());

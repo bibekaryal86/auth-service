@@ -13,10 +13,10 @@ import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.exception.UserForbiddenException;
-import auth.service.app.exception.UserNotActiveException;
-import auth.service.app.exception.UserNotAuthorizedException;
-import auth.service.app.exception.UserNotValidatedException;
+import auth.service.app.exception.ProfileForbiddenException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
@@ -60,11 +60,11 @@ public class CommonUtilsTest extends BaseTest {
     return Stream.of(
         Arguments.of(new ElementNotFoundException("something", "anything"), HttpStatus.NOT_FOUND),
         Arguments.of(new ElementMissingException("something", "anything"), HttpStatus.BAD_REQUEST),
-        Arguments.of(new UserForbiddenException(), HttpStatus.FORBIDDEN),
-        Arguments.of(new UserNotValidatedException(), HttpStatus.FORBIDDEN),
+        Arguments.of(new ProfileForbiddenException(), HttpStatus.FORBIDDEN),
+        Arguments.of(new ProfileNotValidatedException(), HttpStatus.FORBIDDEN),
         Arguments.of(new ElementNotActiveException("something", "anything"), HttpStatus.FORBIDDEN),
-        Arguments.of(new UserNotActiveException(), HttpStatus.FORBIDDEN),
-        Arguments.of(new UserNotAuthorizedException(), HttpStatus.UNAUTHORIZED),
+        Arguments.of(new ProfileNotActiveException(), HttpStatus.FORBIDDEN),
+        Arguments.of(new ProfileNotAuthorizedException(), HttpStatus.UNAUTHORIZED),
         Arguments.of(new JwtInvalidException("something"), HttpStatus.UNAUTHORIZED),
         Arguments.of(new RuntimeException(), INTERNAL_SERVER_ERROR));
   }
