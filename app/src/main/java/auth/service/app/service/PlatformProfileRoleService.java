@@ -2,21 +2,19 @@ package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.PlatformProfileRoleRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -34,7 +32,8 @@ public class PlatformProfileRoleService {
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
     final PlatformEntity platformEntity =
         readFromCacheService.readPlatform(platformProfileRoleRequest.getPlatformId());
-    final ProfileEntity profileEntity = profileService.readProfile(platformProfileRoleRequest.getProfileId());
+    final ProfileEntity profileEntity =
+        profileService.readProfile(platformProfileRoleRequest.getProfileId());
     final RoleEntity roleEntity =
         readFromCacheService.readRole(platformProfileRoleRequest.getRoleId());
     platformProfileRoleEntity.setPlatform(platformEntity);

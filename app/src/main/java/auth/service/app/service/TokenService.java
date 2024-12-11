@@ -52,8 +52,7 @@ public class TokenService {
       final Long id,
       final LocalDateTime deletedDate,
       final PlatformEntity platformEntity,
-      final ProfileEntity profileEntity,
-      final String appId) {
+      final ProfileEntity profileEntity) {
     log.debug(
         "Save Token: [{}], [{}], [{}], [{}]",
         id,

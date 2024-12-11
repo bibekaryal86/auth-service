@@ -14,6 +14,7 @@ import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.exception.UserForbiddenException;
+import auth.service.app.exception.UserLockedException;
 import auth.service.app.exception.UserNotActiveException;
 import auth.service.app.exception.UserNotAuthorizedException;
 import auth.service.app.exception.UserNotValidatedException;
@@ -54,6 +55,7 @@ public class CommonUtils {
         || exception instanceof UserNotValidatedException
         || exception instanceof ElementNotActiveException
         || exception instanceof UserNotActiveException
+        || exception instanceof UserLockedException
         || exception instanceof CheckPermissionException) {
       return FORBIDDEN;
     } else if (exception instanceof UserNotAuthorizedException

@@ -1,13 +1,21 @@
 package auth.service.app.service;
 
+import static auth.service.app.util.ConstantUtils.PROFILE_STATUS_NAME_ACTIVE;
 import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static auth.service.app.util.ConstantUtils.ROLE_NAME_STANDARD;
+import static auth.service.app.util.JwtUtils.decodeEmailAddress;
 
 import auth.service.app.exception.ElementMissingException;
+import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.exception.UserLockedException;
+import auth.service.app.exception.UserNotActiveException;
+import auth.service.app.exception.UserNotAuthorizedException;
+import auth.service.app.exception.UserNotValidatedException;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
+import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -43,6 +51,7 @@ public class ProfileService {
   private final ProfileAddressRepository profileAddressRepository;
   private final PlatformProfileRoleRepository platformProfileRoleRepository;
   private final ReadFromCacheService readFromCacheService;
+  private final TokenService tokenService;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -211,6 +220,80 @@ public class ProfileService {
   }
 
   // OTHERS
+  @Transactional
+  public ProfilePasswordTokenResponse loginProfile(
+      final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+    final PlatformEntity platformEntity = platformProfileRoleEntity.getPlatform();
+    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+
+    if (platformEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Platform", String.valueOf(platformId));
+    }
+
+    if (profileEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Profile", profileEntity.getEmail());
+    }
+
+    if (!profileEntity.getIsValidated()) {
+      throw new UserNotValidatedException();
+    }
+
+    if (!Objects.equals(
+        profileEntity.getStatusType().getStatusName().toUpperCase(), PROFILE_STATUS_NAME_ACTIVE)) {
+      throw new UserNotActiveException();
+    }
+
+    if (profileEntity.getLoginAttempts() > 5) {
+      throw new UserLockedException();
+    }
+
+    final boolean isLoginSuccess =
+        passwordUtils.verifyPassword(
+            profilePasswordRequest.getPassword(), profileEntity.getPassword());
+
+    if (!isLoginSuccess) {
+      throw new UserNotAuthorizedException();
+    }
+
+    return tokenService.saveToken(null, null, platformEntity, profileEntity);
+  }
+
+  public ProfileEntity resetProfile(
+      final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+    profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
+    return updateProfile(profileEntity);
+  }
+
+  public ProfileEntity validateAndResetProfile(
+      final Long platformId, final String encodedEmail, final boolean isValidate) {
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        readPlatformProfileRole(platformId, decodeEmailAddress(encodedEmail));
+    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+
+    if (isValidate) {
+      profileEntity.setIsValidated(true);
+      return updateProfile(profileEntity);
+    }
+
+    return profileEntity;
+  }
+
+  private PlatformProfileRoleEntity readPlatformProfileRole(
+      final Long platformId, final String email) {
+    log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
+    return platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email).stream()
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new ElementNotFoundException(
+                    "Platform Profile Role", String.format("%s,%s", platformId, email)));
+  }
+
   private List<ProfileAddressEntity> convertAddressRequestToEntity(
       final List<ProfileAddressRequest> requests,
       final ProfileEntity profileEntity,
