@@ -210,7 +210,7 @@ public class ProfileService {
     return profileRepository.save(profileEntity);
   }
 
-  // others
+  // OTHERS
   private List<ProfileAddressEntity> convertAddressRequestToEntity(
       final List<ProfileAddressRequest> requests,
       final ProfileEntity profileEntity,
