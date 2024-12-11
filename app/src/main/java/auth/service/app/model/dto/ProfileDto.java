@@ -1,5 +1,6 @@
 package auth.service.app.model.dto;
 
+import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenPermission;
 import auth.service.app.model.token.AuthTokenPlatform;
@@ -38,7 +39,7 @@ public class ProfileDto {
   private StatusTypeDto status;
   private List<RoleDto> roles;
 
-  public AuthToken toAuthToken(final PlatformDto platform) {
+  public AuthToken toAuthToken(final PlatformEntity platform) {
     AuthTokenPlatform authTokenPlatform =
         AuthTokenPlatform.builder()
             .id(platform.getId())

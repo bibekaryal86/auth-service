@@ -29,5 +29,5 @@ public class ProfileRequest {
   private Long statusId;
 
   private boolean guestUser;
-  private List<AppUserAddressDto> addresses;
+  private List<ProfileAddressRequest> addresses;
 }

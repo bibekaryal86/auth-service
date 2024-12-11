@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlatformProfileRoleRequest {
   @Positive(message = "PlatformID is required")
-  private int platformId;
+  private long platformId;
 
   @Positive(message = "ProfileID is required")
-  private int profileId;
+  private long profileId;
 
   @Positive(message = "RoleId is required")
-  private int roleId;
+  private long roleId;
 }

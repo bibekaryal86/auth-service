@@ -10,7 +10,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfilePasswordResponse {
+public class ProfilePasswordTokenResponse {
   @ToString.Exclude private String aToken;
   @ToString.Exclude private String rToken;
   private ProfileDto profile;

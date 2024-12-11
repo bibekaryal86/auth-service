@@ -4,10 +4,8 @@ import static auth.service.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
 import static auth.service.app.util.JwtUtils.encodeEmailAddress;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
-import auth.service.app.model.entity.AppUserEntity;
-import auth.service.app.model.entity.AppsEntity;
-import auth.service.app.model.events.AppUserCreatedEvent;
-import auth.service.app.model.events.AppUserUpdatedEvent;
+import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.util.FileReaderUtils;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
@@ -18,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +28,7 @@ public class EmailService {
   private final MailjetClient mailjetClient;
 
   public void sendEmail(
-      final String appName,
+      final String platformName,
       final String emailTo,
       final String emailToFullName,
       final String subject,
@@ -39,7 +36,8 @@ public class EmailService {
       final String html,
       final String attachmentFileName,
       final String attachment) {
-    log.debug("Sending Email: [{}], [{}], [{}], [{}]", appName, emailTo, emailToFullName, subject);
+    log.debug(
+        "Sending Email: [{}], [{}], [{}], [{}]", platformName, emailTo, emailToFullName, subject);
 
     try {
       final String emailFrom = getSystemEnvProperty(ENV_MAILJET_EMAIL_ADDRESS, null);
@@ -49,7 +47,7 @@ public class EmailService {
               .put(Emailv31.Message.CUSTOMID, UUID.randomUUID().toString())
               .put(
                   Emailv31.Message.FROM,
-                  new JSONObject().put("Email", emailFrom).put("Name", appName))
+                  new JSONObject().put("Email", emailFrom).put("Name", platformName))
               .put(
                   Emailv31.Message.TO,
                   new JSONArray()
@@ -91,66 +89,66 @@ public class EmailService {
     }
   }
 
-  @EventListener
-  public void handleUserCreated(final AppUserCreatedEvent appUserCreatedEvent) {
-    final AppsEntity appsEntity = appUserCreatedEvent.getAppsEntity();
-    final AppUserEntity appUserEntity = appUserCreatedEvent.getAppUserEntity();
-    final String baseUrl = appUserCreatedEvent.getBaseUrl();
-    log.info("Handle User Created: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
-    sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
-  }
-
-  @EventListener
-  public void handleUserEmailUpdated(final AppUserUpdatedEvent appUserUpdatedEvent) {
-    final AppsEntity appsEntity = appUserUpdatedEvent.getAppsEntity();
-    final AppUserEntity appUserEntity = appUserUpdatedEvent.getAppUserEntity();
-    final String baseUrl = appUserUpdatedEvent.getBaseUrl();
-    log.info("Handle User Email Updated: [{}], [{}]", appsEntity.getName(), appUserEntity.getId());
-    sendUserValidationEmail(appsEntity, appUserEntity, baseUrl);
-  }
-
   public void sendUserValidationEmail(
-      final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
-    final String appName = convertAppNameToTitleCase(appsEntity.getName());
-    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
+      final PlatformEntity platformEntity,
+      final ProfileEntity profileEntity,
+      final String baseUrl) {
+    final String platformName = convertAppNameToTitleCase(platformEntity.getPlatformName());
+    final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
     final String activationLink =
         String.format(
             "%s/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s",
-            baseUrl, appsEntity.getId(), encodedEmail);
+            baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_validate_user.html")
             .replace("{activation_link}", activationLink)
-            .replace("{app_name}", appName);
+            .replace("{app_name}", platformName);
     final String fullName =
-        String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Validation", appName);
+        String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
+    final String subject = String.format("[%s] User Validation", platformName);
     sendEmail(
-        appName, appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+        platformName,
+        profileEntity.getEmail(),
+        fullName,
+        subject,
+        null,
+        emailHtmlContent,
+        null,
+        null);
   }
 
   public void sendUserResetEmail(
-      final AppsEntity appsEntity, final AppUserEntity appUserEntity, final String baseUrl) {
-    final String appName = convertAppNameToTitleCase(appsEntity.getName());
-    final String encodedEmail = encodeEmailAddress(appUserEntity.getEmail());
+      final PlatformEntity platformEntity,
+      final ProfileEntity profileEntity,
+      final String baseUrl) {
+    final String platformName = convertAppNameToTitleCase(platformEntity.getPlatformName());
+    final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
     final String resetLink =
         String.format(
             "%s/api/v1/na_app_users/user/%s/reset_exit?toReset=%s",
-            baseUrl, appsEntity.getId(), encodedEmail);
+            baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
             .readFileContents("email/templates/email_reset_user.html")
             .replace("{reset_link}", resetLink)
-            .replace("{app_name}", appName);
+            .replace("{app_name}", platformName);
     final String fullName =
-        String.format("%s %s", appUserEntity.getFirstName(), appUserEntity.getLastName());
-    final String subject = String.format("[%s] User Reset", appName);
+        String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
+    final String subject = String.format("[%s] User Reset", platformName);
     sendEmail(
-        appName, appUserEntity.getEmail(), fullName, subject, null, emailHtmlContent, null, null);
+        platformName,
+        profileEntity.getEmail(),
+        fullName,
+        subject,
+        null,
+        emailHtmlContent,
+        null,
+        null);
   }
 
-  private String convertAppNameToTitleCase(final String appName) {
-    final String[] words = appName.replace('-', ' ').split("\\s+");
+  private String convertAppNameToTitleCase(final String platformName) {
+    final String[] words = platformName.replace('-', ' ').split("\\s+");
     for (int i = 0; i < words.length; i++) {
       words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase();
     }

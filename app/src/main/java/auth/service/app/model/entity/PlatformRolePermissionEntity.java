@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "platform_profile_role")
+@Table(name = "platform_role_permission")
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 public class PlatformRolePermissionEntity {
 
-  @EmbeddedId private PlatformProfileRoleId id;
+  @EmbeddedId private PlatformRolePermissionId id;
 
   @MapsId("platformId")
   @ManyToOne

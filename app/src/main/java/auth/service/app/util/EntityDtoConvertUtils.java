@@ -11,7 +11,7 @@ import auth.service.app.model.dto.PlatformDto;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.ProfileAddressDto;
 import auth.service.app.model.dto.ProfileDto;
-import auth.service.app.model.dto.ProfilePasswordResponse;
+import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
@@ -399,10 +399,10 @@ public class EntityDtoConvertUtils {
     return profileAddressEntities.stream().map(this::convertEntityToDtoProfileAddress).toList();
   }
 
-  public ResponseEntity<ProfilePasswordResponse> getResponseErrorProfilePassword(
+  public ResponseEntity<ProfilePasswordTokenResponse> getResponseErrorProfilePassword(
       final Exception exception) {
     return new ResponseEntity<>(
-        ProfilePasswordResponse.builder()
+        ProfilePasswordTokenResponse.builder()
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(

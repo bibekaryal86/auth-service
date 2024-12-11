@@ -45,7 +45,7 @@ public class ProfileEntity extends BaseEntity {
 
   @ManyToOne
   @JoinColumn(name = "status_id")
-  private StatusTypeEntity status;
+  private StatusTypeEntity statusType;
 
   @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(FetchMode.JOIN)

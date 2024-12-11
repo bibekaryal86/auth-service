@@ -7,8 +7,8 @@ import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_ISSUER;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.model.dto.PlatformDto;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,7 +78,7 @@ public class JwtUtils {
   }
 
   public static String encodeAuthCredentials(
-      final PlatformDto platform, final ProfileDto profile, final long expirationMillis) {
+      final PlatformEntity platform, final ProfileDto profile, final long expirationMillis) {
     AuthToken authToken = profile.toAuthToken(platform);
     Map<String, Object> tokenClaim = new HashMap<>();
     tokenClaim.put(TOKEN_CLAIM_AUTH, authToken);
