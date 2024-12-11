@@ -35,7 +35,7 @@ public class ProfileDto {
   private Integer loginAttempts;
 
   private List<ProfileAddressDto> addresses;
-  private ProfileStatusDto status;
+  private StatusTypeDto status;
   private List<RoleDto> roles;
 
   public AuthToken toAuthToken(final PlatformDto platform) {

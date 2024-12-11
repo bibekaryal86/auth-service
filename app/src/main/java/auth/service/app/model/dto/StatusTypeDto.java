@@ -10,12 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfileStatusDto {
+public class StatusTypeDto {
   private Long id;
   private LocalDateTime createdDate;
   private LocalDateTime updatedDate;
   private LocalDateTime deletedDate;
 
+  private String componentName;
   private String statusName;
   private String statusDesc;
 }

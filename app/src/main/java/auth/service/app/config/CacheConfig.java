@@ -12,6 +12,7 @@ public class CacheConfig {
 
   @Bean
   public CacheManager cacheManager() {
-    return new ConcurrentMapCacheManager("roles", "apps", "redirectUrls");
+    return new ConcurrentMapCacheManager(
+        "platforms", "address_types", "status_types", "roles", "redirectUrls");
   }
 }

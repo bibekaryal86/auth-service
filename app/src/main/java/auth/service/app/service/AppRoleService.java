@@ -23,7 +23,7 @@ public class AppRoleService {
   private final AppRoleRepository appRoleRepository;
 
   // CREATE
-  @CacheEvict(value = "role", allEntries = true, beforeInvocation = true)
+  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity createAppRole(final AppRoleRequest appRoleRequest) {
     log.debug("Create App Role: [{}]", appRoleRequest);
     AppRoleEntity appRoleEntity = new AppRoleEntity();
@@ -32,7 +32,7 @@ public class AppRoleService {
   }
 
   // READ
-  @Cacheable(value = "role")
+  @Cacheable(value = "roles")
   public List<AppRoleEntity> readAppRoles() {
     log.debug("Read App Roles...");
     return appRoleRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -46,7 +46,7 @@ public class AppRoleService {
   }
 
   // UPDATE
-  @CacheEvict(value = "role", allEntries = true, beforeInvocation = true)
+  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity updateAppRole(final int id, final AppRoleRequest appRoleRequest) {
     log.debug("Update App Role: [{}], [{}]", id, appRoleRequest);
     final AppRoleEntity appRoleEntity = readAppRole(id);
@@ -55,7 +55,7 @@ public class AppRoleService {
   }
 
   // DELETE
-  @CacheEvict(value = "role", allEntries = true, beforeInvocation = true)
+  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity softDeleteAppRole(final int id) {
     log.info("Soft Delete App Role: [{}]", id);
     final AppRoleEntity appRoleEntity = readAppRole(id);
@@ -63,7 +63,7 @@ public class AppRoleService {
     return appRoleRepository.save(appRoleEntity);
   }
 
-  @CacheEvict(value = "role", allEntries = true, beforeInvocation = true)
+  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   @Transactional
   public void hardDeleteAppRole(final int id) {
     log.info("Hard Delete App Role: [{}]", id);
@@ -72,7 +72,7 @@ public class AppRoleService {
   }
 
   // RESTORE
-  @CacheEvict(value = "role", allEntries = true, beforeInvocation = true)
+  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public AppRoleEntity restoreSoftDeletedAppRole(final int id) {
     log.info("Restore Soft Deleted App Role: [{}]", id);
     final AppRoleEntity appRoleEntity = readAppRole(id);

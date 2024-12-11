@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @AllArgsConstructor
-public class ProfileStatusResponse {
-  private List<ProfileStatusDto> profileStatuses;
+public class StatusTypeResponse {
+  private List<StatusTypeDto> profileStatuses;
   private ResponseMetadata responseMetadata;
 }

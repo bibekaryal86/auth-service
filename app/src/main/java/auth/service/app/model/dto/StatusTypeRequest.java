@@ -8,7 +8,10 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ProfileStatusRequest {
+public class StatusTypeRequest {
+  @NotBlank(message = "Component is required")
+  private String componentName;
+
   @NotBlank(message = "Name is required")
   private String statusName;
 
