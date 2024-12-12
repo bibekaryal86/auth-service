@@ -39,10 +39,8 @@ public class AddressTypeService {
   }
 
   /**
-   * @deprecated This method should be used by AddressTypeService class only for update/delete
-   *     actions. For everything else, use {@link ReadFromCacheService#readAddressType(Long)}
+   * Use {@link ReadFromCacheService#readAddressType(Long)}
    */
-  @Deprecated
   public AddressTypeEntity readAddressType(final Long id) {
     log.debug("Read Address Type: [{}]", id);
     return addressTypeRepository

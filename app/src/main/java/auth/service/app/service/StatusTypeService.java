@@ -40,10 +40,8 @@ public class StatusTypeService {
   }
 
   /**
-   * @deprecated This method should be used by StatusTypeService class only for update/delete
-   *     actions. For everything else, use {@link ReadFromCacheService#readStatusType(Long)}
+   * Use {@link ReadFromCacheService#readStatusType(Long)}
    */
-  @Deprecated
   public StatusTypeEntity readStatusType(final Long id) {
     log.debug("Read Status Type: [{}]", id);
     return statusTypeRepository

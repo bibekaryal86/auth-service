@@ -37,10 +37,8 @@ public class PermissionService {
   }
 
   /**
-   * @deprecated This method should be used by PermissionService class only for update/delete
-   *     actions. For everything else, use {@link ReadFromCacheService#readPermission(Long)}
+   * Use {@link ReadFromCacheService#readPermission(Long)}
    */
-  @Deprecated
   public PermissionEntity readPermission(final Long id) {
     log.debug("Read Permission: [{}]", id);
     return permissionRepository

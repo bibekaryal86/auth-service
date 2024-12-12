@@ -39,10 +39,8 @@ public class RoleService {
   }
 
   /**
-   * @deprecated This method should be used by RoleService class only for update/delete actions. For
-   *     everything else, use {@link ReadFromCacheService#readRole(Long)}
+   * Use {@link ReadFromCacheService#readRole(Long)}
    */
-  @Deprecated
   public RoleEntity readRole(final Long id) {
     log.debug("Read Role: [{}]", id);
     return roleRepository

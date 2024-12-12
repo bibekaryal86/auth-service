@@ -39,10 +39,8 @@ public class PlatformService {
   }
 
   /**
-   * @deprecated This method should be used by PlatformService class only for update/delete actions.
-   *     For everything else, use {@link ReadFromCacheService#readPlatform(Long)}
+   * Use {@link ReadFromCacheService#readPlatform(Long)}
    */
-  @Deprecated
   public PlatformEntity readPlatform(final Long id) {
     log.debug("Read Platform: [{}]", id);
     return platformRepository
