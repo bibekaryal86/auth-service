@@ -18,7 +18,10 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -76,16 +79,19 @@ public class CommonUtils {
         : null;
   }
 
-  public static String convertResponseStatusInfoToJson(
-      final ResponseStatusInfo responseStatusInfo) {
-    return "{"
-        + "\"message\":\""
-        + escapeJson(responseStatusInfo.getMessage())
-        + "\","
-        + "\"errMsg\":\""
-        + escapeJson(responseStatusInfo.getErrMsg())
-        + "\""
-        + "}";
+  public static String convertResponseMetadataToJson(final ResponseMetadata responseMetadata) {
+    try {
+      return new ObjectMapper().writeValueAsString(responseMetadata);
+    } catch (JsonProcessingException e) {
+      return "{"
+          + "\"message\":\""
+          + escapeJson(responseMetadata.getResponseStatusInfo().getMessage())
+          + "\","
+          + "\"errMsg\":\""
+          + escapeJson(responseMetadata.getResponseStatusInfo().getErrMsg())
+          + "\""
+          + "}";
+    }
   }
 
   private static String escapeJson(final String value) {

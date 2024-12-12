@@ -96,20 +96,20 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testConvertResponseStatusInfoToJson() {
+  void testConvertResponseMetadataToJson() {
     ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().message("Success").errMsg("No errors").build();
 
-    String result = CommonUtils.convertResponseStatusInfoToJson(responseStatusInfo);
+    String result = CommonUtils.convertResponseMetadataToJson(responseStatusInfo);
 
     assertEquals("{\"message\":\"Success\",\"errMsg\":\"No errors\"}", result);
   }
 
   @Test
-  void testConvertResponseStatusInfoToJson_MessageIsNull() {
+  void testConvertResponseMetadataToJson_MessageIsNull() {
     ResponseStatusInfo responseStatusInfo =
         ResponseStatusInfo.builder().errMsg("No errors").build();
-    String result = CommonUtils.convertResponseStatusInfoToJson(responseStatusInfo);
+    String result = CommonUtils.convertResponseMetadataToJson(responseStatusInfo);
     assertEquals("{\"message\":\"\",\"errMsg\":\"No errors\"}", result);
   }
 }

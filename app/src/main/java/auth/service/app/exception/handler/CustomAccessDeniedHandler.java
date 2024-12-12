@@ -1,7 +1,8 @@
 package auth.service.app.exception.handler;
 
-import static auth.service.app.util.CommonUtils.convertResponseStatusInfoToJson;
+import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
 
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,22 +26,28 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     response.setStatus(HttpStatus.FORBIDDEN.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    ResponseStatusInfo responseStatusInfo;
+    ResponseMetadata responseMetadata;
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication == null) {
-      responseStatusInfo =
-          ResponseStatusInfo.builder()
-              .errMsg("User is not authenticated to access this resource...")
+      responseMetadata =
+          ResponseMetadata.builder()
+              .responseStatusInfo(
+                  ResponseStatusInfo.builder()
+                      .errMsg("Profile is not authenticated to access this resource...")
+                      .build())
               .build();
     } else {
-      responseStatusInfo =
-          ResponseStatusInfo.builder()
-              .errMsg("User is not authorized to access this resource...")
+      responseMetadata =
+          ResponseMetadata.builder()
+              .responseStatusInfo(
+                  ResponseStatusInfo.builder()
+                      .errMsg("Profile is not authorized to access this resource...")
+                      .build())
               .build();
     }
 
-    final String jsonResponse = convertResponseStatusInfoToJson(responseStatusInfo);
+    final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 }

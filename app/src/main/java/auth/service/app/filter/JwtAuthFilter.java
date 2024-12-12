@@ -1,9 +1,10 @@
 package auth.service.app.filter;
 
-import static auth.service.app.util.CommonUtils.convertResponseStatusInfoToJson;
+import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
 import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
 
 import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
@@ -71,13 +72,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   private void sendUnauthorizedResponse(final HttpServletResponse response, final String errMsg)
       throws IOException {
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(errMsg).build();
+    final ResponseMetadata responseMetadata =
+        ResponseMetadata.builder()
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
+            .build();
 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final String jsonResponse = convertResponseStatusInfoToJson(responseStatusInfo);
+    final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 

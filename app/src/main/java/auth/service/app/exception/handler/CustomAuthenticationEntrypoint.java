@@ -1,7 +1,8 @@
 package auth.service.app.exception.handler;
 
-import static auth.service.app.util.CommonUtils.convertResponseStatusInfoToJson;
+import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
 
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,11 +25,14 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder()
-            .errMsg("User not authenticated to access this resource...")
+    final ResponseMetadata responseMetadata =
+        ResponseMetadata.builder()
+            .responseStatusInfo(
+                ResponseStatusInfo.builder()
+                    .errMsg("Profile not authenticated to access this resource...")
+                    .build())
             .build();
-    final String jsonResponse = convertResponseStatusInfoToJson(responseStatusInfo);
+    final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 }
