@@ -5,6 +5,7 @@ import static auth.service.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
 import auth.service.app.model.dto.AddressTypeDto;
+import auth.service.app.model.dto.AddressTypeResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
@@ -19,6 +20,7 @@ import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.dto.StatusTypeDto;
+import auth.service.app.model.dto.StatusTypeResponse;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -43,8 +45,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-// TODO role in profile
 
 @Component
 @RequiredArgsConstructor
@@ -420,6 +420,55 @@ public class EntityDtoConvertUtils {
         .toList();
   }
 
+  public ResponseEntity<StatusTypeResponse> getResponseSingleStatusType(
+      final StatusTypeEntity statusTypeEntity) {
+    final List<StatusTypeDto> statusTypeDtos =
+        statusTypeEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoStatusType(statusTypeEntity));
+    return new ResponseEntity<>(
+        StatusTypeResponse.builder()
+            .statusTypes(statusTypeDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(statusTypeEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(statusTypeEntity));
+  }
+
+  public ResponseEntity<StatusTypeResponse> getResponseMultipleStatusTypes(
+      final List<StatusTypeEntity> statusTypeEntities) {
+    return ResponseEntity.ok(
+        StatusTypeResponse.builder()
+            .statusTypes(convertEntitiesToDtosStatusTypes(statusTypeEntities))
+            .build());
+  }
+
+  public ResponseEntity<StatusTypeResponse> getResponseDeleteStatusType() {
+    return ResponseEntity.ok(
+        StatusTypeResponse.builder()
+            .statusTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<StatusTypeResponse> getResponseErrorStatusType(final Exception exception) {
+    return new ResponseEntity<>(
+        StatusTypeResponse.builder()
+            .statusTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
   private StatusTypeDto convertEntityToDtoStatusType(final StatusTypeEntity statusTypeEntity) {
     if (statusTypeEntity == null) {
       return null;
@@ -435,6 +484,56 @@ public class EntityDtoConvertUtils {
       return Collections.emptyList();
     }
     return statusTypeEntities.stream().map(this::convertEntityToDtoStatusType).toList();
+  }
+
+  public ResponseEntity<AddressTypeResponse> getResponseSingleAddressType(
+      final AddressTypeEntity addressTypeEntity) {
+    final List<AddressTypeDto> addressTypeDtos =
+        addressTypeEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoAddressType(addressTypeEntity));
+    return new ResponseEntity<>(
+        AddressTypeResponse.builder()
+            .addressTypes(addressTypeDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(addressTypeEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(addressTypeEntity));
+  }
+
+  public ResponseEntity<AddressTypeResponse> getResponseMultipleAddressTypes(
+      final List<AddressTypeEntity> addressTypeEntities) {
+    return ResponseEntity.ok(
+        AddressTypeResponse.builder()
+            .addressTypes(convertEntitiesToDtosAddressTypes(addressTypeEntities))
+            .build());
+  }
+
+  public ResponseEntity<AddressTypeResponse> getResponseDeleteAddressType() {
+    return ResponseEntity.ok(
+        AddressTypeResponse.builder()
+            .addressTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<AddressTypeResponse> getResponseErrorAddressType(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        AddressTypeResponse.builder()
+            .addressTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 
   private AddressTypeDto convertEntityToDtoAddressType(final AddressTypeEntity addressTypeEntity) {
