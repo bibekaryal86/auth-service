@@ -18,16 +18,23 @@ import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
+import auth.service.app.model.dto.StatusTypeDto;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.entity.StatusTypeEntity;
+import auth.service.app.service.PlatformProfileRoleService;
+import auth.service.app.service.PlatformRolePermissionService;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpHeaders;
@@ -37,14 +44,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-// TODO permission in role
 // TODO role in profile
-// TODO PlatformProfileRole
-// TODO PlatformRolePermission
 
 @Component
 @RequiredArgsConstructor
 public class EntityDtoConvertUtils {
+  private final PlatformProfileRoleService platformProfileRoleService;
+  private final PlatformRolePermissionService platformRolePermissionService;
+
   public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
       final PlatformEntity platformEntity) {
     final List<PlatformDto> platformDtos =
@@ -175,12 +182,13 @@ public class EntityDtoConvertUtils {
     return permissionEntities.stream().map(this::convertEntityToDtoPermission).toList();
   }
 
-  public ResponseEntity<RoleResponse> getResponseSingleRole(final RoleEntity roleEntity) {
+  public ResponseEntity<RoleResponse> getResponseSingleRole(
+      final RoleEntity roleEntity, final Long platformId) {
     final HttpStatus httpStatus = getHttpStatusForSingleResponse(roleEntity);
     final List<RoleDto> roleDtos =
         roleEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoRole(roleEntity, true));
+            : List.of(convertEntityToDtoRole(roleEntity, platformId));
     return new ResponseEntity<>(
         RoleResponse.builder()
             .roles(roleDtos)
@@ -193,8 +201,8 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<RoleResponse> getResponseMultipleRoles(
-      final List<RoleEntity> roleEntities) {
-    final List<RoleDto> roleDtos = convertEntitiesToDtosRoles(roleEntities, true);
+      final List<RoleEntity> roleEntities, final Long platformId) {
+    final List<RoleDto> roleDtos = convertEntitiesToDtosRoles(roleEntities, platformId);
     return ResponseEntity.ok(RoleResponse.builder().roles(roleDtos).build());
   }
 
@@ -222,8 +230,7 @@ public class EntityDtoConvertUtils {
         getHttpStatusForErrorResponse(exception));
   }
 
-  public RoleDto convertEntityToDtoRole(
-      final RoleEntity roleEntity, final boolean isIncludePermissions) {
+  public RoleDto convertEntityToDtoRole(final RoleEntity roleEntity, final Long platformId) {
     if (roleEntity == null) {
       return null;
     }
@@ -231,34 +238,56 @@ public class EntityDtoConvertUtils {
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
 
-    if (isIncludePermissions) {
-      // TODO add permissions, consider input of platform
+    if (platformId == null || platformId <= 0L) {
+      return roleDto;
     }
+
+    final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
+        platformRolePermissionService.readPlatformRolePermissions(platformId, roleEntity.getId());
+    final List<PermissionEntity> permissionEntities =
+        platformRolePermissionEntities.stream()
+            .map(PlatformRolePermissionEntity::getPermission)
+            .toList();
+    final List<PermissionDto> permissionDtos = convertEntitiesToDtosPermissions(permissionEntities);
+    roleDto.setPermissions(permissionDtos);
 
     return roleDto;
   }
 
   public List<RoleDto> convertEntitiesToDtosRoles(
-      final List<RoleEntity> roleEntities, boolean isIncludePermissions) {
+      final List<RoleEntity> roleEntities, final Long platformId) {
     if (CollectionUtils.isEmpty(roleEntities)) {
       return Collections.emptyList();
     }
 
-    if (!isIncludePermissions) {
+    if (platformId == null || platformId <= 0L) {
       return roleEntities.stream()
-          .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, false))
+          .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, platformId))
           .toList();
     }
 
     final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).toList();
-    // TODO add permissions, consider input of platform
+    final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
+        platformRolePermissionService.readPlatformRolePermissions(platformId, roleIds);
+
+    Map<Long, List<PermissionDto>> rolePermissionsMap =
+        platformRolePermissionEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    platformRolePermissionEntity -> platformRolePermissionEntity.getRole().getId(),
+                    Collectors.mapping(
+                        platformRolePermissionEntity ->
+                            convertEntityToDtoPermission(
+                                platformRolePermissionEntity.getPermission()),
+                        Collectors.toList())));
 
     return roleEntities.stream()
         .map(
             roleEntity -> {
               RoleDto roleDto = new RoleDto();
               BeanUtils.copyProperties(roleEntity, roleDto);
-              List<PermissionDto> permissions = new ArrayList<>();
+              List<PermissionDto> permissions =
+                  rolePermissionsMap.getOrDefault(roleDto.getId(), Collections.emptyList());
               roleDto.setPermissions(permissions);
               return roleDto;
             })
@@ -266,11 +295,11 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseSingleProfile(
-      final ProfileEntity profileEntity) {
+      final ProfileEntity profileEntity, final Long platformId) {
     final List<ProfileDto> profileDtos =
         profileEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoProfile(profileEntity, true));
+            : List.of(convertEntityToDtoProfile(profileEntity, platformId));
     return new ResponseEntity<>(
         ProfileResponse.builder()
             .profiles(profileDtos)
@@ -283,8 +312,8 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseMultipleProfiles(
-      final List<ProfileEntity> profileEntities) {
-    final List<ProfileDto> profileDtos = convertEntitiesToDtosProfiles(profileEntities, true);
+      final List<ProfileEntity> profileEntities, final Long platformId) {
+    final List<ProfileDto> profileDtos = convertEntitiesToDtosProfiles(profileEntities, platformId);
     return ResponseEntity.ok(ProfileResponse.builder().profiles(profileDtos).build());
   }
 
@@ -316,17 +345,14 @@ public class EntityDtoConvertUtils {
   }
 
   public ProfileDto convertEntityToDtoProfile(
-      final ProfileEntity profileEntity, final boolean isIncludeRoles) {
+      final ProfileEntity profileEntity, final Long platformId) {
     if (profileEntity == null) {
       return null;
     }
     ProfileDto profileDto = new ProfileDto();
     BeanUtils.copyProperties(profileEntity, profileDto, "password", "addresses", "status", "roles");
 
-    if (isIncludeRoles) {
-      // TODO include roles, consider adding platformId as input
-
-    }
+    profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
 
     if (!CollectionUtils.isEmpty(profileEntity.getAddresses())) {
       final List<ProfileAddressDto> profileAddressDtos =
@@ -334,30 +360,81 @@ public class EntityDtoConvertUtils {
       profileDto.setAddresses(profileAddressDtos);
     }
 
+    if (platformId == null || platformId <= 0) {
+      return profileDto;
+    }
+
+    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRoles(platformId, profileEntity.getId());
+    List<RoleEntity> roleEntities =
+        platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getRole).toList();
+    List<RoleDto> roleDtos = convertEntitiesToDtosRoles(roleEntities, platformId);
+    profileDto.setRoles(roleDtos);
+
     return profileDto;
   }
 
   public List<ProfileDto> convertEntitiesToDtosProfiles(
-      final List<ProfileEntity> profileEntities, final boolean isIncludeRoles) {
+      final List<ProfileEntity> profileEntities, final Long platformId) {
     if (CollectionUtils.isEmpty(profileEntities)) {
       return Collections.emptyList();
     }
-    if (!isIncludeRoles) {
+    if (platformId == null || platformId <= 0L) {
       return profileEntities.stream()
-          .map(profileEntity -> convertEntityToDtoProfile(profileEntity, false))
+          .map(profileEntity -> convertEntityToDtoProfile(profileEntity, platformId))
           .toList();
     }
 
     final List<Long> profileIds = profileEntities.stream().map(ProfileEntity::getId).toList();
-    // TODO add roles, consider platformId as input
+    final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRoles(platformId, profileIds);
+    Map<Long, List<RoleDto>> profileRolesMap =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    platformProfileRoleEntity -> platformProfileRoleEntity.getProfile().getId(),
+                    Collectors.mapping(
+                        platformProfileRoleEntity ->
+                            convertEntityToDtoRole(platformProfileRoleEntity.getRole(), platformId),
+                        Collectors.toList())));
 
     return profileEntities.stream()
         .map(
             profileEntity -> {
-              ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, false);
+              ProfileDto profileDto = new ProfileDto();
+              BeanUtils.copyProperties(
+                  profileEntity, profileDto, "password", "addresses", "status", "roles");
+              List<RoleDto> roles =
+                  profileRolesMap.getOrDefault(profileDto.getId(), Collections.emptyList());
+              profileDto.setRoles(roles);
+              profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
+
+              if (!CollectionUtils.isEmpty(profileEntity.getAddresses())) {
+                final List<ProfileAddressDto> profileAddressDtos =
+                    convertEntitiesToDtosProfileAddress(profileEntity.getAddresses());
+                profileDto.setAddresses(profileAddressDtos);
+              }
+
               return profileDto;
             })
         .toList();
+  }
+
+  private StatusTypeDto convertEntityToDtoStatusType(final StatusTypeEntity statusTypeEntity) {
+    if (statusTypeEntity == null) {
+      return null;
+    }
+    final StatusTypeDto statusTypeDto = new StatusTypeDto();
+    BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
+    return statusTypeDto;
+  }
+
+  private List<StatusTypeDto> convertEntitiesToDtosStatusTypes(
+      final List<StatusTypeEntity> statusTypeEntities) {
+    if (CollectionUtils.isEmpty(statusTypeEntities)) {
+      return Collections.emptyList();
+    }
+    return statusTypeEntities.stream().map(this::convertEntityToDtoStatusType).toList();
   }
 
   private AddressTypeDto convertEntityToDtoAddressType(final AddressTypeEntity addressTypeEntity) {

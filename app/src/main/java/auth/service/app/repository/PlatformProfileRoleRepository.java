@@ -15,4 +15,14 @@ public interface PlatformProfileRoleRepository
       "SELECT p FROM PlatformProfileRoleEntity p WHERE p.platform.id = :platformId AND p.profile.email = :email")
   List<PlatformProfileRoleEntity> findByPlatformIdAndProfileEmail(
       @Param("platformId") final Long platformId, @Param("email") final String email);
+
+  @Query(
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre WHERE ppre.id.platformId = :platformId AND ppre.id.profileId = :profileId")
+  List<PlatformProfileRoleEntity> findByPlatformIdAndProfileId(
+      @Param("platformId") final Long platformId, @Param("profileId") final Long profileId);
+
+  @Query(
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre WHERE ppre.id.platformId = :platformId AND ppre.id.profileId IN (:profileIds)")
+  List<PlatformProfileRoleEntity> findByPlatformIdAndProfileIds(
+      @Param("platformId") final Long platformId, @Param("profileIds") final List<Long> profileIds);
 }
