@@ -33,7 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppUserRoleControllerTest extends BaseTest {
+public class PlatformProfileRoleControllerTest extends BaseTest {
 
   private static final int APP_USER_ID = 1;
   private static final int APP_ROLE_ID = 1;

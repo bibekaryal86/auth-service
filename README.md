@@ -42,3 +42,8 @@ TODO:
   * is login_attempts = 5, disable the profile
   * if login successful, set login_attempts to 0
 * CrudInfo implementation in ResponseMetadata
+
+
+
+remove builder from Dtos
+move profileService.readPlatformProfileRole somewhere else

@@ -298,13 +298,18 @@ INSERT INTO permission (permission_name, description)
 VALUES ('PLATFORM_DELETE', 'Can Delete Platform');
 
 INSERT INTO permission (permission_name, description)
-VALUES ('PROFILE_ROLE_ASSIGN', 'Can Add Role to Profile');
+VALUES ('PLATFORM_PROFILE_ROLE_READ', 'Can View Platform Profile Role');
 INSERT INTO permission (permission_name, description)
-VALUES ('PROFILE_ROLE_UNASSIGN', 'Can Remove Role from Profile');
+VALUES ('PLATFORM_ROLE_PERMISSION_READ', 'Can View Platform Role Permission');
+
 INSERT INTO permission (permission_name, description)
-VALUES ('ROLE_PERMISSION_ASSIGN', 'Can Add Permission to Role');
+VALUES ('PLATFORM_PROFILE_ROLE_ASSIGN', 'Can Add Role to Profile in Platform');
 INSERT INTO permission (permission_name, description)
-VALUES ('ROLE_PERMISSION_UNASSIGN', 'Can Remove Permission from Role');
+VALUES ('PLATFORM_PROFILE_ROLE_UNASSIGN', 'Can Remove Role from Profile in Platform');
+INSERT INTO permission (permission_name, description)
+VALUES ('PLATFORM_ROLE_PERMISSION_ASSIGN', 'Can Add Permission to Role in Platform');
+INSERT INTO permission (permission_name, description)
+VALUES ('PLATFORM_ROLE_PERMISSION_UNASSIGN', 'Can Remove Permission from Role in Platform');
 
 INSERT INTO permission (permission_name, description)
 VALUES ('ADDRESS_TYPE_CREATE', 'Can Add Address Type');

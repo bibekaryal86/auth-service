@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppUserNoAuthControllerTest extends BaseTest {
+public class ProfileNoAuthControllerTest extends BaseTest {
 
   private static final String REDIRECT_URL = "https://app-1-redirect-url.com/home/";
   private static String encodedEmail;

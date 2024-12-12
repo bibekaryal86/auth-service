@@ -9,7 +9,11 @@ import auth.service.app.model.dto.AddressTypeResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.PlatformProfileRoleDto;
+import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.dto.PlatformResponse;
+import auth.service.app.model.dto.PlatformRolePermissionDto;
+import auth.service.app.model.dto.PlatformRolePermissionResponse;
 import auth.service.app.model.dto.ProfileAddressDto;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
@@ -588,12 +592,14 @@ public class EntityDtoConvertUtils {
         getHttpStatusForErrorResponse(exception));
   }
 
-  public ResponseEntity<ResponseStatusInfo> getResponseErrorResponseStatusInfo(
+  public ResponseEntity<ResponseMetadata> getResponseErrorResponseMetadata(
       final Exception exception) {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(responseStatusInfo, httpStatus);
+    return new ResponseEntity<>(
+        ResponseMetadata.builder()
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+            .build(),
+        httpStatus);
   }
 
   public ResponseEntity<Void> getResponseValidateProfile(
@@ -619,5 +625,163 @@ public class EntityDtoConvertUtils {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(URI.create(url));
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
+
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseSinglePlatformProfileRole(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
+    final List<PlatformProfileRoleDto> platformProfileRoleDtos =
+        platformProfileRoleEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoPlatformProfileRole(platformProfileRoleEntity));
+    return new ResponseEntity<>(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(platformProfileRoleDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        getResponseStatusInfoForSingleResponse(platformProfileRoleEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(platformProfileRoleEntity));
+  }
+
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseMultiplePlatformProfileRoles(
+      final List<PlatformProfileRoleEntity> platformProfileRoleEntities) {
+    return ResponseEntity.ok(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(
+                convertEntitiesToDtosPlatformProfileRoles(platformProfileRoleEntities))
+            .build());
+  }
+
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseDeletePlatformProfileRole() {
+    return ResponseEntity.ok(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseErrorPlatformProfileRole(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  public PlatformProfileRoleDto convertEntityToDtoPlatformProfileRole(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
+    if (platformProfileRoleEntity == null) {
+      return null;
+    }
+    final PlatformDto platformDto =
+        convertEntityToDtoPlatform(platformProfileRoleEntity.getPlatform());
+    final RoleDto roleDto = convertEntityToDtoRole(platformProfileRoleEntity.getRole(), null);
+    final ProfileDto profileDto =
+        convertEntityToDtoProfile(platformProfileRoleEntity.getProfile(), null);
+    return PlatformProfileRoleDto.builder()
+        .platform(platformDto)
+        .profile(profileDto)
+        .role(roleDto)
+        .build();
+  }
+
+  public List<PlatformProfileRoleDto> convertEntitiesToDtosPlatformProfileRoles(
+      final List<PlatformProfileRoleEntity> platformProfileRoleEntities) {
+    if (CollectionUtils.isEmpty(platformProfileRoleEntities)) {
+      return Collections.emptyList();
+    }
+    return platformProfileRoleEntities.stream()
+        .map(this::convertEntityToDtoPlatformProfileRole)
+        .toList();
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseSinglePlatformRolePermission(
+      final PlatformRolePermissionEntity platformRolePermissionEntity) {
+    final List<PlatformRolePermissionDto> platformRolePermissionDtos =
+        platformRolePermissionEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoPlatformRolePermission(platformRolePermissionEntity));
+    return new ResponseEntity<>(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(platformRolePermissionDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        getResponseStatusInfoForSingleResponse(platformRolePermissionEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(platformRolePermissionEntity));
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseMultiplePlatformRolePermissions(
+      final List<PlatformRolePermissionEntity> platformRolePermissionEntities) {
+    return ResponseEntity.ok(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(
+                convertEntitiesToDtosPlatformRolePermissions(platformRolePermissionEntities))
+            .build());
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseDeletePlatformRolePermission() {
+    return ResponseEntity.ok(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseErrorPlatformRolePermission(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  public PlatformRolePermissionDto convertEntityToDtoPlatformRolePermission(
+      final PlatformRolePermissionEntity platformRolePermissionEntity) {
+    if (platformRolePermissionEntity == null) {
+      return null;
+    }
+    final PlatformDto platformDto =
+        convertEntityToDtoPlatform(platformRolePermissionEntity.getPlatform());
+    final RoleDto roleDto = convertEntityToDtoRole(platformRolePermissionEntity.getRole(), null);
+    final PermissionDto permissionDto =
+        convertEntityToDtoPermission(platformRolePermissionEntity.getPermission());
+    return PlatformRolePermissionDto.builder()
+        .platform(platformDto)
+        .role(roleDto)
+        .permission(permissionDto)
+        .build();
+  }
+
+  public List<PlatformRolePermissionDto> convertEntitiesToDtosPlatformRolePermissions(
+      final List<PlatformRolePermissionEntity> platformRolePermissionEntities) {
+    if (CollectionUtils.isEmpty(platformRolePermissionEntities)) {
+      return Collections.emptyList();
+    }
+    return platformRolePermissionEntities.stream()
+        .map(this::convertEntityToDtoPlatformRolePermission)
+        .toList();
   }
 }

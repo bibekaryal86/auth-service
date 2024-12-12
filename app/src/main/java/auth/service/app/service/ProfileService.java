@@ -283,7 +283,7 @@ public class ProfileService {
     return profileEntity;
   }
 
-  private PlatformProfileRoleEntity readPlatformProfileRole(
+  public PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final String email) {
     log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
     return platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email).stream()

@@ -48,7 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppUserBasicAuthControllerTest extends BaseTest {
+public class ProfileBasicAuthControllerTest extends BaseTest {
 
   private static final String NEW_USER_NEW_EMAIL = "new-user@new-email.com";
   private static final String NEW_USER_NEW_PASSWORD = "new-user-new-password";
