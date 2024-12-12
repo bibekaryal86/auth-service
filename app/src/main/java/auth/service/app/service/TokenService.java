@@ -72,7 +72,7 @@ public class TokenService {
     }
 
     final ProfileDto profileDto =
-        entityDtoConvertUtils.convertEntityToDtoProfile(profileEntity, true);
+        entityDtoConvertUtils.convertEntityToDtoProfile(profileEntity, platformEntity.getId());
 
     TokenEntity tokenEntity = new TokenEntity();
     tokenEntity.setPlatform(platformEntity);
