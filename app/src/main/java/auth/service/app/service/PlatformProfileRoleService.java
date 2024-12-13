@@ -58,14 +58,19 @@ public class PlatformProfileRoleService {
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRoles(
       final Long platformId, final Long profileId) {
-    log.debug("Read Platform Role Permissions: [{}], [{}]", platformId, profileId);
+    log.debug("Read Platform Profile Roles: [{}], [{}]", platformId, profileId);
     return platformProfileRoleRepository.findByPlatformIdAndProfileId(platformId, profileId);
   }
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRoles(
       final Long platformId, final List<Long> profileIds) {
-    log.debug("Read Platform Role Permissions: [{}], [{}]", platformId, profileIds);
+    log.debug("Read Platform Profile Roles: [{}], [{}]", platformId, profileIds);
     return platformProfileRoleRepository.findByPlatformIdAndProfileIds(platformId, profileIds);
+  }
+
+  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final Long platformId) {
+    log.debug("Read Platform Profile Roles: [{}]", platformId);
+    return platformProfileRoleRepository.findByPlatformId(platformId);
   }
 
   public PlatformProfileRoleEntity readPlatformProfileRole(

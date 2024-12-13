@@ -37,7 +37,7 @@ public class PermissionCheck {
     }
   }
 
-  public void canUserAccessAppUser(final String email, final int id) {
+  public void checkProfileAccess(final String email, final long id) {
     try {
       final AuthToken authToken = getAuthentication();
       final boolean isSuperUser = checkSuperUser(authToken);
