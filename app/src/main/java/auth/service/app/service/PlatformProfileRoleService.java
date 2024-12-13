@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlatformProfileRoleService {
 
   private final PlatformProfileRoleRepository platformProfileRoleRepository;
-  private final ProfileService profileService;
   private final ReadFromCacheService readFromCacheService;
 
   // CREATE
@@ -33,7 +32,7 @@ public class PlatformProfileRoleService {
     final PlatformEntity platformEntity =
         readFromCacheService.readPlatform(platformProfileRoleRequest.getPlatformId());
     final ProfileEntity profileEntity =
-        profileService.readProfile(platformProfileRoleRequest.getProfileId());
+            readFromCacheService.readProfile(platformProfileRoleRequest.getProfileId());
     final RoleEntity roleEntity =
         readFromCacheService.readRole(platformProfileRoleRequest.getRoleId());
     platformProfileRoleEntity.setPlatform(platformEntity);
@@ -56,13 +55,14 @@ public class PlatformProfileRoleService {
             Sort.Order.asc("role.roleName")));
   }
 
-  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final Long platformId) {
-    log.debug("Read Platform Profile Roles: [{}]", platformId);
-    return platformProfileRoleRepository.findByPlatformId(platformId);
+  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final Long profileId) {
+    log.debug("Read Platform Profile Roles: [{}]", profileId);
+    return platformProfileRoleRepository.findByProfileId(profileId);
   }
 
-  public PlatformProfileRoleEntity readPlatformProfileRoles(final Long platformId, final String email) {
-    return profileService.readPlatformProfileRole(platformId, email);
+  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final List<Long> profileIds) {
+    log.debug("Read Platform Profile Roles: [{}]", profileIds);
+    return platformProfileRoleRepository.findByProfileIds(profileIds);
   }
 
   public PlatformProfileRoleEntity readPlatformProfileRole(

@@ -34,7 +34,7 @@ public class PlatformProfileRoleController {
   private final AuditService auditService;
 
   @CheckPermission("PLATFORM_PROFILE_ROLE_ASSIGN")
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<PlatformProfileRoleResponse> createPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
       final HttpServletRequest request) {
@@ -53,7 +53,7 @@ public class PlatformProfileRoleController {
   }
 
   @CheckPermission("PLATFORM_PROFILE_ROLE_READ")
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRoles() {
     try {
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
@@ -62,37 +62,6 @@ public class PlatformProfileRoleController {
           platformProfileRoleEntities);
     } catch (Exception ex) {
       log.error("Read Platform Profile Roles...", ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_PROFILE_ROLE_READ")
-  @GetMapping("/platform/{platformId}/profile/{profileId}")
-  public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRolesByProfileId(
-      @PathVariable final long platformId, @PathVariable final long profileId) {
-    try {
-      final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRoles(platformId, profileId);
-      return entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(
-          platformProfileRoleEntities);
-    } catch (Exception ex) {
-      log.error("Read Platform Profile Roles By Profile ID: [{}], [{}]", platformId, profileId, ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_PROFILE_ROLE_READ")
-  @GetMapping("/platform/{platformId}/profiles/{profileIds}")
-  public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRolesByProfileIds(
-      @PathVariable final long platformId, @PathVariable final List<Long> profileIds) {
-    try {
-      final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRoles(platformId, profileIds);
-      return entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(
-          platformProfileRoleEntities);
-    } catch (Exception ex) {
-      log.error(
-          "Read Platform Profile Roles By Profile IDs: [{}], [{}]", platformId, profileIds, ex);
       return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
     }
   }

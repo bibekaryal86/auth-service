@@ -12,12 +12,18 @@ import org.springframework.stereotype.Repository;
 public interface PlatformRolePermissionRepository
     extends JpaRepository<PlatformRolePermissionEntity, PlatformRolePermissionId> {
   @Query(
-      "SELECT prpe FROM PlatformRolePermissionEntity prpe WHERE prpe.id.platformId = :platformId AND prpe.id.roleId = :roleId")
-  List<PlatformRolePermissionEntity> findByPlatformIdAndRoleId(
-      @Param("platformId") final Long platformId, @Param("roleId") final Long roleId);
+          "SELECT prpe FROM PlatformRolePermissionEntity prpe " +
+                  "WHERE prpe.id.roleId = :roleId " +
+                  "ORDER BY prpe.platform.platformName, prpe.role.roleName, prpe.permission.permissionName"
+  )
+  List<PlatformRolePermissionEntity> findByRoleId(
+      @Param("roleId") final Long roleId);
 
   @Query(
-      "SELECT prpe FROM PlatformRolePermissionEntity prpe WHERE prpe.id.platformId = :platformId AND prpe.id.roleId IN (:roleIds)")
-  List<PlatformRolePermissionEntity> findByPlatformIdAndRoleIds(
-      @Param("platformId") final Long platformId, @Param("roleIds") final List<Long> roleIds);
+          "SELECT prpe FROM PlatformRolePermissionEntity prpe " +
+                  "WHERE prpe.id.roleId in (:roleIds) " +
+                  "ORDER BY prpe.platform.platformName, prpe.role.roleName, prpe.permission.permissionName"
+  )
+  List<PlatformRolePermissionEntity> findByRoleIds(
+          @Param("roleIds") final List<Long> roleIds);
 }

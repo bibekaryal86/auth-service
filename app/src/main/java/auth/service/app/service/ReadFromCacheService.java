@@ -4,11 +4,13 @@ import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.repository.AddressTypeRepository;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.repository.PlatformRepository;
+import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.StatusTypeRepository;
 import java.util.List;
@@ -35,6 +37,7 @@ public class ReadFromCacheService {
   private final RoleRepository roleRepository;
   private final StatusTypeService statusTypeService;
   private final StatusTypeRepository statusTypeRepository;
+  private final ProfileRepository profileRepository;
 
   public AddressTypeEntity readAddressType(final Long id) {
     log.debug("Read Address Type: [{}]", id);
@@ -134,5 +137,12 @@ public class ReadFromCacheService {
             .withIgnoreNullValues()
             .withMatcher("roleName", ExampleMatcher.GenericPropertyMatchers.exact());
     return Example.of(probe, matcher); // Exact match for roleName
+  }
+
+  public ProfileEntity readProfile(final Long id) {
+    log.debug("Read Profile: [{}]", id);
+    return profileRepository
+            .findById(id)
+            .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
   }
 }

@@ -55,16 +55,14 @@ public class PlatformRolePermissionService {
             Sort.Order.asc("permission.permissionName")));
   }
 
-  public List<PlatformRolePermissionEntity> readPlatformRolePermissions(
-      final Long platformId, final Long roleId) {
-    log.debug("Read Platform Role Permissions: [{}], [{}]", platformId, roleId);
-    return platformRolePermissionRepository.findByPlatformIdAndRoleId(platformId, roleId);
+  public List<PlatformRolePermissionEntity> readPlatformRolePermissions(final Long roleId) {
+    log.debug("Read Platform Role Permissions: [{}]", roleId);
+    return platformRolePermissionRepository.findByRoleId(roleId);
   }
 
-  public List<PlatformRolePermissionEntity> readPlatformRolePermissions(
-      final Long platformId, final List<Long> roleIds) {
-    log.debug("Read Platform Role Permissions: [{}], [{}]", platformId, roleIds);
-    return platformRolePermissionRepository.findByPlatformIdAndRoleIds(platformId, roleIds);
+  public List<PlatformRolePermissionEntity> readPlatformRolePermissions(final List<Long> roleIds) {
+    log.debug("Read Platform Role Permissions: [{}]", roleIds);
+    return platformRolePermissionRepository.findByRoleIds(roleIds);
   }
 
   public PlatformRolePermissionEntity readPlatformRolePermission(

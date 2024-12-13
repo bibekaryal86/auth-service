@@ -34,7 +34,7 @@ public class PlatformRolePermissionController {
   private final AuditService auditService;
 
   @CheckPermission("PLATFORM_ROLE_PERMISSION_ASSIGN")
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<PlatformRolePermissionResponse> createPlatformRolePermission(
       @Valid @RequestBody final PlatformRolePermissionRequest platformRolePermissionRequest,
       final HttpServletRequest request) {
@@ -54,7 +54,7 @@ public class PlatformRolePermissionController {
   }
 
   @CheckPermission("PLATFORM_ROLE_PERMISSION_READ")
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<PlatformRolePermissionResponse> readPlatformRolePermissions() {
     try {
       final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
@@ -63,36 +63,6 @@ public class PlatformRolePermissionController {
           platformRolePermissionEntities);
     } catch (Exception ex) {
       log.error("Read Platform Role Permissions...", ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformRolePermission(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_ROLE_PERMISSION_READ")
-  @GetMapping("/platform/{platformId}/role/{roleId}")
-  public ResponseEntity<PlatformRolePermissionResponse> readPlatformRolePermissionsByRoleId(
-      @PathVariable final long platformId, @PathVariable final long roleId) {
-    try {
-      final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
-          platformRolePermissionService.readPlatformRolePermissions(platformId, roleId);
-      return entityDtoConvertUtils.getResponseMultiplePlatformRolePermissions(
-          platformRolePermissionEntities);
-    } catch (Exception ex) {
-      log.error("Read Platform Role Permissions By Role ID: [{}], [{}]", platformId, roleId, ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformRolePermission(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_ROLE_PERMISSION_READ")
-  @GetMapping("/platform/{platformId}/roles/{roleIds}")
-  public ResponseEntity<PlatformRolePermissionResponse> readPlatformRolePermissionsByRoleIds(
-      @PathVariable final long platformId, @PathVariable final List<Long> roleIds) {
-    try {
-      final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
-          platformRolePermissionService.readPlatformRolePermissions(platformId, roleIds);
-      return entityDtoConvertUtils.getResponseMultiplePlatformRolePermissions(
-          platformRolePermissionEntities);
-    } catch (Exception ex) {
-      log.error("Read Platform Role Permissions By Role IDs: [{}], [{}]", platformId, roleIds, ex);
       return entityDtoConvertUtils.getResponseErrorPlatformRolePermission(ex);
     }
   }

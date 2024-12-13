@@ -9,7 +9,7 @@ import auth.service.app.model.token.AuthTokenRole;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,13 +37,14 @@ public class ProfileDto {
 
   private List<ProfileAddressDto> addresses;
   private StatusTypeDto status;
-  private List<RoleDto> roles;
 
-  public AuthToken toAuthToken(final PlatformEntity platform) {
+  private Map<PlatformDto, List<RoleDto>> platformRolesMap;
+
+  public AuthToken toAuthToken(final PlatformEntity platformEntity) {
     AuthTokenPlatform authTokenPlatform =
         AuthTokenPlatform.builder()
-            .id(platform.getId())
-            .platformName(platform.getPlatformName())
+            .id(platformEntity.getId())
+            .platformName(platformEntity.getPlatformName())
             .build();
     AuthTokenProfile authTokenProfile =
         AuthTokenProfile.builder()
@@ -53,10 +54,15 @@ public class ProfileDto {
             .isValidated(this.isValidated())
             .isDeleted(this.getDeletedDate() != null)
             .build();
+    List<RoleDto> roleDtos = platformRolesMap.entrySet().stream()
+            .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
+            .map(Map.Entry::getValue)
+            .findFirst()
+            .orElse(Collections.emptyList());
     List<AuthTokenRole> authTokenRoles =
-        CollectionUtils.isEmpty(this.getRoles())
+        CollectionUtils.isEmpty(roleDtos)
             ? Collections.emptyList()
-            : this.getRoles().stream()
+            : roleDtos.stream()
                 .map(
                     appRoleDto ->
                         AuthTokenRole.builder()
@@ -64,22 +70,15 @@ public class ProfileDto {
                             .roleName(appRoleDto.getRoleName())
                             .build())
                 .toList();
-    List<AuthTokenPermission> authTokenPermissions =
-        CollectionUtils.isEmpty(this.getRoles())
-            ? Collections.emptyList()
-            : this.getRoles().stream()
-                .flatMap(
-                    appRoleDto ->
-                        CollectionUtils.isEmpty(appRoleDto.getPermissions())
-                            ? Stream.empty()
-                            : appRoleDto.getPermissions().stream()
-                                .map(
-                                    appPermissionDto ->
-                                        AuthTokenPermission.builder()
-                                            .id(appPermissionDto.getId())
-                                            .permissionName(appPermissionDto.getPermissionName())
-                                            .build()))
-                .toList();
+    List<AuthTokenPermission> authTokenPermissions = roleDtos.stream()
+            .flatMap(roleDto -> roleDto.getPlatformPermissionsMap().entrySet().stream()
+                    .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
+                    .flatMap(entry -> entry.getValue().stream())
+                    .map(permissionDto -> AuthTokenPermission.builder()
+                            .id(permissionDto.getId())
+                            .permissionName(permissionDto.getPermissionName())
+                            .build()))
+            .toList();
     return AuthToken.builder()
         .platform(authTokenPlatform)
         .profile(authTokenProfile)

@@ -112,6 +112,7 @@ public class ProfileService {
     return profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
   }
 
+  /** Use {@link ReadFromCacheService#readProfile(Long)} */
   public ProfileEntity readProfile(final Long id) {
     log.debug("Read Profile: [{}]", id);
     return profileRepository
