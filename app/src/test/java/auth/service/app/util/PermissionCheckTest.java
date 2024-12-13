@@ -89,17 +89,17 @@ public class PermissionCheckTest extends BaseTest {
   }
 
   @Test
-  void testCanUserAccessAppUser_Email() {
-    assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser(APP_USER_EMAIL, 0));
+  void testCheckProfileAccess_Email() {
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(APP_USER_EMAIL, 0));
   }
 
   @Test
-  void testCanUserAccessAppUser_Id() {
-    assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser(null, 1));
+  void testCheckProfileAccess_Id() {
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(null, 1));
   }
 
   @Test
-  void testCanUserAccessAppUser_SuperUser() {
+  void testCheckProfile_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
@@ -107,16 +107,16 @@ public class PermissionCheckTest extends BaseTest {
         new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    assertDoesNotThrow(() -> permissionCheck.canUserAccessAppUser("some@email.com", 99));
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", 99));
     verify(securityContext).getAuthentication();
   }
 
   @Test
-  void testCanUserAccessAppUser_Failure() {
+  void testCheckProfileAccess_Failure() {
     CheckPermissionException exception =
         assertThrows(
             CheckPermissionException.class,
-            () -> permissionCheck.canUserAccessAppUser("some@email.com", 99));
+            () -> permissionCheck.checkProfileAccess("some@email.com", 99));
 
     assertEquals(
         "Permission Denied: User does not have required permissions to user entity...",
