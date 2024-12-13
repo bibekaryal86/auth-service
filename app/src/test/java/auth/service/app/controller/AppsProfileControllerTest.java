@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppsAppUserControllerTest extends BaseTest {
+public class AppsProfileControllerTest extends BaseTest {
 
   private static final int APP_USER_ID = 1;
 

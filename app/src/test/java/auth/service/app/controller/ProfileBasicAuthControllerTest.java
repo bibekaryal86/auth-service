@@ -830,7 +830,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Test
   void testValidateInit_Success() {
-    doNothing().when(emailService).sendUserValidationEmail(any(), any(), any());
+    doNothing().when(emailService).sendProfileValidationEmail(any(), any(), any());
     webTestClient
         .get()
         .uri(
@@ -844,7 +844,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     verify(auditService, after(100).times(1)).auditAppUserValidateInit(any(), any(), any());
     verify(emailService, after(100).times(1))
-        .sendUserValidationEmail(
+        .sendProfileValidationEmail(
             any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 
@@ -852,7 +852,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testValidateInit_Failure() {
     doThrow(new RuntimeException("something happened"))
         .when(emailService)
-        .sendUserValidationEmail(any(), any(), any());
+        .sendProfileValidationEmail(any(), any(), any());
 
     ResponseStatusInfo responseStatusInfo =
         webTestClient
@@ -875,7 +875,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     verify(auditService, after(100).times(1))
         .auditAppUserValidateFailure(any(), any(), any(), any());
     verify(emailService, after(100).times(1))
-        .sendUserValidationEmail(
+        .sendProfileValidationEmail(
             any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 
@@ -896,7 +896,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Test
   void testResetInit_Success() {
-    doNothing().when(emailService).sendUserResetEmail(any(), any(), any());
+    doNothing().when(emailService).sendProfileResetEmail(any(), any(), any());
     webTestClient
         .get()
         .uri(
@@ -910,14 +910,14 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     verify(auditService, after(100).times(1)).auditAppUserResetInit(any(), any(), any());
     verify(emailService, after(100).times(1))
-        .sendUserResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
+        .sendProfileResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 
   @Test
   void testResetInit_Failure() {
     doThrow(new RuntimeException("something happened"))
         .when(emailService)
-        .sendUserResetEmail(any(), any(), any());
+        .sendProfileResetEmail(any(), any(), any());
 
     ResponseStatusInfo responseStatusInfo =
         webTestClient
@@ -939,7 +939,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     verify(auditService, after(100).times(1)).auditAppUserResetFailure(any(), any(), any(), any());
     verify(emailService, after(100).times(1))
-        .sendUserResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
+        .sendProfileResetEmail(any(AppsEntity.class), any(AppUserEntity.class), any(String.class));
   }
 
   @Test

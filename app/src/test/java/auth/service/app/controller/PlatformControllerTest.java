@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppsControllerTest extends BaseTest {
+public class PlatformControllerTest extends BaseTest {
 
   private static AppUserDto appUserDtoNoPermission;
   private static AppUserDto appUserDtoWithPermission;

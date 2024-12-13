@@ -3,7 +3,8 @@ package auth.service.app.model.enums;
 public class TypeEnums {
   public enum EventType {
     CREATE,
-    UPDATE
+    UPDATE_EMAIL,
+    UPDATE_PASSWORD
   }
 
   public enum ComponentName {

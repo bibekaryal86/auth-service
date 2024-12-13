@@ -27,7 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class AppPermissionControllerTest extends BaseTest {
+public class PermissionControllerTest extends BaseTest {
 
   private static final int APP_PERMISSION_ID = 1;
 

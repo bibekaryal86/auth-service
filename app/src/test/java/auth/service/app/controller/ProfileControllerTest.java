@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.CollectionUtils;
 
-public class AppUserControllerTest extends BaseTest {
+public class ProfileControllerTest extends BaseTest {
 
   private static int APP_USER_ID;
   private static AppUserDto appUserDtoNoPermission;

@@ -36,9 +36,7 @@ public class PermissionService {
     return permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName"));
   }
 
-  /**
-   * Use {@link ReadFromCacheService#readPermission(Long)}
-   */
+  /** Use {@link ReadFromCacheService#readPermission(Long)} */
   public PermissionEntity readPermission(final Long id) {
     log.debug("Read Permission: [{}]", id);
     return permissionRepository

@@ -38,9 +38,7 @@ public class AddressTypeService {
     return addressTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "typeName"));
   }
 
-  /**
-   * Use {@link ReadFromCacheService#readAddressType(Long)}
-   */
+  /** Use {@link ReadFromCacheService#readAddressType(Long)} */
   public AddressTypeEntity readAddressType(final Long id) {
     log.debug("Read Address Type: [{}]", id);
     return addressTypeRepository

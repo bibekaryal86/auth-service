@@ -38,9 +38,7 @@ public class RoleService {
     return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "roleName"));
   }
 
-  /**
-   * Use {@link ReadFromCacheService#readRole(Long)}
-   */
+  /** Use {@link ReadFromCacheService#readRole(Long)} */
   public RoleEntity readRole(final Long id) {
     log.debug("Read Role: [{}]", id);
     return roleRepository

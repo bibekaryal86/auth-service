@@ -89,7 +89,7 @@ public class EmailService {
     }
   }
 
-  public void sendUserValidationEmail(
+  public void sendProfileValidationEmail(
       final PlatformEntity platformEntity,
       final ProfileEntity profileEntity,
       final String baseUrl) {
@@ -97,16 +97,16 @@ public class EmailService {
     final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
     final String activationLink =
         String.format(
-            "%s/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s",
+            "%s/api/v1/na_profile/platform/%s/validate_exit?toValidate=%s",
             baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
-            .readFileContents("email/templates/email_validate_user.html")
+            .readFileContents("email/templates/profile_validate_email.html")
             .replace("{activation_link}", activationLink)
-            .replace("{app_name}", platformName);
+            .replace("{platform_name}", platformName);
     final String fullName =
         String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
-    final String subject = String.format("[%s] User Validation", platformName);
+    final String subject = String.format("[%s] Profile Validation", platformName);
     sendEmail(
         platformName,
         profileEntity.getEmail(),
@@ -118,7 +118,7 @@ public class EmailService {
         null);
   }
 
-  public void sendUserResetEmail(
+  public void sendProfileResetEmail(
       final PlatformEntity platformEntity,
       final ProfileEntity profileEntity,
       final String baseUrl) {
@@ -126,16 +126,37 @@ public class EmailService {
     final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
     final String resetLink =
         String.format(
-            "%s/api/v1/na_app_users/user/%s/reset_exit?toReset=%s",
+            "%s/api/v1/na_profile/platform/%s/reset_exit?toReset=%s",
             baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
-            .readFileContents("email/templates/email_reset_user.html")
+            .readFileContents("email/templates/profile_reset_email.html")
             .replace("{reset_link}", resetLink)
-            .replace("{app_name}", platformName);
+            .replace("{platform_name}", platformName);
     final String fullName =
         String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
-    final String subject = String.format("[%s] User Reset", platformName);
+    final String subject = String.format("[%s] Profile Reset", platformName);
+    sendEmail(
+        platformName,
+        profileEntity.getEmail(),
+        fullName,
+        subject,
+        null,
+        emailHtmlContent,
+        null,
+        null);
+  }
+
+  public void sendProfilePasswordEmail(
+      final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
+    final String platformName = convertAppNameToTitleCase(platformEntity.getPlatformName());
+    final String emailHtmlContent =
+        fileReaderUtils
+            .readFileContents("email/templates/password_change_email.html")
+            .replace("{platform_name}", platformName);
+    final String fullName =
+        String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
+    final String subject = String.format("[%s] Password Change Notification", platformName);
     sendEmail(
         platformName,
         profileEntity.getEmail(),

@@ -210,7 +210,7 @@ public class ProfileBasicAuthController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           profileService.readPlatformProfileRole(platformId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      emailService.sendUserValidationEmail(
+      emailService.sendProfileValidationEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
       // TODO audit
       //      runAsync(
@@ -235,7 +235,7 @@ public class ProfileBasicAuthController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           profileService.readPlatformProfileRole(platformId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      emailService.sendUserResetEmail(
+      emailService.sendProfileResetEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
       // TODO audit
       //      runAsync(

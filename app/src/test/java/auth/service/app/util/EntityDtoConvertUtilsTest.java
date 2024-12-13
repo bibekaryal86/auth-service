@@ -611,8 +611,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseDeleteAppUser() {
-    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseDeleteAppUser();
+  void testGetResponseDeleteProfile() {
+    ResponseEntity<AppUserResponse> response = entityDtoConvertUtils.getResponseDeleteProfile();
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -887,7 +887,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseDeleteAppUserRole() {
+  void testGetResponseDeleteProfileRole() {
     ResponseEntity<AppUserRoleResponse> response =
         entityDtoConvertUtils.getResponseDeleteAppUserRole();
 

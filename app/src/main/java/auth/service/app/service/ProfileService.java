@@ -170,17 +170,38 @@ public class ProfileService {
 
     applicationEventPublisher.publishEvent(
         new ProfileEvent(
-            this, TypeEnums.EventType.UPDATE, profileEntity, platformEntity, baseUrlForEmail));
+            this,
+            TypeEnums.EventType.UPDATE_EMAIL,
+            profileEntity,
+            platformEntity,
+            baseUrlForEmail));
 
     return profileEntityUpdated;
   }
 
   public ProfileEntity updateProfilePassword(
-      final Long id, final ProfilePasswordRequest profilePasswordRequest) {
-    log.debug("Update Profile Password: [{}], [{}]", id, profilePasswordRequest.getEmail());
+      final Long id,
+      final ProfilePasswordRequest profilePasswordRequest,
+      final PlatformEntity platformEntity) {
+    log.debug(
+        "Update Profile Password: platform-[{}], profile-[{}], [{}]",
+        platformEntity.getId(),
+        id,
+        profilePasswordRequest);
     final ProfileEntity profileEntity = readProfile(id);
     profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
-    return updateProfile(profileEntity);
+
+    final ProfileEntity profileEntityUpdated = updateProfile(profileEntity);
+
+    applicationEventPublisher.publishEvent(
+        new ProfileEvent(
+            this,
+            TypeEnums.EventType.UPDATE_PASSWORD,
+            profileEntity,
+            platformEntity,
+            ""));
+
+    return profileEntityUpdated;
   }
 
   @Transactional

@@ -321,7 +321,7 @@ public class EntityDtoConvertUtils {
     return ResponseEntity.ok(ProfileResponse.builder().profiles(profileDtos).build());
   }
 
-  public ResponseEntity<ProfileResponse> getResponseDeleteAppUser() {
+  public ResponseEntity<ProfileResponse> getResponseDeleteProfile() {
     return ResponseEntity.ok(
         ProfileResponse.builder()
             .profiles(Collections.emptyList())

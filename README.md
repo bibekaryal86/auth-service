@@ -18,10 +18,6 @@
     * Also implement RequestMetadata
 
 
-redo audit service like in python
-replace User with Profile (esp in exceptions and messages)
-
-
 There are 2 database instances created to support local development and production data.
 This uses free instance from `neon.tech` for database requirements. In neon tech it is possible
 to create multiple instances of database under one project, just like branching out code in a repo.
@@ -47,3 +43,6 @@ TODO:
 
 remove builder from Dtos
 move profileService.readPlatformProfileRole somewhere else
+platform profile role and platform role permission look up by profileId and roleId only
+  in the DTO, create a map of platform, list<role>, platform, list<permission>
+remove / from controllers

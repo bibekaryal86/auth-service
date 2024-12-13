@@ -135,26 +135,27 @@ public class EmailServiceTest extends BaseTest {
   }
 
   @Test
-  void testSendUserValidationEmail() throws Exception {
+  void testSendProfileValidationEmail() throws Exception {
     when(mailjetClient.post(any(MailjetRequest.class)))
         .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
     when(fileReaderUtils.readFileContents(anyString()))
         .thenReturn("{app_name} : {activation_link}");
 
-    emailService.sendUserValidationEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
+    emailService.sendProfileValidationEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
     verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
     verify(fileReaderUtils, times(1))
-        .readFileContents(eq("email/templates/email_validate_user.html"));
+        .readFileContents(eq("email/templates/profile_validate_email.html"));
   }
 
   @Test
-  void testSendUserResetEmail() throws Exception {
+  void testSendProfileResetEmail() throws Exception {
     when(mailjetClient.post(any(MailjetRequest.class)))
         .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
     when(fileReaderUtils.readFileContents(anyString())).thenReturn("{app_name} : {reset_link}");
 
-    emailService.sendUserResetEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
+    emailService.sendProfileResetEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
     verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    verify(fileReaderUtils, times(1)).readFileContents(eq("email/templates/email_reset_user.html"));
+    verify(fileReaderUtils, times(1))
+        .readFileContents(eq("email/templates/profile_reset_email.html"));
   }
 }

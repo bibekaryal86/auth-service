@@ -28,6 +28,11 @@ public class EventListeners {
         eventType,
         platformEntity.getId(),
         profileEntity.getId());
-    emailService.sendUserValidationEmail(platformEntity, profileEntity, baseUrl);
+
+    if (eventType == TypeEnums.EventType.CREATE || eventType == TypeEnums.EventType.UPDATE_EMAIL) {
+      emailService.sendProfileValidationEmail(platformEntity, profileEntity, baseUrl);
+    } else if (eventType == TypeEnums.EventType.UPDATE_PASSWORD) {
+      emailService.sendProfilePasswordEmail(platformEntity, profileEntity);
+    }
   }
 }
