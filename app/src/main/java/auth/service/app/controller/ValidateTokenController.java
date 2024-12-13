@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController("/api/v1/validate")
-public class AppValidateTokenController {
+@RestController("/api/v1/validate/token")
+public class ValidateTokenController {
 
-  @GetMapping(value = "/token/{platformId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{platformId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AuthToken> validateToken(@PathVariable final Long platformId) {
     // Token is validated by Spring Security already, now need to return AuthToken
     try {
