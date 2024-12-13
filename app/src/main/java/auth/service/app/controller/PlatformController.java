@@ -1,12 +1,11 @@
 package auth.service.app.controller;
 
-
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.service.PlatformService;
 import auth.service.app.service.AuditService;
+import auth.service.app.service.PlatformService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -43,7 +42,7 @@ public class PlatformController {
     try {
       final PlatformEntity platformEntity = platformService.createPlatform(platformRequest);
       // TODO audit
-      //runAsync(() -> auditService.auditAppsCreate(request, platformEntity));
+      // runAsync(() -> auditService.auditAppsCreate(request, platformEntity));
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
       log.error("Create App: [{}]", platformRequest, ex);
@@ -84,7 +83,7 @@ public class PlatformController {
     try {
       final PlatformEntity platformEntity = platformService.updatePlatform(id, platformRequest);
       // TODO audit
-      //runAsync(() -> auditService.auditAppsUpdate(request, platformEntity));
+      // runAsync(() -> auditService.auditAppsUpdate(request, platformEntity));
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
       log.error("Update App: [{}] | [{}]", id, platformRequest, ex);

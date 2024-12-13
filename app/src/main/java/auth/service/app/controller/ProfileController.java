@@ -1,7 +1,6 @@
 package auth.service.app.controller;
 
 import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
-import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.ProfileEmailRequest;
@@ -91,7 +90,7 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> readProfileByEmail(@PathVariable final String email) {
     try {
       permissionCheck.checkProfileAccess(email, 0);
-      final ProfileEntity profileEntity = profileService.readProfile(email);
+      final ProfileEntity profileEntity = profileService.readProfileByEmail(email);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error("Read Profile By Email: [{}]", email, ex);
@@ -130,8 +129,7 @@ public class ProfileController {
       permissionCheck.checkProfileAccess("", id);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleService.readPlatformProfileRole(
-              platformId, profileEmailRequest.getOldEmail());
+          profileService.readPlatformProfileRole(platformId, profileEmailRequest.getOldEmail());
       final ProfileEntity profileEntity =
           profileService.updateProfileEmail(
               id, profileEmailRequest, platformProfileRoleEntity.getPlatform(), baseUrl);
@@ -153,15 +151,20 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess("", id);
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleService.readPlatformProfileRole(
-              platformId, profilePasswordRequest.getEmail());
+          profileService.readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
       final ProfileEntity profileEntity =
-          profileService.updateProfilePassword(id, profilePasswordRequest, platformProfileRoleEntity.getPlatform());
+          profileService.updateProfilePassword(
+              id, profilePasswordRequest, platformProfileRoleEntity.getPlatform());
       // TODO audit
-      //runAsync(() -> auditService.auditProfileUpdatePassword(request, profileEntity));
+      // runAsync(() -> auditService.auditProfileUpdatePassword(request, profileEntity));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
-      log.error("Update Profile Password: [{}] | [{}] | [{}]", platformId, id, profilePasswordRequest, ex);
+      log.error(
+          "Update Profile Password: [{}] | [{}] | [{}]",
+          platformId,
+          id,
+          profilePasswordRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -175,7 +178,7 @@ public class ProfileController {
       permissionCheck.checkProfileAccess("", profileId);
       final ProfileEntity profileEntity = profileService.deleteProfileAddress(profileId, addressId);
       // TODO audit
-      r//unAsync(() -> auditService.auditProfileDeleteAddress(request, profileEntity));
+      // unAsync(() -> auditService.auditProfileDeleteAddress(request, profileEntity));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error("Delete Profile Address: [{}] | [{}]", profileId, addressId, ex);
@@ -205,7 +208,7 @@ public class ProfileController {
     try {
       profileService.hardDeleteProfile(id);
       // TODO audit
-      //runAsync(() -> auditService.auditProfileDeleteHard(request, id));
+      // runAsync(() -> auditService.auditProfileDeleteHard(request, id));
       return entityDtoConvertUtils.getResponseDeleteProfile();
     } catch (Exception ex) {
       log.error("Hard Delete Profile: [{}]", id, ex);

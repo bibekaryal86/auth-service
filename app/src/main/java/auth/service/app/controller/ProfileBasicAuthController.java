@@ -73,7 +73,7 @@ public class ProfileBasicAuthController {
       //          () ->
       //              auditService.auditProfileCreate(
       //                  request, platformId, profileEntity, profileRequest.isGuestUser()));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, platformId);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

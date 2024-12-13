@@ -196,11 +196,7 @@ public class ProfileService {
 
     applicationEventPublisher.publishEvent(
         new ProfileEvent(
-            this,
-            TypeEnums.EventType.UPDATE_PASSWORD,
-            profileEntity,
-            platformEntity,
-            ""));
+            this, TypeEnums.EventType.UPDATE_PASSWORD, profileEntity, platformEntity, ""));
 
     return profileEntityUpdated;
   }

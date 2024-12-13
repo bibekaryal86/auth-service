@@ -32,7 +32,7 @@ public class PlatformProfileRoleService {
     final PlatformEntity platformEntity =
         readFromCacheService.readPlatform(platformProfileRoleRequest.getPlatformId());
     final ProfileEntity profileEntity =
-            readFromCacheService.readProfile(platformProfileRoleRequest.getProfileId());
+        readFromCacheService.readProfile(platformProfileRoleRequest.getProfileId());
     final RoleEntity roleEntity =
         readFromCacheService.readRole(platformProfileRoleRequest.getRoleId());
     platformProfileRoleEntity.setPlatform(platformEntity);
@@ -67,7 +67,7 @@ public class PlatformProfileRoleService {
 
   public PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
-    log.info("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    log.debug("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
     return platformProfileRoleRepository
         .findById(new PlatformProfileRoleId(platformId, profileId, roleId))
         .orElseThrow(

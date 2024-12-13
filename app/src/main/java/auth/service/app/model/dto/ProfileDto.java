@@ -54,7 +54,8 @@ public class ProfileDto {
             .isValidated(this.isValidated())
             .isDeleted(this.getDeletedDate() != null)
             .build();
-    List<RoleDto> roleDtos = platformRolesMap.entrySet().stream()
+    List<RoleDto> roleDtos =
+        platformRolesMap.entrySet().stream()
             .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
             .map(Map.Entry::getValue)
             .findFirst()
@@ -70,14 +71,19 @@ public class ProfileDto {
                             .roleName(appRoleDto.getRoleName())
                             .build())
                 .toList();
-    List<AuthTokenPermission> authTokenPermissions = roleDtos.stream()
-            .flatMap(roleDto -> roleDto.getPlatformPermissionsMap().entrySet().stream()
-                    .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
-                    .flatMap(entry -> entry.getValue().stream())
-                    .map(permissionDto -> AuthTokenPermission.builder()
-                            .id(permissionDto.getId())
-                            .permissionName(permissionDto.getPermissionName())
-                            .build()))
+    List<AuthTokenPermission> authTokenPermissions =
+        roleDtos.stream()
+            .flatMap(
+                roleDto ->
+                    roleDto.getPlatformPermissionsMap().entrySet().stream()
+                        .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
+                        .flatMap(entry -> entry.getValue().stream())
+                        .map(
+                            permissionDto ->
+                                AuthTokenPermission.builder()
+                                    .id(permissionDto.getId())
+                                    .permissionName(permissionDto.getPermissionName())
+                                    .build()))
             .toList();
     return AuthToken.builder()
         .platform(authTokenPlatform)

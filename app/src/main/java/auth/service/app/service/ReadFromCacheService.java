@@ -142,7 +142,7 @@ public class ReadFromCacheService {
   public ProfileEntity readProfile(final Long id) {
     log.debug("Read Profile: [{}]", id);
     return profileRepository
-            .findById(id)
-            .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
+        .findById(id)
+        .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
   }
 }
