@@ -52,7 +52,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   static void setUpBeforeAll() {
     appUserDtoNoPermission = TestData.getAppUserDto();
     bearerAuthCredentialsNoPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoNoPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoNoPermission);
   }
 
   @AfterEach
@@ -64,9 +64,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void testCreateAppRolePermission_Success() {
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(
-            APP_ID, "ROLE_PERMISSION_ASSIGN", appUserDtoNoPermission);
+                PLATFORM_ID, "ROLE_PERMISSION_ASSIGN", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     int appRoleId = 6;
     int appPermissionId = 6;
@@ -105,7 +105,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void testCreateAppRolePermission_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     int appRoleId = 6;
     int appPermissionId = 6;
@@ -197,9 +197,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   @ValueSource(strings = {"ROLE_READ", "PERMISSION_READ"})
   void testReadAppRolePermissions_Success(String permissionName) {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, permissionName, appUserDtoNoPermission);
+        TestData.getAppUserDtoWithPermission(PLATFORM_ID, permissionName, appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -222,7 +222,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void testReadAppRolePermissions_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -266,9 +266,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   @ValueSource(strings = {"ROLE_READ", "PERMISSION_READ"})
   void testReadAppRolePermissionsByRoleId_Success(String permissionName) {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, permissionName, appUserDtoNoPermission);
+        TestData.getAppUserDtoWithPermission(PLATFORM_ID, permissionName, appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -291,7 +291,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void testReadAppRolePermissionsByRoleId_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -335,9 +335,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   @ValueSource(strings = {"ROLE_READ", "PERMISSION_READ"})
   void testReadAppRolePermissionsByAppIdAndRoleIds_Success(String permissionName) {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, permissionName, appUserDtoNoPermission);
+        TestData.getAppUserDtoWithPermission(PLATFORM_ID, permissionName, appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -360,7 +360,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void testReadAppRolePermissionsByAppIdAndRoleIds_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -404,9 +404,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   @ValueSource(strings = {"ROLE_READ", "PERMISSION_READ"})
   void readAppRolePermission_Success(String permissionName) {
     appUserDtoWithPermission =
-        TestData.getAppUserDtoWithPermission(APP_ID, permissionName, appUserDtoNoPermission);
+        TestData.getAppUserDtoWithPermission(PLATFORM_ID, permissionName, appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -437,7 +437,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   void readAppRolePermission_Success_NoPermission_ButSuperUser() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -503,9 +503,9 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
 
     appUserDtoWithPermission =
         TestData.getAppUserDtoWithPermission(
-            APP_ID, "ROLE_PERMISSION_UNASSIGN", appUserDtoNoPermission);
+                PLATFORM_ID, "ROLE_PERMISSION_UNASSIGN", appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient
@@ -554,7 +554,7 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppRolePermissionResponse appRolePermissionResponse =
         webTestClient

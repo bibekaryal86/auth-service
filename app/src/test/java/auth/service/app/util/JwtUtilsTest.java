@@ -61,13 +61,13 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   void testEncodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(PLATFORM_ID, appUserDto, 3600000L);
     assertNotNull(token);
   }
 
   @Test
   void testDecodeAuthCredentials() {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 3600000L);
+    String token = JwtUtils.encodeAuthCredentials(PLATFORM_ID, appUserDto, 3600000L);
     Map<String, AuthToken> result = JwtUtils.decodeAuthCredentials(token);
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -87,7 +87,7 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   void testDecodeAuthCredentials_ExpiredToken() throws InterruptedException {
-    String token = JwtUtils.encodeAuthCredentials(APP_ID, appUserDto, 1000);
+    String token = JwtUtils.encodeAuthCredentials(PLATFORM_ID, appUserDto, 1000);
     Thread.sleep(1000);
     JwtInvalidException exception =
         assertThrows(

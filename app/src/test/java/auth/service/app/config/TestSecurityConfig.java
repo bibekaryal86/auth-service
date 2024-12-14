@@ -3,7 +3,7 @@ package auth.service.app.config;
 import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 
-import auth.service.app.service.AppUserService;
+import auth.service.app.service.ProfileService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +16,8 @@ public class TestSecurityConfig extends SecurityConfigBase {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   protected TestSecurityConfig(
-      final AppUserService appUserService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
-    super(appUserService);
+          final ProfileService profileService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
+    super(profileService);
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
   }
 

@@ -126,7 +126,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .post()
-            .uri(String.format("/api/v1/basic_app_users/user/%s/create", APP_ID))
+            .uri(String.format("/api/v1/basic_app_users/user/%s/create", PLATFORM_ID))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .bodyValue(appUserRequest)
             .exchange()
@@ -158,7 +158,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     // cleanup
     int appUserId = appUserResponse.getUsers().getFirst().getId();
-    appsAppUserRepository.deleteById(new AppsAppUserId(APP_ID, appUserId));
+    appsAppUserRepository.deleteById(new AppsAppUserId(PLATFORM_ID, appUserId));
     appUserRoleRepository.deleteById(new AppUserRoleId(appUserId, 7));
     appUserRepository.deleteById(appUserResponse.getUsers().getFirst().getId());
   }

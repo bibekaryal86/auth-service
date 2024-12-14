@@ -56,9 +56,9 @@ public class ProfileControllerTest extends BaseTest {
     APP_USER_ID = appUserDtoNoPermission.getId();
 
     bearerAuthCredentialsNoPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoNoPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoNoPermission);
     bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
   }
 
   @AfterEach
@@ -122,7 +122,7 @@ public class ProfileControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .get()
-            .uri(String.format("/api/v1/app_users/app/%s", APP_ID))
+            .uri(String.format("/api/v1/app_users/app/%s", PLATFORM_ID))
             .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
             .exchange()
             .expectStatus()
@@ -439,7 +439,7 @@ public class ProfileControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, APP_USER_ID))
+            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", PLATFORM_ID, APP_USER_ID))
             .bodyValue(userUpdateEmailRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
             .exchange()
@@ -478,7 +478,7 @@ public class ProfileControllerTest extends BaseTest {
     AppUserResponse appUserResponse =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, APP_USER_ID))
+            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", PLATFORM_ID, APP_USER_ID))
             .bodyValue(userUpdateEmailRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -516,7 +516,7 @@ public class ProfileControllerTest extends BaseTest {
 
     webTestClient
         .put()
-        .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, 2))
+        .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", PLATFORM_ID, 2))
         .bodyValue(userUpdateEmailRequest)
         .exchange()
         .expectStatus()
@@ -532,7 +532,7 @@ public class ProfileControllerTest extends BaseTest {
 
     webTestClient
         .put()
-        .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, 2))
+        .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", PLATFORM_ID, 2))
         .bodyValue(userUpdateEmailRequest)
         .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
@@ -548,7 +548,7 @@ public class ProfileControllerTest extends BaseTest {
     ResponseStatusInfo responseStatusInfo =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", APP_ID, 2))
+            .uri(String.format("/api/v1/app_users/app/%s/user/%s/email", PLATFORM_ID, 2))
             .bodyValue(userUpdateEmailRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
             .exchange()
@@ -758,7 +758,7 @@ public class ProfileControllerTest extends BaseTest {
   void testSoftDeleteAppUser_Success() {
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppUserResponse appUserResponse =
         webTestClient
@@ -814,7 +814,7 @@ public class ProfileControllerTest extends BaseTest {
 
     appUserDtoWithPermission = TestData.getAppUserDtoWithSuperUserRole(appUserDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(APP_ID, appUserDtoWithPermission);
+        TestData.getBearerAuthCredentialsForTest(PLATFORM_ID, appUserDtoWithPermission);
 
     AppUserResponse appUserResponse =
         webTestClient

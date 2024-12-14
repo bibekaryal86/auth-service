@@ -32,7 +32,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
 
   @BeforeEach
   void setUpBeforeEach() {
-    when(envServiceConnector.getRedirectUrls()).thenReturn(Map.of(APP_ID, REDIRECT_URL));
+    when(envServiceConnector.getRedirectUrls()).thenReturn(Map.of(PLATFORM_ID, REDIRECT_URL));
   }
 
   @AfterEach
@@ -46,7 +46,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", APP_ID, encodedEmail))
+                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", PLATFORM_ID, encodedEmail))
         .exchange()
         .expectStatus()
         .is3xxRedirection()
@@ -63,7 +63,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", APP_ID, APP_USER_EMAIL))
+                "/api/v1/na_app_users/user/%s/validate_exit?toValidate=%s", PLATFORM_ID, APP_USER_EMAIL))
         .exchange()
         .expectStatus()
         .is3xxRedirection()
@@ -81,7 +81,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", APP_ID, encodedEmail))
+                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", PLATFORM_ID, encodedEmail))
         .exchange()
         .expectStatus()
         .is3xxRedirection()
@@ -98,7 +98,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", APP_ID, APP_USER_EMAIL))
+                "/api/v1/na_app_users/user/%s/reset_exit?toReset=%s", PLATFORM_ID, APP_USER_EMAIL))
         .exchange()
         .expectStatus()
         .is3xxRedirection()
