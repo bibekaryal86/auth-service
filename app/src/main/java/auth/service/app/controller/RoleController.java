@@ -5,6 +5,7 @@ import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.service.AuditService;
+import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.RoleService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoleController {
 
   private final RoleService roleService;
+  private final CircularDependencyService circularDependencyService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
@@ -66,7 +68,7 @@ public class RoleController {
   @GetMapping("/role/{id}")
   public ResponseEntity<RoleResponse> readRole(@PathVariable final long id) {
     try {
-      final RoleEntity roleEntity = roleService.readRole(id);
+      final RoleEntity roleEntity = circularDependencyService.readRole(id);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity);
     } catch (Exception ex) {
       log.error("Read Role: [{}]", id, ex);

@@ -5,6 +5,7 @@ import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.service.AuditService;
+import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PlatformService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlatformController {
 
   private final PlatformService platformService;
+  private final CircularDependencyService circularDependencyService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
@@ -66,7 +68,7 @@ public class PlatformController {
   @GetMapping("/platform/{id}")
   public ResponseEntity<PlatformResponse> readPlatform(@PathVariable final long id) {
     try {
-      final PlatformEntity platformEntity = platformService.readPlatform(id);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
       log.error("Read Platform: [{}]", id, ex);

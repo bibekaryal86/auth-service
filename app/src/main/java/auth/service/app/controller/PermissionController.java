@@ -5,6 +5,7 @@ import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.service.AuditService;
+import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermissionController {
 
   private final PermissionService permissionService;
+  private final CircularDependencyService circularDependencyService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
@@ -68,7 +70,7 @@ public class PermissionController {
   @GetMapping("/permission/{id}")
   public ResponseEntity<PermissionResponse> readPermission(@PathVariable final long id) {
     try {
-      final PermissionEntity permissionEntity = permissionService.readPermission(id);
+      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id);
       return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
     } catch (Exception ex) {
       log.error("Read Permission: [{}]", id, ex);
