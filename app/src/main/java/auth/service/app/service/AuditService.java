@@ -64,9 +64,9 @@ public class AuditService {
 
   public void auditPermission(
       final HttpServletRequest request,
+      final PermissionEntity permissionEntity,
       final AuditEnums.AuditPermission eventType,
-      final String eventDesc,
-      final PermissionEntity permissionEntity) {
+      final String eventDesc) {
     try {
       AuditPermissionEntity auditPermissionEntity = new AuditPermissionEntity();
       auditPermissionEntity.setEventType(eventType.name());
@@ -92,9 +92,9 @@ public class AuditService {
 
   public void auditRole(
       final HttpServletRequest request,
+      final RoleEntity roleEntity,
       final AuditEnums.AuditRole eventType,
-      final String eventDesc,
-      final RoleEntity roleEntity) {
+      final String eventDesc) {
     try {
       AuditRoleEntity auditRoleEntity = new AuditRoleEntity();
       auditRoleEntity.setEventType(eventType.name());
@@ -116,9 +116,9 @@ public class AuditService {
 
   public void auditPlatform(
       final HttpServletRequest request,
+      final PlatformEntity platformEntity,
       final AuditEnums.AuditPlatform eventType,
-      final String eventDesc,
-      final PlatformEntity platformEntity) {
+      final String eventDesc) {
     try {
       AuditPlatformEntity auditPlatformEntity = new AuditPlatformEntity();
       auditPlatformEntity.setEventType(eventType.name());
@@ -144,9 +144,9 @@ public class AuditService {
 
   public void auditProfile(
       final HttpServletRequest request,
+      final ProfileEntity profileEntity,
       final AuditEnums.AuditProfile eventType,
-      final String eventDesc,
-      final ProfileEntity profileEntity) {
+      final String eventDesc) {
     try {
       AuditProfileEntity auditProfileEntity = new AuditProfileEntity();
       auditProfileEntity.setEventType(eventType.name());

@@ -2,6 +2,7 @@ package auth.service.app.controller;
 
 import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.JwtInvalidException;
@@ -15,6 +16,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.TokenEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
@@ -68,11 +70,16 @@ public class ProfileBasicAuthController {
       final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
       final ProfileEntity profileEntity =
           profileService.createProfile(platformEntity, profileRequest, baseUrl);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileCreate(
-      //                  request, platformId, profileEntity, profileRequest.isGuestUser()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  profileEntity,
+                  AuditEnums.AuditProfile.PROFILE_CREATE,
+                  String.format(
+                      "Profile Create [Id: %s] - [Email: %s]",
+                      profileEntity.getId(), profileEntity.getEmail())));
+
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
@@ -86,21 +93,35 @@ public class ProfileBasicAuthController {
       @Valid @RequestBody final ProfilePasswordRequest profilePasswordRequest,
       final HttpServletRequest request) {
     try {
+      final ProfileEntity profileEntity =
+          profileService.readProfileByEmail(profilePasswordRequest.getEmail());
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
           profileService.loginProfile(platformId, profilePasswordRequest);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileLoginSuccess(
-      //                  request, platformId, userLoginResponse.getUser().getId()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  profileEntity,
+                  AuditEnums.AuditProfile.PROFILE_LOGIN,
+                  String.format(
+                      "Profile Login [Id: %s] - [Email: %s]",
+                      profileEntity.getId(), profileEntity.getEmail())));
       return ResponseEntity.ok(profilePasswordTokenResponse);
     } catch (Exception ex) {
       log.error("Login Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileLoginFailure(
-      //                  request, platformId, profilePasswordRequest.getEmail(), ex));
+      final ProfileEntity profileEntity =
+          profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
+      if (profileEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    profileEntity,
+                    AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR,
+                    String.format(
+                        "Profile Login Error [Id: %s] - [Email: %s]",
+                        profileEntity.getId(), profileEntity.getEmail())));
+      }
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
@@ -124,19 +145,35 @@ public class ProfileBasicAuthController {
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
           tokenService.saveToken(
               tokenEntity.getId(), null, tokenEntity.getPlatform(), tokenEntity.getProfile());
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileTokenRefreshSuccess(
-      //                  request, platformId, appTokenEntity.getUser()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  tokenEntity.getProfile(),
+                  AuditEnums.AuditProfile.TOKEN_REFRESH,
+                  String.format(
+                      "Profile Token Refresh [Id: %s] - [Email: %s] - [Platform: %s]",
+                      tokenEntity.getProfile().getId(),
+                      tokenEntity.getProfile().getEmail(),
+                      tokenEntity.getPlatform().getId())));
       return ResponseEntity.ok(profilePasswordTokenResponse);
     } catch (Exception ex) {
       log.error("Refresh Token: [{}] | [{}]", platformId, tokenRequest, ex);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileTokenRefreshFailure(
-      //                  request, platformId, appTokenRequest.getProfileId(), ex));
+      final TokenEntity tokenEntity =
+          tokenService.readTokenByRefreshTokenNoException(tokenRequest.getRefreshToken());
+      if (tokenEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    tokenEntity.getProfile(),
+                    AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR,
+                    String.format(
+                        "Profile Token Refresh Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                        tokenEntity.getProfile().getId(),
+                        tokenEntity.getProfile().getEmail(),
+                        tokenEntity.getPlatform().getId())));
+      }
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
@@ -151,7 +188,7 @@ public class ProfileBasicAuthController {
         throw new ElementMissingException("Token", "Access");
       }
 
-      Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(tokenRequest.getRefreshToken());
+      Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(tokenRequest.getAccessToken());
       final TokenEntity tokenEntity =
           tokenService.readTokenByAccessToken(tokenRequest.getAccessToken());
 
@@ -163,40 +200,35 @@ public class ProfileBasicAuthController {
           tokenEntity.getPlatform(),
           tokenEntity.getProfile());
 
-      // TODO audit
-      //      runAsync(
-      //          () -> auditService.auditProfileLogoutSuccess(request, platformId,
-      // tokenEntity.getUser()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  tokenEntity.getProfile(),
+                  AuditEnums.AuditProfile.PROFILE_LOGOUT,
+                  String.format(
+                      "Profile Logout [Id: %s] - [Email: %s] - [Platform: %s]",
+                      tokenEntity.getProfile().getId(),
+                      tokenEntity.getProfile().getEmail(),
+                      tokenEntity.getPlatform().getId())));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Logout: [{}] | [{}]", platformId, tokenRequest, ex);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileLogoutFailure(
-      //                  request, platformId, tokenRequest.getProfileId(), ex));
-      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
-    }
-  }
-
-  @PostMapping("/{platformId}/reset")
-  public ResponseEntity<ResponseMetadata> resetProfile(
-      @PathVariable final Long platformId,
-      @Valid @RequestBody final ProfilePasswordRequest profilePasswordRequest,
-      final HttpServletRequest request) {
-    try {
-      final ProfileEntity profileEntity =
-          profileService.resetProfile(platformId, profilePasswordRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditProfileResetSuccess(request, platformId, profileEntity));
-      return ResponseEntity.noContent().build();
-    } catch (Exception ex) {
-      log.error("Reset Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileResetFailure(
-      //                  request, platformId, profilePasswordRequest.getEmail(), ex));
+      final TokenEntity tokenEntity =
+          tokenService.readTokenByAccessTokenNoException(tokenRequest.getAccessToken());
+      if (tokenEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    tokenEntity.getProfile(),
+                    AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR,
+                    String.format(
+                        "Profile Logout Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                        tokenEntity.getProfile().getId(),
+                        tokenEntity.getProfile().getEmail(),
+                        tokenEntity.getPlatform().getId())));
+      }
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -212,16 +244,32 @@ public class ProfileBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendProfileValidationEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
-      // TODO audit
-      //      runAsync(
-      //          () ->
-      //              auditService.auditProfileValidateInit(
-      //                  request, platformId, appsProfileEntity.getProfile()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  platformProfileRoleEntity.getProfile(),
+                  AuditEnums.AuditProfile.PROFILE_VALIDATE_INIT,
+                  String.format(
+                      "Profile Validate Init [Id: %s] - [Email: %s] - [Platform: %s]",
+                      platformProfileRoleEntity.getProfile().getId(),
+                      platformProfileRoleEntity.getProfile().getEmail(),
+                      platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Validate Profile Init: [{}], [{}]", platformId, email, ex);
-      // TODO audit
-      // runAsync(() -> auditService.auditProfileValidateFailure(request, platformId, email, ex));
+      final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
+      if (profileEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    profileEntity,
+                    AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
+                    String.format(
+                        "Profile Validate Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                        profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      }
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -237,15 +285,69 @@ public class ProfileBasicAuthController {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendProfileResetEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
-      // TODO audit
-      //      runAsync(
-      //          () -> auditService.auditProfileResetInit(request, platformId,
-      // appsProfileEntity.getProfile()));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  platformProfileRoleEntity.getProfile(),
+                  AuditEnums.AuditProfile.PROFILE_RESET_INIT,
+                  String.format(
+                      "Profile Reset Init [Id: %s] - [Email: %s] - [Platform: %s]",
+                      platformProfileRoleEntity.getProfile().getId(),
+                      platformProfileRoleEntity.getProfile().getEmail(),
+                      platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Reset Profile Init: [{}], [{}]", platformId, email, ex);
-      // TODO audit
-      // runAsync(() -> auditService.auditProfileResetFailure(request, platformId, email, ex));
+      final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
+      if (profileEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    profileEntity,
+                    AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
+                    String.format(
+                        "Profile Reset Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                        profileEntity, profileEntity.getEmail(), platformId)));
+      }
+      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
+    }
+  }
+
+  @PostMapping("/{platformId}/reset")
+  public ResponseEntity<ResponseMetadata> resetProfile(
+      @PathVariable final Long platformId,
+      @Valid @RequestBody final ProfilePasswordRequest profilePasswordRequest,
+      final HttpServletRequest request) {
+    try {
+      final ProfileEntity profileEntity =
+          profileService.resetProfile(platformId, profilePasswordRequest);
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  profileEntity,
+                  AuditEnums.AuditProfile.PROFILE_RESET_SUCCESS,
+                  String.format(
+                      "Profile Reset Success [Id: %s] - [Email: %s] - [Platform: %s]",
+                      profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      return ResponseEntity.noContent().build();
+    } catch (Exception ex) {
+      log.error("Reset Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
+      final ProfileEntity profileEntity =
+          profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
+      if (profileEntity != null) {
+        runAsync(
+            () ->
+                auditService.auditProfile(
+                    request,
+                    profileEntity,
+                    AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
+                    String.format(
+                        "Profile Reset Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                        profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      }
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }

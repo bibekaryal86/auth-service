@@ -1,9 +1,12 @@
 package auth.service.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.util.EntityDtoConvertUtils;
@@ -42,8 +45,17 @@ public class PlatformProfileRoleController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.createPlatformProfileRole(platformProfileRoleRequest);
 
-      // TODO audit
-      // runAsync(() -> auditService.auditAppUserAssignRole(request, appUserRoleEntity));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  platformProfileRoleEntity.getProfile(),
+                  AuditEnums.AuditProfile.ASSIGN_PLATFORM_ROLE,
+                  String.format(
+                      "Platform Profile Role Assign [Platform: %s] - [Profile: %s] - [Role: %s]",
+                      platformProfileRoleEntity.getPlatform().getId(),
+                      platformProfileRoleEntity.getProfile().getId(),
+                      platformProfileRoleEntity.getRole().getId())));
 
       return entityDtoConvertUtils.getResponseSinglePlatformProfileRole(platformProfileRoleEntity);
     } catch (Exception ex) {
@@ -90,9 +102,20 @@ public class PlatformProfileRoleController {
       @PathVariable final long roleId,
       final HttpServletRequest request) {
     try {
+      final PlatformProfileRoleEntity platformProfileRoleEntity =
+          platformProfileRoleService.readPlatformProfileRole(platformId, profileId, roleId);
       platformProfileRoleService.deletePlatformProfileRole(platformId, profileId, roleId);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppUserUnassignRole(request, userId, roleId));
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  platformProfileRoleEntity.getProfile(),
+                  AuditEnums.AuditProfile.UNASSIGN_PLATFORM_ROLE,
+                  String.format(
+                      "Platform Profile Role UnAssign [Platform: %s] - [Profile: %s] - [Role: %s]",
+                      platformProfileRoleEntity.getPlatform().getId(),
+                      platformProfileRoleEntity.getProfile().getId(),
+                      platformProfileRoleEntity.getRole().getId())));
       return entityDtoConvertUtils.getResponseDeletePlatformProfileRole();
     } catch (Exception ex) {
       log.error(

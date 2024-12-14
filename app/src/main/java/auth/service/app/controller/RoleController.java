@@ -1,9 +1,12 @@
 package auth.service.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.RoleService;
@@ -43,8 +46,15 @@ public class RoleController {
       @Valid @RequestBody final RoleRequest roleRequest, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.createRole(roleRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditRoleCreate(request, roleEntity));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  roleEntity,
+                  AuditEnums.AuditRole.ROLE_CREATE,
+                  String.format(
+                      "Role Create [Id: %s] - [Name: %s]",
+                      roleEntity.getId(), roleEntity.getRoleName())));
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity);
     } catch (Exception ex) {
       log.error("Create Role: [{}]", roleRequest, ex);
@@ -84,8 +94,15 @@ public class RoleController {
       final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.updateRole(id, roleRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditRoleUpdate(request, roleEntity));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  roleEntity,
+                  AuditEnums.AuditRole.ROLE_UPDATE,
+                  String.format(
+                      "Role Update [Id: %s] - [Name: %s]",
+                      roleEntity.getId(), roleEntity.getRoleName())));
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity);
     } catch (Exception ex) {
       log.error("Update Role: [{}] | [{}]", id, roleRequest, ex);
@@ -98,9 +115,17 @@ public class RoleController {
   public ResponseEntity<RoleResponse> softDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final RoleEntity roleEntity = circularDependencyService.readRole(id);
       roleService.softDeleteRole(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditRoleDeleteSoft(request, id));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  roleEntity,
+                  AuditEnums.AuditRole.ROLE_DELETE_SOFT,
+                  String.format(
+                      "Role Delete Soft [Id: %s] - [Name: %s]",
+                      roleEntity.getId(), roleEntity.getRoleName())));
       return entityDtoConvertUtils.getResponseDeleteRole();
     } catch (Exception ex) {
       log.error("Soft Delete Role: [{}]", id, ex);
@@ -113,9 +138,17 @@ public class RoleController {
   public ResponseEntity<RoleResponse> hardDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final RoleEntity roleEntity = circularDependencyService.readRole(id);
       roleService.hardDeleteRole(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditRoleDeleteHard(request, id));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  roleEntity,
+                  AuditEnums.AuditRole.ROLE_DELETE_HARD,
+                  String.format(
+                      "Role Delete Hard [Id: %s] - [Name: %s]",
+                      roleEntity.getId(), roleEntity.getRoleName())));
       return entityDtoConvertUtils.getResponseDeleteRole();
     } catch (Exception ex) {
       log.error("Hard Delete Role: [{}]", id, ex);
@@ -129,8 +162,15 @@ public class RoleController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.restoreSoftDeletedRole(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditRoleRestore(request, id));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  roleEntity,
+                  AuditEnums.AuditRole.ROLE_RESTORE,
+                  String.format(
+                      "Role Restore [Id: %s] - [Name: %s]",
+                      roleEntity.getId(), roleEntity.getRoleName())));
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity);
     } catch (Exception ex) {
       log.error("Restore Role: [{}]", id, ex);

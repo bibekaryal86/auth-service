@@ -1,9 +1,12 @@
 package auth.service.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
@@ -45,8 +48,15 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.createPermission(permissionRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditPermissionCreate(request, appId, permissionEntity));
+      runAsync(
+          () ->
+              auditService.auditPermission(
+                  request,
+                  permissionEntity,
+                  AuditEnums.AuditPermission.PERMISSION_CREATE,
+                  String.format(
+                      "Permission Create [Id: %s] - [Name: %s]",
+                      permissionEntity.getId(), permissionEntity.getPermissionName())));
       return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
     } catch (Exception ex) {
       log.error("Create Permission: [{}]", permissionRequest, ex);
@@ -87,8 +97,15 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.updatePermission(id, permissionRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditPermissionUpdate(request, permissionEntity));
+      runAsync(
+          () ->
+              auditService.auditPermission(
+                  request,
+                  permissionEntity,
+                  AuditEnums.AuditPermission.PERMISSION_UPDATE,
+                  String.format(
+                      "Permission Update [Id: %s] - [Name: %s]",
+                      permissionEntity.getId(), permissionEntity.getPermissionName())));
       return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
     } catch (Exception ex) {
       log.error("Update Permission: [{}] | [{}]", id, permissionRequest, ex);
@@ -101,9 +118,17 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> softDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id);
       permissionService.softDeletePermission(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditPermissionDeleteSoft(request, id));
+      runAsync(
+          () ->
+              auditService.auditPermission(
+                  request,
+                  permissionEntity,
+                  AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT,
+                  String.format(
+                      "Permission Delete Soft [Id: %s] - [Name: %s]",
+                      permissionEntity.getId(), permissionEntity.getPermissionName())));
       return entityDtoConvertUtils.getResponseDeletePermission();
     } catch (Exception ex) {
       log.error("Soft Delete Permission: [{}]", id, ex);
@@ -116,9 +141,17 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> hardDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id);
       permissionService.hardDeletePermission(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditPermissionDeleteHard(request, id));
+      runAsync(
+          () ->
+              auditService.auditPermission(
+                  request,
+                  permissionEntity,
+                  AuditEnums.AuditPermission.PERMISSION_DELETE_HARD,
+                  String.format(
+                      "Permission Delete Hard [Id: %s] - [Name: %s]",
+                      permissionEntity.getId(), permissionEntity.getPermissionName())));
       return entityDtoConvertUtils.getResponseDeletePermission();
     } catch (Exception ex) {
       log.error("Hard Delete Permission: [{}]", id, ex);
@@ -132,8 +165,15 @@ public class PermissionController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PermissionEntity permissionEntity = permissionService.restoreSoftDeletedPermission(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditPermissionRestore(request, id));
+      runAsync(
+          () ->
+              auditService.auditPermission(
+                  request,
+                  permissionEntity,
+                  AuditEnums.AuditPermission.PERMISSION_RESTORE,
+                  String.format(
+                      "Permission Restore [Id: %s] - [Name: %s]",
+                      permissionEntity.getId(), permissionEntity.getPermissionName())));
       return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
     } catch (Exception ex) {
       log.error("Restore Permission: [{}]", id, ex);

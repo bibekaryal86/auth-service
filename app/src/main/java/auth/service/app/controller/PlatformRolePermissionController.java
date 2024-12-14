@@ -1,9 +1,12 @@
 package auth.service.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformRolePermissionRequest;
 import auth.service.app.model.dto.PlatformRolePermissionResponse;
 import auth.service.app.model.entity.PlatformRolePermissionEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.PlatformRolePermissionService;
 import auth.service.app.util.EntityDtoConvertUtils;
@@ -41,10 +44,17 @@ public class PlatformRolePermissionController {
     try {
       final PlatformRolePermissionEntity platformRolePermissionEntity =
           platformRolePermissionService.createPlatformRolePermission(platformRolePermissionRequest);
-
-      // TODO audit
-      // runAsync(() -> auditService.auditAppUserAssignRole(request, appUserRoleEntity));
-
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  platformRolePermissionEntity.getRole(),
+                  AuditEnums.AuditRole.ASSIGN_PLATFORM_PERMISSION,
+                  String.format(
+                      "Platform Role Permission Assign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                      platformRolePermissionEntity.getPlatform().getId(),
+                      platformRolePermissionEntity.getRole().getId(),
+                      platformRolePermissionEntity.getPermission().getId())));
       return entityDtoConvertUtils.getResponseSinglePlatformRolePermission(
           platformRolePermissionEntity);
     } catch (Exception ex) {
@@ -94,9 +104,21 @@ public class PlatformRolePermissionController {
       @PathVariable final long permissionId,
       final HttpServletRequest request) {
     try {
+      final PlatformRolePermissionEntity platformRolePermissionEntity =
+          platformRolePermissionService.readPlatformRolePermission(
+              platformId, roleId, permissionId);
       platformRolePermissionService.deletePlatformRolePermission(platformId, roleId, permissionId);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppUserUnassignRole(request, userId, roleId));
+      runAsync(
+          () ->
+              auditService.auditRole(
+                  request,
+                  platformRolePermissionEntity.getRole(),
+                  AuditEnums.AuditRole.UNASSIGN_PLATFORM_PERMISSION,
+                  String.format(
+                      "Platform Role Permission Unassign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                      platformRolePermissionEntity.getPlatform().getId(),
+                      platformRolePermissionEntity.getRole().getId(),
+                      platformRolePermissionEntity.getPermission().getId())));
       return entityDtoConvertUtils.getResponseDeletePlatformRolePermission();
     } catch (Exception ex) {
       log.error(

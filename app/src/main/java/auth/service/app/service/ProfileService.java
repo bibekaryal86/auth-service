@@ -127,6 +127,15 @@ public class ProfileService {
         .orElseThrow(() -> new ElementNotFoundException("Profile", email));
   }
 
+  public ProfileEntity readProfileByEmailNoException(final String email) {
+    log.debug("Read Profile By Email No Exception: [{}]", email);
+    try {
+      return readProfileByEmail(email);
+    } catch (Exception ignored) {
+      return null;
+    }
+  }
+
   // UPDATE
   @Transactional
   public ProfileEntity updateProfile(final Long id, final ProfileRequest profileRequest) {

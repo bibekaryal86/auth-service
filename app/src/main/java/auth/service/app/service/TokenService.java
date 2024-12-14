@@ -39,6 +39,22 @@ public class TokenService {
         .orElseThrow(() -> new ElementNotFoundException("Token", "refresh"));
   }
 
+  public TokenEntity readTokenByAccessTokenNoException(final String accessToken) {
+    try {
+      return readTokenByAccessToken(accessToken);
+    } catch (Exception ignored) {
+      return null;
+    }
+  }
+
+  public TokenEntity readTokenByRefreshTokenNoException(final String refreshToken) {
+    try {
+      return readTokenByRefreshToken(refreshToken);
+    } catch (Exception ignored) {
+      return null;
+    }
+  }
+
   // UPDATE
   // handled by save
 

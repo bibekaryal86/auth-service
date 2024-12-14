@@ -11,7 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class TokenRequest {
   @Positive(message = "REQUIRED")
-  private int appUserId;
+  private int profileId;
 
   @ToString.Exclude private String accessToken;
   @ToString.Exclude private String refreshToken;

@@ -1,9 +1,12 @@
 package auth.service.app.controller;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PlatformService;
@@ -43,11 +46,18 @@ public class PlatformController {
       @Valid @RequestBody final PlatformRequest platformRequest, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.createPlatform(platformRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppsCreate(request, platformEntity));
+      runAsync(
+          () ->
+              auditService.auditPlatform(
+                  request,
+                  platformEntity,
+                  AuditEnums.AuditPlatform.PLATFORM_CREATE,
+                  String.format(
+                      "Platform Create [Id: %s] - [Name: %s]",
+                      platformEntity.getId(), platformEntity.getPlatformName())));
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
-      log.error("Create App: [{}]", platformRequest, ex);
+      log.error("Create Platform: [{}]", platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -84,11 +94,18 @@ public class PlatformController {
       final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.updatePlatform(id, platformRequest);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppsUpdate(request, platformEntity));
+      runAsync(
+          () ->
+              auditService.auditPlatform(
+                  request,
+                  platformEntity,
+                  AuditEnums.AuditPlatform.PLATFORM_UPDATE,
+                  String.format(
+                      "Platform Update [Id: %s] - [Name: %s]",
+                      platformEntity.getId(), platformEntity.getPlatformName())));
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
-      log.error("Update App: [{}] | [{}]", id, platformRequest, ex);
+      log.error("Update Platform: [{}] | [{}]", id, platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -98,9 +115,17 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> softDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
       platformService.softDeletePlatform(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppsDeleteSoft(request, id));
+      runAsync(
+          () ->
+              auditService.auditPlatform(
+                  request,
+                  platformEntity,
+                  AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT,
+                  String.format(
+                      "Platform Delete Soft [Id: %s] - [Name: %s]",
+                      platformEntity.getId(), platformEntity.getPlatformName())));
       return entityDtoConvertUtils.getResponseDeletePlatform();
     } catch (Exception ex) {
       log.error("Soft Delete Platform: [{}]", id, ex);
@@ -113,9 +138,17 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> hardDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
       platformService.hardDeletePlatform(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppsDeleteHard(request, id));
+      runAsync(
+          () ->
+              auditService.auditPlatform(
+                  request,
+                  platformEntity,
+                  AuditEnums.AuditPlatform.PLATFORM_DELETE_HARD,
+                  String.format(
+                      "Platform Delete Hard [Id: %s] - [Name: %s]",
+                      platformEntity.getId(), platformEntity.getPlatformName())));
       return entityDtoConvertUtils.getResponseDeletePlatform();
     } catch (Exception ex) {
       log.error("Hard Delete Platform: [{}]", id, ex);
@@ -129,8 +162,15 @@ public class PlatformController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.restoreSoftDeletedPlatform(id);
-      // TODO audit
-      // runAsync(() -> auditService.auditAppsRestore(request, id));
+      runAsync(
+          () ->
+              auditService.auditPlatform(
+                  request,
+                  platformEntity,
+                  AuditEnums.AuditPlatform.PLATFORM_RESTORE,
+                  String.format(
+                      "Platform Restore [Id: %s] - [Name: %s]",
+                      platformEntity.getId(), platformEntity.getPlatformName())));
       return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
     } catch (Exception ex) {
       log.error("Restore Platform: [{}]", id, ex);
