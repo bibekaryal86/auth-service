@@ -7,7 +7,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.ProfileService;
-import auth.service.app.service.ReadFromCacheService;
+import auth.service.app.service.CircularDependencyService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/na_profile/platform")
 public class ProfileNoAuthController {
 
-  private final ReadFromCacheService readFromCacheService;
+  private final CircularDependencyService circularDependencyService;
   private final ProfileService profileService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EnvServiceConnector envServiceConnector;
@@ -40,7 +40,7 @@ public class ProfileNoAuthController {
       final HttpServletRequest request) {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
-      final PlatformEntity platformEntity = readFromCacheService.readPlatform(platformId);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
@@ -65,7 +65,7 @@ public class ProfileNoAuthController {
       final HttpServletRequest request) {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
-      final PlatformEntity platformEntity = readFromCacheService.readPlatform(platformId);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =

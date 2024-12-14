@@ -50,7 +50,7 @@ public class ProfileService {
   private final ProfileRepository profileRepository;
   private final ProfileAddressRepository profileAddressRepository;
   private final PlatformProfileRoleRepository platformProfileRoleRepository;
-  private final ReadFromCacheService readFromCacheService;
+  private final CircularDependencyService circularDependencyService;
   private final TokenService tokenService;
   private final PasswordUtils passwordUtils;
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -103,7 +103,7 @@ public class ProfileService {
 
   private RoleEntity getRoleEntityToCreate(final boolean isGuestUser) {
     final String roleName = isGuestUser ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
-    return readFromCacheService.readRoleByName(roleName);
+    return circularDependencyService.readRoleByName(roleName);
   }
 
   // READ
@@ -112,7 +112,7 @@ public class ProfileService {
     return profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
   }
 
-  /** Use {@link ReadFromCacheService#readProfile(Long)} */
+  /** Use {@link CircularDependencyService#readProfile(Long)} */
   public ProfileEntity readProfile(final Long id) {
     log.debug("Read Profile: [{}]", id);
     return profileRepository
@@ -137,7 +137,7 @@ public class ProfileService {
 
     if (!Objects.equals(profileRequest.getStatusId(), profileEntity.getStatusType().getId())) {
       profileEntity.setStatusType(
-          readFromCacheService.readStatusType(profileRequest.getStatusId()));
+          circularDependencyService.readStatusType(profileRequest.getStatusId()));
     }
 
     // save addresses
@@ -326,7 +326,7 @@ public class ProfileService {
                 BeanUtils.copyProperties(request, entity, "profileId", "typeId");
               }
               entity.setProfile(profileEntity);
-              entity.setType(readFromCacheService.readAddressType(request.getTypeId()));
+              entity.setType(circularDependencyService.readAddressType(request.getTypeId()));
               return entity;
             })
         .toList();

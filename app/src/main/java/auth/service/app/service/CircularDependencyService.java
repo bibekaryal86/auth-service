@@ -25,7 +25,7 @@ import org.springframework.util.CollectionUtils;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReadFromCacheService {
+public class CircularDependencyService {
 
   private final AddressTypeService addressTypeService;
   private final AddressTypeRepository addressTypeRepository;

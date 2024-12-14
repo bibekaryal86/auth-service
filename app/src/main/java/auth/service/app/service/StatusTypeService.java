@@ -39,7 +39,7 @@ public class StatusTypeService {
         Sort.by(Sort.Order.asc("componentName"), Sort.Order.asc("typeName")));
   }
 
-  /** Use {@link ReadFromCacheService#readStatusType(Long)} */
+  /** Use {@link CircularDependencyService#readStatusType(Long)} */
   public StatusTypeEntity readStatusType(final Long id) {
     log.debug("Read Status Type: [{}]", id);
     return statusTypeRepository

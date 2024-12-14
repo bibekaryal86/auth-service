@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlatformRolePermissionService {
 
   private final PlatformRolePermissionRepository platformRolePermissionRepository;
-  private final ReadFromCacheService readFromCacheService;
+  private final CircularDependencyService circularDependencyService;
 
   // CREATE
   public PlatformRolePermissionEntity createPlatformRolePermission(
@@ -30,11 +30,11 @@ public class PlatformRolePermissionService {
     log.debug("Create Platform Role Permission: [{}]", platformRolePermissionRequest);
     PlatformRolePermissionEntity platformRolePermissionEntity = new PlatformRolePermissionEntity();
     final PlatformEntity platformEntity =
-        readFromCacheService.readPlatform(platformRolePermissionRequest.getPlatformId());
+        circularDependencyService.readPlatform(platformRolePermissionRequest.getPlatformId());
     final RoleEntity roleEntity =
-        readFromCacheService.readRole(platformRolePermissionRequest.getRoleId());
+        circularDependencyService.readRole(platformRolePermissionRequest.getRoleId());
     final PermissionEntity permissionEntity =
-        readFromCacheService.readPermission(platformRolePermissionRequest.getPermissionId());
+        circularDependencyService.readPermission(platformRolePermissionRequest.getPermissionId());
     platformRolePermissionEntity.setPlatform(platformEntity);
     platformRolePermissionEntity.setRole(roleEntity);
     platformRolePermissionEntity.setPermission(permissionEntity);

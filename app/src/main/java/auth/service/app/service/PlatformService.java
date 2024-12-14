@@ -38,7 +38,7 @@ public class PlatformService {
     return platformRepository.findAll(Sort.by(Sort.Direction.ASC, "platformName"));
   }
 
-  /** Use {@link ReadFromCacheService#readPlatform(Long)} */
+  /** Use {@link CircularDependencyService#readPlatform(Long)} */
   public PlatformEntity readPlatform(final Long id) {
     log.debug("Read Platform: [{}]", id);
     return platformRepository

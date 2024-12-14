@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlatformProfileRoleService {
 
   private final PlatformProfileRoleRepository platformProfileRoleRepository;
-  private final ReadFromCacheService readFromCacheService;
+  private final CircularDependencyService circularDependencyService;
 
   // CREATE
   public PlatformProfileRoleEntity createPlatformProfileRole(
@@ -30,11 +30,11 @@ public class PlatformProfileRoleService {
     log.debug("Create Platform Profile Role: [{}]", platformProfileRoleRequest);
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
     final PlatformEntity platformEntity =
-        readFromCacheService.readPlatform(platformProfileRoleRequest.getPlatformId());
+        circularDependencyService.readPlatform(platformProfileRoleRequest.getPlatformId());
     final ProfileEntity profileEntity =
-        readFromCacheService.readProfile(platformProfileRoleRequest.getProfileId());
+        circularDependencyService.readProfile(platformProfileRoleRequest.getProfileId());
     final RoleEntity roleEntity =
-        readFromCacheService.readRole(platformProfileRoleRequest.getRoleId());
+        circularDependencyService.readRole(platformProfileRoleRequest.getRoleId());
     platformProfileRoleEntity.setPlatform(platformEntity);
     platformProfileRoleEntity.setProfile(profileEntity);
     platformProfileRoleEntity.setRole(roleEntity);

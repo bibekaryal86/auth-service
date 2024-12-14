@@ -21,7 +21,7 @@ import auth.service.app.service.EmailService;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.PlatformService;
 import auth.service.app.service.ProfileService;
-import auth.service.app.service.ReadFromCacheService;
+import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.TokenService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class ProfileBasicAuthController {
 
   private final ProfileService profileService;
   private final PlatformService platformService;
-  private final ReadFromCacheService readFromCacheService;
+  private final CircularDependencyService circularDependencyService;
   private final PlatformProfileRoleService platformProfileRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
@@ -65,7 +65,7 @@ public class ProfileBasicAuthController {
       final HttpServletRequest request) {
     try {
       final String baseUrl = getBaseUrlForLinkInEmail(request);
-      final PlatformEntity platformEntity = readFromCacheService.readPlatform(platformId);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
       final ProfileEntity profileEntity =
           profileService.createProfile(platformEntity, profileRequest, baseUrl);
       // TODO audit
