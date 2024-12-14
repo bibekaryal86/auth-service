@@ -17,6 +17,7 @@ import auth.service.app.exception.ProfileForbiddenException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
@@ -97,19 +98,28 @@ public class CommonUtilsTest extends BaseTest {
 
   @Test
   void testConvertResponseMetadataToJson() {
-    ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().message("Success").errMsg("No errors").build();
+    ResponseMetadata responseMetadata =
+        ResponseMetadata.builder()
+            .responseStatusInfo(
+                ResponseStatusInfo.builder().message("Success").errMsg("No errors").build())
+            .build();
 
-    String result = CommonUtils.convertResponseMetadataToJson(responseStatusInfo);
+    String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
 
-    assertEquals("{\"message\":\"Success\",\"errMsg\":\"No errors\"}", result);
+    assertEquals(
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":\"Success\",\"errMsg\":\"No errors\"}}",
+        result);
   }
 
   @Test
   void testConvertResponseMetadataToJson_MessageIsNull() {
-    ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg("No errors").build();
-    String result = CommonUtils.convertResponseMetadataToJson(responseStatusInfo);
-    assertEquals("{\"message\":\"\",\"errMsg\":\"No errors\"}", result);
+    ResponseMetadata responseMetadata =
+        ResponseMetadata.builder()
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg("Some errors").build())
+            .build();
+    String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
+    assertEquals(
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some errors\"}}",
+        result);
   }
 }

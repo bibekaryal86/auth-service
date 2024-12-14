@@ -16,7 +16,7 @@ public class TestSecurityConfig extends SecurityConfigBase {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   protected TestSecurityConfig(
-          final ProfileService profileService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
+      final ProfileService profileService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
     super(profileService);
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
   }

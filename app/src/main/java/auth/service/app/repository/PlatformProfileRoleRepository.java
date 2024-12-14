@@ -12,20 +12,20 @@ import org.springframework.stereotype.Repository;
 public interface PlatformProfileRoleRepository
     extends JpaRepository<PlatformProfileRoleEntity, PlatformProfileRoleId> {
   @Query(
-      "SELECT p FROM PlatformProfileRoleEntity p WHERE p.platform.id = :platformId AND p.profile.email = :email")
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre WHERE ppre.platform.id = :platformId AND ppre.profile.email = :email")
   List<PlatformProfileRoleEntity> findByPlatformIdAndProfileEmail(
       @Param("platformId") final Long platformId, @Param("email") final String email);
 
   @Query(
-      "SELECT ppre FROM PlatformProfileRoleEntity prpe "
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre "
           + "WHERE ppre.id.profileId = :profileId "
-          + "ORDER BY ppre.platform.platformName, prpe.profile.email, prpe.role.roleName")
+          + "ORDER BY ppre.platform.platformName, ppre.profile.email, ppre.role.roleName")
   List<PlatformProfileRoleEntity> findByProfileId(@Param("profileId") final Long profileId);
 
   @Query(
-      "SELECT ppre FROM PlatformProfileRoleEntity prpe "
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre "
           + "WHERE ppre.id.profileId in (:profileIds) "
-          + "ORDER BY ppre.platform.platformName, prpe.profile.email, prpe.role.roleName")
+          + "ORDER BY ppre.platform.platformName, ppre.profile.email, ppre.role.roleName")
   List<PlatformProfileRoleEntity> findByProfileIds(
       @Param("profileIds") final List<Long> profileIds);
 }

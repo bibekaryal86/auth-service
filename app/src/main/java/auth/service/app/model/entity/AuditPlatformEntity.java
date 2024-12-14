@@ -23,6 +23,6 @@ public class AuditPlatformEntity extends BaseEntityAudit {
   private PlatformEntity eventData;
 
   @ManyToOne
-  @JoinColumn(name = "profile_id")
+  @JoinColumn(name = "platform_id")
   private PlatformEntity platform;
 }

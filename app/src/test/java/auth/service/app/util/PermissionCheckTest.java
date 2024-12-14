@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.entity.AppUserEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenRole;
 import helper.TestData;
@@ -30,7 +30,7 @@ public class PermissionCheckTest extends BaseTest {
 
   private static Authentication authentication;
   private static AuthToken authToken;
-  private static List<AppUserEntity> appUserEntities;
+  private static List<ProfileEntity> profileEntities;
 
   @Mock private SecurityContext securityContext;
 
@@ -39,14 +39,14 @@ public class PermissionCheckTest extends BaseTest {
   @BeforeAll
   public static void setUpBeforeAll() {
     authToken = TestData.getAuthToken();
-    appUserEntities = TestData.getAppUserEntities();
+    profileEntities = TestData.getProfileEntities();
   }
 
   @BeforeEach
   public void setUpBeforeEach() {
     SecurityContextHolder.setContext(securityContext);
     authentication =
-        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
+        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
   }
 
@@ -63,9 +63,9 @@ public class PermissionCheckTest extends BaseTest {
   void testCheckPermission_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
-        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
+        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
 
     CheckPermission checkPermission = mock(CheckPermission.class);
     when(checkPermission.value())
@@ -90,7 +90,7 @@ public class PermissionCheckTest extends BaseTest {
 
   @Test
   void testCheckProfileAccess_Email() {
-    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(APP_USER_EMAIL, 0));
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(PROFILE_EMAIL, 0));
   }
 
   @Test
@@ -102,9 +102,9 @@ public class PermissionCheckTest extends BaseTest {
   void testCheckProfile_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
-        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
+        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", 99));
@@ -119,38 +119,38 @@ public class PermissionCheckTest extends BaseTest {
             () -> permissionCheck.checkProfileAccess("some@email.com", 99));
 
     assertEquals(
-        "Permission Denied: User does not have required permissions to user entity...",
+        "Permission Denied: User does not have required permissions to profile entity...",
         exception.getMessage());
   }
 
   @Test
-  void testFilterAppUserListByAccess() {
-    List<AppUserEntity> appUserEntitiesFiltered =
-        permissionCheck.filterAppUserListByAccess(appUserEntities);
-    assertEquals(1, appUserEntitiesFiltered.size());
-    assertEquals(authToken.getUser().getId(), appUserEntitiesFiltered.getFirst().getId());
+  void testFilterProfileListByAccess() {
+    List<ProfileEntity> profileEntitiesFiltered =
+        permissionCheck.filterProfileListByAccess(profileEntities);
+    assertEquals(1, profileEntitiesFiltered.size());
+    assertEquals(authToken.getProfile().getId(), profileEntitiesFiltered.getFirst().getId());
   }
 
   @Test
-  void testFilterAppUserListByAccess_SuperUser() {
+  void testFilterProfileListByAccess_SuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
-        List.of(AuthTokenRole.builder().name(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+        List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
     authentication =
-        new TestingAuthenticationToken(APP_USER_EMAIL, authToken, Collections.emptyList());
+        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    List<AppUserEntity> appUserEntitiesFiltered =
-        permissionCheck.filterAppUserListByAccess(appUserEntities);
-    assertEquals(appUserEntities.size(), appUserEntitiesFiltered.size());
+    List<ProfileEntity> profileEntitiesFiltered =
+        permissionCheck.filterProfileListByAccess(profileEntities);
+    assertEquals(profileEntities.size(), profileEntitiesFiltered.size());
   }
 
   @Test
-  void testFilterAppUserListByAccess_Failure() {
+  void testFilterProfileListByAccess_Failure() {
     when(securityContext.getAuthentication()).thenReturn(null);
 
     assertThrows(
         CheckPermissionException.class,
-        () -> permissionCheck.filterAppUserListByAccess(appUserEntities));
+        () -> permissionCheck.filterProfileListByAccess(profileEntities));
   }
 }

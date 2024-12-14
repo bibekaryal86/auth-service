@@ -182,7 +182,8 @@ public class TestData {
                 .statusId(1L)
                 .build())
         .roles(List.of(AuthTokenRole.builder().id(1L).roleName("Role One").build()))
-        .permissions(List.of(AuthTokenPermission.builder().id(1L).permissionName("Permission One").build()))
+        .permissions(
+            List.of(AuthTokenPermission.builder().id(1L).permissionName("Permission One").build()))
         .build();
   }
 

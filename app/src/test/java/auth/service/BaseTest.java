@@ -28,7 +28,7 @@ public abstract class BaseTest {
   @Autowired protected WebTestClient webTestClient;
 
   protected static final Long PLATFORM_ID = 1L;
-  protected static final String APP_USER_EMAIL = "firstlast@one.com";
+  protected static final String PROFILE_EMAIL = "firstlast@one.com";
 
   protected String basicAuthCredentialsForTest =
       Base64.getEncoder()
