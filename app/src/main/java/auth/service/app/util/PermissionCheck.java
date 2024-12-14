@@ -45,7 +45,7 @@ public class PermissionCheck {
 
       if (!isSuperUser && !isPermitted) {
         throw new CheckPermissionException(
-            "Profile does not have required permissions to user entity...");
+            "Profile does not have required permissions to profile entity...");
       }
     } catch (Exception ex) {
       if (ex instanceof CheckPermissionException) {

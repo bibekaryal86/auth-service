@@ -85,7 +85,7 @@ public class PermissionCheckTest extends BaseTest {
             CheckPermissionException.class, () -> permissionCheck.checkPermission(checkPermission));
 
     assertEquals(
-        "Permission Denied: User does not have required permissions...", exception.getMessage());
+        "Permission Denied: Profile does not have required permissions...", exception.getMessage());
   }
 
   @Test
@@ -119,7 +119,7 @@ public class PermissionCheckTest extends BaseTest {
             () -> permissionCheck.checkProfileAccess("some@email.com", 99));
 
     assertEquals(
-        "Permission Denied: User does not have required permissions to profile entity...",
+        "Permission Denied: Profile does not have required permissions to profile entity...",
         exception.getMessage());
   }
 

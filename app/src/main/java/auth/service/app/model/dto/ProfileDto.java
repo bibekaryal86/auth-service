@@ -31,7 +31,6 @@ public class ProfileDto {
   private String lastName;
   @ToString.Exclude private String email;
   @ToString.Exclude private String phone;
-  private Long statusId;
   private boolean isValidated;
   private Integer loginAttempts;
 
@@ -50,7 +49,7 @@ public class ProfileDto {
         AuthTokenProfile.builder()
             .id(this.getId())
             .email(this.getEmail())
-            .statusId(this.getStatusId())
+            .statusId(this.getStatus().getId())
             .isValidated(this.isValidated())
             .isDeleted(this.getDeletedDate() != null)
             .build();

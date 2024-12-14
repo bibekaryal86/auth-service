@@ -46,3 +46,5 @@ move profileService.readPlatformProfileRole somewhere else
 platform profile role and platform role permission look up by profileId and roleId only
   in the DTO, create a map of platform, list<role>, platform, list<permission>
 remove / from controllers
+
+implement audits

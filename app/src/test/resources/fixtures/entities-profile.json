@@ -8,7 +8,7 @@
     "password": "password-one",
     "isValidated": true,
     "loginAttempts": 0,
-    "statusType": {
+    "status": {
       "id": 1,
       "componentName": "PROFILE",
       "statusName": "ACTIVE",
@@ -20,8 +20,15 @@
     "addresses": [
       {
         "id": 1,
-        "addressType": "MAILING",
-        "appUserId": 1,
+        "type": {
+          "id": 1,
+          "typeName": "MAILING",
+          "typeDesc": "Address Type Desc One",
+          "createdDate": "2024-08-23T22:06:49.685768",
+          "updatedDate": "2024-08-23T22:46:45.153133",
+          "deletedDate": null
+        },
+        "profileId": 1,
         "street": "Street One One",
         "city": "City One One",
         "state": "ON",
@@ -30,8 +37,15 @@
       },
       {
         "id": 2,
-        "addressType": "SHIPPING",
-        "appUserId": 1,
+        "type": {
+          "id": 3,
+          "typeName": "SHIPPING",
+          "typeDesc": "Address Type Desc Three",
+          "createdDate": "2024-08-23T22:06:49.685768",
+          "updatedDate": "2024-08-23T22:46:45.153133",
+          "deletedDate": null
+        },
+        "profileId": 1,
         "street": "Street One Two",
         "city": "City One Two",
         "state": "ON",
@@ -52,7 +66,7 @@
     "password": "password-two",
     "isValidated": true,
     "loginAttempts": 4,
-    "statusType": {
+    "status": {
       "id": 3,
       "componentName": "PROFILE",
       "statusName": "DELETED",
@@ -64,8 +78,15 @@
     "addresses": [
       {
         "id": 3,
-        "addressType": "MAILING",
-        "appUserId": 1,
+        "type": {
+          "id": 1,
+          "typeName": "MAILING",
+          "typeDesc": "Address Type Desc One",
+          "createdDate": "2024-08-23T22:06:49.685768",
+          "updatedDate": "2024-08-23T22:46:45.153133",
+          "deletedDate": null
+        },
+        "profileId": 1,
         "street": "Street Two One",
         "city": "City Two One",
         "state": "TW",
@@ -86,7 +107,7 @@
     "password": "password-three",
     "isValidated": true,
     "loginAttempts": 0,
-    "statusType": {
+    "status": {
       "id": 1,
       "componentName": "PROFILE",
       "statusName": "ACTIVE",
