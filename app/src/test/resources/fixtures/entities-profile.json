@@ -6,8 +6,17 @@
     "email": "firstlast@one.com",
     "phone": null,
     "password": "password-one",
-    "status": "ACTIVE",
     "isValidated": true,
+    "loginAttempts": 0,
+    "statusType": {
+      "id": 1,
+      "componentName": "PROFILE",
+      "statusName": "ACTIVE",
+      "statusDesc": "Status Type Desc One",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
     "addresses": [
       {
         "id": 1,
@@ -41,8 +50,17 @@
     "email": "firstlast@two.com",
     "phone": "9876543210",
     "password": "password-two",
-    "status": "ACTIVE",
-    "isValidated": false,
+    "isValidated": true,
+    "loginAttempts": 4,
+    "statusType": {
+      "id": 3,
+      "componentName": "PROFILE",
+      "statusName": "DELETED",
+      "statusDesc": "Status Type Desc Three",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
     "addresses": [
       {
         "id": 3,
@@ -66,8 +84,17 @@
     "email": "firstlast@three.com",
     "phone": null,
     "password": "password-three",
-    "status": "ACTIVE",
     "isValidated": true,
+    "loginAttempts": 0,
+    "statusType": {
+      "id": 1,
+      "componentName": "PROFILE",
+      "statusName": "ACTIVE",
+      "statusDesc": "Status Type Desc One",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
     "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",

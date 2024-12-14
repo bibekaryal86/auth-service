@@ -1,24 +1,24 @@
 [
   {
     "id": 1,
-    "roleName": "Role Name One",
-    "roleDesc": "Role Description One",
+    "typeName": "Address Type Name One",
+    "typeDesc": "Address Type Desc One",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": null
   },
   {
     "id": 2,
-    "roleName": "Role Name Two",
-    "roleDesc": "Role Description Two",
+    "typeName": "Address Type Name Two",
+    "typeDesc": "Address Type Desc Two",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": null
   },
   {
     "id": 3,
-    "roleName": "Role Name Three",
-    "roleDesc": "Role Description Three",
+    "typeName": "Address Type Name Three",
+    "typeDesc": "Address Type Desc Three",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": "2024-08-24T22:06:49.685768"

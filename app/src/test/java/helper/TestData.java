@@ -64,7 +64,7 @@ public class TestData {
   }
 
   public static List<AppUserEntity> getAppUserEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-user.json");
+    String fixtureAsString = FixtureReader.readFixture("entities-profile.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
@@ -120,7 +120,7 @@ public class TestData {
   }
 
   public static List<AppsEntity> getAppsEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-apps.json");
+    String fixtureAsString = FixtureReader.readFixture("entities-platform.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
