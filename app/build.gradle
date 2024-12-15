@@ -2,6 +2,7 @@ buildscript {
     dependencies {
         classpath 'org.postgresql:postgresql:42.7.4'
         classpath 'org.flywaydb:flyway-database-postgresql:11.0.0'
+        classpath 'org.yaml:snakeyaml:2.3'
     }
 }
 
@@ -88,11 +89,54 @@ spotless {
     }
 }
 
+// everything below is for local development only
+import org.yaml.snakeyaml.Yaml
+
+def loadAppCredentialsEnvVariables() {
+    def file = file('../gcp/app-credentials.yaml')
+    if (file.exists()) {
+        def data = new Yaml().load(file.text)
+        def properties = new Properties()
+
+        if (data?.env_variables) {
+            data.env_variables.each { key, value ->
+                properties.setProperty(key, value)
+            }
+        }
+        return properties
+    } else {
+        println "Warning: app-credentials.yaml file not found!"
+        return new Properties()
+    }
+}
+
+def yamlProperties = loadAppCredentialsEnvVariables()
+
 flyway {
-    url = 'jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres'
     locations = ['classpath:db/migration']
     schemas = ['public']
-    // user = 'some.user'
-    // password = 'some.password'
-    // username and password provided as environment variables
+
+    // for local development, use SANDBOX DB
+    def db_host = yamlProperties.getProperty('DB_HOST_SANDBOX')
+    def db_name = yamlProperties.getProperty('DB_DBNAME')
+
+    if (db_host && db_name) {
+        url = "jdbc:postgresql://${db_host}:5432/${db_name}"
+        user = yamlProperties.getProperty('DB_USERNAME')
+        password = yamlProperties.getProperty('DB_PASSWORD')
+    } else {
+        throw new GradleException("Flyway DB Host and Name Configuration Error...")
+    }
+}
+
+bootRun {
+    // do not run flyway migrate when running the app
+    systemProperty 'spring.flyway.enabled', 'false'
+    def activeProfile = yamlProperties['SPRING_PROFILES_ACTIVE'] ?: 'development'
+    systemProperty 'spring.profiles.active', activeProfile
+    doFirst {
+        yamlProperties.each { key, value ->
+            environment key, value
+        }
+    }
 }

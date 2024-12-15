@@ -1,15 +1,34 @@
 # auth-service
 
-* Database
-  * postgres:
-    * application.yml
+A small utility for authentication and authorization, and users, roles and permissions management
+
+## Local Development
+
+* Navigate to project root
+* `./gradlew bootrun`
+* The bootrun process reads environment variables from gcp folder's `app-credentials.yaml` file
+* There is an example `app-credentials_DUMMY.yaml` file provided, create `app-credentials.yaml` file and update values
+* These environment variables are checked during application start, and if not present the application won't start
+* During the build process, these variables are used in flyway and bootrun scripts
+
 * Flyway
-  * Run flyway command as `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx`
+  * Run flyway command as `./gradlew flywayMigrate`
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
   * Clear database (DELETES EVERYTHING)
-    * `./gradlew flywayMigrate -Dflyway.user=xxx -Dflyway.password=xxx -Dflyway.cleanDisabled=false`
+    * `./gradlew flywayClean -Dflyway.cleanDisabled=false`
   * Flyway migration is configured to not trigger automatically, it only validates
     * So migration command needs to be given manually
+  * Flyway migration is controlled via github actions to main DB branch
+  * There are 2 database instances created to support local development and production data.
+    This uses free instance from `neon.tech` for database requirements. In neon tech it is possible
+    to create multiple instances of database under one project, just like branching out code in a repo.
+    So, for this service, there are two branches in `authsvc` project.
+      * MAIN
+        * This branch is used for production instance
+        * When a pull request is merged to main branch, flyway migration is run in this branch
+      * DEV
+        * This branch is used for local/development instances
+        * When a pull request is created, flyway migration is run in this branch to validate schema changes
 
 
 * Remaining (thoughts)
@@ -18,33 +37,15 @@
     * Also implement RequestMetadata
 
 
-There are 2 database instances created to support local development and production data.
-This uses free instance from `neon.tech` for database requirements. In neon tech it is possible
-to create multiple instances of database under one project, just like branching out code in a repo.
-So, for this service, there are two branches in `authsvc` project.
-* MAIN
-  * This branch is used for production instance
-  * When a pull request is merged to main branch, flyway migration is run in this branch
-* DEV
-  * This branch is used for local/development instances
-  * When a pull request is created, flyway migration is run in this branch to validate schema changes
-
-
 TODO:
 * GitHub actions for PR and merge to main, check if variables work
 * create a scheduled job to check for user login and set as inactive
-* create caching for platform only
 * when login, if login is unsuccessful, update login_attempts
   * is login_attempts = 5, disable the profile
   * if login successful, set login_attempts to 0
 * CrudInfo implementation in ResponseMetadata
 
 
-
-remove builder from Dtos
-move profileService.readPlatformProfileRole somewhere else
 platform profile role and platform role permission look up by profileId and roleId only
   in the DTO, create a map of platform, list<role>, platform, list<permission>
-remove / from controllers
-
-implement audits
+  Instead of Map, create objects with role, list<permission> etc
