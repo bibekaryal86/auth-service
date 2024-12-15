@@ -18,6 +18,7 @@ import auth.service.app.repository.PermissionRepository;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
+import auth.service.app.util.ConstantUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -151,9 +152,10 @@ public class AuditService {
       AuditProfileEntity auditProfileEntity = new AuditProfileEntity();
       auditProfileEntity.setEventType(eventType.name());
       auditProfileEntity.setEventDesc(eventDesc);
-      auditProfileEntity.setEventData(profileEntity);
-      auditProfileEntity.setProfile(profileEntity);
-
+      if (profileEntity != null) {
+        auditProfileEntity.setEventData(profileEntity);
+        auditProfileEntity.setProfile(profileEntity);
+      }
       auditProfileEntity.setCreatedBy(getCreatedByProfileEntity());
       auditProfileEntity.setCreatedAt(LocalDateTime.now());
       auditProfileEntity.setIpAddress(getIpAddress(request));
@@ -163,7 +165,7 @@ public class AuditService {
     } catch (Exception ex) {
       log.error(
           "AuditProfileException: [{}], [{}], [{}]",
-          profileEntity.getId(),
+          profileEntity == null ? ConstantUtils.ELEMENT_ID_NOT_FOUND : profileEntity.getId(),
           eventType,
           eventDesc,
           ex);

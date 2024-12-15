@@ -46,6 +46,9 @@ public class ConstantUtils {
   public static final String TOKEN_CLAIM_ISSUER = "authsvc";
   public static final String TOKEN_CLAIM_AUTH = "authToken";
 
+  // ID for elements not found
+  public static final Long ELEMENT_ID_NOT_FOUND = -1L;
+
   // messages
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
       "Something went wrong, please try again later!";

@@ -10,6 +10,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.ProfileService;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,17 +63,19 @@ public class ProfileNoAuthController {
       log.error("Validate Profile Exit: [{}], [{}]", platformId, decodedEmail, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
-      if (profileEntity != null) {
-        runAsync(
-            () ->
-                auditService.auditProfile(
-                    request,
-                    profileEntity,
-                    AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
-                    String.format(
-                        "Profile Validate Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                        profileEntity.getId(), profileEntity.getEmail(), platformId)));
-      }
+      runAsync(
+          () ->
+              auditService.auditProfile(
+                  request,
+                  profileEntity,
+                  AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
+                  String.format(
+                      "Profile Validate Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                      profileEntity == null
+                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                          : profileEntity.getId(),
+                      profileEntity == null ? decodedEmail : profileEntity.getEmail(),
+                      platformId)));
       return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, false);
     }
   }
@@ -113,7 +116,11 @@ public class ProfileNoAuthController {
                   AuditEnums.AuditProfile.PROFILE_RESET_EXIT,
                   String.format(
                       "Profile Reset Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity.getId(), profileEntity.getEmail(), platformId)));
+                      profileEntity == null
+                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                          : profileEntity.getId(),
+                      profileEntity == null ? decodedEmail : profileEntity.getEmail(),
+                      platformId)));
       return entityDtoConvertUtils.getResponseResetProfile(redirectUrl, false, "");
     }
   }

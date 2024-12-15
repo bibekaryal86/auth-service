@@ -71,8 +71,7 @@ public class JwtUtils {
   public static String decodeEmailAddressNoException(final String encodedEmail) {
     try {
       return decodeEmailAddress(encodedEmail);
-    } catch (Exception ex) {
-      // ignore exception
+    } catch (Exception ignored) {
       return encodedEmail;
     }
   }
