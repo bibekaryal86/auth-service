@@ -35,7 +35,7 @@ public abstract class SecurityConfigBase {
                   request
                       .getRequestURI()
                       .matches(
-                          "^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_app_users/|/error).*");
+                          "^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_profiles/|/error).*");
               //              if (matches) {
               //                System.out.println("noAuthSecurityFilterChain: " +
               // request.getRequestURI());
@@ -43,7 +43,7 @@ public abstract class SecurityConfigBase {
               return matches;
             })
         // .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/tests/ping",
-        // "/api/v1/na_app_users/**")
+        // "/api/v1/na_profiles/**")
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -57,16 +57,14 @@ public abstract class SecurityConfigBase {
         .securityMatcher(
             request -> {
               boolean matches =
-                  request
-                      .getRequestURI()
-                      .matches("^.*(?:/actuator/|/tests/reset|/basic_app_users/).*");
+                  request.getRequestURI().matches("^.*(?:/actuator/|/tests/reset|/ba_profiles/).*");
               //              if (matches) {
               //                System.out.println("basicAuthSecurityFilterChain: " +
               // request.getRequestURI());
               //              }
               return matches;
             })
-        // .securityMatcher("/api/v1/basic_app_users/**", "/actuator/**", "/tests/reset")
+        // .securityMatcher("/api/v1/ba_profiles/**", "/actuator/**", "/tests/reset")
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
