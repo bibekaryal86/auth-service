@@ -4,6 +4,10 @@ import static auth.service.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
@@ -19,6 +23,8 @@ import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -27,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
@@ -121,5 +128,24 @@ public class CommonUtilsTest extends BaseTest {
     assertEquals(
         "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some errors\"}}",
         result);
+  }
+
+  @Test
+  void testConvertResponseMetadataToJson_handlesJsonProcessingException() {
+    ResponseMetadata responseMetadata = ResponseMetadata.builder()
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg("Some Error Message").build())
+            .build();
+
+    try {
+      ObjectMapper objectMapper = mock(ObjectMapper.class);
+      Mockito.lenient().when(objectMapper.writeValueAsString(responseMetadata)).thenThrow(JsonProcessingException.class);
+    } catch (JsonProcessingException e) {
+      fail("Mock setup failed: " + e.getMessage());
+    }
+
+    String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
+    assertEquals(
+            "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some Error Message\"}}",
+            result);
   }
 }
