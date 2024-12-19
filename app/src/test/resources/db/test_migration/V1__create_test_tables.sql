@@ -212,13 +212,20 @@ CREATE INDEX idx_audit_profile_profile_id ON audit_profile (profile_id);
 CREATE INDEX idx_audit_role_role_id ON audit_role (role_id);
 CREATE INDEX idx_audit_permission_permission_id ON audit_permission (permission_id);
 
--- admin table data
+-- create test data, match with fixtures
 INSERT INTO address_type (type_name, type_desc) VALUES
 ('Mailing', 'Mailing Address');
 INSERT INTO address_type (type_name, type_desc) VALUES
 ('Billing', 'Billing Address');
 INSERT INTO address_type (type_name, type_desc) VALUES
 ('Shipping', 'Shipping Address');
+-- not in fixtures
+INSERT INTO address_type (type_name, type_desc) VALUES
+('Mailing-1', '1-Mailing Address');
+INSERT INTO address_type (type_name, type_desc) VALUES
+('Billing-1', '1-Billing Address');
+INSERT INTO address_type (type_name, type_desc) VALUES
+('Shipping-1', '1-Shipping Address');
 
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
 ('PROFILE', 'Created', 'Profile Entity is Created');
@@ -226,23 +233,13 @@ INSERT INTO status_type (component_name, status_name, status_desc) VALUES
 ('PROFILE', 'Pending', 'Profile is Sent Validation Email');
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
 ('PROFILE', 'Active', 'Profile is Validated');
+-- not in fixtures
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Validation Init', 'Profile Initiated Re-validation');
+('PROFILE', 'Created-1', '1-Profile Entity is Created');
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Validation Error', 'Error Encountered During Validation');
+('PROFILE', 'Pending-1', '1-Profile is Sent Validation Email');
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Reset Init', 'Profile Initiated Reset Password');
-INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Reset Exit', 'Profile Initiated Reset Password Continue');
-INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Reset Error', 'Error Encountered During Reset Password');
-INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Inactive', 'Profile has not Signed in for 45 Days');
-INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Disabled', 'Profile is Disabled after 5 Consecutive Failed Login');
-INSERT INTO status_type (component_name, status_name, status_desc) VALUES
-('PROFILE', 'Deleted', 'Profile is Deleted');
-
+('PROFILE', 'Active-1', '1-Profile is Validated');
 
 INSERT INTO platform (platform_name, platform_desc)
 VALUES ('Auth Service', 'Authentication / Authorization Server with Roles and Permissions');
@@ -250,10 +247,41 @@ INSERT INTO platform (platform_name, platform_desc)
 VALUES ('Env Service', 'Platform to hold runtime variables for different services');
 INSERT INTO platform (platform_name, platform_desc)
 VALUES ('Personal Expenses Tracking System', 'Application to manage / budget personal finances');
+-- not in fixtures
 INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Health Data', 'Application to manage / track health test results');
+VALUES ('Auth Service-1', '1-Authentication / Authorization Server with Roles and Permissions');
 INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Trackcase', 'Application to manage immigration / court cases');
+VALUES ('Env Service-1', '1-Platform to hold runtime variables for different services');
+INSERT INTO platform (platform_name, platform_desc)
+VALUES ('Personal Expenses Tracking System-1', '1-Application to manage / budget personal finances');
+
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First One', 'Last One', 'firstlast@one.com', null, 'password-one', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First Two', 'Last Two', 'firstlast@two.com', null, 'password-two', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First Three', 'Last Three', 'firstlast@three.com', null, 'password-three', 3, true, 0, null);
+-- not in fixtures
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First One-1', 'Last One-1', 'firstlast-1@one.com', null, 'password-one-1', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First Two-1', 'Last Two-1', 'firstlast-1@two.com', null, 'password-two-1', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
+VALUES ('First Three-1', 'Last Three-1', 'firstlast-1@three.com', null, 'password-three-1', 3, true, 0, null);
+
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (1, 1, 'Street One One', 'City One One', 'ON', 'US', '12569');
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (1, 3, 'Street One Two', 'City One Two', 'ON', 'US', '12569');
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (2, 1, 'Street Two One', 'City Two One', 'TW', 'US', '96521');
+-- not in fixtures
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (2, 2, 'Street One One-1', 'City One One-1', 'ON-1', 'US-1', '12569-1');
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (3, 1, 'Street One Two-1', 'City One Two-1', 'ON-1', 'US-1', '12659-1');
+INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
+VALUES (3, 2, 'Street Two One-1', 'City Two One-1', 'TW-1', 'US-1', '96521-1');
 
 INSERT INTO role (role_name, role_desc)
 VALUES ('SUPERUSER', 'User has all and unlimited access, including hard delete');
@@ -261,8 +289,13 @@ INSERT INTO role (role_name, role_desc)
 VALUES ('POWERUSER', 'User has all access, including soft delete. View access to ref/admin data');
 INSERT INTO role (role_name, role_desc)
 VALUES ('STANDARD', 'User has create, read and update access. No access to ref/admin data');
+-- not in fixtures
 INSERT INTO role (role_name, role_desc)
-VALUES ('GUEST', 'User has view only access. No access to ref/admin data');
+VALUES ('SUPERUSER-1', '1-User has all and unlimited access, including hard delete');
+INSERT INTO role (role_name, role_desc)
+VALUES ('POWERUSER-1', '1-User has all access, including soft delete. View access to ref/admin data');
+INSERT INTO role (role_name, role_desc)
+VALUES ('STANDARD-1', '1-User has create, read and update access. No access to ref/admin data');
 
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_CREATE', 'Can Add Permission');
@@ -270,93 +303,10 @@ INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_READ', 'Can View Permission(s)');
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_UPDATE', 'Can Update Permission');
+-- not in fixtures
 INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PERMISSION_DELETE', 'Can Delete Permission');
-
+VALUES ('PERMISSION_CREATE-1', '1-Can Add Permission');
 INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ROLE_CREATE', 'Can Add Role');
+VALUES ('PERMISSION_READ-1', '1-Can View Permission(s)');
 INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ROLE_READ', 'Can View Role(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ROLE_UPDATE', 'Can Update Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ROLE_DELETE', 'Can Delete Role');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_CREATE', 'Can Add Profile');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_READ', 'Can View Profile(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_UPDATE', 'Can Update Profile');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_DELETE', 'Can Delete Profile');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_CREATE', 'Can Add Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_READ', 'Can View Platform(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_UPDATE', 'Can Update Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_DELETE', 'Can Delete Platform');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_PROFILE_ROLE_READ', 'Can View Platform Profile Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_ROLE_PERMISSION_READ', 'Can View Platform Role Permission');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_PROFILE_ROLE_ASSIGN', 'Can Add Role to Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_PROFILE_ROLE_UNASSIGN', 'Can Remove Role from Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_ROLE_PERMISSION_ASSIGN', 'Can Add Permission to Role in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PLATFORM_ROLE_PERMISSION_UNASSIGN', 'Can Remove Permission from Role in Platform');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ADDRESS_TYPE_CREATE', 'Can Add Address Type');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ADDRESS_TYPE_READ', 'Can Read Address Type');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ADDRESS_TYPE_UPDATE', 'Can Update Address Type');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('ADDRESS_TYPE_DELETE', 'Can Delete Address Type');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_STATUS_CREATE', 'Can Add Profile Status');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_STATUS_READ', 'Can Read Profile Status');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_STATUS_UPDATE', 'Can Update Profile Status');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('PROFILE_STATUS_DELETE', 'Can Delete Profile Status');
-
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 2); -- Auth Service, POWERUSER, PERMISSION_READ
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 6); -- Auth Service, POWERUSER, ROLE_READ
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 10); -- Auth Service, POWERUSER, PROFILE_READ
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 14); -- Auth Service, POWERUSER, PLATFORM_READ
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 22); -- Auth Service, POWERUSER, ADDRESS_TYPE_READ
-INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
-VALUES (1, 2, 26); -- Auth Service, POWERUSER, PROFILE_STATUS_READ
-
--- DROP TABLE public.audit_platform CASCADE;
--- DROP TABLE public.audit_profile CASCADE;
--- DROP TABLE public.audit_role CASCADE;
--- DROP TABLE public.audit_permission CASCADE;
--- DROP TABLE public.platform_role_permission CASCADE;
--- DROP TABLE public.platform_profile_role CASCADE;
--- DROP TABLE public.permission CASCADE;
--- DROP TABLE public.role CASCADE;
--- DROP TABLE public.token CASCADE;
--- DROP TABLE public.profile_address CASCADE;
--- DROP TABLE public.address_type CASCADE;
--- DROP TABLE public.profile CASCADE;
--- DROP TABLE public.status_type CASCADE:
--- DROP TABLE public.platform CASCADE;
--- DROP TABLE public.flyway_schema_history;
+VALUES ('PERMISSION_UPDATE-1', '1-Can Update Permission');

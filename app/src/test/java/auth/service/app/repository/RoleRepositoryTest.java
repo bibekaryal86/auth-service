@@ -15,17 +15,17 @@ public class RoleRepositoryTest extends BaseTest {
 
   @Test
   void testUniqueConstraint_roleName() {
-    RoleEntity roleEntity = TestData.getRoleEntities().getFirst();
-    roleEntity.setId(null);
+    RoleEntity roleEntityInput = TestData.getRoleEntities().getFirst();
+    roleEntityInput.setId(null);
 
     // throws exception for same name
-    assertThrows(DataIntegrityViolationException.class, () -> roleRepository.save(roleEntity));
+    assertThrows(DataIntegrityViolationException.class, () -> roleRepository.save(roleEntityInput));
 
     // does not throw exception for different name
-    roleEntity.setRoleName("Some Role Name");
-    RoleEntity roleEntity1 = roleRepository.save(roleEntity);
+    roleEntityInput.setRoleName("Some Role Name");
+    RoleEntity roleEntityOutput = roleRepository.save(roleEntityInput);
 
     // cleanup
-    roleRepository.deleteById(roleEntity1.getId());
+    roleRepository.deleteById(roleEntityOutput.getId());
   }
 }

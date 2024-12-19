@@ -15,18 +15,19 @@ public class PermissionRepositoryTest extends BaseTest {
 
   @Test
   void testUniqueConstraint_permissionName() {
-    PermissionEntity permissionEntity = TestData.getPermissionEntities().getFirst();
-    permissionEntity.setId(null);
+    PermissionEntity permissionEntityInput = TestData.getPermissionEntities().getFirst();
+    permissionEntityInput.setId(null);
 
     // throws exception for same name
     assertThrows(
-        DataIntegrityViolationException.class, () -> permissionRepository.save(permissionEntity));
+        DataIntegrityViolationException.class,
+        () -> permissionRepository.save(permissionEntityInput));
 
     // does not throw exception for different name
-    permissionEntity.setPermissionName("Some New Permission");
-    PermissionEntity permissionEntity1 = permissionRepository.save(permissionEntity);
+    permissionEntityInput.setPermissionName("Some New Permission");
+    PermissionEntity permissionEntityOutput = permissionRepository.save(permissionEntityInput);
 
     // cleanup
-    permissionRepository.deleteById(permissionEntity1.getId());
+    permissionRepository.deleteById(permissionEntityOutput.getId());
   }
 }

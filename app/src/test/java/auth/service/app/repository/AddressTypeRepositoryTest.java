@@ -15,18 +15,19 @@ public class AddressTypeRepositoryTest extends BaseTest {
 
   @Test
   void testUniqueConstraint_addressTypeName() {
-    AddressTypeEntity addressTypeEntity = TestData.getAddressTypeEntities().getFirst();
-    addressTypeEntity.setId(null);
+    AddressTypeEntity addressTypeEntityInput = TestData.getAddressTypeEntities().getFirst();
+    addressTypeEntityInput.setId(null);
 
     // throws exception for same name
     assertThrows(
-        DataIntegrityViolationException.class, () -> addressTypeRepository.save(addressTypeEntity));
+        DataIntegrityViolationException.class,
+        () -> addressTypeRepository.save(addressTypeEntityInput));
 
     // does not throw exception for different name
-    addressTypeEntity.setTypeName("Some New Type");
-    AddressTypeEntity addressTypeEntity1 = addressTypeRepository.save(addressTypeEntity);
+    addressTypeEntityInput.setTypeName("Some New Type");
+    AddressTypeEntity addressTypeEntityOutput = addressTypeRepository.save(addressTypeEntityInput);
 
     // cleanup
-    addressTypeRepository.deleteById(addressTypeEntity1.getId());
+    addressTypeRepository.deleteById(addressTypeEntityOutput.getId());
   }
 }

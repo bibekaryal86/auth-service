@@ -8,51 +8,16 @@
     "password": "password-one",
     "isValidated": true,
     "loginAttempts": 0,
-    "status": {
+    "statusType": {
       "id": 1,
       "componentName": "PROFILE",
-      "statusName": "ACTIVE",
-      "statusDesc": "Status Type Desc One",
+      "statusName": "Created",
+      "statusDesc": "Profile Entity is Created",
       "createdDate": "2024-08-23T22:06:49.685768",
       "updatedDate": "2024-08-23T22:46:45.153133",
       "deletedDate": null
     },
-    "addresses": [
-      {
-        "id": 1,
-        "type": {
-          "id": 1,
-          "typeName": "MAILING",
-          "typeDesc": "Address Type Desc One",
-          "createdDate": "2024-08-23T22:06:49.685768",
-          "updatedDate": "2024-08-23T22:46:45.153133",
-          "deletedDate": null
-        },
-        "profileId": 1,
-        "street": "Street One One",
-        "city": "City One One",
-        "state": "ON",
-        "country": "US",
-        "postalCode": "12569"
-      },
-      {
-        "id": 2,
-        "type": {
-          "id": 3,
-          "typeName": "SHIPPING",
-          "typeDesc": "Address Type Desc Three",
-          "createdDate": "2024-08-23T22:06:49.685768",
-          "updatedDate": "2024-08-23T22:46:45.153133",
-          "deletedDate": null
-        },
-        "profileId": 1,
-        "street": "Street One Two",
-        "city": "City One Two",
-        "state": "ON",
-        "country": "US",
-        "postalCode": "12569"
-      }
-    ],
+    "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": null
@@ -66,34 +31,16 @@
     "password": "password-two",
     "isValidated": true,
     "loginAttempts": 4,
-    "status": {
+    "statusType": {
       "id": 3,
       "componentName": "PROFILE",
-      "statusName": "DELETED",
+      "statusName": "Deleted",
       "statusDesc": "Status Type Desc Three",
       "createdDate": "2024-08-23T22:06:49.685768",
       "updatedDate": "2024-08-23T22:46:45.153133",
       "deletedDate": null
     },
-    "addresses": [
-      {
-        "id": 3,
-        "type": {
-          "id": 1,
-          "typeName": "MAILING",
-          "typeDesc": "Address Type Desc One",
-          "createdDate": "2024-08-23T22:06:49.685768",
-          "updatedDate": "2024-08-23T22:46:45.153133",
-          "deletedDate": null
-        },
-        "profileId": 1,
-        "street": "Street Two One",
-        "city": "City Two One",
-        "state": "TW",
-        "country": "US",
-        "postalCode": "96521"
-      }
-    ],
+    "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": "2024-08-24T22:06:49.685768"
@@ -107,10 +54,10 @@
     "password": "password-three",
     "isValidated": true,
     "loginAttempts": 0,
-    "status": {
+    "statusType": {
       "id": 1,
       "componentName": "PROFILE",
-      "statusName": "ACTIVE",
+      "statusName": "Active",
       "statusDesc": "Status Type Desc One",
       "createdDate": "2024-08-23T22:06:49.685768",
       "updatedDate": "2024-08-23T22:46:45.153133",

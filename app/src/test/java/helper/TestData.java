@@ -14,6 +14,7 @@ import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.StatusTypeEntity;
@@ -62,8 +63,25 @@ public class TestData {
   public static List<ProfileEntity> getProfileEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-profile.json");
     try {
-      return ObjectMapperProvider.objectMapper()
-          .readValue(fixtureAsString, new TypeReference<>() {});
+      List<ProfileEntity> profileEntities =
+          ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
+
+      List<ProfileAddressEntity> profileAddressEntities = getProfileAddressEntities();
+
+      Map<Long, List<ProfileAddressEntity>> addressMap =
+          profileAddressEntities.stream()
+              .collect(
+                  Collectors.groupingBy(
+                      profileAddressEntity -> profileAddressEntity.getProfile().getId()));
+
+      profileEntities.forEach(
+          profile -> {
+            List<ProfileAddressEntity> addresses =
+                addressMap.getOrDefault(profile.getId(), Collections.emptyList());
+            profile.setAddresses(addresses);
+          });
+
+      return profileEntities;
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
@@ -77,12 +95,31 @@ public class TestData {
     profileEntity.setPassword("some-password");
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
-
-    StatusTypeEntity statusType = new StatusTypeEntity();
-    statusType.setId(1L);
-    statusType.setStatusName("ACTIVE");
-    statusType.setStatusDesc("Status Type Desc One");
+    profileEntity.setStatusType(null);
+    profileEntity.setAddresses(null);
     return profileEntity;
+  }
+
+  public static List<ProfileAddressEntity> getProfileAddressEntities() {
+    String fixtureAsString = FixtureReader.readFixture("entities-profile-address.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
+  }
+
+  public static ProfileAddressEntity getNewProfileAddressEntity() {
+    ProfileAddressEntity profileAddressEntity = new ProfileAddressEntity();
+    profileAddressEntity.setStreet("New Street");
+    profileAddressEntity.setCity("New City");
+    profileAddressEntity.setState("NS");
+    profileAddressEntity.setCountry("NC");
+    profileAddressEntity.setPostalCode("13579");
+    profileAddressEntity.setProfile(null);
+    profileAddressEntity.setType(null);
+    return profileAddressEntity;
   }
 
   public static List<RoleEntity> getRoleEntities() {

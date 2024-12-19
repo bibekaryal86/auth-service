@@ -15,18 +15,18 @@ public class PlatformRepositoryTest extends BaseTest {
 
   @Test
   void testUniqueConstraint_platformName() {
-    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
-    platformEntity.setId(null);
+    PlatformEntity platformEntityInput = TestData.getPlatformEntities().getFirst();
+    platformEntityInput.setId(null);
 
     // throws exception for same name
     assertThrows(
-        DataIntegrityViolationException.class, () -> platformRepository.save(platformEntity));
+        DataIntegrityViolationException.class, () -> platformRepository.save(platformEntityInput));
 
     // does not throw exception for different name
-    platformEntity.setPlatformName("Some Platform Name");
-    PlatformEntity platformEntity1 = platformRepository.save(platformEntity);
+    platformEntityInput.setPlatformName("Some Platform Name");
+    PlatformEntity platformEntityOutput = platformRepository.save(platformEntityInput);
 
     // cleanup
-    platformRepository.deleteById(platformEntity1.getId());
+    platformRepository.deleteById(platformEntityOutput.getId());
   }
 }
