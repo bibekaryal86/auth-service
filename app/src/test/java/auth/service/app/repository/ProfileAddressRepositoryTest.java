@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 public class ProfileAddressRepositoryTest extends BaseTest {
 
-  // TODO this needs reworking after including profile and address in sql
   @Autowired private ProfileAddressRepository profileAddressRepository;
 
   @Test
