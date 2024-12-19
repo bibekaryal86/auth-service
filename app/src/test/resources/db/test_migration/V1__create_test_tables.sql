@@ -217,6 +217,8 @@ INSERT INTO address_type (type_name, type_desc) VALUES
 ('Mailing', 'Mailing Address');
 INSERT INTO address_type (type_name, type_desc) VALUES
 ('Billing', 'Billing Address');
+INSERT INTO address_type (type_name, type_desc) VALUES
+('Shipping', 'Shipping Address');
 
 INSERT INTO status_type (component_name, status_name, status_desc) VALUES
 ('PROFILE', 'Created', 'Profile Entity is Created');

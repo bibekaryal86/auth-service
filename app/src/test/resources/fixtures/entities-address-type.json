@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "typeName": "MAILING",
+    "typeName": "Mailing",
     "typeDesc": "Address Type Desc One",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "typeName": "BILLING",
+    "typeName": "Billing",
     "typeDesc": "Address Type Desc Two",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
@@ -17,7 +17,7 @@
   },
   {
     "id": 3,
-    "typeName": "SHIPPING",
+    "typeName": "Shipping",
     "typeDesc": "Address Type Desc Three",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",

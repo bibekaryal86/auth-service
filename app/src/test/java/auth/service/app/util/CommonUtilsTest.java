@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
@@ -132,20 +130,23 @@ public class CommonUtilsTest extends BaseTest {
 
   @Test
   void testConvertResponseMetadataToJson_handlesJsonProcessingException() {
-    ResponseMetadata responseMetadata = ResponseMetadata.builder()
+    ResponseMetadata responseMetadata =
+        ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg("Some Error Message").build())
             .build();
 
     try {
       ObjectMapper objectMapper = mock(ObjectMapper.class);
-      Mockito.lenient().when(objectMapper.writeValueAsString(responseMetadata)).thenThrow(JsonProcessingException.class);
+      Mockito.lenient()
+          .when(objectMapper.writeValueAsString(responseMetadata))
+          .thenThrow(JsonProcessingException.class);
     } catch (JsonProcessingException e) {
       fail("Mock setup failed: " + e.getMessage());
     }
 
     String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
     assertEquals(
-            "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some Error Message\"}}",
-            result);
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some Error Message\"}}",
+        result);
   }
 }
