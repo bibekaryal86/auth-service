@@ -49,3 +49,5 @@ TODO:
 platform profile role and platform role permission look up by profileId and roleId only
   in the DTO, create a map of platform, list<role>, platform, list<permission>
   Instead of Map, create objects with role, list<permission> etc
+
+refactor TestData to run the fixtures once only

@@ -310,3 +310,31 @@ INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_READ-1', '1-Can View Permission(s)');
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_UPDATE-1', '1-Can Update Permission');
+
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (1, 1, 1);
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (2, 2, 2);
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (3, 3, 3);
+-- not in fixtures
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (4, 4, 4);
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (4, 4, 5);
+INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
+VALUES (4, 4, 6);
+
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (1, 1, 1);
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (2, 2, 2);
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (3, 3, 3);
+-- not in fixtures
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (4, 4, 4);
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (4, 4, 5);
+INSERT INTO platform_role_permission (platform_id, role_id, permission_id)
+VALUES (4, 4, 6);
