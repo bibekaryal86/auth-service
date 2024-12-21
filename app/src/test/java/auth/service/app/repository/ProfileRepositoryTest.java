@@ -9,6 +9,7 @@ import auth.service.app.model.entity.ProfileEntity;
 import helper.TestData;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -29,9 +30,16 @@ public class ProfileRepositoryTest extends BaseTest {
   void testUniqueConstraint_email() {
     // create (email cannot be duplicate)
     ProfileEntity profileEntityInput = TestData.getProfileEntities().getFirst();
-    profileEntityInput.setId(null);
+    final String original = profileEntityInput.getEmail();
+    ProfileEntity profileEntityOutput = new ProfileEntity();
+    BeanUtils.copyProperties(profileEntityInput, profileEntityOutput, "id", "addresses");
+
+    // Variable used in lambda expression should be final or effectively final
+    final ProfileEntity finalProfileEntityOutput = profileEntityOutput;
+    // throws exception for same name
     assertThrows(
-        DataIntegrityViolationException.class, () -> profileRepository.save(profileEntityInput));
+        DataIntegrityViolationException.class,
+        () -> profileRepository.save(finalProfileEntityOutput));
 
     // partial index not supported in H2 database used for testing
     // update (phone number cannot be duplicate if entered)
@@ -40,10 +48,13 @@ public class ProfileRepositoryTest extends BaseTest {
     // assertThrows(
     //    DataIntegrityViolationException.class, () -> profileRepository.save(profileEntityInput));
 
-    profileEntityInput.setEmail("something-new@email.com");
-    profileEntityInput.setAddresses(null);
-    ProfileEntity profileEntityOutput = profileRepository.save(profileEntityInput);
+    // does not throw exception for different name
+    profileEntityOutput.setEmail("something-new@email.com");
+    profileEntityOutput = profileRepository.save(profileEntityOutput);
     assertEquals("something-new@email.com", profileEntityOutput.getEmail());
+
+    // make sure original entity remains unchanged as its used in other tests
+    assertEquals(original, profileEntityInput.getEmail());
 
     // reset
     profileRepository.deleteById(profileEntityOutput.getId());

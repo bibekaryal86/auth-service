@@ -53,7 +53,8 @@ public class PermissionCheckTest extends BaseTest {
   @Test
   void testCheckPermission() {
     CheckPermission checkPermission = mock(CheckPermission.class);
-    when(checkPermission.value()).thenReturn(new String[] {"Permission One", "Permission Two"});
+    when(checkPermission.value())
+        .thenReturn(new String[] {"PERMISSION_READ", "SOME_OTHER_PERMISSION"});
 
     assertDoesNotThrow(() -> permissionCheck.checkPermission(checkPermission));
     verify(securityContext).getAuthentication();

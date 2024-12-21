@@ -1,5 +1,6 @@
 package auth.service.app.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import auth.service.BaseTest;
@@ -21,23 +22,28 @@ public class ProfileAddressRepositoryTest extends BaseTest {
     // setup
     List<AddressTypeEntity> addressTypeEntities = TestData.getAddressTypeEntities();
 
-    ProfileAddressEntity profileAddressEntityOneInput =
+    ProfileAddressEntity profileAddressEntityInput =
         TestData.getProfileAddressEntities().getFirst();
-    profileAddressEntityOneInput.setId(null);
+    final Long original = profileAddressEntityInput.getType().getId();
+    ProfileAddressEntity profileAddressEntityOutput = new ProfileAddressEntity();
+    BeanUtils.copyProperties(profileAddressEntityInput, profileAddressEntityOutput, "id");
 
+    // Variable used in lambda expression should be final or effectively final
+    final ProfileAddressEntity finalProfileAddressEntityOutput = profileAddressEntityOutput;
     // throws exception for same profile same type
     assertThrows(
         DataIntegrityViolationException.class,
-        () -> profileAddressRepository.save(profileAddressEntityOneInput));
+        () -> profileAddressRepository.save(finalProfileAddressEntityOutput));
 
     // does not throw exception for same profile different type
-    ProfileAddressEntity profileAddressEntityTwoInput = new ProfileAddressEntity();
-    BeanUtils.copyProperties(profileAddressEntityOneInput, profileAddressEntityTwoInput);
-    profileAddressEntityTwoInput.setType(addressTypeEntities.get(1));
-    ProfileAddressEntity profileAddressEntityTwoOutput =
-        profileAddressRepository.save(profileAddressEntityTwoInput);
+    profileAddressEntityOutput.setType(addressTypeEntities.get(1));
+    profileAddressEntityOutput = profileAddressRepository.save(profileAddressEntityOutput);
+    assertEquals(2L, profileAddressEntityOutput.getType().getId());
+
+    // make sure original entity remains unchanged as its used in other tests
+    assertEquals(original, profileAddressEntityInput.getType().getId());
 
     // cleanup
-    profileAddressRepository.deleteById(profileAddressEntityTwoOutput.getId());
+    profileAddressRepository.deleteById(profileAddressEntityOutput.getId());
   }
 }

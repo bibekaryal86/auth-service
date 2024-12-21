@@ -40,6 +40,26 @@ import org.springframework.beans.BeanUtils;
 
 public class TestData {
 
+  private static final List<EnvDetails> ENV_DETAILS_RESPONSE_FIXTURE;
+  private static final List<StatusTypeEntity> STATUS_TYPE_ENTITIES_FIXTURE;
+  private static final List<AddressTypeEntity> ADDRESS_TYPE_ENTITIES_FIXTURE;
+  private static final List<PermissionEntity> PERMISSION_ENTITIES_FIXTURE;
+  private static final List<RoleEntity> ROLE_ENTITIES_FIXTURE;
+  private static final List<PlatformEntity> PLATFORM_ENTITIES_FIXTURE;
+  private static final List<ProfileAddressEntity> PROFILE_ADDRESS_ENTITIES_FIXTURE;
+  private static final List<ProfileEntity> PROFILE_ENTITIES_FIXTURE;
+
+  static {
+    ENV_DETAILS_RESPONSE_FIXTURE = getEnvDetailsResponseFixture();
+    STATUS_TYPE_ENTITIES_FIXTURE = getStatusTypeEntitiesFixture();
+    ADDRESS_TYPE_ENTITIES_FIXTURE = getAddressTypeEntitiesFixture();
+    PERMISSION_ENTITIES_FIXTURE = getPermissionEntitiesFixture();
+    ROLE_ENTITIES_FIXTURE = getRoleEntitiesFixture();
+    PLATFORM_ENTITIES_FIXTURE = getPlatformEntitiesFixture();
+    PROFILE_ADDRESS_ENTITIES_FIXTURE = getProfileAddressEntitiesFixture();
+    PROFILE_ENTITIES_FIXTURE = getProfileEntitiesFixture();
+  }
+
   public static Map<String, String> getSystemEnvPropertyTestData() {
     return ENV_KEY_NAMES.stream()
         .collect(Collectors.toMap(someKeyName -> someKeyName, someKeyName -> someKeyName));
@@ -55,7 +75,7 @@ public class TestData {
     System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
   }
 
-  public static List<EnvDetails> getEnvDetailsResponse() {
+  private static List<EnvDetails> getEnvDetailsResponseFixture() {
     String fixtureAsString = FixtureReader.readFixture("env-service_getPropertiesResponse.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -65,7 +85,11 @@ public class TestData {
     }
   }
 
-  public static List<StatusTypeEntity> getStatusTypeEntities() {
+  public static List<EnvDetails> getEnvDetailsResponse() {
+    return ENV_DETAILS_RESPONSE_FIXTURE;
+  }
+
+  private static List<StatusTypeEntity> getStatusTypeEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-status-type.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -75,6 +99,10 @@ public class TestData {
     }
   }
 
+  public static List<StatusTypeEntity> getStatusTypeEntities() {
+    return STATUS_TYPE_ENTITIES_FIXTURE;
+  }
+
   public static StatusTypeEntity getNewStatusTypeEntity() {
     StatusTypeEntity statusTypeEntity = new StatusTypeEntity();
     statusTypeEntity.setStatusName("New Status Type");
@@ -82,7 +110,7 @@ public class TestData {
     return statusTypeEntity;
   }
 
-  public static List<AddressTypeEntity> getAddressTypeEntities() {
+  private static List<AddressTypeEntity> getAddressTypeEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-address-type.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -92,6 +120,10 @@ public class TestData {
     }
   }
 
+  public static List<AddressTypeEntity> getAddressTypeEntities() {
+    return ADDRESS_TYPE_ENTITIES_FIXTURE;
+  }
+
   public static AddressTypeEntity getNewAddressTypeEntity() {
     AddressTypeEntity addressTypeEntity = new AddressTypeEntity();
     addressTypeEntity.setTypeName("New Address Type");
@@ -99,7 +131,7 @@ public class TestData {
     return addressTypeEntity;
   }
 
-  public static List<PermissionEntity> getPermissionEntities() {
+  private static List<PermissionEntity> getPermissionEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-permission.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -109,6 +141,10 @@ public class TestData {
     }
   }
 
+  public static List<PermissionEntity> getPermissionEntities() {
+    return PERMISSION_ENTITIES_FIXTURE;
+  }
+
   public static PermissionEntity getNewPermissionEntity() {
     PermissionEntity permissionEntity = new PermissionEntity();
     permissionEntity.setPermissionName("New Permission");
@@ -116,7 +152,7 @@ public class TestData {
     return permissionEntity;
   }
 
-  public static List<RoleEntity> getRoleEntities() {
+  private static List<RoleEntity> getRoleEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-role.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -126,6 +162,10 @@ public class TestData {
     }
   }
 
+  public static List<RoleEntity> getRoleEntities() {
+    return ROLE_ENTITIES_FIXTURE;
+  }
+
   public static RoleEntity getNewRoleEntity() {
     RoleEntity roleEntity = new RoleEntity();
     roleEntity.setRoleName("New Role");
@@ -133,7 +173,7 @@ public class TestData {
     return roleEntity;
   }
 
-  public static List<PlatformEntity> getPlatformEntities() {
+  private static List<PlatformEntity> getPlatformEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-platform.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -143,6 +183,10 @@ public class TestData {
     }
   }
 
+  public static List<PlatformEntity> getPlatformEntities() {
+    return PLATFORM_ENTITIES_FIXTURE;
+  }
+
   public static PlatformEntity getNewPlatformEntity() {
     PlatformEntity platformEntity = new PlatformEntity();
     platformEntity.setPlatformName("New Platform");
@@ -150,7 +194,7 @@ public class TestData {
     return platformEntity;
   }
 
-  public static List<ProfileAddressEntity> getProfileAddressEntities() {
+  private static List<ProfileAddressEntity> getProfileAddressEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-profile-address.json");
     try {
       return ObjectMapperProvider.objectMapper()
@@ -158,6 +202,10 @@ public class TestData {
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
+  }
+
+  public static List<ProfileAddressEntity> getProfileAddressEntities() {
+    return PROFILE_ADDRESS_ENTITIES_FIXTURE;
   }
 
   public static ProfileAddressEntity getNewProfileAddressEntity() {
@@ -172,7 +220,7 @@ public class TestData {
     return profileAddressEntity;
   }
 
-  public static List<ProfileEntity> getProfileEntities() {
+  private static List<ProfileEntity> getProfileEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-profile.json");
     try {
       List<ProfileEntity> profileEntities =
@@ -197,6 +245,10 @@ public class TestData {
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
+  }
+
+  public static List<ProfileEntity> getProfileEntities() {
+    return PROFILE_ENTITIES_FIXTURE;
   }
 
   public static ProfileEntity getNewProfileEntity() {
@@ -330,7 +382,7 @@ public class TestData {
 
   public static AuthToken getAuthToken() {
     return AuthToken.builder()
-        .platform(AuthTokenPlatform.builder().id(1L).platformName("Platform Name One").build())
+        .platform(AuthTokenPlatform.builder().id(1L).platformName("Auth Service").build())
         .profile(
             AuthTokenProfile.builder()
                 .id(1L)
@@ -339,9 +391,9 @@ public class TestData {
                 .isValidated(true)
                 .statusId(1L)
                 .build())
-        .roles(List.of(AuthTokenRole.builder().id(1L).roleName("Role One").build()))
+        .roles(List.of(AuthTokenRole.builder().id(3L).roleName("STANDARD").build()))
         .permissions(
-            List.of(AuthTokenPermission.builder().id(1L).permissionName("Permission One").build()))
+            List.of(AuthTokenPermission.builder().id(2L).permissionName("PERMISSION_READ").build()))
         .build();
   }
 
