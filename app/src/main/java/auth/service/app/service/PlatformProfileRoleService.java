@@ -77,6 +77,17 @@ public class PlatformProfileRoleService {
                     String.format("%s,%s,%s", platformId, profileId, roleId)));
   }
 
+  public PlatformProfileRoleEntity readPlatformProfileRole(
+      final Long platformId, final String email) {
+    log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
+    return platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email).stream()
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new ElementNotFoundException(
+                    "Platform Profile Role", String.format("%s,%s", platformId, email)));
+  }
+
   // UPDATE
   // not provided
 

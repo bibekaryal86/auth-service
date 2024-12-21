@@ -246,7 +246,7 @@ public class ProfileBasicAuthController {
       final HttpServletRequest request) {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          profileService.readPlatformProfileRole(platformId, email);
+          platformProfileRoleService.readPlatformProfileRole(platformId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendProfileValidationEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
@@ -289,7 +289,7 @@ public class ProfileBasicAuthController {
       final HttpServletRequest request) {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          profileService.readPlatformProfileRole(platformId, email);
+          platformProfileRoleService.readPlatformProfileRole(platformId, email);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       emailService.sendProfileResetEmail(
           platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);

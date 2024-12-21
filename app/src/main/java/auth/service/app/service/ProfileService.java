@@ -12,6 +12,7 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -19,13 +20,11 @@ import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
-import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.PasswordUtils;
@@ -49,7 +48,7 @@ public class ProfileService {
 
   private final ProfileRepository profileRepository;
   private final ProfileAddressRepository profileAddressRepository;
-  private final PlatformProfileRoleRepository platformProfileRoleRepository;
+  private final PlatformProfileRoleService platformProfileRoleService;
   private final CircularDependencyService circularDependencyService;
   private final TokenService tokenService;
   private final PasswordUtils passwordUtils;
@@ -79,14 +78,10 @@ public class ProfileService {
 
     // save platform profile role
     final RoleEntity roleEntity = getRoleEntityToCreate(appUserRequest.isGuestUser());
-    PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
-    platformProfileRoleEntity.setPlatform(platformEntity);
-    platformProfileRoleEntity.setProfile(profileEntity);
-    platformProfileRoleEntity.setRole(roleEntity);
-    platformProfileRoleEntity.setId(
-        new PlatformProfileRoleId(
-            platformEntity.getId(), profileEntity.getId(), roleEntity.getId()));
-    platformProfileRoleRepository.save(platformProfileRoleEntity);
+    PlatformProfileRoleRequest platformProfileRoleRequest =
+        new PlatformProfileRoleRequest(
+            platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
+    platformProfileRoleService.createPlatformProfileRole(platformProfileRoleRequest);
 
     applicationEventPublisher.publishEvent(
         new ProfileEvent(
@@ -251,7 +246,8 @@ public class ProfileService {
     log.info(
         "Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
-        readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, profilePasswordRequest.getEmail());
     final PlatformEntity platformEntity = platformProfileRoleEntity.getPlatform();
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
 
@@ -290,7 +286,8 @@ public class ProfileService {
   public ProfileEntity resetProfile(
       final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
     final PlatformProfileRoleEntity platformProfileRoleEntity =
-        readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, profilePasswordRequest.getEmail());
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
     profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
     return updateProfile(profileEntity);
@@ -299,7 +296,8 @@ public class ProfileService {
   public ProfileEntity validateAndResetProfile(
       final Long platformId, final String encodedEmail, final boolean isValidate) {
     final PlatformProfileRoleEntity platformProfileRoleEntity =
-        readPlatformProfileRole(platformId, decodeEmailAddress(encodedEmail));
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, decodeEmailAddress(encodedEmail));
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
 
     if (isValidate) {
@@ -308,17 +306,6 @@ public class ProfileService {
     }
 
     return profileEntity;
-  }
-
-  public PlatformProfileRoleEntity readPlatformProfileRole(
-      final Long platformId, final String email) {
-    log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
-    return platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email).stream()
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new ElementNotFoundException(
-                    "Platform Profile Role", String.format("%s,%s", platformId, email)));
   }
 
   private ProfileEntity updateProfile(final ProfileEntity profileEntity) {

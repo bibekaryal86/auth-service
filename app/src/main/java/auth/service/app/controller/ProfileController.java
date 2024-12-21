@@ -133,7 +133,8 @@ public class ProfileController {
       permissionCheck.checkProfileAccess("", id);
       final String baseUrl = getBaseUrlForLinkInEmail(request);
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          profileService.readPlatformProfileRole(platformId, profileEmailRequest.getOldEmail());
+          platformProfileRoleService.readPlatformProfileRole(
+              platformId, profileEmailRequest.getOldEmail());
       final ProfileEntity profileEntity =
           profileService.updateProfileEmail(
               id, profileEmailRequest, platformProfileRoleEntity.getPlatform(), baseUrl);
@@ -164,7 +165,8 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess("", id);
       final PlatformProfileRoleEntity platformProfileRoleEntity =
-          profileService.readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+          platformProfileRoleService.readPlatformProfileRole(
+              platformId, profilePasswordRequest.getEmail());
       final ProfileEntity profileEntity =
           profileService.updateProfilePassword(
               id, profilePasswordRequest, platformProfileRoleEntity.getPlatform());
