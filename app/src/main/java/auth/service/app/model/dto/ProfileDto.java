@@ -33,6 +33,7 @@ public class ProfileDto {
   @ToString.Exclude private String phone;
   private boolean isValidated;
   private Integer loginAttempts;
+  private LocalDateTime lastLogin;
 
   private List<ProfileAddressDto> addresses;
   private StatusTypeDto status;

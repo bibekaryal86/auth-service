@@ -8,6 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +44,9 @@ public class ProfileEntity extends BaseEntity {
 
   @Column(name = "login_attempts")
   private Integer loginAttempts;
+
+  @Column(name = "last_login")
+  private LocalDateTime lastLogin;
 
   @ManyToOne
   @JoinColumn(name = "status_id")

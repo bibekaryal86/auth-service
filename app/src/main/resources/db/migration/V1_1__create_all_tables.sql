@@ -31,6 +31,7 @@ CREATE TABLE profile
     status_id    BIGINT                                              NOT NULL,
     is_validated BOOLEAN                                              NOT NULL,
     login_attempts INTEGER,
+    last_login TIMESTAMP,
     created_date TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_date TIMESTAMP,

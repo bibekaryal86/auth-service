@@ -42,7 +42,7 @@ TODO:
 * create a scheduled job to check for user login and set as inactive
 * when login, if login is unsuccessful, update login_attempts
   * is login_attempts = 5, disable the profile
-  * if login successful, set login_attempts to 0
+  * if login successful, set login_attempts to 0, and update last_login field
 * CrudInfo implementation in ResponseMetadata
 
 
