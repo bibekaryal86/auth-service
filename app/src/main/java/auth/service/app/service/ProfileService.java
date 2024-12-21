@@ -97,7 +97,7 @@ public class ProfileService {
   private void validateCreateProfile(final ProfileRequest appUserRequest) {
     // password and app are required for create user
     if (!StringUtils.hasText(appUserRequest.getPassword())) {
-      throw new ElementMissingException("User", "password");
+      throw new ElementMissingException("Profile", "password");
     }
   }
 

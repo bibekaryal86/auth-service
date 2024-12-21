@@ -253,9 +253,9 @@ public class TestData {
 
   public static ProfileEntity getNewProfileEntity() {
     ProfileEntity profileEntity = new ProfileEntity();
-    profileEntity.setFirstName("New App Profile F");
-    profileEntity.setLastName("New App Profile L");
-    profileEntity.setEmail("new_app@profile.com");
+    profileEntity.setFirstName("New First");
+    profileEntity.setLastName("New Last");
+    profileEntity.setEmail("new@email.com");
     profileEntity.setPassword("some-password");
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
@@ -266,15 +266,16 @@ public class TestData {
 
   public static ProfileRequest getProfileRequest(String password) {
     ProfileEntity profileEntity = getNewProfileEntity();
+    StatusTypeEntity statusTypeEntity = getStatusTypeEntities().getFirst();
     return new ProfileRequest(
         profileEntity.getFirstName(),
         profileEntity.getLastName(),
         profileEntity.getEmail(),
         profileEntity.getPhone(),
         password == null ? profileEntity.getPassword() : password,
-        profileEntity.getStatusType().getId(),
+        statusTypeEntity.getId(),
         true,
-        null);
+        Collections.emptyList());
   }
 
   public static ProfileDto getProfileDto() {
