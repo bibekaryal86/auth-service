@@ -14,8 +14,6 @@ import auth.service.app.model.entity.AuditProfileEntity;
 import auth.service.app.model.entity.AuditRoleEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
@@ -46,8 +44,6 @@ public class AuditServiceTest extends BaseTest {
   private static RoleEntity roleEntity;
   private static PlatformEntity platformEntity;
   private static ProfileEntity profileEntity;
-  private static PlatformProfileRoleEntity platformProfileRoleEntity;
-  private static PlatformRolePermissionEntity platformRolePermissionEntity;
 
   @Mock private HttpServletRequest request;
   @Mock private SecurityContext securityContext;
@@ -65,8 +61,6 @@ public class AuditServiceTest extends BaseTest {
     roleEntity = TestData.getRoleEntities().getFirst();
     platformEntity = TestData.getPlatformEntities().getFirst();
     profileEntity = TestData.getProfileEntities().getFirst();
-    platformProfileRoleEntity = TestData.getPlatformProfileRoleEntities().getFirst();
-    platformRolePermissionEntity = TestData.getPlatformRolePermissionEntities().getFirst();
   }
 
   @BeforeEach

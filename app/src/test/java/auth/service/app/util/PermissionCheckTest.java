@@ -45,8 +45,7 @@ public class PermissionCheckTest extends BaseTest {
   @BeforeEach
   public void setUpBeforeEach() {
     SecurityContextHolder.setContext(securityContext);
-    authentication =
-        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
   }
 
@@ -65,8 +64,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
-    authentication =
-        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
 
     CheckPermission checkPermission = mock(CheckPermission.class);
     when(checkPermission.value())
@@ -91,7 +89,7 @@ public class PermissionCheckTest extends BaseTest {
 
   @Test
   void testCheckProfileAccess_Email() {
-    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(PROFILE_EMAIL, 0));
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess(EMAIL, 0));
   }
 
   @Test
@@ -104,8 +102,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
-    authentication =
-        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", 99));
@@ -137,8 +134,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
-    authentication =
-        new TestingAuthenticationToken(PROFILE_EMAIL, authToken, Collections.emptyList());
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     List<ProfileEntity> profileEntitiesFiltered =

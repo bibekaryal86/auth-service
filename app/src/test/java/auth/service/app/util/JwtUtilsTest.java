@@ -40,15 +40,15 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   public void testEncodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(PROFILE_EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(EMAIL);
     assertNotNull(encodedEmail);
   }
 
   @Test
   public void testDecodeEmailAddress() {
-    String encodedEmail = JwtUtils.encodeEmailAddress(PROFILE_EMAIL);
+    String encodedEmail = JwtUtils.encodeEmailAddress(EMAIL);
     String decodedEmail = JwtUtils.decodeEmailAddress(encodedEmail);
-    assertEquals(PROFILE_EMAIL, decodedEmail);
+    assertEquals(EMAIL, decodedEmail);
   }
 
   @Test
