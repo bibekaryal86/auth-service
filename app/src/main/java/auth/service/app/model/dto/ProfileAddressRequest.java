@@ -1,11 +1,11 @@
 package auth.service.app.model.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class ProfileAddressRequest {
   private Long id; // needed in request for updates from within profile

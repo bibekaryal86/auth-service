@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -125,7 +124,6 @@ public class ProfileServiceTest extends BaseTest {
 
     // Update
     ProfileAddressEntity profileAddressEntity = TestData.getNewProfileAddressEntity();
-    ProfileAddressRequest profileAddressRequest = new ProfileAddressRequest()
     request =
         new ProfileRequest(
             updatedFirstName,
@@ -160,7 +158,7 @@ public class ProfileServiceTest extends BaseTest {
 
     // verify platform profile role created
     PlatformProfileRoleEntity platformProfileRoleEntity =
-            platformProfileRoleService.readPlatformProfileRole(entity.getId(), entity.getEmail());
+        platformProfileRoleService.readPlatformProfileRole(entity.getId(), entity.getEmail());
     assertEquals(platformEntity.getId(), platformProfileRoleEntity.getPlatform().getId());
     assertEquals(entity.getId(), platformProfileRoleEntity.getProfile().getId());
     assertEquals(ConstantUtils.ROLE_NAME_GUEST, platformProfileRoleEntity.getRole().getRoleName());

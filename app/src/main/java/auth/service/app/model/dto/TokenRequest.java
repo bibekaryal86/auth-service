@@ -2,12 +2,12 @@ package auth.service.app.model.dto;
 
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
-@Data
-@NoArgsConstructor
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class TokenRequest {
   @Positive(message = "REQUIRED")

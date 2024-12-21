@@ -2,11 +2,11 @@ package auth.service.app.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class ProfileEmailRequest {
   @NotBlank(message = "Old Email is Required")

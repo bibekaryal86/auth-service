@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString
 @EqualsAndHashCode
 @AllArgsConstructor
 public class ProfileRequest {
