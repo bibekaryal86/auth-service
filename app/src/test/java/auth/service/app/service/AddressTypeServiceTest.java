@@ -26,6 +26,7 @@ public class AddressTypeServiceTest extends BaseTest {
     assertEquals("Shipping-1", addressTypeEntities.getLast().getTypeName());
   }
 
+  @Test
   void testAddressTypeService_CRUD() {
     String newName = "AddressTypeNewName";
     String newDesc = "AddressTypeNewDesc";

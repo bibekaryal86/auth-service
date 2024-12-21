@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PlatformRequest {
   @NotBlank(message = "Name is required")
-  private String platformRequest;
+  private String platformName;
 
   @NotBlank(message = "Description is required")
   private String platformDesc;

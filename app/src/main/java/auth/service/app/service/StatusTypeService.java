@@ -36,7 +36,7 @@ public class StatusTypeService {
   public List<StatusTypeEntity> readStatusTypes() {
     log.debug("Read Status Types...");
     return statusTypeRepository.findAll(
-        Sort.by(Sort.Order.asc("componentName"), Sort.Order.asc("typeName")));
+        Sort.by(Sort.Order.asc("componentName"), Sort.Order.asc("statusName")));
   }
 
   /** Use {@link CircularDependencyService#readStatusType(Long)} */

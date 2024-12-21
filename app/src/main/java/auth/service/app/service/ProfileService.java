@@ -159,10 +159,6 @@ public class ProfileService {
     return profileEntity;
   }
 
-  public ProfileEntity updateProfile(final ProfileEntity profileEntity) {
-    return profileRepository.save(profileEntity);
-  }
-
   public ProfileEntity updateProfileEmail(
       final Long id,
       final ProfileEmailRequest profileEmailRequest,
@@ -319,6 +315,10 @@ public class ProfileService {
             () ->
                 new ElementNotFoundException(
                     "Platform Profile Role", String.format("%s,%s", platformId, email)));
+  }
+
+  private ProfileEntity updateProfile(final ProfileEntity profileEntity) {
+    return profileRepository.save(profileEntity);
   }
 
   private List<ProfileAddressEntity> convertAddressRequestToEntity(
