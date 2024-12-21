@@ -1,6 +1,7 @@
 package auth.service.app.controller;
 
 import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
+import static auth.service.app.util.CommonUtils.getIpAddress;
 import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
@@ -97,7 +98,7 @@ public class ProfileBasicAuthController {
       final ProfileEntity profileEntity =
           profileService.readProfileByEmail(profilePasswordRequest.getEmail());
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
-          profileService.loginProfile(platformId, profilePasswordRequest);
+          profileService.loginProfile(platformId, profilePasswordRequest, getIpAddress(request));
       runAsync(
           () ->
               auditService.auditProfile(
@@ -146,7 +147,11 @@ public class ProfileBasicAuthController {
 
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
           tokenService.saveToken(
-              tokenEntity.getId(), null, tokenEntity.getPlatform(), tokenEntity.getProfile());
+              tokenEntity.getId(),
+              null,
+              tokenEntity.getPlatform(),
+              tokenEntity.getProfile(),
+              getIpAddress(request));
       runAsync(
           () ->
               auditService.auditProfile(
@@ -199,7 +204,8 @@ public class ProfileBasicAuthController {
           tokenEntity.getId(),
           LocalDateTime.now(),
           tokenEntity.getPlatform(),
-          tokenEntity.getProfile());
+          tokenEntity.getProfile(),
+          getIpAddress(request));
 
       runAsync(
           () ->

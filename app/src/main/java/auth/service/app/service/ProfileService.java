@@ -245,7 +245,11 @@ public class ProfileService {
   // OTHERS
   @Transactional
   public ProfilePasswordTokenResponse loginProfile(
-      final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
+      final Long platformId,
+      final ProfilePasswordRequest profilePasswordRequest,
+      final String ipAddress) {
+    log.info(
+        "Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
     final PlatformEntity platformEntity = platformProfileRoleEntity.getPlatform();
@@ -280,7 +284,7 @@ public class ProfileService {
       throw new ProfileNotAuthorizedException();
     }
 
-    return tokenService.saveToken(null, null, platformEntity, profileEntity);
+    return tokenService.saveToken(null, null, platformEntity, profileEntity, ipAddress);
   }
 
   public ProfileEntity resetProfile(

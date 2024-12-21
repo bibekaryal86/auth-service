@@ -1,5 +1,8 @@
 package auth.service.app.service;
 
+import static auth.service.app.util.CommonUtils.getIpAddress;
+import static auth.service.app.util.CommonUtils.getUserAgent;
+
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -40,18 +43,6 @@ public class AuditService {
   private final RoleRepository roleRepository;
   private final PlatformRepository platformRepository;
   private final ProfileRepository profileRepository;
-
-  private String getIpAddress(final HttpServletRequest request) {
-    String ipAddress = request.getHeader("X-Forwarded-For");
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getRemoteAddr();
-    }
-    return ipAddress;
-  }
-
-  private String getUserAgent(final HttpServletRequest request) {
-    return request.getHeader("User-Agent");
-  }
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

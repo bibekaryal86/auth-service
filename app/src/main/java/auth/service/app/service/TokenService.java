@@ -68,13 +68,15 @@ public class TokenService {
       final Long id,
       final LocalDateTime deletedDate,
       final PlatformEntity platformEntity,
-      final ProfileEntity profileEntity) {
+      final ProfileEntity profileEntity,
+      final String ipAddress) {
     log.debug(
-        "Save Token: [{}], [{}], [{}], [{}]",
+        "Save Token: [{}], [{}], [{}], [{}], [{}]",
         id,
         deletedDate,
         platformEntity.getId(),
-        profileEntity.getEmail());
+        profileEntity.getEmail(),
+        ipAddress);
 
     if (id != null && deletedDate != null) {
       tokenRepository
@@ -95,6 +97,7 @@ public class TokenService {
     tokenEntity.setProfile(profileEntity);
     tokenEntity.setAccessToken(getNewAccessToken(platformEntity, profileDto));
     tokenEntity.setRefreshToken(getNewRefreshToken(platformEntity, profileDto));
+    tokenEntity.setIpAddress(ipAddress);
 
     if (id != null) {
       tokenEntity.setId(id);

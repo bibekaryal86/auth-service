@@ -79,6 +79,18 @@ public class CommonUtils {
         : null;
   }
 
+  public static String getIpAddress(final HttpServletRequest request) {
+    String ipAddress = request.getHeader("X-Forwarded-For");
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getRemoteAddr();
+    }
+    return ipAddress;
+  }
+
+  public static String getUserAgent(final HttpServletRequest request) {
+    return request.getHeader("User-Agent");
+  }
+
   public static String convertResponseMetadataToJson(final ResponseMetadata responseMetadata) {
     try {
       return new ObjectMapper().writeValueAsString(responseMetadata);
