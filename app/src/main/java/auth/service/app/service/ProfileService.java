@@ -58,26 +58,26 @@ public class ProfileService {
   @Transactional
   public ProfileEntity createProfile(
       final PlatformEntity platformEntity,
-      final ProfileRequest appUserRequest,
+      final ProfileRequest profileRequest,
       final String baseUrlForEmail) {
-    log.debug("Create App User: [{}], [{}]", appUserRequest, baseUrlForEmail);
-    validateCreateProfile(appUserRequest);
+    log.debug("Create App User: [{}], [{}]", profileRequest, baseUrlForEmail);
+    validateCreateProfile(profileRequest);
 
     ProfileEntity profileEntity = new ProfileEntity();
-    BeanUtils.copyProperties(appUserRequest, profileEntity, "password", "addresses");
-    profileEntity.setPassword(passwordUtils.hashPassword(appUserRequest.getPassword()));
+    BeanUtils.copyProperties(profileRequest, profileEntity, "password", "addresses");
+    profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
     profileEntity = profileRepository.save(profileEntity);
 
     // save addresses
-    if (!CollectionUtils.isEmpty(appUserRequest.getAddresses())) {
-      List<ProfileAddressEntity> appUserAddressEntities =
-          convertAddressRequestToEntity(appUserRequest.getAddresses(), profileEntity, true);
-      profileAddressRepository.saveAll(appUserAddressEntities);
+    if (!CollectionUtils.isEmpty(profileRequest.getAddresses())) {
+      List<ProfileAddressEntity> profileAddressEntities =
+          convertAddressRequestToEntity(profileRequest.getAddresses(), profileEntity, true);
+      profileAddressRepository.saveAll(profileAddressEntities);
     }
 
     // save platform profile role
-    final RoleEntity roleEntity = getRoleEntityToCreate(appUserRequest.isGuestUser());
+    final RoleEntity roleEntity = getRoleEntityToCreate(profileRequest.isGuestUser());
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(
             platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
@@ -89,9 +89,9 @@ public class ProfileService {
     return profileEntity;
   }
 
-  private void validateCreateProfile(final ProfileRequest appUserRequest) {
+  private void validateCreateProfile(final ProfileRequest profileRequest) {
     // password and app are required for create user
-    if (!StringUtils.hasText(appUserRequest.getPassword())) {
+    if (!StringUtils.hasText(profileRequest.getPassword())) {
       throw new ElementMissingException("Profile", "password");
     }
   }
@@ -146,9 +146,9 @@ public class ProfileService {
 
     // save addresses
     if (!CollectionUtils.isEmpty(profileRequest.getAddresses())) {
-      List<ProfileAddressEntity> appUserAddressEntities =
+      List<ProfileAddressEntity> profileAddressEntities =
           convertAddressRequestToEntity(profileRequest.getAddresses(), profileEntity, false);
-      profileAddressRepository.saveAll(appUserAddressEntities);
+      profileAddressRepository.saveAll(profileAddressEntities);
     }
 
     return profileEntity;
