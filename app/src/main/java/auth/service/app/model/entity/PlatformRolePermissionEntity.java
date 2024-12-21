@@ -17,7 +17,6 @@ import lombok.Setter;
 @Table(name = "platform_role_permission")
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 public class PlatformRolePermissionEntity {
 

@@ -17,7 +17,6 @@ import lombok.Setter;
 @Table(name = "platform_profile_role")
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 public class PlatformProfileRoleEntity {
 
