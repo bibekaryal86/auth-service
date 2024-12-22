@@ -247,7 +247,7 @@ public class EntityDtoConvertUtils {
     }
 
     final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
-        platformRolePermissionService.readPlatformRolePermissions(roleEntity.getId());
+        platformRolePermissionService.readPlatformRolePermissionsByRoleId(roleEntity.getId());
 
     final List<PlatformEntity> platformEntities =
         platformRolePermissionEntities.stream()
@@ -295,7 +295,7 @@ public class EntityDtoConvertUtils {
 
     final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).distinct().toList();
     final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
-        platformRolePermissionService.readPlatformRolePermissions(roleIds);
+        platformRolePermissionService.readPlatformRolePermissionsByRoleIds(roleIds);
     final List<PlatformEntity> platformEntities =
         platformRolePermissionEntities.stream()
             .map(PlatformRolePermissionEntity::getPlatform)
