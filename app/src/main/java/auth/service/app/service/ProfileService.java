@@ -23,6 +23,7 @@ import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
@@ -63,10 +64,14 @@ public class ProfileService {
     log.debug("Create App User: [{}], [{}]", profileRequest, baseUrlForEmail);
     validateCreateProfile(profileRequest);
 
+    final StatusTypeEntity statusTypeEntity =
+        circularDependencyService.readStatusType(profileRequest.getStatusId());
     ProfileEntity profileEntity = new ProfileEntity();
     BeanUtils.copyProperties(profileRequest, profileEntity, "password", "addresses");
     profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
+    profileEntity.setStatusType(statusTypeEntity);
+
     profileEntity = profileRepository.save(profileEntity);
 
     // save addresses

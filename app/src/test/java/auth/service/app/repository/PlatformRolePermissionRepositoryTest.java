@@ -110,7 +110,7 @@ public class PlatformRolePermissionRepositoryTest extends BaseTest {
                         platformRolePermissionEntities.get(5).getPlatform().getPlatformName()),
                 () ->
                     assertEquals(
-                        "STANDARD", platformRolePermissionEntities.get(5).getRole().getRoleName()),
+                        "GUEST", platformRolePermissionEntities.get(5).getRole().getRoleName()),
                 () ->
                     assertEquals(
                         "PERMISSION_UPDATE",

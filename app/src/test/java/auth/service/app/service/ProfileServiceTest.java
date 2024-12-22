@@ -1,26 +1,35 @@
 package auth.service.app.service;
 
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.ProfileAddressRequest;
+import auth.service.app.model.dto.ProfileEmailRequest;
+import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
-import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class ProfileServiceTest extends BaseTest {
@@ -39,19 +49,16 @@ public class ProfileServiceTest extends BaseTest {
   private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
 
   private static PlatformEntity platformEntity;
-  private static ProfileEntity profileEntity;
-  private static ProfileRequest profileRequest;
 
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
 
   @Autowired private ProfileService profileService;
   @Autowired private PlatformProfileRoleService platformProfileRoleService;
+  @Autowired private CircularDependencyService circularDependencyService;
 
   @BeforeAll
   static void setUpBeforeAll() {
     platformEntity = TestData.getPlatformEntities().getFirst();
-    profileEntity = TestData.getProfileEntities().getFirst();
-    profileRequest = TestData.getProfileRequest("some-password");
   }
 
   @BeforeEach
@@ -63,15 +70,7 @@ public class ProfileServiceTest extends BaseTest {
   @Test
   void testCreateProfile_FailureOnMissingPassword() {
     ProfileRequest profileRequestNoPassword =
-        new ProfileRequest(
-            profileRequest.getFirstName(),
-            profileRequest.getLastName(),
-            profileRequest.getEmail(),
-            profileRequest.getPhone(),
-            null,
-            profileRequest.getStatusId(),
-            true,
-            profileRequest.getAddresses());
+        TestData.getProfileRequest("First", "Last", "some@email.com", null);
     ElementMissingException exception =
         assertThrows(
             ElementMissingException.class,
@@ -113,31 +112,38 @@ public class ProfileServiceTest extends BaseTest {
 
   @Test
   void testProfileService_CRUD() {
-    String updatedFirstName = "Updated First";
-    String updatedLastName = "Updated Last";
-    ProfileRequest request = profileRequest;
-    // Create
-    ProfileEntity newEntity = assertCreate(request);
+    String oldFirstName = "Old First";
+    String oldLastName = "Old Last";
+    String newFirstName = "New First";
+    String newLastName = "New Last";
 
-    Long profileId = newEntity.getId();
-    final String oldHashedPassword = newEntity.getPassword();
+    // Create
+    ProfileRequest profileRequest =
+        TestData.getProfileRequest(oldFirstName, oldLastName, OLD_EMAIL, OLD_PASSWORD);
+    ProfileEntity profileEntityCreated = assertCreate(profileRequest);
+
+    Long profileId = profileEntityCreated.getId();
+    final String oldHashedPassword = profileEntityCreated.getPassword();
 
     // Update
-    ProfileAddressEntity profileAddressEntity = TestData.getNewProfileAddressEntity();
-    request =
-        new ProfileRequest(
-            updatedFirstName,
-            updatedLastName,
-            profileRequest.getEmail(),
-            profileRequest.getPhone(),
-            null,
-            profileRequest.getStatusId(),
-            profileRequest.isGuestUser(),
-            profileRequest.getAddresses());
-    assertUpdate(profileId, request);
+    ProfileAddressRequest profileAddressRequest =
+        TestData.getProfileAddressRequest(profileId, 1L, "some-street");
+    profileRequest = TestData.getProfileRequest(newFirstName, newLastName, NEW_EMAIL, NEW_PASSWORD);
+    profileRequest.getAddresses().add(profileAddressRequest);
+    assertUpdate(profileId, profileRequest, oldHashedPassword);
 
     // Read
-    assertRead(profileId, updatedFirstName, updatedLastName);
+    ProfileAddressEntity profileAddressEntity = assertRead(profileId, newFirstName, newLastName);
+    Long addressId = profileAddressEntity.getId();
+
+    // Update Email
+    ProfileEmailRequest profileEmailRequest = new ProfileEmailRequest(OLD_EMAIL, NEW_EMAIL);
+    assertUpdateEmail(profileId, profileEmailRequest);
+
+    // Update Password
+    ProfilePasswordRequest profilePasswordRequest =
+        new ProfilePasswordRequest(NEW_EMAIL, NEW_PASSWORD);
+    assertUpdatePassword(profileId, profilePasswordRequest, oldHashedPassword);
 
     // Soft delete
     assertDeleteSoft(profileId);
@@ -145,65 +151,133 @@ public class ProfileServiceTest extends BaseTest {
     // Restore
     assertRestoreSoftDeleted(profileId);
 
-    // deleteHard
+    // Delete Profile Address
+    assertDeleteProfileAddress(profileId, addressId);
+
+    // Hard Delete
     assertDeleteHard(profileId);
   }
 
   private ProfileEntity assertCreate(ProfileRequest request) {
-    ProfileEntity entity =
+    ProfileEntity profileEntity =
         profileService.createProfile(platformEntity, request, BASE_URL_FOR_EMAIL);
-    assertNotNull(entity);
-    assertNotNull(entity.getId());
-    assertNull(entity.getAddresses());
+    assertNotNull(profileEntity);
+    assertNotNull(profileEntity.getId());
+    assertNull(profileEntity.getAddresses());
 
     // verify platform profile role created
     PlatformProfileRoleEntity platformProfileRoleEntity =
-        platformProfileRoleService.readPlatformProfileRole(entity.getId(), entity.getEmail());
+        platformProfileRoleService.readPlatformProfileRole(
+            platformEntity.getId(), profileEntity.getEmail());
     assertEquals(platformEntity.getId(), platformProfileRoleEntity.getPlatform().getId());
-    assertEquals(entity.getId(), platformProfileRoleEntity.getProfile().getId());
-    assertEquals(ConstantUtils.ROLE_NAME_GUEST, platformProfileRoleEntity.getRole().getRoleName());
+    assertEquals(profileEntity.getId(), platformProfileRoleEntity.getProfile().getId());
+    assertEquals(ROLE_NAME_GUEST, platformProfileRoleEntity.getRole().getRoleName());
 
     // verify application event publisher called
-    verify(applicationEventPublisher, times(1)).publishEvent(any(ProfileEvent.class));
+    verify(applicationEventPublisher, times(1))
+        .publishEvent(
+            argThat(
+                event -> {
+                  ProfileEvent profileEvent = (ProfileEvent) event;
+                  assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
+                  return true;
+                }));
 
-    // return profile entity
-    return entity;
+    // return profile profileEntity
+    return profileEntity;
   }
 
-  private void assertUpdate(Long id, ProfileRequest request) {
-    ProfileEntity entity = profileService.updateProfile(id, request);
-    assertNotNull(entity);
+  private void assertUpdate(Long id, ProfileRequest request, String oldHashedPassword) {
+    ProfileEntity profileEntity = profileService.updateProfile(id, request);
+    assertNotNull(profileEntity);
+    // email, password doesn't change on update
+    assertEquals(OLD_EMAIL, profileEntity.getEmail());
+    assertEquals(oldHashedPassword, profileEntity.getPassword());
   }
 
-  private void assertRead(Long id, String expectedName, String expectedDescription) {
-    ProfileEntity entity = profileService.readProfile(id);
-    assertNotNull(entity);
-    assertEquals(expectedName, entity.getFirstName());
-    assertEquals(expectedDescription, entity.getLastName());
-    assertNull(entity.getDeletedDate());
+  private ProfileAddressEntity assertRead(Long id, String expectedName, String expectedLastName) {
+    ProfileEntity profileEntity = profileService.readProfile(id);
+    assertNotNull(profileEntity);
+    assertEquals(expectedName, profileEntity.getFirstName());
+    assertEquals(expectedLastName, profileEntity.getLastName());
+    assertNull(profileEntity.getDeletedDate());
+    assertFalse(profileEntity.getAddresses().isEmpty());
+    return profileEntity.getAddresses().getFirst();
+  }
+
+  private void assertUpdateEmail(Long id, ProfileEmailRequest profileEmailRequest) {
+    reset(applicationEventPublisher);
+    ProfileEntity profileEntity =
+        profileService.updateProfileEmail(
+            id, profileEmailRequest, platformEntity, BASE_URL_FOR_EMAIL);
+    assertNotNull(profileEntity);
+    assertEquals(NEW_EMAIL, profileEntity.getEmail());
+
+    // verify application event publisher called
+    verify(applicationEventPublisher, times(1))
+        .publishEvent(
+            argThat(
+                event -> {
+                  ProfileEvent profileEvent = (ProfileEvent) event;
+                  assertEquals(TypeEnums.EventType.UPDATE_EMAIL, profileEvent.getEventType());
+                  return true;
+                }));
+  }
+
+  private void assertUpdatePassword(
+      Long id, ProfilePasswordRequest profilePasswordRequest, String oldHashedPassword) {
+    reset(applicationEventPublisher);
+    ProfileEntity profileEntity =
+        profileService.updateProfilePassword(id, profilePasswordRequest, platformEntity);
+    assertNotNull(profileEntity);
+    assertNotEquals(oldHashedPassword, profileEntity.getPassword());
+
+    // verify application event publisher called
+    verify(applicationEventPublisher, times(1))
+        .publishEvent(
+            argThat(
+                event -> {
+                  ProfileEvent profileEvent = (ProfileEvent) event;
+                  assertEquals(TypeEnums.EventType.UPDATE_PASSWORD, profileEvent.getEventType());
+                  return true;
+                }));
   }
 
   private void assertDeleteSoft(Long id) {
-    ProfileEntity entity = profileService.softDeleteProfile(id);
-    assertNotNull(entity);
-    assertNotNull(entity.getDeletedDate());
+    ProfileEntity profileEntity = profileService.softDeleteProfile(id);
+    assertNotNull(profileEntity);
+    assertNotNull(profileEntity.getDeletedDate());
   }
 
   private void assertRestoreSoftDeleted(Long id) {
-    ProfileEntity entity = profileService.restoreSoftDeletedProfile(id);
-    assertNotNull(entity);
-    assertNull(entity.getDeletedDate());
+    ProfileEntity profileEntity = profileService.restoreSoftDeletedProfile(id);
+    assertNotNull(profileEntity);
+    assertNull(profileEntity.getDeletedDate());
   }
 
-  private void assertDeleteHard(Long id) {
-    profileService.hardDeleteProfile(id);
+  private void assertDeleteProfileAddress(Long profileId, Long addressId) {
+    ProfileEntity profileEntity = profileService.deleteProfileAddress(profileId, addressId);
+    assertNotNull(profileEntity);
+    assertTrue(profileEntity.getAddresses().isEmpty());
+  }
+
+  private void assertDeleteHard(Long profileId) {
+    // throws exception because used in platform profile role table
+    assertThrows(
+        DataIntegrityViolationException.class, () -> profileService.hardDeleteProfile(profileId));
+    // delete from platform profile role service first
+    Long roleId = circularDependencyService.readRoleByName(ROLE_NAME_GUEST).getId();
+    platformProfileRoleService.deletePlatformProfileRole(platformEntity.getId(), profileId, roleId);
+
+    // delete profile
+    profileService.hardDeleteProfile(profileId);
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> profileService.readProfile(id),
+            () -> profileService.readProfile(profileId),
             "Expected ElementNotFoundException after hard delete...");
     assertEquals(
-        String.format("Profile Not Found for [%s]", id),
+        String.format("Profile Not Found for [%s]", profileId),
         exception.getMessage(),
         "Exception message mismatch...");
   }

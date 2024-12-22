@@ -289,14 +289,14 @@ VALUES ('SUPERUSER', 'User has all and unlimited access, including hard delete')
 INSERT INTO role (role_name, role_desc)
 VALUES ('POWERUSER', 'User has all access, including soft delete. View access to ref/admin data');
 INSERT INTO role (role_name, role_desc)
-VALUES ('STANDARD', 'User has create, read and update access. No access to ref/admin data');
+VALUES ('GUEST', 'User has create, read and update access. No access to ref/admin data');
 -- not in fixtures
 INSERT INTO role (role_name, role_desc)
 VALUES ('SUPERUSER-1', '1-User has all and unlimited access, including hard delete');
 INSERT INTO role (role_name, role_desc)
 VALUES ('POWERUSER-1', '1-User has all access, including soft delete. View access to ref/admin data');
 INSERT INTO role (role_name, role_desc)
-VALUES ('STANDARD-1', '1-User has create, read and update access. No access to ref/admin data');
+VALUES ('GUEST-1', '1-User has create, read and update access. No access to ref/admin data');
 
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('PERMISSION_CREATE', 'Can Add Permission');

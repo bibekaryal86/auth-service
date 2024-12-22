@@ -62,7 +62,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                         platformProfileRoleEntities.get(1).getProfile().getEmail()),
                 () ->
                     assertEquals(
-                        "POWERUSER-1", platformProfileRoleEntities.get(1).getRole().getRoleName())),
+                        "GUEST-1", platformProfileRoleEntities.get(1).getRole().getRoleName())),
         () ->
             assertAll(
                 "Entity 2",
@@ -76,7 +76,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                         platformProfileRoleEntities.get(2).getProfile().getEmail()),
                 () ->
                     assertEquals(
-                        "STANDARD-1", platformProfileRoleEntities.get(2).getRole().getRoleName())),
+                        "POWERUSER-1", platformProfileRoleEntities.get(2).getRole().getRoleName())),
         () ->
             assertAll(
                 "Entity 3",
@@ -118,6 +118,6 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                         platformProfileRoleEntities.get(5).getProfile().getEmail()),
                 () ->
                     assertEquals(
-                        "STANDARD", platformProfileRoleEntities.get(5).getRole().getRoleName())));
+                        "GUEST", platformProfileRoleEntities.get(5).getRole().getRoleName())));
   }
 }

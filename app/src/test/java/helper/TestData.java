@@ -7,6 +7,7 @@ import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 import auth.service.app.model.client.EnvDetails;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RoleDto;
@@ -220,6 +221,20 @@ public class TestData {
     return profileAddressEntity;
   }
 
+  public static ProfileAddressRequest getProfileAddressRequest(
+      Long profileId, Long typeId, String street) {
+    ProfileAddressEntity profileAddressEntity = getNewProfileAddressEntity();
+    return new ProfileAddressRequest(
+        null,
+        profileId,
+        typeId,
+        street,
+        profileAddressEntity.getCity(),
+        profileAddressEntity.getState(),
+        profileAddressEntity.getCountry(),
+        profileAddressEntity.getPostalCode());
+  }
+
   private static List<ProfileEntity> getProfileEntitiesFixture() {
     String fixtureAsString = FixtureReader.readFixture("entities-profile.json");
     try {
@@ -264,18 +279,10 @@ public class TestData {
     return profileEntity;
   }
 
-  public static ProfileRequest getProfileRequest(String password) {
-    ProfileEntity profileEntity = getNewProfileEntity();
-    StatusTypeEntity statusTypeEntity = getStatusTypeEntities().getFirst();
+  public static ProfileRequest getProfileRequest(
+      String firstName, String lastName, String email, String password) {
     return new ProfileRequest(
-        profileEntity.getFirstName(),
-        profileEntity.getLastName(),
-        profileEntity.getEmail(),
-        profileEntity.getPhone(),
-        password == null ? profileEntity.getPassword() : password,
-        statusTypeEntity.getId(),
-        true,
-        Collections.emptyList());
+        firstName, lastName, email, null, password, 2L, true, new ArrayList<>());
   }
 
   public static ProfileDto getProfileDto() {

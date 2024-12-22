@@ -22,7 +22,7 @@ public class RoleServiceTest extends BaseTest {
     List<RoleEntity> roleEntities = roleService.readRoles();
     assertEquals(6, roleEntities.size());
     // check sorted by name
-    assertEquals("POWERUSER", roleEntities.getFirst().getRoleName());
+    assertEquals("GUEST", roleEntities.getFirst().getRoleName());
     assertEquals("SUPERUSER-1", roleEntities.getLast().getRoleName());
   }
 
