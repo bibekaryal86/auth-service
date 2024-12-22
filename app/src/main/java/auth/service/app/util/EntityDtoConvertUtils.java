@@ -188,7 +188,6 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<RoleResponse> getResponseSingleRole(final RoleEntity roleEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(roleEntity);
     final List<RoleDto> roleDtos =
         roleEntity == null
             ? Collections.emptyList()
@@ -253,10 +252,12 @@ public class EntityDtoConvertUtils {
     final List<PlatformEntity> platformEntities =
         platformRolePermissionEntities.stream()
             .map(PlatformRolePermissionEntity::getPlatform)
+            .distinct()
             .toList();
     final List<PermissionEntity> permissionEntities =
         platformRolePermissionEntities.stream()
             .map(PlatformRolePermissionEntity::getPermission)
+            .distinct()
             .toList();
 
     final Map<Long, PlatformDto> platformIdDtoMap =
@@ -292,16 +293,18 @@ public class EntityDtoConvertUtils {
           .toList();
     }
 
-    final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).toList();
+    final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).distinct().toList();
     final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
         platformRolePermissionService.readPlatformRolePermissions(roleIds);
     final List<PlatformEntity> platformEntities =
         platformRolePermissionEntities.stream()
             .map(PlatformRolePermissionEntity::getPlatform)
+            .distinct()
             .toList();
     final List<PermissionEntity> permissionEntities =
         platformRolePermissionEntities.stream()
             .map(PlatformRolePermissionEntity::getPermission)
+            .distinct()
             .toList();
     final Map<Long, PlatformDto> platformIdDtoMap =
         platformEntities.stream()
@@ -407,9 +410,15 @@ public class EntityDtoConvertUtils {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleService.readPlatformProfileRoles(profileEntity.getId());
     List<PlatformEntity> platformEntities =
-        platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getPlatform).toList();
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
+            .toList();
     List<RoleEntity> roleEntities =
-        platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getRole).toList();
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
 
     final Map<Long, PlatformDto> platformIdDtoMap =
         platformEntities.stream()
@@ -418,7 +427,7 @@ public class EntityDtoConvertUtils {
         roleEntities.stream()
             .collect(
                 Collectors.toMap(
-                    BaseEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
+                    RoleEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
 
     final Map<PlatformDto, List<RoleDto>> platformRolesMap =
         platformProfileRoleEntities.stream()
@@ -447,9 +456,15 @@ public class EntityDtoConvertUtils {
     final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleService.readPlatformProfileRoles(profileIds);
     List<PlatformEntity> platformEntities =
-        platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getPlatform).toList();
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
+            .toList();
     List<RoleEntity> roleEntities =
-        platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getRole).toList();
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
 
     final Map<Long, PlatformDto> platformIdDtoMap =
         platformEntities.stream()
