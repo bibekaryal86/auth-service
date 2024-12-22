@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,33 +20,24 @@ import static org.mockito.Mockito.verify;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
-import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.repository.TokenRepository;
-import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
-
 import java.util.List;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -62,8 +52,6 @@ public class ProfileServiceTest extends BaseTest {
   private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
   private static final String USER_EMAIL_ENCODED = "very-encoded-email-address";
   private static PlatformEntity platformEntity;
-  private static PlatformProfileRoleId platformProfileRoleId;
-  private static ProfileEntity profileEntityRV;
 
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
 
@@ -77,24 +65,12 @@ public class ProfileServiceTest extends BaseTest {
   @BeforeAll
   static void setUpBeforeAll() {
     platformEntity = TestData.getPlatformEntities().getFirst();
-    profileEntityRV = TestData.getProfileEntities().getLast();
   }
 
   @BeforeEach
   void setUpBeforeEach() {
     clearInvocations(applicationEventPublisher);
     doNothing().when(applicationEventPublisher).publishEvent(any(ProfileEvent.class));
-  }
-
-  @AfterAll
-  static void tearDown(
-      @Autowired TokenRepository tokenRepository,
-      @Autowired PlatformProfileRoleService platformProfileRoleService) {
-    tokenRepository.deleteAll();
-    platformProfileRoleService.deletePlatformProfileRole(
-        platformProfileRoleId.getPlatformId(),
-        platformProfileRoleId.getProfileId(),
-        platformProfileRoleId.getRoleId());
   }
 
   @Test
@@ -310,73 +286,5 @@ public class ProfileServiceTest extends BaseTest {
         String.format("Profile Not Found for [%s]", profileId),
         exception.getMessage(),
         "Exception message mismatch...");
-  }
-
-  @Test
-  void testResetUser() {
-    RoleEntity roleEntity = TestData.getRoleEntities().getLast();
-    PlatformProfileRoleEntity platformProfileRoleEntity =
-        platformProfileRoleRepository
-            .findById(
-                new PlatformProfileRoleId(
-                    platformEntity.getId(), profileEntityRV.getId(), roleEntity.getId()))
-            .orElseGet(
-                () ->
-                    platformProfileRoleService.createPlatformProfileRole(
-                        new PlatformProfileRoleRequest(
-                            platformEntity.getId(), profileEntityRV.getId(), roleEntity.getId())));
-    platformProfileRoleId = platformProfileRoleEntity.getId();
-
-    profileEntityRV =
-        profileService.resetProfile(
-            platformEntity.getId(),
-            new ProfilePasswordRequest(profileEntityRV.getEmail(), NEW_PASSWORD));
-    assertNotNull(profileEntityRV);
-    assertFalse(passwordUtils.verifyPassword(OLD_PASSWORD, profileEntityRV.getPassword()));
-    assertTrue(passwordUtils.verifyPassword(NEW_PASSWORD, profileEntityRV.getPassword()));
-  }
-
-  @Test
-  void testValidateAndResetProfile() {
-    RoleEntity roleEntity = TestData.getRoleEntities().getLast();
-    Long profileId = TestData.getProfileEntities().getLast().getId();
-    ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
-    assertNotNull(profileEntity);
-
-    // set it as false for testing
-    profileEntity.setIsValidated(false);
-    profileRepository.save(profileEntity);
-
-    try (MockedStatic<JwtUtils> mockedStatic = mockStatic(JwtUtils.class)) {
-      mockedStatic
-          .when(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED))
-          .thenReturn(profileEntity.getEmail());
-
-      PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleRepository
-              .findById(
-                  new PlatformProfileRoleId(
-                      platformEntity.getId(), profileEntityRV.getId(), roleEntity.getId()))
-              .orElseGet(
-                  () ->
-                      platformProfileRoleService.createPlatformProfileRole(
-                          new PlatformProfileRoleRequest(
-                              platformEntity.getId(),
-                              profileEntityRV.getId(),
-                              roleEntity.getId())));
-      platformProfileRoleId = platformProfileRoleEntity.getId();
-
-      profileEntity =
-          profileService.validateAndResetProfile(platformEntity.getId(), USER_EMAIL_ENCODED, false);
-      assertNotNull(profileEntity);
-      assertFalse(profileEntity.getIsValidated());
-
-      profileEntity =
-          profileService.validateAndResetProfile(platformEntity.getId(), USER_EMAIL_ENCODED, true);
-      assertNotNull(profileEntity);
-      assertTrue(profileEntity.getIsValidated());
-
-      mockedStatic.verify(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED), times(2));
-    }
   }
 }

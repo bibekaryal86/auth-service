@@ -273,7 +273,7 @@ public class ProfileService {
       throw new ProfileNotActiveException();
     }
 
-    if (profileEntity.getLoginAttempts() > 5) {
+    if (profileEntity.getLoginAttempts() >= 5) {
       throw new ProfileLockedException();
     }
 
