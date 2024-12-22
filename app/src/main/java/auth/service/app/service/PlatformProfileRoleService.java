@@ -46,7 +46,7 @@ public class PlatformProfileRoleService {
   }
 
   // READ
-  public List<PlatformProfileRoleEntity> readPlatformProfileRoles() {
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileId() {
     log.debug("Read Platform Profile Role...");
     return platformProfileRoleRepository.findAll(
         Sort.by(
@@ -55,12 +55,13 @@ public class PlatformProfileRoleService {
             Sort.Order.asc("role.roleName")));
   }
 
-  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final Long profileId) {
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileId(final Long profileId) {
     log.debug("Read Platform Profile Roles: [{}]", profileId);
     return platformProfileRoleRepository.findByProfileId(profileId);
   }
 
-  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(final List<Long> profileIds) {
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileIds(
+      final List<Long> profileIds) {
     log.debug("Read Platform Profile Roles: [{}]", profileIds);
     return platformProfileRoleRepository.findByProfileIds(profileIds);
   }

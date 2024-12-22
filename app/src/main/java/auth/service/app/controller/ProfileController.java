@@ -63,7 +63,7 @@ public class ProfileController {
       @PathVariable final Long platformId) {
     try {
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRoles(platformId);
+          platformProfileRoleService.readPlatformProfileRolesByProfileId(platformId);
       final List<ProfileEntity> profileEntities =
           platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
       final List<ProfileEntity> filteredProfileEntities =

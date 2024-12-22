@@ -408,7 +408,7 @@ public class EntityDtoConvertUtils {
     }
 
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-        platformProfileRoleService.readPlatformProfileRoles(profileEntity.getId());
+        platformProfileRoleService.readPlatformProfileRolesByProfileId(profileEntity.getId());
     List<PlatformEntity> platformEntities =
         platformProfileRoleEntities.stream()
             .map(PlatformProfileRoleEntity::getPlatform)
@@ -454,7 +454,7 @@ public class EntityDtoConvertUtils {
 
     final List<Long> profileIds = profileEntities.stream().map(ProfileEntity::getId).toList();
     final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-        platformProfileRoleService.readPlatformProfileRoles(profileIds);
+        platformProfileRoleService.readPlatformProfileRolesByProfileIds(profileIds);
     List<PlatformEntity> platformEntities =
         platformProfileRoleEntities.stream()
             .map(PlatformProfileRoleEntity::getPlatform)

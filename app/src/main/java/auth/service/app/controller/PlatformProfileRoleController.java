@@ -69,7 +69,7 @@ public class PlatformProfileRoleController {
   public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRoles() {
     try {
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRoles();
+          platformProfileRoleService.readPlatformProfileRolesByProfileId();
       return entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(
           platformProfileRoleEntities);
     } catch (Exception ex) {
