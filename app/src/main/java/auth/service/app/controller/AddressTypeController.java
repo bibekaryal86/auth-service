@@ -5,7 +5,6 @@ import auth.service.app.model.dto.AddressTypeRequest;
 import auth.service.app.model.dto.AddressTypeResponse;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.service.AddressTypeService;
-import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.validation.Valid;
@@ -34,7 +33,6 @@ public class AddressTypeController {
   private final AddressTypeService addressTypeService;
   private final CircularDependencyService circularDependencyService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
-  private final AuditService auditService;
 
   @CheckPermission("STATUS_TYPE_CREATE")
   @PostMapping("/address_type")

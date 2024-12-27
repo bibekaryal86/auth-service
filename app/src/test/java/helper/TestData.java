@@ -11,6 +11,7 @@ import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.dto.StatusTypeDto;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -32,10 +33,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 
@@ -288,8 +291,8 @@ public class TestData {
   public static ProfileDto getProfileDto() {
     ProfileEntity profileEntity = getProfileEntities().getFirst();
     PlatformEntity platformEntity = getPlatformEntities().getFirst();
-    RoleEntity roleEntity = getRoleEntities().getFirst();
-    PermissionEntity permissionEntity = getPermissionEntities().getFirst();
+    RoleEntity roleEntity = getRoleEntities().getLast();
+    PermissionEntity permissionEntity = getPermissionEntities().getLast();
 
     ProfileDto profileDto = new ProfileDto();
     BeanUtils.copyProperties(
@@ -309,6 +312,18 @@ public class TestData {
     platformRolesMap.put(platformDto, List.of(roleDto));
     profileDto.setPlatformRolesMap(platformRolesMap);
 
+    StatusTypeEntity statusTypeEntity =
+        TestData.getStatusTypeEntities().stream()
+            .filter(
+                status ->
+                    status.getComponentName().equals("PROFILE")
+                        && status.getStatusName().equals("Active"))
+            .findFirst()
+            .orElse(getStatusTypeEntities().getFirst());
+    StatusTypeDto statusTypeDto = new StatusTypeDto();
+    BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
+    profileDto.setStatus(statusTypeDto);
+
     return profileDto;
   }
 
@@ -323,9 +338,46 @@ public class TestData {
     RoleEntity roleEntity = getRoleEntities().getFirst();
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
+    roleDto.setPlatformPermissionsMap(new HashMap<>());
 
     Map<PlatformDto, List<RoleDto>> platformRolesMap = new HashMap<>();
     platformRolesMap.put(platformDto, List.of(roleDto));
+
+    profileDtoOutput.setPlatformRolesMap(platformRolesMap);
+    return profileDtoOutput;
+  }
+
+  public static ProfileDto getProfileDtoWithPermission(
+      final String permissionName, final ProfileDto profileDtoInput) {
+    ProfileDto profileDtoOutput = new ProfileDto();
+    BeanUtils.copyProperties(profileDtoInput, profileDtoOutput, "platformRolesMap");
+
+    PlatformDto platformDto = new PlatformDto();
+    Optional<PlatformDto> platformDtoOptional =
+        profileDtoInput.getPlatformRolesMap().keySet().stream().findFirst();
+    if (platformDtoOptional.isEmpty()) {
+      PlatformEntity platformEntity = getPlatformEntities().getFirst();
+      BeanUtils.copyProperties(platformEntity, platformDto);
+    } else {
+      platformDto = platformDtoOptional.get();
+    }
+
+    List<RoleDto> roleDtos =
+        profileDtoInput.getPlatformRolesMap().values().stream()
+            .flatMap(Collection::stream)
+            .toList();
+    PermissionDto permissionDto =
+        PermissionDto.builder()
+            .id(-1L)
+            .permissionName(permissionName)
+            .permissionDesc(permissionName)
+            .build();
+    Map<PlatformDto, List<PermissionDto>> platformPermissionsMap = new HashMap<>();
+    platformPermissionsMap.put(platformDto, List.of(permissionDto));
+    roleDtos.getFirst().setPlatformPermissionsMap(platformPermissionsMap);
+
+    Map<PlatformDto, List<RoleDto>> platformRolesMap = new HashMap<>();
+    platformRolesMap.put(platformDto, roleDtos);
 
     profileDtoOutput.setPlatformRolesMap(platformRolesMap);
     return profileDtoOutput;
