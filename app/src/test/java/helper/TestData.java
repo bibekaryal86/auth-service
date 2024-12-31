@@ -292,7 +292,7 @@ public class TestData {
     ProfileEntity profileEntity = getProfileEntities().getFirst();
     PlatformEntity platformEntity = getPlatformEntities().getFirst();
     RoleEntity roleEntity = getRoleEntities().getLast();
-    PermissionEntity permissionEntity = getPermissionEntities().getLast();
+    // PermissionEntity permissionEntity = getPermissionEntities().getLast();
 
     ProfileDto profileDto = new ProfileDto();
     BeanUtils.copyProperties(
@@ -302,11 +302,9 @@ public class TestData {
     BeanUtils.copyProperties(platformEntity, platformDto);
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
-    PermissionDto permissionDto = new PermissionDto();
-    BeanUtils.copyProperties(permissionEntity, permissionDto);
 
     Map<PlatformDto, List<PermissionDto>> platformPermissionsMap = new HashMap<>();
-    platformPermissionsMap.put(platformDto, List.of(permissionDto));
+    platformPermissionsMap.put(platformDto, new ArrayList<>());
     roleDto.setPlatformPermissionsMap(platformPermissionsMap);
     Map<PlatformDto, List<RoleDto>> platformRolesMap = new HashMap<>();
     platformRolesMap.put(platformDto, List.of(roleDto));
