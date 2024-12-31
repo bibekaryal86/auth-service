@@ -16,6 +16,7 @@ import helper.TestData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 
 public class StatusTypeControllerTest extends BaseTest {
 
@@ -50,7 +51,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/status_types/status_type")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -80,7 +81,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/status_types/status_type")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -118,7 +119,7 @@ public class StatusTypeControllerTest extends BaseTest {
         .post()
         .uri("/api/v1/status_types/status_type")
         .bodyValue(statusTypeRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -136,7 +137,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/status_types/status_type")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -173,7 +174,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/status_types/status_type")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .is5xxServerError()
@@ -200,7 +201,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/status_types")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -223,7 +224,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/status_types")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -246,7 +247,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/status_types")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -263,7 +264,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/status_types/status_type/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -286,7 +287,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/status_types/status_type/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -314,7 +315,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/status_types/status_type/1")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -329,7 +330,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/status_types/status_type/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -352,7 +353,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/status_types/status_type/1")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -385,7 +386,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/status_types/status_type/1")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -423,7 +424,7 @@ public class StatusTypeControllerTest extends BaseTest {
         .put()
         .uri("/api/v1/status_types/status_type/1")
         .bodyValue(statusTypeRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -441,7 +442,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/status_types/status_type/1")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -472,7 +473,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/status_types/status_type/9999")
             .bodyValue(statusTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isNotFound()
@@ -499,7 +500,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/status_types/status_type/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -524,7 +525,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/status_types/status_type/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -554,7 +555,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/status_types/status_type/%s", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -569,7 +570,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/status_types/status_type/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -590,7 +591,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .delete()
             .uri(
                 String.format("/api/v1/status_types/status_type/%s/hard", statusTypeEntity.getId()))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -625,7 +626,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/status_types/status_type/%s/hard", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -640,7 +641,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/status_types/status_type/9999/hard")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -656,7 +657,7 @@ public class StatusTypeControllerTest extends BaseTest {
         webTestClient
             .patch()
             .uri(String.format("/api/v1/status_types/status_type/%s/restore", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -689,7 +690,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri(String.format("/api/v1/status_types/status_type/%s/restore", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -704,7 +705,7 @@ public class StatusTypeControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri("/api/v1/status_types/status_type/9999/restore")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();

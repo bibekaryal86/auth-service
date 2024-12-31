@@ -26,6 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class RoleControllerTest extends BaseTest {
@@ -67,7 +68,7 @@ public class RoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/roles/role")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -104,7 +105,7 @@ public class RoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/roles/role")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -149,7 +150,7 @@ public class RoleControllerTest extends BaseTest {
         .post()
         .uri("/api/v1/roles/role")
         .bodyValue(roleRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -168,7 +169,7 @@ public class RoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/roles/role")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -201,7 +202,7 @@ public class RoleControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/roles/role")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .is5xxServerError()
@@ -228,7 +229,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/roles")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -251,7 +252,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/roles")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -274,7 +275,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/roles")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -290,7 +291,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/roles/role/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -313,7 +314,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/roles/role/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -336,7 +337,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/roles/role/1")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -351,7 +352,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/roles/role/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -373,7 +374,7 @@ public class RoleControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/roles/role/1")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -413,7 +414,7 @@ public class RoleControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/roles/role/1")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -458,7 +459,7 @@ public class RoleControllerTest extends BaseTest {
         .put()
         .uri("/api/v1/roles/role/1")
         .bodyValue(roleRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -477,7 +478,7 @@ public class RoleControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/roles/role/1")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -509,7 +510,7 @@ public class RoleControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/roles/role/9999")
             .bodyValue(roleRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isNotFound()
@@ -537,7 +538,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/roles/role/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -568,7 +569,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/roles/role/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -605,7 +606,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/roles/role/%s", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -621,7 +622,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/roles/role/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -641,7 +642,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/roles/role/%s/hard", roleEntity.getId()))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -683,7 +684,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/roles/role/%s/hard", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -699,7 +700,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/roles/role/9999/hard")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -716,7 +717,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .patch()
             .uri(String.format("/api/v1/roles/role/%s/restore", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -761,7 +762,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri(String.format("/api/v1/roles/role/%s/restore", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -777,7 +778,7 @@ public class RoleControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri("/api/v1/roles/role/9999/restore")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();

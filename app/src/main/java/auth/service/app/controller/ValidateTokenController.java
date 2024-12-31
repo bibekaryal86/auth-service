@@ -10,10 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController("/api/v1/validate/token")
+@RestController
+@RequestMapping("/api/v1/validate/token")
 public class ValidateTokenController {
 
   @GetMapping(value = "/{platformId}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -16,6 +16,7 @@ import helper.TestData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 
 public class AddressTypeControllerTest extends BaseTest {
 
@@ -49,7 +50,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/address_types/address_type")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -78,7 +79,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/address_types/address_type")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -114,7 +115,7 @@ public class AddressTypeControllerTest extends BaseTest {
         .post()
         .uri("/api/v1/address_types/address_type")
         .bodyValue(addressTypeRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -132,7 +133,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/address_types/address_type")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -165,7 +166,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/address_types/address_type")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .is5xxServerError()
@@ -192,7 +193,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/address_types")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -215,7 +216,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/address_types")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -238,7 +239,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/address_types")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -255,7 +256,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/address_types/address_type/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -278,7 +279,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/address_types/address_type/1")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -306,7 +307,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/address_types/address_type/1")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -320,7 +321,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/address_types/address_type/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -342,7 +343,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/address_types/address_type/1")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -374,7 +375,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/address_types/address_type/1")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -410,7 +411,7 @@ public class AddressTypeControllerTest extends BaseTest {
         .put()
         .uri("/api/v1/address_types/address_type/1")
         .bodyValue(addressTypeRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -428,7 +429,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/address_types/address_type/1")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -459,7 +460,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/address_types/address_type/9999")
             .bodyValue(addressTypeRequest)
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isNotFound()
@@ -486,7 +487,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/address_types/address_type/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -511,7 +512,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .delete()
             .uri(String.format("/api/v1/address_types/address_type/%s", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -541,7 +542,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/address_types/address_type/%s", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -555,7 +556,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/address_types/address_type/9999")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -577,7 +578,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .uri(
                 String.format(
                     "/api/v1/address_types/address_type/%s/hard", addressTypeEntity.getId()))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -612,7 +613,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/address_types/address_type/%s/hard", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -626,7 +627,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .delete()
         .uri("/api/v1/address_types/address_type/9999/hard")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -642,7 +643,7 @@ public class AddressTypeControllerTest extends BaseTest {
         webTestClient
             .patch()
             .uri(String.format("/api/v1/address_types/address_type/%s/restore", ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
             .isOk()
@@ -675,7 +676,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri(String.format("/api/v1/address_types/address_type/%s/restore", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -689,7 +690,7 @@ public class AddressTypeControllerTest extends BaseTest {
     webTestClient
         .patch()
         .uri("/api/v1/address_types/address_type/9999/restore")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
         .isNotFound();
