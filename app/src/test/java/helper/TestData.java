@@ -109,6 +109,7 @@ public class TestData {
 
   public static StatusTypeEntity getNewStatusTypeEntity() {
     StatusTypeEntity statusTypeEntity = new StatusTypeEntity();
+    statusTypeEntity.setComponentName("New Component Name");
     statusTypeEntity.setStatusName("New Status Type");
     statusTypeEntity.setStatusDesc("New Status Type Entity for Test");
     return statusTypeEntity;
