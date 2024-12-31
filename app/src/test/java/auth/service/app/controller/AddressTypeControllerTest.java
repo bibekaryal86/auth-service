@@ -438,7 +438,6 @@ public class AddressTypeControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    AddressTypeEntity addressTypeEntity = TestData.getAddressTypeEntities().getFirst();
     addressTypeRequest = new AddressTypeRequest("UPDATED_NAME", "UPDATED_DESC");
 
     AddressTypeResponse addressTypeResponse =
@@ -460,5 +459,183 @@ public class AddressTypeControllerTest extends BaseTest {
     assertNotNull(addressTypeResponse.getResponseMetadata().getResponseStatusInfo());
     assertNotNull(addressTypeResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(addressTypeResponse.getAddressTypes().isEmpty());
+  }
+
+  @Test
+  void testSoftDeleteAddressType_Success() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("STATUS_TYPE_DELETE", profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    AddressTypeResponse addressTypeResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/address_types/address_type/%s", ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AddressTypeResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(addressTypeResponse);
+    assertNotNull(addressTypeResponse.getResponseMetadata());
+    assertNotNull(addressTypeResponse.getResponseMetadata().getResponseCrudInfo());
+    assertEquals(
+        1, addressTypeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testSoftDeleteAddressType_SuccessSuperuser() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    AddressTypeResponse addressTypeResponse =
+        webTestClient
+            .delete()
+            .uri(String.format("/api/v1/address_types/address_type/%s", ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AddressTypeResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(addressTypeResponse);
+    assertNotNull(addressTypeResponse.getResponseMetadata());
+    assertNotNull(addressTypeResponse.getResponseMetadata().getResponseCrudInfo());
+    assertEquals(
+        1, addressTypeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testSoftDeleteAddressType_FailureNoAuth() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/address_types/address_type/%s", ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+  }
+
+  @Test
+  void testSoftDeleteAddressType_FailureNoPermission() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/address_types/address_type/%s", ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  void testHardDeleteAddressType_Success() {
+    // setup
+    AddressTypeEntity addressTypeEntity =
+        addressTypeRepository.save(TestData.getNewAddressTypeEntity());
+
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    AddressTypeResponse addressTypeResponse =
+        webTestClient
+            .delete()
+            .uri(
+                String.format(
+                    "/api/v1/address_types/address_type/%s/hard", addressTypeEntity.getId()))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AddressTypeResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(addressTypeResponse);
+    assertNotNull(addressTypeResponse.getResponseMetadata());
+    assertNotNull(addressTypeResponse.getResponseMetadata().getResponseCrudInfo());
+    assertEquals(
+        1, addressTypeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testHardDeleteAddressType_FailureNoAuth() {
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/address_types/address_type/%s/hard", ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+  }
+
+  @Test
+  void testHardDeleteAddressType_FailureNoPermission() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("STATUS_TYPE_DELETE", profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/address_types/address_type/%s/hard", ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  void testRestoreAddressType_Success() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    AddressTypeResponse addressTypeResponse =
+        webTestClient
+            .patch()
+            .uri(String.format("/api/v1/address_types/address_type/%s/restore", ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(AddressTypeResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(addressTypeResponse);
+    assertNotNull(addressTypeResponse.getAddressTypes());
+    assertEquals(1, addressTypeResponse.getAddressTypes().size());
+  }
+
+  @Test
+  void testRestoreAddressType_FailureNoAuth() {
+    webTestClient
+        .patch()
+        .uri(String.format("/api/v1/address_types/address_type/%s/restore", ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+  }
+
+  @Test
+  void testRestoreAddressType_FailureNoPermission() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("STATUS_TYPE_RESTORE", profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .patch()
+        .uri(String.format("/api/v1/address_types/address_type/%s/restore", ID))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
   }
 }
