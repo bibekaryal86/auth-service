@@ -34,7 +34,7 @@ public class JwtUtilsTest extends BaseTest {
     StatusTypeDto statusTypeDto = new StatusTypeDto();
     BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
     profileDto.setStatus(statusTypeDto);
-    profileDto.setPlatformRolesMap(Collections.emptyMap());
+    profileDto.setPlatformRoles(Collections.emptyList());
     platformEntity = TestData.getPlatformEntities().getFirst();
   }
 

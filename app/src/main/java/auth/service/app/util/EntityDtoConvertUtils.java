@@ -16,12 +16,14 @@ import auth.service.app.model.dto.PlatformRolePermissionDto;
 import auth.service.app.model.dto.PlatformRolePermissionResponse;
 import auth.service.app.model.dto.ProfileAddressDto;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.ProfileDtoPlatformRole;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.dto.RoleDtoPlatformPermission;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.dto.StatusTypeDto;
 import auth.service.app.model.dto.StatusTypeResponse;
@@ -268,16 +270,20 @@ public class EntityDtoConvertUtils {
         permissionEntities.stream()
             .collect(Collectors.toMap(PermissionEntity::getId, this::convertEntityToDtoPermission));
 
-    final Map<PlatformDto, List<PermissionDto>> platformPermissionsMap =
+    final List<RoleDtoPlatformPermission> platformPermissions =
         platformRolePermissionEntities.stream()
             .collect(
                 Collectors.groupingBy(
                     prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
                     Collectors.mapping(
                         prpe -> permissionIdDtoMap.get(prpe.getPermission().getId()),
-                        Collectors.toList())));
+                        Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new RoleDtoPlatformPermission(entry.getKey(), entry.getValue()))
+            .toList();
 
-    roleDto.setPlatformPermissionsMap(platformPermissionsMap);
+    roleDto.setPlatformPermissions(platformPermissions);
     return roleDto;
   }
 
@@ -312,26 +318,36 @@ public class EntityDtoConvertUtils {
     final Map<Long, PermissionDto> permissionIdDtoMap =
         permissionEntities.stream()
             .collect(Collectors.toMap(PermissionEntity::getId, this::convertEntityToDtoPermission));
-    final Map<Long, Map<PlatformDto, List<PermissionDto>>> roleIdPlatformPermissionsMap =
+    final Map<Long, List<RoleDtoPlatformPermission>> roleIdPlatformPermissionsMap =
         platformRolePermissionEntities.stream()
             .collect(
                 Collectors.groupingBy(
                     prpe -> prpe.getRole().getId(),
-                    Collectors.groupingBy(
-                        prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
-                        Collectors.mapping(
-                            prpe -> permissionIdDtoMap.get(prpe.getPermission().getId()),
-                            Collectors.toList()))));
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                            Collectors.mapping(
+                                prpe -> permissionIdDtoMap.get(prpe.getPermission().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        RoleDtoPlatformPermission.builder()
+                                            .platform(e.getKey())
+                                            .permissions(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
 
     return roleEntities.stream()
         .map(
             roleEntity -> {
               RoleDto roleDto = new RoleDto();
               BeanUtils.copyProperties(roleEntity, roleDto);
-              final Map<PlatformDto, List<PermissionDto>> platformPermissionsMap =
+              final List<RoleDtoPlatformPermission> platformPermissions =
                   roleIdPlatformPermissionsMap.getOrDefault(
-                      roleDto.getId(), Collections.emptyMap());
-              roleDto.setPlatformPermissionsMap(platformPermissionsMap);
+                      roleDto.getId(), Collections.emptyList());
+              roleDto.setPlatformPermissions(platformPermissions);
               return roleDto;
             })
         .toList();
@@ -429,15 +445,19 @@ public class EntityDtoConvertUtils {
                 Collectors.toMap(
                     RoleEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
 
-    final Map<PlatformDto, List<RoleDto>> platformRolesMap =
+    final List<ProfileDtoPlatformRole> platformRoles =
         platformProfileRoleEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    ppre -> platformIdDtoMap.get(ppre.getPlatform().getId()),
+                    prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
                     Collectors.mapping(
-                        ppre -> roleIdDtoMap.get(ppre.getRole().getId()), Collectors.toList())));
+                        prpe -> roleIdDtoMap.get(prpe.getRole().getId()), Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new ProfileDtoPlatformRole(entry.getKey(), entry.getValue()))
+            .toList();
 
-    profileDto.setPlatformRolesMap(platformRolesMap);
+    profileDto.setPlatformRoles(platformRoles);
     return profileDto;
   }
 
@@ -475,16 +495,26 @@ public class EntityDtoConvertUtils {
                 Collectors.toMap(
                     BaseEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
 
-    final Map<Long, Map<PlatformDto, List<RoleDto>>> profileIdPlatformRolesMap =
+    final Map<Long, List<ProfileDtoPlatformRole>> profileIdPlatformRolesMap =
         platformProfileRoleEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    ppre -> ppre.getProfile().getId(),
-                    Collectors.groupingBy(
-                        ppre -> platformIdDtoMap.get(ppre.getPlatform().getId()),
-                        Collectors.mapping(
-                            ppre -> roleIdDtoMap.get(ppre.getRole().getId()),
-                            Collectors.toList()))));
+                    prpe -> prpe.getRole().getId(),
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                            Collectors.mapping(
+                                prpe -> roleIdDtoMap.get(prpe.getRole().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        ProfileDtoPlatformRole.builder()
+                                            .platform(e.getKey())
+                                            .roles(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
 
     return profileEntities.stream()
         .map(
@@ -492,10 +522,10 @@ public class EntityDtoConvertUtils {
               ProfileDto profileDto = new ProfileDto();
               BeanUtils.copyProperties(
                   profileEntity, profileDto, "password", "addresses", "status", "roles");
-              Map<PlatformDto, List<RoleDto>> platformRolesMap =
+              List<ProfileDtoPlatformRole> platformRoles =
                   profileIdPlatformRolesMap.getOrDefault(
-                      profileDto.getId(), Collections.emptyMap());
-              profileDto.setPlatformRolesMap(platformRolesMap);
+                      profileDto.getId(), Collections.emptyList());
+              profileDto.setPlatformRoles(platformRoles);
               profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
 
               if (!CollectionUtils.isEmpty(profileEntity.getAddresses())) {

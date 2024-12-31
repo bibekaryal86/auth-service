@@ -2,7 +2,6 @@ package auth.service.app.model.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +20,5 @@ public class RoleDto {
   private String roleName;
   private String roleDesc;
 
-  private Map<PlatformDto, List<PermissionDto>> platformPermissionsMap;
+  private List<RoleDtoPlatformPermission> platformPermissions;
 }

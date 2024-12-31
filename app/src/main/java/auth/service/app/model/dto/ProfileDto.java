@@ -9,7 +9,6 @@ import auth.service.app.model.token.AuthTokenRole;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,7 +37,7 @@ public class ProfileDto {
   private List<ProfileAddressDto> addresses;
   private StatusTypeDto status;
 
-  private Map<PlatformDto, List<RoleDto>> platformRolesMap;
+  private List<ProfileDtoPlatformRole> platformRoles;
 
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
     AuthTokenPlatform authTokenPlatform =
@@ -55,11 +54,9 @@ public class ProfileDto {
             .isDeleted(this.getDeletedDate() != null)
             .build();
     List<RoleDto> roleDtos =
-        platformRolesMap.entrySet().stream()
-            .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElse(Collections.emptyList());
+        platformRoles.stream()
+            .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
+            .toList();
     List<AuthTokenRole> authTokenRoles =
         CollectionUtils.isEmpty(roleDtos)
             ? Collections.emptyList()
@@ -75,9 +72,9 @@ public class ProfileDto {
         roleDtos.stream()
             .flatMap(
                 roleDto ->
-                    roleDto.getPlatformPermissionsMap().entrySet().stream()
-                        .filter(entry -> entry.getKey().getId().equals(platformEntity.getId()))
-                        .flatMap(entry -> entry.getValue().stream())
+                    roleDto.getPlatformPermissions().stream()
+                        .filter(entry -> entry.getPlatform().getId().equals(platformEntity.getId()))
+                        .flatMap(entry -> entry.getPermissions().stream())
                         .map(
                             permissionDto ->
                                 AuthTokenPermission.builder()
