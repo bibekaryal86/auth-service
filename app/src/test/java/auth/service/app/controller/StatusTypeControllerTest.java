@@ -148,7 +148,8 @@ public class StatusTypeControllerTest extends BaseTest {
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Component is required")
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
                 .getResponseStatusInfo()
                 .getErrMsg()
@@ -320,6 +321,21 @@ public class StatusTypeControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadStatusType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .get()
+        .uri("/api/v1/status_types/status_type/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testUpdateStatusType_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("STATUS_TYPE_UPDATE", profileDtoNoPermission);
@@ -459,7 +475,7 @@ public class StatusTypeControllerTest extends BaseTest {
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
-            .is4xxClientError()
+            .isNotFound()
             .expectBody(StatusTypeResponse.class)
             .returnResult()
             .getResponseBody();
@@ -499,7 +515,7 @@ public class StatusTypeControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeleteStatusType_SuccessSuperuser() {
+  void testSoftDeleteStatusType_SuccessSuperUser() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
@@ -542,6 +558,21 @@ public class StatusTypeControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testSoftDeleteStatusType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/status_types/status_type/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 
   @Test
@@ -601,6 +632,21 @@ public class StatusTypeControllerTest extends BaseTest {
   }
 
   @Test
+  void testHardDeleteStatusType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/status_types/status_type/9999/hard")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testRestoreStatusType_Success() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -647,5 +693,20 @@ public class StatusTypeControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testRestoreStatusType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .patch()
+        .uri("/api/v1/status_types/status_type/9999/restore")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 }

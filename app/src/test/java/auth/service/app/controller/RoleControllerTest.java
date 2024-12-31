@@ -33,7 +33,7 @@ public class RoleControllerTest extends BaseTest {
   private static PlatformEntity platformEntity;
   private static ProfileDto profileDtoNoRole;
   private static ProfileDto profileDtoWithPermission;
-  private static String bearerAuthCredentialsNoRole;
+  private static String bearerAuthCredentialsNoPermission;
 
   private static RoleRequest roleRequest;
 
@@ -45,7 +45,7 @@ public class RoleControllerTest extends BaseTest {
   static void setUpBeforeAll() {
     platformEntity = TestData.getPlatformEntities().getFirst();
     profileDtoNoRole = TestData.getProfileDto();
-    bearerAuthCredentialsNoRole =
+    bearerAuthCredentialsNoPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoNoRole);
   }
 
@@ -143,13 +143,13 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreateRole_FailureNoRole() {
+  void testCreateRole_FailureNoPermission() {
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
     webTestClient
         .post()
         .uri("/api/v1/roles/role")
         .bodyValue(roleRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -270,11 +270,11 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadRoles_FailureNoRole() {
+  void testReadRoles_FailureNoPermission() {
     webTestClient
         .get()
         .uri("/api/v1/roles")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -332,14 +332,29 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadRole_FailureNoRole() {
+  void testReadRole_FailureNoPermission() {
     webTestClient
         .get()
         .uri("/api/v1/roles/role/1")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testReadRole_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .get()
+        .uri("/api/v1/roles/role/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 
   @Test
@@ -437,13 +452,13 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testUpdateRole_FailureNoRole() {
+  void testUpdateRole_FailureNoPermission() {
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
     webTestClient
         .put()
         .uri("/api/v1/roles/role/1")
         .bodyValue(roleRequest)
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -497,7 +512,7 @@ public class RoleControllerTest extends BaseTest {
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
-            .is4xxClientError()
+            .isNotFound()
             .expectBody(RoleResponse.class)
             .returnResult()
             .getResponseBody();
@@ -544,7 +559,7 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeleteRole_SuccessSuperuser() {
+  void testSoftDeleteRole_SuccessSuperUser() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
@@ -586,14 +601,30 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeleteRole_FailureNoRole() {
+  void testSoftDeleteRole_FailureNoPermission() {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/roles/role/%s", ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoRole)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testSoftDeleteRole_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/roles/role/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
     verifyNoInteractions(auditService);
   }
 
@@ -643,7 +674,7 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testHardDeleteRole_FailureNoRole() {
+  void testHardDeleteRole_FailureNoPermission() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("ROLE_DELETE", profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
@@ -656,6 +687,22 @@ public class RoleControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testHardDeleteRole_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/roles/role/9999/hard")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
     verifyNoInteractions(auditService);
   }
 
@@ -705,7 +752,7 @@ public class RoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testRestoreRole_FailureNoRole() {
+  void testRestoreRole_FailureNoPermission() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("ROLE_RESTORE", profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
@@ -718,6 +765,22 @@ public class RoleControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRestoreRole_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .patch()
+        .uri("/api/v1/roles/role/9999/restore")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
     verifyNoInteractions(auditService);
   }
 }

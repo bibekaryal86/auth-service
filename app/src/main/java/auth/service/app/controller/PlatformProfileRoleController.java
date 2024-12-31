@@ -96,7 +96,7 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("PLATFORM_PROFILE_ROLE_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<PlatformProfileRoleResponse> deleteAppUserRole(
+  public ResponseEntity<PlatformProfileRoleResponse> deletePlatformProfileRole(
       @PathVariable final long platformId,
       @PathVariable final long profileId,
       @PathVariable final long roleId,

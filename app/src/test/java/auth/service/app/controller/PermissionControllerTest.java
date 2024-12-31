@@ -360,6 +360,21 @@ public class PermissionControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadPermission_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .get()
+        .uri("/api/v1/permissions/permission/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testUpdatePermission_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("PERMISSION_UPDATE", profileDtoNoPermission);
@@ -522,7 +537,7 @@ public class PermissionControllerTest extends BaseTest {
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
-            .is4xxClientError()
+            .isNotFound()
             .expectBody(PermissionResponse.class)
             .returnResult()
             .getResponseBody();
@@ -571,7 +586,7 @@ public class PermissionControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeletePermission_SuccessSuperuser() {
+  void testSoftDeletePermission_SuccessSuperUser() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
@@ -623,6 +638,22 @@ public class PermissionControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testSoftDeletePermission_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/permissions/permission/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
     verifyNoInteractions(auditService);
   }
 
@@ -692,6 +723,22 @@ public class PermissionControllerTest extends BaseTest {
   }
 
   @Test
+  void testHardDeletePermission_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri("/api/v1/permissions/permission/9999/hard")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testRestorePermission_Success() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -751,6 +798,22 @@ public class PermissionControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRestorePermission_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .patch()
+        .uri("/api/v1/permissions/permission/9999/restore")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
     verifyNoInteractions(auditService);
   }
 }

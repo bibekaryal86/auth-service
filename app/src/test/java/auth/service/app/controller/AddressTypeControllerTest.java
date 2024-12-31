@@ -313,6 +313,20 @@ public class AddressTypeControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadAddressType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    webTestClient
+        .get()
+        .uri("/api/v1/address_types/address_type/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testUpdateAddressType_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("STATUS_TYPE_UPDATE", profileDtoNoPermission);
@@ -448,7 +462,7 @@ public class AddressTypeControllerTest extends BaseTest {
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
-            .is4xxClientError()
+            .isNotFound()
             .expectBody(AddressTypeResponse.class)
             .returnResult()
             .getResponseBody();
@@ -488,7 +502,7 @@ public class AddressTypeControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeleteAddressType_SuccessSuperuser() {
+  void testSoftDeleteAddressType_SuccessSuperUser() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
@@ -531,6 +545,20 @@ public class AddressTypeControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testSoftDeleteAddressType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    webTestClient
+        .delete()
+        .uri("/api/v1/address_types/address_type/9999")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 
   @Test
@@ -591,6 +619,20 @@ public class AddressTypeControllerTest extends BaseTest {
   }
 
   @Test
+  void testHardDeleteAddressType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    webTestClient
+        .delete()
+        .uri("/api/v1/address_types/address_type/9999/hard")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testRestoreAddressType_Success() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -637,5 +679,19 @@ public class AddressTypeControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testRestoreAddressType_FailureException() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    webTestClient
+        .patch()
+        .uri("/api/v1/address_types/address_type/9999/restore")
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 }
