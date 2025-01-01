@@ -113,7 +113,7 @@ public class ProfileNoAuthController {
               auditService.auditProfile(
                   request,
                   profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_EXIT,
+                  AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
                   String.format(
                       "Profile Reset Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
                       profileEntity == null
