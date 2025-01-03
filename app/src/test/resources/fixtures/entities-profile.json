@@ -8,6 +8,7 @@
     "password": "password-one",
     "isValidated": true,
     "loginAttempts": 0,
+    "lastLogin": null,
     "statusType": {
       "id": 1,
       "componentName": "PROFILE",
@@ -31,6 +32,7 @@
     "password": "password-two",
     "isValidated": true,
     "loginAttempts": 4,
+    "lastLogin": null,
     "statusType": {
       "id": 3,
       "componentName": "PROFILE",
@@ -54,6 +56,7 @@
     "password": "password-three",
     "isValidated": true,
     "loginAttempts": 0,
+    "lastLogin": null,
     "statusType": {
       "id": 1,
       "componentName": "PROFILE",

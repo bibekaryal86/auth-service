@@ -278,7 +278,7 @@ public class TestData {
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
     profileEntity.setStatusType(null);
-    profileEntity.setAddresses(null);
+    profileEntity.setAddresses(Collections.emptyList());
     return profileEntity;
   }
 

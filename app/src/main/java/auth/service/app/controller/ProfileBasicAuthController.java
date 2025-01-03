@@ -23,7 +23,6 @@ import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.EmailService;
 import auth.service.app.service.PlatformProfileRoleService;
-import auth.service.app.service.PlatformService;
 import auth.service.app.service.ProfileService;
 import auth.service.app.service.TokenService;
 import auth.service.app.util.ConstantUtils;
@@ -54,7 +53,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileBasicAuthController {
 
   private final ProfileService profileService;
-  private final PlatformService platformService;
   private final CircularDependencyService circularDependencyService;
   private final PlatformProfileRoleService platformProfileRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
@@ -113,6 +111,14 @@ public class ProfileBasicAuthController {
       log.error("Login Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
+
+      // increase failed login attempts
+      if (profileEntity != null) {
+        int currentLoginAttempts = profileEntity.getLoginAttempts();
+        profileEntity.setLoginAttempts(currentLoginAttempts + 1);
+        profileService.updateProfile(profileEntity);
+      }
+
       runAsync(
           () ->
               auditService.auditProfile(

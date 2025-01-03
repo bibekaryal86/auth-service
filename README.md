@@ -40,12 +40,5 @@ A small utility for authentication and authorization, and users, roles and permi
 TODO:
 * GitHub actions for PR and merge to main, check if variables work
 * create a scheduled job to check for user login and set as inactive
-* when login, if login is unsuccessful, update login_attempts
-  * is login_attempts = 5, disable the profile
-  * if login successful, set login_attempts to 0, and update last_login field
 * CrudInfo implementation in ResponseMetadata
-
-
-platform profile role and platform role permission look up by profileId and roleId only
-  in the DTO, create a map of platform, list<role>, platform, list<permission>
-  Instead of Map, create objects with role, list<permission> etc
+* EntityDtoConvertUtilsTest

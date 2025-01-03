@@ -388,9 +388,6 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseErrorProfile(final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
     return new ResponseEntity<>(
         ProfileResponse.builder()
             .profiles(Collections.emptyList())

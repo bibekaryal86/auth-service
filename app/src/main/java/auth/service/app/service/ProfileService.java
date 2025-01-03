@@ -137,6 +137,10 @@ public class ProfileService {
   }
 
   // UPDATE
+  public ProfileEntity updateProfile(final ProfileEntity profileEntity) {
+    return profileRepository.save(profileEntity);
+  }
+
   @Transactional
   public ProfileEntity updateProfile(final Long id, final ProfileRequest profileRequest) {
     log.debug("Update Profiler: [{}], [{}]", id, profileRequest);
@@ -285,6 +289,10 @@ public class ProfileService {
       throw new ProfileNotAuthorizedException();
     }
 
+    profileEntity.setLoginAttempts(0);
+    profileEntity.setLastLogin(LocalDateTime.now());
+    profileRepository.save(profileEntity);
+
     return tokenService.saveToken(null, null, platformEntity, profileEntity, ipAddress);
   }
 
@@ -311,10 +319,6 @@ public class ProfileService {
     }
 
     return profileEntity;
-  }
-
-  private ProfileEntity updateProfile(final ProfileEntity profileEntity) {
-    return profileRepository.save(profileEntity);
   }
 
   private List<ProfileAddressEntity> convertAddressRequestToEntity(

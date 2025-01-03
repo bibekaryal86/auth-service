@@ -139,7 +139,7 @@ public class PermissionCheckTest extends BaseTest {
 
     List<ProfileEntity> profileEntitiesFiltered =
         permissionCheck.filterProfileListByAccess(profileEntities);
-    assertEquals(profileEntities.size(), profileEntitiesFiltered.size());
+    assertEquals(profileEntitiesFiltered.size(), profileEntities.size());
   }
 
   @Test

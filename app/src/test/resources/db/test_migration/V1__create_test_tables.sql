@@ -256,19 +256,19 @@ VALUES ('Env Service-1', '1-Platform to hold runtime variables for different ser
 INSERT INTO platform (platform_name, platform_desc)
 VALUES ('Personal Expenses Tracking System-1', '1-Application to manage / budget personal finances');
 
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First One', 'Last One', 'firstlast@one.com', null, 'password-one', 3, true, 0, null);
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First Two', 'Last Two', 'firstlast@two.com', null, 'password-two', 3, true, 0, null);
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First Three', 'Last Three', 'firstlast@three.com', null, 'password-three', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login, deleted_date)
+VALUES ('First One', 'Last One', 'firstlast@one.com', null, 'password-one', 3, true, 0, null, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login, deleted_date)
+VALUES ('First Two', 'Last Two', 'firstlast@two.com', null, 'password-two', 3, true, 0, null, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login, deleted_date)
+VALUES ('First Three', 'Last Three', 'firstlast@three.com', null, 'password-three', 3, true, 0, null, null);
 -- not in fixtures
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First One-1', 'Last One-1', 'firstlast-1@one.com', null, 'password-one-1', 3, true, 0, null);
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First Two-1', 'Last Two-1', 'firstlast-1@two.com', null, 'password-two-1', 3, true, 0, null);
-INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, deleted_date)
-VALUES ('First Three-1', 'Last Three-1', 'firstlast-1@three.com', null, 'password-three-1', 3, true, 0, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login, deleted_date)
+VALUES ('First One-1', 'Last One-1', 'firstlast-1@one.com', null, 'password-one-1', 3, true, 0, null, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login, deleted_date)
+VALUES ('First Two-1', 'Last Two-1', 'firstlast-1@two.com', null, 'password-two-1', 3, true, 0, null, null);
+INSERT INTO profile (first_name, last_name, email, phone, password, status_id, is_validated, login_attempts, last_login,deleted_date)
+VALUES ('First Three-1', 'Last Three-1', 'firstlast-1@three.com', null, 'password-three-1', 3, true, 0, null, null);
 
 INSERT INTO profile_address (profile_id, type_id, street, city, state, country, postal_code)
 VALUES (1, 1, 'Street One One', 'City One One', 'ON', 'US', '12569');
