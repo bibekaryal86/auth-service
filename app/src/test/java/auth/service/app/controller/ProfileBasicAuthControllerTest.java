@@ -1250,14 +1250,14 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNotFound();
 
-    // verify audit service called for validate init success
+    // verify audit service called for validate init failure
     verify(auditService, after(100).times(1))
         .auditProfile(
             any(HttpServletRequest.class),
             any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
             any(String.class));
-    // verify email sent for validation
+    // verify email not sent for validation
     verifyNoInteractions(emailService);
   }
 
@@ -1275,14 +1275,14 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNoContent();
 
-    // verify audit service called for validate init success
+    // verify audit service called for reset init success
     verify(auditService, after(100).times(1))
         .auditProfile(
             any(HttpServletRequest.class),
             any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_INIT)),
             any(String.class));
-    // verify email sent for validation
+    // verify email sent for reset
     verify(emailService, after(200).times(1))
         .sendProfileResetEmail(
             any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
@@ -1312,7 +1312,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     assertNotNull(responseMetadata);
     assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("something happened"));
 
-    // verify audit service called for validate init failure
+    // verify audit service called for reset init failure
     verify(auditService, after(100).times(1))
         .auditProfile(
             any(HttpServletRequest.class),
@@ -1353,14 +1353,95 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .expectStatus()
         .isNotFound();
 
-    // verify audit service called for validate init success
+    // verify audit service called for reset init failure
     verify(auditService, after(100).times(1))
         .auditProfile(
             any(HttpServletRequest.class),
             any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
             any(String.class));
-    // verify email sent for validation
+    // verify email not sent for reset error
     verifyNoInteractions(emailService);
+  }
+
+  @Test
+  void testResetProfile_Success() {
+    ProfilePasswordRequest profilePasswordRequest =
+        new ProfilePasswordRequest(NEW_USER_NEW_EMAIL, "new-user-newer-password");
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .bodyValue(profilePasswordRequest)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+
+    // verify audit service called for reset success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_SUCCESS)),
+            any(String.class));
+
+    // reset
+    profilePasswordRequest = new ProfilePasswordRequest(NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .bodyValue(profilePasswordRequest)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+  }
+
+  @Test
+  void testResetProfile_Failure() {
+    ProfilePasswordRequest profilePasswordRequest =
+        new ProfilePasswordRequest("some-old@email.com", "new-user-newer-password");
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(profilePasswordRequest)
+            .exchange()
+            .expectStatus()
+            .isNotFound()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(
+        responseMetadata
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Platform Profile Role Not Found"));
+
+    // verify audit service called for reset failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testResetProfile_FailureNoAuth() {
+    ProfilePasswordRequest profilePasswordRequest =
+        new ProfilePasswordRequest(NEW_USER_NEW_EMAIL, "new-user-newer-password");
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
+        .bodyValue(profilePasswordRequest)
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
   }
 }
