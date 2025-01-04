@@ -1,6 +1,7 @@
 package auth.service.app.model.dto;
 
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,12 +10,15 @@ import lombok.Getter;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class PlatformRolePermissionRequest {
-  @Positive(message = "PlatformID is required")
-  private long platformId;
+  @NotNull(message = "PlatformID is required")
+  @Min(value = 1, message = "PlatformID is required")
+  private Long platformId;
 
-  @Positive(message = "RoleId is required")
-  private long roleId;
+  @NotNull(message = "RoleID is required")
+  @Min(value = 1, message = "RoleID is required")
+  private Long roleId;
 
-  @Positive(message = "PermissionID is required")
-  private long permissionId;
+  @NotNull(message = "PermissionID is required")
+  @Min(value = 1, message = "PermissionID is required")
+  private Long permissionId;
 }
