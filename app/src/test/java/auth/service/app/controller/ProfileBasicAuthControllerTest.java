@@ -1,11 +1,13 @@
 package auth.service.app.controller;
 
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
@@ -21,6 +23,7 @@ import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseMetadata;
+import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
@@ -49,7 +52,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -342,10 +344,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login success
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
+            any(HttpServletRequest.class),
             argThat(profileEntityParam -> profileEntityParam.getEmail().equals(NEW_USER_NEW_EMAIL)),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // validate that login attempts is reset to 0 and last login is populated
     ProfileEntity peFound = profileRepository.findById(profileEntity.getId()).orElse(null);
@@ -391,10 +393,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // validate that login attempts increased by 1 and last login is not populated
     ProfileEntity peFound = profileRepository.findByEmail(NEW_USER_NEW_EMAIL).orElse(null);
@@ -442,10 +444,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // reset
     platformEntity.setDeletedDate(null);
@@ -486,10 +488,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // reset
     profileEntity.setDeletedDate(null);
@@ -530,10 +532,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
   }
 
   @Test
@@ -570,10 +572,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // reset
     profileEntity.setIsValidated(false);
@@ -616,15 +618,542 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // verify audit service is called for login failed
     verify(auditService, after(100).times(1))
         .auditProfile(
-            ArgumentMatchers.any(HttpServletRequest.class),
-            ArgumentMatchers.any(ProfileEntity.class),
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
-            ArgumentMatchers.any(String.class));
+            any(String.class));
 
     // reset
     profileEntity.setIsValidated(false);
     profileEntity.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileEntity.setLoginAttempts(0);
     profileRepository.save(profileEntity);
+  }
+
+  @Test
+  void testRefreshToken_Success() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNotNull(profilePasswordTokenResponse.getRToken());
+    assertNotNull(profilePasswordTokenResponse.getAToken());
+    assertNotNull(profilePasswordTokenResponse.getProfile());
+    assertNotEquals(tokenRequest.getAccessToken(), profilePasswordTokenResponse.getAToken());
+    assertNotEquals(tokenRequest.getRefreshToken(), profilePasswordTokenResponse.getRToken());
+    assertEquals(profileEntity.getId(), profilePasswordTokenResponse.getProfile().getId());
+
+    // verify audit service called for token refresh success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH)),
+            any(String.class));
+  }
+
+  @Test
+  void testRefreshToken_FailureNoAuth() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getRefreshToken(), tokenEntity.getAccessToken());
+
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+        .bodyValue(tokenRequest)
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRefreshToken_FailureBadRequest() {
+    TokenRequest tokenRequest =
+        new TokenRequest(null, tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .bodyValue(tokenRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertNotNull(responseMetadata.getResponseStatusInfo());
+    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("REQUIRED"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testRefreshToken_FailureMissingRefreshToken() {
+    TokenRequest tokenRequest =
+        new TokenRequest(profileEntity.getId(), tokenEntity.getAccessToken(), "");
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getAToken());
+    assertNull(profilePasswordTokenResponse.getProfile());
+    assertTrue(
+        profilePasswordTokenResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("is Missing in"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testRefreshToken_FailureInvalidRefreshToken() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getAccessToken(), "an.invalid.refresh.token");
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getAToken());
+    assertNull(profilePasswordTokenResponse.getProfile());
+    assertTrue(
+        profilePasswordTokenResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Invalid Auth Credentials"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testRefreshToken_FailureExpiredRefreshToken() {
+    // setup
+    ProfileDto profileDtoSetup = TestData.getProfileDto();
+    profileDtoSetup.setEmail(NEW_USER_NEW_EMAIL);
+    String refreshTokenExpiry =
+        JwtUtils.encodeAuthCredentials(platformEntity, profileDtoSetup, 100);
+    TokenRequest tokenRequest =
+        new TokenRequest(profileEntity.getId(), tokenEntity.getAccessToken(), refreshTokenExpiry);
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getAToken());
+    assertNull(profilePasswordTokenResponse.getProfile());
+    assertTrue(
+        profilePasswordTokenResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Expired Auth Credentials"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testRefreshToken_FailureRefreshTokenNotFound() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getRefreshToken(), tokenEntity.getAccessToken());
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isNotFound()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getAToken());
+    assertNull(profilePasswordTokenResponse.getProfile());
+    assertTrue(
+        profilePasswordTokenResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Token Not Found"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testRefreshToken_FailureDeletedToken() {
+    // setup
+    tokenEntity.setDeletedDate(LocalDateTime.now());
+    tokenRepository.save(tokenEntity);
+
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+
+    ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        webTestClient
+            .post()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/token/refresh", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ProfilePasswordTokenResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profilePasswordTokenResponse);
+    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getAToken());
+    assertNull(profilePasswordTokenResponse.getProfile());
+    assertTrue(
+        profilePasswordTokenResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Deleted Token"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR)),
+            any(String.class));
+
+    // reset
+    tokenEntity.setDeletedDate(null);
+    tokenRepository.save(tokenEntity);
+  }
+
+  @Test
+  void testLogout_Success() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .bodyValue(tokenRequest)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+
+    // verify audit service called for logout success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT)),
+            any(String.class));
+  }
+
+  @Test
+  void testLogout_FailureNoAuth() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getRefreshToken(), tokenEntity.getAccessToken());
+
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+        .bodyValue(tokenRequest)
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testLogout_FailureBadRequest() {
+    TokenRequest tokenRequest =
+        new TokenRequest(null, tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .bodyValue(tokenRequest)
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertNotNull(responseMetadata.getResponseStatusInfo());
+    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("REQUIRED"));
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testLogout_FailureMissingAccessToken() {
+    TokenRequest tokenRequest =
+        new TokenRequest(profileEntity.getId(), "", tokenEntity.getRefreshToken());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("is Missing in"));
+
+    // verify audit service called for logout failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testLogout_FailureInvalidAccessToken() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), "an.invalid.access.token", tokenEntity.getRefreshToken());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Invalid Auth Credentials"));
+
+    // verify audit service called for logout failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testLogout_FailureExpiredAccessToken() {
+    // setup
+    ProfileDto profileDtoSetup = TestData.getProfileDto();
+    profileDtoSetup.setEmail(NEW_USER_NEW_EMAIL);
+    String accessTokenExpiry = JwtUtils.encodeAuthCredentials(platformEntity, profileDtoSetup, 100);
+    TokenRequest tokenRequest =
+        new TokenRequest(profileEntity.getId(), accessTokenExpiry, tokenEntity.getRefreshToken());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Expired Auth Credentials"));
+
+    // verify audit service called for token refresh failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testLogout_FailureAccessTokenNotFound() {
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getRefreshToken(), tokenEntity.getAccessToken());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isNotFound()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("Token Not Found"));
+
+    // verify audit service called for logout failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            isNull(),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+            any(String.class));
+  }
+
+  @Test
+  void testLogout_FailureDeletedToken() {
+    // setup
+    tokenEntity.setDeletedDate(LocalDateTime.now());
+    tokenRepository.save(tokenEntity);
+
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            profileEntity.getId(), tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .bodyValue(tokenRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("Deleted Token"));
+
+    // verify audit service called for logout failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+            any(String.class));
+
+    // reset
+    tokenEntity.setDeletedDate(null);
+    tokenRepository.save(tokenEntity);
   }
 }
