@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1155,5 +1156,211 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     // reset
     tokenEntity.setDeletedDate(null);
     tokenRepository.save(tokenEntity);
+  }
+
+  @Test
+  void testValidateProfileInit_Success() {
+    doNothing().when(emailService).sendProfileValidationEmail(any(), any(), any());
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
+                platformEntity.getId(), NEW_USER_NEW_EMAIL))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+
+    // verify audit service called for validate init success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_INIT)),
+            any(String.class));
+    // verify email sent for validation
+    verify(emailService, after(200).times(1))
+        .sendProfileValidationEmail(
+            any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
+  }
+
+  @Test
+  void testValidateProfileInit_Failure() {
+    doThrow(new RuntimeException("something happened"))
+        .when(emailService)
+        .sendProfileValidationEmail(any(), any(), any());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .get()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
+                    platformEntity.getId(), NEW_USER_NEW_EMAIL))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .is5xxServerError()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("something happened"));
+
+    // verify audit service called for validate init failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
+            any(String.class));
+    // verify email service called
+    verify(emailService, after(200).times(1))
+        .sendProfileValidationEmail(
+            any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
+  }
+
+  @Test
+  void testValidateProfileInit_FailureNoAuth() {
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
+                platformEntity.getId(), NEW_USER_NEW_EMAIL))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+
+    verifyNoInteractions(auditService, emailService);
+  }
+
+  @Test
+  void testValidateProfileInit_FailureNotFound() {
+    doNothing().when(emailService).sendProfileValidationEmail(any(), any(), any());
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/validate_init?email=%s", ID, NEW_USER_NEW_EMAIL))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+
+    // verify audit service called for validate init success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
+            any(String.class));
+    // verify email sent for validation
+    verifyNoInteractions(emailService);
+  }
+
+  @Test
+  void testResetProfileInit_Success() {
+    doNothing().when(emailService).sendProfileResetEmail(any(), any(), any());
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
+                platformEntity.getId(), NEW_USER_NEW_EMAIL))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+
+    // verify audit service called for validate init success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_INIT)),
+            any(String.class));
+    // verify email sent for validation
+    verify(emailService, after(200).times(1))
+        .sendProfileResetEmail(
+            any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
+  }
+
+  @Test
+  void testResetProfileInit_Failure() {
+    doThrow(new RuntimeException("something happened"))
+        .when(emailService)
+        .sendProfileResetEmail(any(), any(), any());
+
+    ResponseMetadata responseMetadata =
+        webTestClient
+            .get()
+            .uri(
+                String.format(
+                    "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
+                    platformEntity.getId(), NEW_USER_NEW_EMAIL))
+            .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+            .exchange()
+            .expectStatus()
+            .is5xxServerError()
+            .expectBody(ResponseMetadata.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(responseMetadata);
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("something happened"));
+
+    // verify audit service called for validate init failure
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
+            any(String.class));
+    // verify email service called
+    verify(emailService, after(200).times(1))
+        .sendProfileResetEmail(
+            any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
+  }
+
+  @Test
+  void testResetProfileInit_FailureNoAuth() {
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
+                platformEntity.getId(), NEW_USER_NEW_EMAIL))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+
+    verifyNoInteractions(auditService, emailService);
+  }
+
+  @Test
+  void testResetProfileInit_FailureNotFound() {
+    doNothing().when(emailService).sendProfileResetEmail(any(), any(), any());
+    webTestClient
+        .get()
+        .uri(
+            String.format(
+                "/api/v1/ba_profiles/platform/%s/reset_init?email=%s", ID, NEW_USER_NEW_EMAIL))
+        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+
+    // verify audit service called for validate init success
+    verify(auditService, after(100).times(1))
+        .auditProfile(
+            any(HttpServletRequest.class),
+            any(ProfileEntity.class),
+            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
+            any(String.class));
+    // verify email sent for validation
+    verifyNoInteractions(emailService);
   }
 }
