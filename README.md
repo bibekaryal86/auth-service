@@ -42,3 +42,4 @@ TODO:
 * create a scheduled job to check for user login and set as inactive
 * CrudInfo implementation in ResponseMetadata
 * EntityDtoConvertUtilsTest
+* ProfileServiceTest for create/login/reset/etc
