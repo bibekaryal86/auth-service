@@ -42,4 +42,8 @@ TODO:
 * create a scheduled job to check for user login and set as inactive
 * CrudInfo implementation in ResponseMetadata
 * EntityDtoConvertUtilsTest
-* ProfileServiceTest for create/login/reset/etc
+* RoleController -> add query param (default false) to include permissions
+  * include tests
+* ProfileController -> add query param (default false) to include roles
+  * include tests
+

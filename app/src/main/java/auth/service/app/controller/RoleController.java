@@ -67,7 +67,7 @@ public class RoleController {
   public ResponseEntity<RoleResponse> readRoles() {
     try {
       final List<RoleEntity> roleEntities = roleService.readRoles();
-      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities);
+      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities, Boolean.TRUE);
     } catch (Exception ex) {
       log.error("Read Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);

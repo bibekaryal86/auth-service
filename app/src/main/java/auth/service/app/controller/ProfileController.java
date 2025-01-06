@@ -51,7 +51,8 @@ public class ProfileController {
       final List<ProfileEntity> profileEntities = profileService.readProfiles();
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
-      return entityDtoConvertUtils.getResponseMultipleProfiles(filteredProfileEntities);
+      return entityDtoConvertUtils.getResponseMultipleProfiles(
+          filteredProfileEntities, Boolean.TRUE);
     } catch (Exception ex) {
       log.error("Read Profiles...", ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -68,7 +69,8 @@ public class ProfileController {
           platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
-      return entityDtoConvertUtils.getResponseMultipleProfiles(filteredProfileEntities);
+      return entityDtoConvertUtils.getResponseMultipleProfiles(
+          filteredProfileEntities, Boolean.TRUE);
     } catch (Exception ex) {
       log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

@@ -447,7 +447,6 @@ public class TestData {
             AuthTokenProfile.builder()
                 .id(1L)
                 .email("firstlast@one.com")
-                .isDeleted(false)
                 .isValidated(true)
                 .statusId(1L)
                 .build())
