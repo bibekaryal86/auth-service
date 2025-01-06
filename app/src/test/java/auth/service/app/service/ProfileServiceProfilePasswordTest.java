@@ -125,7 +125,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testValidateAndResetUser() {
+  void testValidateAndResetProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
 
@@ -151,7 +151,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_Success() {
+  void testLoginProfile_Success() {
     ProfilePasswordTokenResponse profilePasswordTokenResponse =
         profileService.loginProfile(
             platformId, new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD), "some-ip-address");
@@ -161,7 +161,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_Failure() {
+  void testLoginProfile_Failure() {
     ProfileNotAuthorizedException exception =
         assertThrows(
             ProfileNotAuthorizedException.class,
@@ -176,7 +176,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_DeletedApp() {
+  void testLoginProfile_DeletedPlatform() {
     PlatformEntity platformEntity = platformRepository.findById(platformId).orElse(null);
     assertNotNull(platformEntity);
     platformEntity.setDeletedDate(LocalDateTime.now());
@@ -225,7 +225,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_NotValidatedProfile() {
+  void testLoginProfile_NotValidatedProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setIsValidated(false);
@@ -250,7 +250,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_NotActiveProfile() {
+  void testLoginProfile_NotActiveProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setStatusType(statusTypeEntityNotActive);
@@ -274,7 +274,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   }
 
   @Test
-  void testLoginUser_ExceedLoginAttempts() {
+  void testLoginProfile_ExceedLoginAttempts() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setLoginAttempts(5);
