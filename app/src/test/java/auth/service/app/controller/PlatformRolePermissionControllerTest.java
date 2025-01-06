@@ -239,6 +239,26 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   }
 
   @Test
+  void testCreatePlatformRolePermission_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PlatformRolePermissionRequest platformRolePermissionRequest =
+        new PlatformRolePermissionRequest(9L, 9L, 9L);
+    webTestClient
+        .post()
+        .uri("/api/v1/prp")
+        .bodyValue(platformRolePermissionRequest)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testReadPlatformRolePermissions_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission(
@@ -406,6 +426,21 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadPlatformRolePermission_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .get()
+        .uri(String.format("/api/v1/prp/platform/%s/role/%s/permission/%s", 9L, 9L, 9L))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testDeletePlatformRolePermission_Success() {
     // setup
     RoleEntity roleEntity = roleRepository.findById(ROLE_ID).orElse(null);
@@ -544,5 +579,20 @@ public class PlatformRolePermissionControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testDeletePlatformRolePermission_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/prp/platform/%s/role/%s/permission/%s", 9L, 9L, 9L))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 }

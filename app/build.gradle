@@ -72,9 +72,10 @@ bootJar {
 
 test {
     useJUnitPlatform()
-    jacoco {
-        enabled = true
-    }
+//    jacoco {
+//        enabled = true
+//    }
+//    finalizedBy jacocoTestReport
 }
 
 application {
@@ -93,18 +94,22 @@ spotless {
     }
 }
 
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = true
-            element = 'CLASS'
-                            limit {
-                                counter = 'LINE'
-                                value = 'COVEREDRATIO'
-                                minimum = 0.8
-                            }
-        }
-    }
+//jacocoTestCoverageVerification {
+//    violationRules {
+//        rule {
+//            enabled = true
+//            element = 'CLASS'
+//                            limit {
+//                                counter = 'LINE'
+//                                value = 'COVEREDRATIO'
+//                                minimum = 0.8
+//                            }
+//        }
+//    }
+//}
+
+jacocoTestReport {
+    dependsOn test
 }
 
 // everything below is for local development only

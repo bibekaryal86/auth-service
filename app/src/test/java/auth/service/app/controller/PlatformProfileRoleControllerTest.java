@@ -223,6 +223,27 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
+  void testCreatePlatformProfileRole_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PlatformProfileRoleRequest platformProfileRoleRequest =
+        new PlatformProfileRoleRequest(9L, 9L, 9L);
+
+    webTestClient
+        .post()
+        .uri("/api/v1/ppr")
+        .bodyValue(platformProfileRoleRequest)
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testReadPlatformProfileRoles_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission("PLATFORM_PROFILE_ROLE_READ", profileDtoNoPermission);
@@ -366,6 +387,21 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadPlatformProfileRole_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .get()
+        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", 9L, 9L, 9L))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void testDeletePlatformProfileRole_Success() {
     // setup
     ProfileEntity profileEntity = profileRepository.findById(PROFILE_ID).orElse(null);
@@ -488,7 +524,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   @Test
   void testDeletePlatformProfileRole_FailureNoPermission() {
     webTestClient
-        .get()
+        .delete()
         .uri(
             String.format(
                 "/api/v1/ppr/platform/%s/profile/%s/role/%s", PLATFORM_ID, PROFILE_ID, ROLE_ID))
@@ -496,5 +532,20 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void testDeletePlatformProfileRole_FailureNotFound() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", 9L, 9L, 9L))
+        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
   }
 }
