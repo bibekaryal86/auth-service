@@ -525,7 +525,9 @@ public class EntityDtoConvertUtils {
 
     profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
 
-    if (!CollectionUtils.isEmpty(profileEntity.getAddresses())) {
+    if (CollectionUtils.isEmpty(profileEntity.getAddresses())) {
+      profileDto.setAddresses(Collections.emptyList());
+    } else {
       final List<ProfileAddressDto> profileAddressDtos =
           convertEntitiesToDtosProfileAddress(profileEntity.getAddresses());
       profileDto.setAddresses(profileAddressDtos);
@@ -632,20 +634,13 @@ public class EntityDtoConvertUtils {
     return profileEntities.stream()
         .map(
             profileEntity -> {
-              ProfileDto profileDto = new ProfileDto();
-              BeanUtils.copyProperties(
-                  profileEntity, profileDto, "password", "addresses", "status", "roles");
+              ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, isIncludeRoles);
+              profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
+
               List<ProfileDtoPlatformRole> platformRoles =
                   profileIdPlatformRolesMap.getOrDefault(
                       profileDto.getId(), Collections.emptyList());
               profileDto.setPlatformRoles(platformRoles);
-              profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
-
-              if (!CollectionUtils.isEmpty(profileEntity.getAddresses())) {
-                final List<ProfileAddressDto> profileAddressDtos =
-                    convertEntitiesToDtosProfileAddress(profileEntity.getAddresses());
-                profileDto.setAddresses(profileAddressDtos);
-              }
 
               return profileDto;
             })

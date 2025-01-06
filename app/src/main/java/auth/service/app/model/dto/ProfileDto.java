@@ -30,7 +30,7 @@ public class ProfileDto {
   private String lastName;
   @ToString.Exclude private String email;
   @ToString.Exclude private String phone;
-  private boolean isValidated;
+  private Boolean isValidated;
   private Integer loginAttempts;
   private LocalDateTime lastLogin;
 
@@ -50,7 +50,7 @@ public class ProfileDto {
             .id(this.getId())
             .email(this.getEmail())
             .statusId(this.getStatus().getId())
-            .isValidated(this.isValidated())
+            .isValidated(this.getIsValidated())
             .build();
     List<RoleDto> roleDtos =
         platformRoles.stream()

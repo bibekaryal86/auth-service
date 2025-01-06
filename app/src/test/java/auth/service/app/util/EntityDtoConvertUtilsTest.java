@@ -407,19 +407,12 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getRoles());
     assertEquals(3, response.getBody().getRoles().size());
 
-    assertAll("Roles With Permissions",
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getRoles().get(0).getPlatformPermissions().size()),
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getRoles().get(1).getPlatformPermissions().size()),
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getRoles().get(2).getPlatformPermissions().size()));
+    assertAll(
+        "Roles With Permissions",
+        () -> assertEquals(1, response.getBody().getRoles().get(0).getPlatformPermissions().size()),
+        () -> assertEquals(1, response.getBody().getRoles().get(1).getPlatformPermissions().size()),
+        () ->
+            assertEquals(1, response.getBody().getRoles().get(2).getPlatformPermissions().size()));
 
     assertEquals(1, response.getBody().getRoles().getFirst().getPlatformPermissions().size());
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -463,19 +456,12 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getRoles());
     assertEquals(3, response.getBody().getRoles().size());
 
-    assertAll("Roles Without Permissions",
-            () ->
-                            assertEquals(
-                                    0,
-                                    response.getBody().getRoles().get(0).getPlatformPermissions().size()),
-            () ->
-                    assertEquals(
-                            0,
-                            response.getBody().getRoles().get(1).getPlatformPermissions().size()),
-            () ->
-                    assertEquals(
-                            0,
-                            response.getBody().getRoles().get(2).getPlatformPermissions().size()));
+    assertAll(
+        "Roles Without Permissions",
+        () -> assertEquals(0, response.getBody().getRoles().get(0).getPlatformPermissions().size()),
+        () -> assertEquals(0, response.getBody().getRoles().get(1).getPlatformPermissions().size()),
+        () ->
+            assertEquals(0, response.getBody().getRoles().get(2).getPlatformPermissions().size()));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -679,19 +665,11 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getProfiles());
     assertEquals(3, response.getBody().getProfiles().size());
 
-    assertAll("Profiles With Roles",
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getProfiles().get(0).getPlatformRoles().size()),
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getProfiles().get(1).getPlatformRoles().size()),
-            () ->
-                    assertEquals(
-                            1,
-                            response.getBody().getProfiles().get(2).getPlatformRoles().size()));
+    assertAll(
+        "Profiles With Roles",
+        () -> assertEquals(1, response.getBody().getProfiles().get(0).getPlatformRoles().size()),
+        () -> assertEquals(1, response.getBody().getProfiles().get(1).getPlatformRoles().size()),
+        () -> assertEquals(1, response.getBody().getProfiles().get(2).getPlatformRoles().size()));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -741,19 +719,11 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getProfiles());
     assertEquals(3, response.getBody().getProfiles().size());
 
-    assertAll("Profiles Without Roles",
-            () ->
-                    assertEquals(
-                            0,
-                            response.getBody().getProfiles().get(0).getPlatformRoles().size()),
-            () ->
-                    assertEquals(
-                            0,
-                            response.getBody().getProfiles().get(1).getPlatformRoles().size()),
-            () ->
-                    assertEquals(
-                            0,
-                            response.getBody().getProfiles().get(2).getPlatformRoles().size()));
+    assertAll(
+        "Profiles Without Roles",
+        () -> assertEquals(0, response.getBody().getProfiles().get(0).getPlatformRoles().size()),
+        () -> assertEquals(0, response.getBody().getProfiles().get(1).getPlatformRoles().size()),
+        () -> assertEquals(0, response.getBody().getProfiles().get(2).getPlatformRoles().size()));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
