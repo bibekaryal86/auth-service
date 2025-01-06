@@ -51,7 +51,6 @@ public class ProfileDto {
             .email(this.getEmail())
             .statusId(this.getStatus().getId())
             .isValidated(this.isValidated())
-            .isDeleted(this.getDeletedDate() != null)
             .build();
     List<RoleDto> roleDtos =
         platformRoles.stream()

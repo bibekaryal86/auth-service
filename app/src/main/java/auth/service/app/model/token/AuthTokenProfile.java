@@ -14,5 +14,4 @@ public class AuthTokenProfile {
   private String email;
   private long statusId;
   private boolean isValidated;
-  private boolean isDeleted;
 }
