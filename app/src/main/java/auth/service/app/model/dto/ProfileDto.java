@@ -35,8 +35,6 @@ public class ProfileDto {
   private LocalDateTime lastLogin;
 
   private List<ProfileAddressDto> addresses;
-  private StatusTypeDto status;
-
   private List<ProfileDtoPlatformRole> platformRoles;
 
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
@@ -46,12 +44,7 @@ public class ProfileDto {
             .platformName(platformEntity.getPlatformName())
             .build();
     AuthTokenProfile authTokenProfile =
-        AuthTokenProfile.builder()
-            .id(this.getId())
-            .email(this.getEmail())
-            .statusId(this.getStatus().getId())
-            .isValidated(this.getIsValidated())
-            .build();
+        AuthTokenProfile.builder().id(this.getId()).email(this.getEmail()).build();
     List<RoleDto> roleDtos =
         platformRoles.stream()
             .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
 import auth.service.app.exception.CheckPermissionException;
-import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.exception.JwtInvalidException;
@@ -32,8 +31,6 @@ import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
-import auth.service.app.model.dto.StatusTypeDto;
-import auth.service.app.model.dto.StatusTypeResponse;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -41,7 +38,6 @@ import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import helper.EntityDtoComparator;
 import helper.TestData;
 import java.util.Collections;
@@ -60,7 +56,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Autowired private EntityDtoConvertUtils entityDtoConvertUtils;
 
   private static List<AddressTypeEntity> addressTypeEntities;
-  private static List<StatusTypeEntity> statusTypeEntities;
   private static List<PermissionEntity> permissionEntities;
   private static List<RoleEntity> roleEntities;
   private static List<PlatformEntity> platformEntities;
@@ -71,7 +66,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @BeforeAll
   static void setUp() {
     addressTypeEntities = TestData.getAddressTypeEntities();
-    statusTypeEntities = TestData.getStatusTypeEntities();
     permissionEntities = TestData.getPermissionEntities();
     roleEntities = TestData.getRoleEntities();
     platformEntities = TestData.getPlatformEntities();
@@ -176,105 +170,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getAddressTypes().isEmpty());
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseSingleStatusType_NullEntity() {
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseSingleStatusType(null);
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getStatusTypes());
-    assertTrue(response.getBody().getStatusTypes().isEmpty());
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseSingleStatusType_NonNullEntity() {
-    StatusTypeEntity entity = statusTypeEntities.getFirst();
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseSingleStatusType(entity);
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getStatusTypes());
-    assertEquals(1, response.getBody().getStatusTypes().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    StatusTypeDto dto = response.getBody().getStatusTypes().getFirst();
-    assertTrue(EntityDtoComparator.areEqual(entity, dto));
-  }
-
-  @Test
-  void testGetResponseMultipleStatusTypes_EmptyList() {
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseMultipleStatusTypes(Collections.emptyList());
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getStatusTypes());
-    assertTrue(response.getBody().getStatusTypes().isEmpty());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void testGetResponseMultipleStatusTypes_NonEmptyList() {
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseMultipleStatusTypes(statusTypeEntities);
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getStatusTypes());
-    assertEquals(3, response.getBody().getStatusTypes().size());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    List<StatusTypeDto> statusTypeDtos = response.getBody().getStatusTypes();
-
-    Map<StatusTypeEntity, StatusTypeDto> entityDtoMap =
-        statusTypeEntities.stream()
-            .filter(entity -> entity.getId() != null)
-            .collect(
-                Collectors.toMap(
-                    entity -> entity,
-                    entity ->
-                        statusTypeDtos.stream()
-                            .filter(dto -> Objects.equals(entity.getId(), dto.getId()))
-                            .findFirst()
-                            .orElse(
-                                new StatusTypeDto(entity.getId(), null, null, null, "", "", ""))));
-
-    for (Map.Entry<StatusTypeEntity, StatusTypeDto> entry : entityDtoMap.entrySet()) {
-      StatusTypeEntity entity = entry.getKey();
-      StatusTypeDto dto = entry.getValue();
-      assertTrue(EntityDtoComparator.areEqual(entity, dto));
-    }
-  }
-
-  @Test
-  void testGetResponseDeleteStatusType() {
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseDeleteStatusType();
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseMetadata().getResponseCrudInfo());
-    assertTrue(response.getBody().getStatusTypes().isEmpty());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(
-        1, response.getBody().getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
-  }
-
-  @Test
-  void testGetResponseErrorStatusType() {
-    ResponseEntity<StatusTypeResponse> response =
-        entityDtoConvertUtils.getResponseErrorStatusType(
-            new ElementMissingException("something", "anything"));
-
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
-    assertTrue(response.getBody().getStatusTypes().isEmpty());
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   @Test
@@ -714,7 +609,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
                                     0,
                                     null,
                                     Collections.emptyList(),
-                                    null,
                                     Collections.emptyList()))));
 
     for (Map.Entry<ProfileEntity, ProfileDto> entry : entityDtoMap.entrySet()) {
@@ -768,7 +662,6 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
                                     0,
                                     null,
                                     Collections.emptyList(),
-                                    null,
                                     Collections.emptyList()))));
 
     for (Map.Entry<ProfileEntity, ProfileDto> entry : entityDtoMap.entrySet()) {

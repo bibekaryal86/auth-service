@@ -1,6 +1,5 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.PROFILE_STATUS_NAME_ACTIVE;
 import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static auth.service.app.util.ConstantUtils.ROLE_NAME_STANDARD;
 import static auth.service.app.util.JwtUtils.decodeEmailAddress;
@@ -23,7 +22,6 @@ import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
@@ -64,13 +62,10 @@ public class ProfileService {
     log.debug("Create App User: [{}], [{}]", profileRequest, baseUrlForEmail);
     validateCreateProfile(profileRequest);
 
-    final StatusTypeEntity statusTypeEntity =
-        circularDependencyService.readStatusType(profileRequest.getStatusId());
     ProfileEntity profileEntity = new ProfileEntity();
     BeanUtils.copyProperties(profileRequest, profileEntity, "password", "addresses");
     profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
-    profileEntity.setStatusType(statusTypeEntity);
 
     profileEntity = profileRepository.save(profileEntity);
 
@@ -147,11 +142,6 @@ public class ProfileService {
     ProfileEntity profileEntity = readProfile(id);
     BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "addresses");
     profileEntity = updateProfile(profileEntity);
-
-    if (!Objects.equals(profileRequest.getStatusId(), profileEntity.getStatusType().getId())) {
-      profileEntity.setStatusType(
-          circularDependencyService.readStatusType(profileRequest.getStatusId()));
-    }
 
     // save addresses
     if (!CollectionUtils.isEmpty(profileRequest.getAddresses())) {
@@ -272,13 +262,13 @@ public class ProfileService {
       throw new ProfileNotValidatedException();
     }
 
-    if (!Objects.equals(
-        profileEntity.getStatusType().getStatusName().toUpperCase(), PROFILE_STATUS_NAME_ACTIVE)) {
-      throw new ProfileNotActiveException();
-    }
-
     if (profileEntity.getLoginAttempts() >= 5) {
       throw new ProfileLockedException();
+    }
+
+    if (profileEntity.getLastLogin() != null
+        && profileEntity.getLastLogin().isBefore(LocalDateTime.now().minusDays(45))) {
+      throw new ProfileNotActiveException();
     }
 
     final boolean isLoginSuccess =
@@ -288,10 +278,6 @@ public class ProfileService {
     if (!isLoginSuccess) {
       throw new ProfileNotAuthorizedException();
     }
-
-    profileEntity.setLoginAttempts(0);
-    profileEntity.setLastLogin(LocalDateTime.now());
-    profileRepository.save(profileEntity);
 
     return tokenService.saveToken(null, null, platformEntity, profileEntity, ipAddress);
   }

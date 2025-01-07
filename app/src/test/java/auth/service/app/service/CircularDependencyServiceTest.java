@@ -16,13 +16,11 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.repository.AddressTypeRepository;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
-import auth.service.app.repository.StatusTypeRepository;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
@@ -43,8 +41,6 @@ public class CircularDependencyServiceTest extends BaseTest {
   @MockitoBean private PlatformRepository platformRepository;
   @MockitoBean private RoleService roleService;
   @MockitoBean private RoleRepository roleRepository;
-  @MockitoBean private StatusTypeService statusTypeService;
-  @MockitoBean private StatusTypeRepository statusTypeRepository;
   @MockitoBean private ProfileRepository profileRepository;
 
   @Autowired private CircularDependencyService circularDependencyService;
@@ -53,7 +49,6 @@ public class CircularDependencyServiceTest extends BaseTest {
   private static List<PermissionEntity> permissionEntities;
   private static List<PlatformEntity> platformEntities;
   private static List<RoleEntity> roleEntities;
-  private static List<StatusTypeEntity> statusTypeEntities;
   private static ProfileEntity profileEntity;
 
   @BeforeAll
@@ -62,7 +57,6 @@ public class CircularDependencyServiceTest extends BaseTest {
     permissionEntities = TestData.getPermissionEntities();
     platformEntities = TestData.getPlatformEntities();
     roleEntities = TestData.getRoleEntities();
-    statusTypeEntities = TestData.getStatusTypeEntities();
     profileEntity = TestData.getProfileEntities().getFirst();
   }
 
@@ -76,8 +70,6 @@ public class CircularDependencyServiceTest extends BaseTest {
     reset(platformRepository);
     reset(roleService);
     reset(roleRepository);
-    reset(statusTypeService);
-    reset(statusTypeRepository);
     reset(profileRepository);
   }
 
@@ -275,73 +267,6 @@ public class CircularDependencyServiceTest extends BaseTest {
     assertEquals("Role Not Found for [SUPERUSER]", exception.getMessage());
     verify(roleService).readRoles();
     verify(roleRepository).findOne(any());
-  }
-
-  @Test
-  void testReadStatusType_Service() {
-    when(statusTypeService.readStatusTypes()).thenReturn(statusTypeEntities);
-
-    StatusTypeEntity result = circularDependencyService.readStatusType(ID);
-
-    assertNotNull(result);
-    assertEquals(statusTypeEntities.getFirst(), result);
-    verify(statusTypeService).readStatusTypes();
-    verifyNoInteractions(statusTypeRepository);
-  }
-
-  @Test
-  void testReadStatusType_Repository() {
-    when(statusTypeService.readStatusTypes()).thenReturn(Collections.emptyList());
-    when(statusTypeRepository.findById(ID)).thenReturn(Optional.of(statusTypeEntities.getFirst()));
-
-    StatusTypeEntity result = circularDependencyService.readStatusType(ID);
-
-    assertNotNull(result);
-    assertEquals(statusTypeEntities.getFirst(), result);
-    verify(statusTypeService).readStatusTypes();
-    verify(statusTypeRepository).findById(ID);
-  }
-
-  @Test
-  void testReadStatusType_Exception() {
-    when(statusTypeService.readStatusTypes()).thenReturn(Collections.emptyList());
-    when(statusTypeRepository.findById(ID)).thenReturn(Optional.empty());
-
-    ElementNotFoundException exception =
-        assertThrows(
-            ElementNotFoundException.class, () -> circularDependencyService.readStatusType(ID));
-
-    assertEquals(String.format("Status Type Not Found for [%s]", ID), exception.getMessage());
-    verify(statusTypeService).readStatusTypes();
-    verify(statusTypeRepository).findById(ID);
-  }
-
-  @Test
-  void testReadStatusTypesByComponentName_Service() {
-    when(statusTypeService.readStatusTypes()).thenReturn(statusTypeEntities);
-
-    List<StatusTypeEntity> result =
-        circularDependencyService.readStatusTypesByComponentName("PROFILE");
-
-    assertNotNull(result);
-    assertEquals(3, statusTypeEntities.size());
-    verify(statusTypeService).readStatusTypes();
-    verifyNoInteractions(statusTypeRepository);
-  }
-
-  @Test
-  void testReadStatusTypesByComponentName_Repository() {
-    when(statusTypeService.readStatusTypes()).thenReturn(Collections.emptyList());
-    when(statusTypeRepository.findByComponentNameOrderByStatusNameAsc("PROFILE"))
-        .thenReturn(statusTypeEntities);
-
-    List<StatusTypeEntity> result =
-        circularDependencyService.readStatusTypesByComponentName("PROFILE");
-
-    assertNotNull(result);
-    assertEquals(3, statusTypeEntities.size());
-    verify(statusTypeService).readStatusTypes();
-    verify(statusTypeRepository).findByComponentNameOrderByStatusNameAsc("PROFILE");
   }
 
   @Test

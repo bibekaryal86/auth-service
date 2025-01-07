@@ -8,10 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import auth.service.BaseTest;
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ProfileDto;
-import auth.service.app.model.dto.StatusTypeDto;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import java.util.Collections;
@@ -30,10 +28,6 @@ public class JwtUtilsTest extends BaseTest {
   public static void setUp() {
     ProfileEntity profileEntity = TestData.getProfileEntities().getFirst();
     BeanUtils.copyProperties(profileEntity, profileDto, "password", "status", "addresses");
-    StatusTypeEntity statusTypeEntity = TestData.getStatusTypeEntities().getFirst();
-    StatusTypeDto statusTypeDto = new StatusTypeDto();
-    BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
-    profileDto.setStatus(statusTypeDto);
     profileDto.setPlatformRoles(Collections.emptyList());
     platformEntity = TestData.getPlatformEntities().getFirst();
   }

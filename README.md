@@ -41,5 +41,3 @@ TODO:
 * GitHub actions for PR and merge to main, check if variables work
 * create a scheduled job to check for user login and set as inactive
 * CrudInfo implementation in ResponseMetadata
-* In Login Profile, also check last login greater than 90 days
-

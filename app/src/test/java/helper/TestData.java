@@ -13,7 +13,6 @@ import auth.service.app.model.dto.ProfileDtoPlatformRole;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleDtoPlatformPermission;
-import auth.service.app.model.dto.StatusTypeDto;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -24,7 +23,6 @@ import auth.service.app.model.entity.PlatformRolePermissionId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenPermission;
 import auth.service.app.model.token.AuthTokenPlatform;
@@ -66,24 +64,6 @@ public class TestData {
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
-  }
-
-  public static List<StatusTypeEntity> getStatusTypeEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-status-type.json");
-    try {
-      return ObjectMapperProvider.objectMapper()
-          .readValue(fixtureAsString, new TypeReference<>() {});
-    } catch (JsonProcessingException ex) {
-      return Collections.emptyList();
-    }
-  }
-
-  public static StatusTypeEntity getNewStatusTypeEntity() {
-    StatusTypeEntity statusTypeEntity = new StatusTypeEntity();
-    statusTypeEntity.setComponentName("New Component Name");
-    statusTypeEntity.setStatusName("New Status Type");
-    statusTypeEntity.setStatusDesc("New Status Type Entity for Test");
-    return statusTypeEntity;
   }
 
   public static List<AddressTypeEntity> getAddressTypeEntities() {
@@ -225,15 +205,13 @@ public class TestData {
     profileEntity.setPassword("some-password");
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
-    profileEntity.setStatusType(null);
     profileEntity.setAddresses(Collections.emptyList());
     return profileEntity;
   }
 
   public static ProfileRequest getProfileRequest(
       String firstName, String lastName, String email, String password) {
-    return new ProfileRequest(
-        firstName, lastName, email, null, password, 2L, true, new ArrayList<>());
+    return new ProfileRequest(firstName, lastName, email, null, password, true, new ArrayList<>());
   }
 
   public static ProfileDto getProfileDto() {
@@ -262,18 +240,6 @@ public class TestData {
                 .platform(platformDto)
                 .roles(List.of(roleDto))
                 .build()));
-
-    StatusTypeEntity statusTypeEntity =
-        TestData.getStatusTypeEntities().stream()
-            .filter(
-                status ->
-                    status.getComponentName().equals("PROFILE")
-                        && status.getStatusName().equals("Active"))
-            .findFirst()
-            .orElse(getStatusTypeEntities().getFirst());
-    StatusTypeDto statusTypeDto = new StatusTypeDto();
-    BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
-    profileDto.setStatus(statusTypeDto);
 
     return profileDto;
   }
@@ -391,13 +357,7 @@ public class TestData {
   public static AuthToken getAuthToken() {
     return AuthToken.builder()
         .platform(AuthTokenPlatform.builder().id(1L).platformName("Auth Service").build())
-        .profile(
-            AuthTokenProfile.builder()
-                .id(1L)
-                .email("firstlast@one.com")
-                .isValidated(true)
-                .statusId(1L)
-                .build())
+        .profile(AuthTokenProfile.builder().id(1L).email("firstlast@one.com").build())
         .roles(List.of(AuthTokenRole.builder().id(3L).roleName("STANDARD").build()))
         .permissions(
             List.of(AuthTokenPermission.builder().id(2L).permissionName("PERMISSION_READ").build()))

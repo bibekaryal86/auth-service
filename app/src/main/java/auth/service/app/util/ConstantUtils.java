@@ -38,9 +38,6 @@ public class ConstantUtils {
   public static final String ROLE_NAME_STANDARD = "STANDARD";
   public static final String ROLE_NAME_SUPERUSER = "SUPERUSER";
 
-  // PROFILE STATUSES
-  public static final String PROFILE_STATUS_NAME_ACTIVE = "ACTIVE";
-
   // JWT TOKEN
   public static final String TOKEN_CLAIM_EMAIL = "emailToken";
   public static final String TOKEN_CLAIM_ISSUER = "authsvc";

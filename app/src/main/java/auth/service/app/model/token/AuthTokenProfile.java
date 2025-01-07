@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class AuthTokenProfile {
   private long id;
   private String email;
-  private long statusId;
-  private boolean isValidated;
 }

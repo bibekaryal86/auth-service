@@ -6,21 +6,17 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.repository.AddressTypeRepository;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
-import auth.service.app.repository.StatusTypeRepository;
-import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -35,8 +31,6 @@ public class CircularDependencyService {
   private final PlatformRepository platformRepository;
   private final RoleService roleService;
   private final RoleRepository roleRepository;
-  private final StatusTypeService statusTypeService;
-  private final StatusTypeRepository statusTypeRepository;
   private final ProfileRepository profileRepository;
 
   public AddressTypeEntity readAddressType(final Long id) {
@@ -100,31 +94,6 @@ public class CircularDependencyService {
                 roleRepository
                     .findOne(getRoleNameExample(roleName))
                     .orElseThrow(() -> new ElementNotFoundException("Role", roleName)));
-  }
-
-  public StatusTypeEntity readStatusType(final Long id) {
-    log.debug("Read Status Type: [{}]", id);
-    return statusTypeService.readStatusTypes().stream()
-        .filter(addressType -> Objects.equals(addressType.getId(), id))
-        .findFirst()
-        .orElseGet(
-            () ->
-                statusTypeRepository
-                    .findById(id)
-                    .orElseThrow(
-                        () -> new ElementNotFoundException("Status Type", String.valueOf(id))));
-  }
-
-  public List<StatusTypeEntity> readStatusTypesByComponentName(final String componentName) {
-    log.debug("Read Status Types by Component Name: [{}]", componentName);
-    List<StatusTypeEntity> statusTypeEntities =
-        statusTypeService.readStatusTypes().stream()
-            .filter(statusType -> Objects.equals(statusType.getComponentName(), componentName))
-            .toList();
-    if (CollectionUtils.isEmpty(statusTypeEntities)) {
-      return statusTypeRepository.findByComponentNameOrderByStatusNameAsc(componentName);
-    }
-    return statusTypeEntities;
   }
 
   private Example<RoleEntity> getRoleNameExample(final String roleName) {

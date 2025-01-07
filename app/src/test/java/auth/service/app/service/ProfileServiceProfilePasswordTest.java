@@ -22,7 +22,6 @@ import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
@@ -42,8 +41,6 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   private static Long profileId;
   private static Long platformId;
   private static Long roleId;
-  private static StatusTypeEntity statusTypeEntityActive;
-  private static StatusTypeEntity statusTypeEntityNotActive;
 
   private static final String USER_EMAIL = "new@email.com";
   private static final String USER_EMAIL_ENCODED = "very-encoded-email-address";
@@ -63,23 +60,11 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
     PlatformEntity platformEntity = TestData.getPlatformEntities().getLast();
     ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
     RoleEntity roleEntity = TestData.getRoleEntities().getLast();
-    statusTypeEntityActive =
-        TestData.getStatusTypeEntities().stream()
-            .filter(statusTypeEntity -> "Active".equalsIgnoreCase(statusTypeEntity.getStatusName()))
-            .findFirst()
-            .orElse(null);
-    statusTypeEntityNotActive =
-        TestData.getStatusTypeEntities().stream()
-            .filter(
-                statusTypeEntity -> !"Active".equalsIgnoreCase(statusTypeEntity.getStatusName()))
-            .findFirst()
-            .orElse(null);
 
     profileEntity.setEmail(USER_EMAIL);
     profileEntity.setPassword(passwordUtils.hashPassword(OLD_PASSWORD));
     profileEntity.setId(null);
     profileEntity.setIsValidated(true);
-    profileEntity.setStatusType(statusTypeEntityActive);
     profileEntity = profileRepository.save(profileEntity);
 
     profileId = profileEntity.getId();
@@ -253,7 +238,7 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
   void testLoginProfile_NotActiveProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
-    profileEntity.setStatusType(statusTypeEntityNotActive);
+    profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));
     profileRepository.save(profileEntity);
 
     ProfileNotActiveException exception =
@@ -268,9 +253,8 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
         "Profile is not active, please revalidate or reset your account!", exception.getMessage());
 
     // reset
-    profileEntity.setStatusType(statusTypeEntityActive);
+    profileEntity.setLastLogin(null);
     profileRepository.save(profileEntity);
-    assertNotNull(profileEntity);
   }
 
   @Test

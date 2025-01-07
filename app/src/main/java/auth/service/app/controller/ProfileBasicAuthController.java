@@ -106,6 +106,12 @@ public class ProfileBasicAuthController {
                   String.format(
                       "Profile Login [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
+
+      // reset login attempts and set last login date
+      profileEntity.setLoginAttempts(0);
+      profileEntity.setLastLogin(LocalDateTime.now());
+      profileService.updateProfile(profileEntity);
+
       return ResponseEntity.ok(profilePasswordTokenResponse);
     } catch (Exception ex) {
       log.error("Login Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);

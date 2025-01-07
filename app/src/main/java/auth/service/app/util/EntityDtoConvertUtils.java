@@ -25,8 +25,6 @@ import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleDtoPlatformPermission;
 import auth.service.app.model.dto.RoleResponse;
-import auth.service.app.model.dto.StatusTypeDto;
-import auth.service.app.model.dto.StatusTypeResponse;
 import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.BaseEntity;
 import auth.service.app.model.entity.PermissionEntity;
@@ -36,7 +34,6 @@ import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.entity.StatusTypeEntity;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.PlatformRolePermissionService;
 import java.net.URI;
@@ -118,73 +115,6 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(
         AddressTypeResponse.builder()
             .addressTypes(Collections.emptyList())
-            .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .build())
-            .build(),
-        getHttpStatusForErrorResponse(exception));
-  }
-
-  // status type
-  private StatusTypeDto convertEntityToDtoStatusType(final StatusTypeEntity statusTypeEntity) {
-    if (statusTypeEntity == null) {
-      return null;
-    }
-    final StatusTypeDto statusTypeDto = new StatusTypeDto();
-    BeanUtils.copyProperties(statusTypeEntity, statusTypeDto);
-    return statusTypeDto;
-  }
-
-  private List<StatusTypeDto> convertEntitiesToDtosStatusTypes(
-      final List<StatusTypeEntity> statusTypeEntities) {
-    if (CollectionUtils.isEmpty(statusTypeEntities)) {
-      return Collections.emptyList();
-    }
-    return statusTypeEntities.stream().map(this::convertEntityToDtoStatusType).toList();
-  }
-
-  public ResponseEntity<StatusTypeResponse> getResponseSingleStatusType(
-      final StatusTypeEntity statusTypeEntity) {
-    final List<StatusTypeDto> statusTypeDtos =
-        statusTypeEntity == null
-            ? Collections.emptyList()
-            : List.of(convertEntityToDtoStatusType(statusTypeEntity));
-    return new ResponseEntity<>(
-        StatusTypeResponse.builder()
-            .statusTypes(statusTypeDtos)
-            .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(statusTypeEntity))
-                    .build())
-            .build(),
-        getHttpStatusForSingleResponse(statusTypeEntity));
-  }
-
-  public ResponseEntity<StatusTypeResponse> getResponseMultipleStatusTypes(
-      final List<StatusTypeEntity> statusTypeEntities) {
-    return ResponseEntity.ok(
-        StatusTypeResponse.builder()
-            .statusTypes(convertEntitiesToDtosStatusTypes(statusTypeEntities))
-            .build());
-  }
-
-  public ResponseEntity<StatusTypeResponse> getResponseDeleteStatusType() {
-    return ResponseEntity.ok(
-        StatusTypeResponse.builder()
-            .statusTypes(Collections.emptyList())
-            .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
-                    .build())
-            .build());
-  }
-
-  public ResponseEntity<StatusTypeResponse> getResponseErrorStatusType(final Exception exception) {
-    return new ResponseEntity<>(
-        StatusTypeResponse.builder()
-            .statusTypes(Collections.emptyList())
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(
@@ -523,8 +453,6 @@ public class EntityDtoConvertUtils {
     ProfileDto profileDto = new ProfileDto();
     BeanUtils.copyProperties(profileEntity, profileDto, "password", "addresses", "status", "roles");
 
-    profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
-
     if (CollectionUtils.isEmpty(profileEntity.getAddresses())) {
       profileDto.setAddresses(Collections.emptyList());
     } else {
@@ -635,7 +563,6 @@ public class EntityDtoConvertUtils {
         .map(
             profileEntity -> {
               ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, isIncludeRoles);
-              profileDto.setStatus(convertEntityToDtoStatusType(profileEntity.getStatusType()));
 
               List<ProfileDtoPlatformRole> platformRoles =
                   profileIdPlatformRolesMap.getOrDefault(

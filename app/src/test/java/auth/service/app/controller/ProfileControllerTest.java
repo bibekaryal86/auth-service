@@ -417,7 +417,6 @@ public class ProfileControllerTest extends BaseTest {
             "some-new@email.com",
             profileEntity.getPhone(),
             profileEntity.getPassword(),
-            profileEntity.getStatusType().getId(),
             false,
             Collections.emptyList());
 
@@ -461,7 +460,6 @@ public class ProfileControllerTest extends BaseTest {
             "some-new@email.com",
             profileEntity.getPhone(),
             profileEntity.getPassword(),
-            profileEntity.getStatusType().getId(),
             false,
             Collections.emptyList());
 
@@ -505,7 +503,6 @@ public class ProfileControllerTest extends BaseTest {
             "some-new@email.com",
             profileEntity.getPhone(),
             profileEntity.getPassword(),
-            profileEntity.getStatusType().getId(),
             false,
             Collections.emptyList());
     webTestClient
@@ -527,7 +524,6 @@ public class ProfileControllerTest extends BaseTest {
             "some-new@email.com",
             profileEntity.getPhone(),
             profileEntity.getPassword(),
-            profileEntity.getStatusType().getId(),
             false,
             Collections.emptyList());
     webTestClient
@@ -543,7 +539,7 @@ public class ProfileControllerTest extends BaseTest {
 
   @Test
   void testUpdateProfile_FailureBadRequest() {
-    ProfileRequest profileRequest = new ProfileRequest("", null, "", null, null, 0L, false, null);
+    ProfileRequest profileRequest = new ProfileRequest("", null, "", null, null, false, null);
     ResponseMetadata responseMetadata =
         webTestClient
             .put()
@@ -564,8 +560,7 @@ public class ProfileControllerTest extends BaseTest {
                 .getResponseStatusInfo()
                 .getErrMsg()
                 .contains("Last Name is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Status is required"));
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -974,7 +969,6 @@ public class ProfileControllerTest extends BaseTest {
   void testHardDeleteAppUser_Success() {
     // setup
     ProfileEntity profileEntityNew = TestData.getNewProfileEntity();
-    profileEntityNew.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileEntityNew = profileRepository.save(profileEntityNew);
 
     ProfileResponse profileResponse =

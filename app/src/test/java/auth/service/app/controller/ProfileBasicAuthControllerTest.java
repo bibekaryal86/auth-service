@@ -89,7 +89,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     ProfileEntity profileEntitySetup = TestData.getNewProfileEntity();
     profileEntitySetup.setEmail(NEW_USER_NEW_EMAIL);
     profileEntitySetup.setPassword(newUserNewPassword);
-    profileEntitySetup.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileEntity = profileRepository.save(profileEntitySetup);
 
     PlatformEntity platformEntitySetup = TestData.getNewPlatformEntity();
@@ -227,7 +226,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testCreateProfile_FailureBadRequest() {
     ProfileRequest profileRequest =
         new ProfileRequest(
-            "", null, "", "some-phone", "some-password", 0L, true, Collections.emptyList());
+            "", null, "", "some-phone", "some-password", true, Collections.emptyList());
     ResponseMetadata responseMetadata =
         webTestClient
             .post()
@@ -250,8 +249,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
                 .getResponseStatusInfo()
                 .getErrMsg()
                 .contains("Last Name is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Status is required"));
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -315,7 +313,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testLoginProfile_Success() {
     // setup
     profileEntity.setIsValidated(true);
-    profileEntity.setStatusType(TestData.getStatusTypeEntities().getLast());
     profileEntity.setLastLogin(null);
     profileEntity.setLoginAttempts(2);
     profileRepository.save(profileEntity);
@@ -358,7 +355,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     // reset
     peFound.setIsValidated(false);
-    peFound.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileRepository.save(peFound);
   }
 
@@ -366,7 +362,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testLoginProfile_Failure() {
     // setup
     profileEntity.setIsValidated(true);
-    profileEntity.setStatusType(TestData.getStatusTypeEntities().getLast());
     profileEntity.setLastLogin(null);
     profileEntity.setLoginAttempts(2);
     profileRepository.save(profileEntity);
@@ -407,7 +402,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     // reset
     profileEntity.setIsValidated(false);
-    profileEntity.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileRepository.save(profileEntity);
   }
 
@@ -543,6 +537,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testLoginProfile_FailureProfileNotActive() {
     // setup
     profileEntity.setIsValidated(true);
+    profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));
     profileRepository.save(profileEntity);
 
     ProfilePasswordRequest profilePasswordRequest =
@@ -580,6 +575,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     // reset
     profileEntity.setIsValidated(false);
+    profileEntity.setLastLogin(null);
     profileRepository.save(profileEntity);
   }
 
@@ -587,7 +583,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testLoginProfile_FailureProfileLoginAttemptExceeded() {
     // setup
     profileEntity.setIsValidated(true);
-    profileEntity.setStatusType(TestData.getStatusTypeEntities().getLast());
     profileEntity.setLoginAttempts(5);
     profileRepository.save(profileEntity);
 
@@ -626,7 +621,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     // reset
     profileEntity.setIsValidated(false);
-    profileEntity.setStatusType(TestData.getStatusTypeEntities().getFirst());
     profileEntity.setLoginAttempts(0);
     profileRepository.save(profileEntity);
   }

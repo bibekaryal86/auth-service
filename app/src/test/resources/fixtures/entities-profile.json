@@ -9,15 +9,6 @@
     "isValidated": true,
     "loginAttempts": 0,
     "lastLogin": null,
-    "statusType": {
-      "id": 1,
-      "componentName": "PROFILE",
-      "statusName": "Created",
-      "statusDesc": "Profile Entity is Created",
-      "createdDate": "2024-08-23T22:06:49.685768",
-      "updatedDate": "2024-08-23T22:46:45.153133",
-      "deletedDate": null
-    },
     "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
@@ -33,15 +24,6 @@
     "isValidated": true,
     "loginAttempts": 4,
     "lastLogin": null,
-    "statusType": {
-      "id": 3,
-      "componentName": "PROFILE",
-      "statusName": "Deleted",
-      "statusDesc": "Status Type Desc Three",
-      "createdDate": "2024-08-23T22:06:49.685768",
-      "updatedDate": "2024-08-23T22:46:45.153133",
-      "deletedDate": null
-    },
     "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
@@ -57,15 +39,6 @@
     "isValidated": true,
     "loginAttempts": 0,
     "lastLogin": null,
-    "statusType": {
-      "id": 1,
-      "componentName": "PROFILE",
-      "statusName": "Active",
-      "statusDesc": "Status Type Desc One",
-      "createdDate": "2024-08-23T22:06:49.685768",
-      "updatedDate": "2024-08-23T22:46:45.153133",
-      "deletedDate": null
-    },
     "addresses": null,
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
