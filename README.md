@@ -1,6 +1,6 @@
 # auth-service
 
-A small utility for authentication and authorization, and users, roles and permissions management
+A small utility for authentication and authorization with platforms, profiles, roles and permissions management
 
 ## Local Development
 
