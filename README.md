@@ -17,7 +17,7 @@ A small utility for authentication and authorization with platforms, profiles, r
   * Clear database (DELETES EVERYTHING)
     * `./gradlew flywayClean -Dflyway.cleanDisabled=false`
   * Flyway migration is configured to not trigger automatically, it only validates
-    * So migration command needs to be given manually
+    * This means that migration command needs to be given manually
   * Flyway migration is controlled via github actions to main DB branch
   * There are 2 database instances created to support local development and production data.
     This uses free instance from `neon.tech` for database requirements. In neon tech it is possible
@@ -31,13 +31,11 @@ A small utility for authentication and authorization with platforms, profiles, r
         * When a pull request is created, flyway migration is run in this branch to validate schema changes
 
 
-* Remaining (thoughts)
+
+* TODO
   * Update this README.md for proper documentation
-  * Implement ResponseCrudInfo and ResponsePageInfo
-    * Also implement RequestMetadata
-
-
-TODO:
-* GitHub actions for PR and merge to main, check if variables work
-* create a scheduled job to check for user login and set as inactive
-* CrudInfo implementation in ResponseMetadata
+  * Implement RequestMetadata, ResponseCrudInfo
+  * GitHub actions for flyway
+    * migrate to dev database when pull request is created
+    * migrate to main database when pull request is merged
+    * add flyway repair and validate workflows, but keep them manual only
