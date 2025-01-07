@@ -3,18 +3,33 @@ package auth.service.app.util;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
+import auth.service.app.exception.CheckPermissionException;
+import auth.service.app.exception.ElementMissingException;
+import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.ProfileLockedException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.AddressTypeDto;
 import auth.service.app.model.dto.AddressTypeResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.PlatformProfileRoleDto;
+import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.dto.PlatformResponse;
+import auth.service.app.model.dto.PlatformRolePermissionDto;
+import auth.service.app.model.dto.PlatformRolePermissionResponse;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.dto.StatusTypeDto;
@@ -253,13 +268,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseErrorStatusType() {
     ResponseEntity<StatusTypeResponse> response =
         entityDtoConvertUtils.getResponseErrorStatusType(
-            new ElementNotFoundException("something", "anything"));
+            new ElementMissingException("something", "anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getStatusTypes().isEmpty());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   @Test
@@ -351,13 +366,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseErrorPermission() {
     ResponseEntity<PermissionResponse> response =
         entityDtoConvertUtils.getResponseErrorPermission(
-            new ElementNotFoundException("something", "anything"));
+            new ElementNotActiveException("something", "anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getPermissions().isEmpty());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
   @Test
@@ -511,13 +526,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseErrorRole() {
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseErrorRole(
-            new ElementNotFoundException("something", "anything"));
+            new CheckPermissionException("something anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getRoles().isEmpty());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
   @Test
@@ -608,13 +623,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseErrorPlatform() {
     ResponseEntity<PlatformResponse> response =
         entityDtoConvertUtils.getResponseErrorPlatform(
-            new ElementNotFoundException("something", "anything"));
+            new JwtInvalidException("something anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getPlatforms().isEmpty());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
 
   @Test
@@ -779,13 +794,277 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseErrorProfile() {
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseErrorProfile(
-            new ElementNotFoundException("something", "anything"));
+        entityDtoConvertUtils.getResponseErrorProfile(new ProfileNotValidatedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertTrue(response.getBody().getProfiles().isEmpty());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSinglePlatformProfileRole_NullEntity() {
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseSinglePlatformProfileRole(null);
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformProfileRoles());
+    assertTrue(response.getBody().getPlatformProfileRoles().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSinglePlatformProfileRole_NonNullEntity() {
+    PlatformProfileRoleEntity entity = platformProfileRoleEntities.getFirst();
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseSinglePlatformProfileRole(entity);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformProfileRoles());
+    assertEquals(1, response.getBody().getPlatformProfileRoles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    PlatformProfileRoleDto dto = response.getBody().getPlatformProfileRoles().getFirst();
+    assertAll(
+        "Platform Profile Role",
+        () -> assertEquals(entity.getId().getPlatformId(), dto.getPlatform().getId()),
+        () -> assertEquals(entity.getId().getProfileId(), dto.getProfile().getId()),
+        () -> assertEquals(entity.getId().getRoleId(), dto.getRole().getId()));
+
+    assertTrue(EntityDtoComparator.areEqual(entity, dto));
+  }
+
+  @Test
+  void testGetResponseMultiplePlatformProfileRoles_EmptyList() {
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformProfileRoles());
+    assertTrue(response.getBody().getPlatformProfileRoles().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultiplePlatformProfileRoles_NonEmptyList() {
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(platformProfileRoleEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformProfileRoles());
+    assertEquals(3, response.getBody().getPlatformProfileRoles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeletePlatformProfileRole() {
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseDeletePlatformProfileRole();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertTrue(response.getBody().getPlatformProfileRoles().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(
+        1, response.getBody().getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseErrorPlatformProfileRole() {
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseErrorPlatformProfileRole(
+            new RuntimeException("something anything"));
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertTrue(response.getBody().getPlatformProfileRoles().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSinglePlatformRolePermission_NullEntity() {
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseSinglePlatformRolePermission(null);
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformRolePermissions());
+    assertTrue(response.getBody().getPlatformRolePermissions().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseSinglePlatformRolePermission_NonNullEntity() {
+    PlatformRolePermissionEntity entity = platformRolePermissionEntities.getFirst();
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseSinglePlatformRolePermission(entity);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformRolePermissions());
+    assertEquals(1, response.getBody().getPlatformRolePermissions().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    PlatformRolePermissionDto dto = response.getBody().getPlatformRolePermissions().getFirst();
+    assertAll(
+        "Platform Role Permission",
+        () -> assertEquals(entity.getId().getPlatformId(), dto.getPlatform().getId()),
+        () -> assertEquals(entity.getId().getRoleId(), dto.getRole().getId()),
+        () -> assertEquals(entity.getId().getPermissionId(), dto.getPermission().getId()));
+
+    assertTrue(EntityDtoComparator.areEqual(entity, dto));
+  }
+
+  @Test
+  void testGetResponseMultiplePlatformRolePermissions_EmptyList() {
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatformRolePermissions(Collections.emptyList());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformRolePermissions());
+    assertTrue(response.getBody().getPlatformRolePermissions().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseMultiplePlatformRolePermissions_NonEmptyList() {
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatformRolePermissions(
+            platformRolePermissionEntities);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatformRolePermissions());
+    assertEquals(3, response.getBody().getPlatformRolePermissions().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseDeletePlatformRolePermission() {
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseDeletePlatformRolePermission();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertTrue(response.getBody().getPlatformRolePermissions().isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(
+        1, response.getBody().getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+  }
+
+  @Test
+  void testGetResponseErrorPlatformRolePermission() {
+    ResponseEntity<PlatformRolePermissionResponse> response =
+        entityDtoConvertUtils.getResponseErrorPlatformRolePermission(
+            new NullPointerException("something anything"));
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertTrue(response.getBody().getPlatformRolePermissions().isEmpty());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseErrorProfilePassword() {
+    ResponseEntity<ProfilePasswordTokenResponse> response =
+        entityDtoConvertUtils.getResponseErrorProfilePassword(new ProfileNotActiveException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNull(response.getBody().getProfile());
+    assertTrue(response.getBody().getAToken() == null && response.getBody().getRToken() == null);
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseErrorResponseMetadata() {
+    ResponseEntity<ResponseMetadata> response =
+        entityDtoConvertUtils.getResponseErrorResponseMetadata(new ProfileLockedException());
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getResponseStatusInfo().getErrMsg());
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  void testGetResponseValidateProfile_Validated() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isValidated = true;
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_validated=true", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseValidateProfile_NotValidated() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isValidated = false;
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_validated=false", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseValidateProfile_EmptyRedirectUrl() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseValidateProfile("", true));
+  }
+
+  @Test
+  void testGetResponseResetProfile_Reset() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isReset = true;
+    String email = "user@example.com";
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(
+        redirectUrl + "?is_reset=true&to_reset=" + email,
+        response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseResetProfile_NotReset() {
+    String redirectUrl = "https://example.com/redirect";
+    boolean isReset = false;
+    String email = "";
+    ResponseEntity<Void> response =
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
+
+    assertNotNull(response);
+    assertNotNull(response.getHeaders().getLocation());
+    assertEquals(HttpStatus.FOUND, response.getStatusCode());
+    assertEquals(redirectUrl + "?is_reset=false", response.getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void testGetResponseResetProfile_EmptyRedirectUrl() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseResetProfile("", true, "some@email.com"));
   }
 }
