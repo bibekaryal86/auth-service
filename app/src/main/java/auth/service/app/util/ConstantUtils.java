@@ -34,9 +34,17 @@ public class ConstantUtils {
           ENV_ENVSVC_PASSWORD);
 
   // ROLE NAMES
-  public static final String APP_ROLE_NAME_GUEST = "GUEST";
-  public static final String APP_ROLE_NAME_STANDARD = "STANDARD";
-  public static final String APP_ROLE_NAME_SUPERUSER = "SUPERUSER";
+  public static final String ROLE_NAME_GUEST = "GUEST";
+  public static final String ROLE_NAME_STANDARD = "STANDARD";
+  public static final String ROLE_NAME_SUPERUSER = "SUPERUSER";
+
+  // JWT TOKEN
+  public static final String TOKEN_CLAIM_EMAIL = "emailToken";
+  public static final String TOKEN_CLAIM_ISSUER = "authsvc";
+  public static final String TOKEN_CLAIM_AUTH = "authToken";
+
+  // ID for elements not found
+  public static final Long ELEMENT_ID_NOT_FOUND = -1L;
 
   // messages
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =

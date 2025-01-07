@@ -1,10 +1,10 @@
 package auth.service.app.util;
 
-import static auth.service.app.util.ConstantUtils.APP_ROLE_NAME_SUPERUSER;
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
 
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.entity.AppUserEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class PermissionCheck {
       final boolean isPermitted = checkUserPermission(authToken, List.of(requiredPermissions));
 
       if (!isPermitted) {
-        throw new CheckPermissionException("User does not have required permissions...");
+        throw new CheckPermissionException("Profile does not have required permissions...");
       }
     } catch (Exception ex) {
       if (ex instanceof CheckPermissionException) {
@@ -37,7 +37,7 @@ public class PermissionCheck {
     }
   }
 
-  public void canUserAccessAppUser(final String email, final int id) {
+  public void checkProfileAccess(final String email, final long id) {
     try {
       final AuthToken authToken = getAuthentication();
       final boolean isSuperUser = checkSuperUser(authToken);
@@ -45,7 +45,7 @@ public class PermissionCheck {
 
       if (!isSuperUser && !isPermitted) {
         throw new CheckPermissionException(
-            "User does not have required permissions to user entity...");
+            "Profile does not have required permissions to profile entity...");
       }
     } catch (Exception ex) {
       if (ex instanceof CheckPermissionException) {
@@ -55,20 +55,17 @@ public class PermissionCheck {
     }
   }
 
-  public List<AppUserEntity> filterAppUserListByAccess(final List<AppUserEntity> appUserEntities) {
+  public List<ProfileEntity> filterProfileListByAccess(final List<ProfileEntity> profileEntities) {
     try {
       final AuthToken authToken = getAuthentication();
       final boolean isSuperUser = checkSuperUser(authToken);
 
       if (isSuperUser) {
-        return appUserEntities;
+        return profileEntities;
       }
 
-      return appUserEntities.stream()
-          .filter(
-              appUserEntity ->
-                  Objects.equals(appUserEntity.getEmail(), authToken.getUser().getEmail())
-                      || Objects.equals(appUserEntity.getId(), authToken.getUser().getId()))
+      return profileEntities.stream()
+          .filter(profile -> checkUserIdEmail(profile.getEmail(), profile.getId(), authToken))
           .toList();
     } catch (Exception ex) {
       throw new CheckPermissionException(ex.getMessage());
@@ -81,7 +78,7 @@ public class PermissionCheck {
     if (authentication == null
         || authentication.getPrincipal() == null
         || !authentication.isAuthenticated()) {
-      throw new CheckPermissionException("User not authenticated...");
+      throw new CheckPermissionException("Profile not authenticated...");
     }
 
     if (authentication.getCredentials() != null
@@ -89,7 +86,7 @@ public class PermissionCheck {
       return authToken;
     }
 
-    throw new CheckPermissionException("User not authorized...");
+    throw new CheckPermissionException("Profile not authorized...");
   }
 
   private boolean checkUserPermission(
@@ -102,16 +99,17 @@ public class PermissionCheck {
 
     return authToken.getPermissions().stream()
         .anyMatch(
-            authTokenPermission -> requiredPermissions.contains(authTokenPermission.getName()));
+            authTokenPermission ->
+                requiredPermissions.contains(authTokenPermission.getPermissionName()));
   }
 
   private boolean checkSuperUser(final AuthToken authToken) {
     return authToken.getRoles().stream()
-        .anyMatch(authTokenRole -> authTokenRole.getName().equals(APP_ROLE_NAME_SUPERUSER));
+        .anyMatch(authTokenRole -> authTokenRole.getRoleName().equals(ROLE_NAME_SUPERUSER));
   }
 
-  private boolean checkUserIdEmail(final String email, final int id, final AuthToken authToken) {
-    return Objects.equals(email, authToken.getUser().getEmail())
-        || Objects.equals(id, authToken.getUser().getId());
+  private boolean checkUserIdEmail(final String email, final long id, final AuthToken authToken) {
+    return Objects.equals(email, authToken.getProfile().getEmail())
+        || Objects.equals(id, authToken.getProfile().getId());
   }
 }

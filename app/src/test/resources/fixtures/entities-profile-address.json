@@ -1,0 +1,119 @@
+[
+  {
+    "id": 1,
+    "profile": {
+      "id": 1,
+      "firstName": "First One",
+      "lastName": "Last One",
+      "email": "firstlast@one.com",
+      "phone": null,
+      "password": "password-one",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "status": {
+        "id": 1,
+        "componentName": "PROFILE",
+        "statusName": "Created",
+        "statusDesc": "Profile Entity is Created",
+        "createdDate": "2024-08-23T22:06:49.685768",
+        "updatedDate": "2024-08-23T22:46:45.153133",
+        "deletedDate": null
+      },
+      "addresses": null,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
+    "type": {
+      "id": 1,
+      "typeName": "Mailing",
+      "typeDesc": "Mailing Address",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
+    "street": "Street One One",
+    "city": "City One One",
+    "state": "ON",
+    "country": "US",
+    "postalCode": "12569"
+  },
+  {
+    "id": 2,
+    "profile": {
+      "id": 1,
+      "firstName": "First One",
+      "lastName": "Last One",
+      "email": "firstlast@one.com",
+      "phone": null,
+      "password": "password-one",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "status": {
+        "id": 1,
+        "componentName": "PROFILE",
+        "statusName": "Created",
+        "statusDesc": "Profile Entity is Created",
+        "createdDate": "2024-08-23T22:06:49.685768",
+        "updatedDate": "2024-08-23T22:46:45.153133",
+        "deletedDate": null
+      },
+      "addresses": null,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
+    "type": {
+      "id": 3,
+      "typeName": "Shipping",
+      "typeDesc": "Shipping Address",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
+    "street": "Street One Two",
+    "city": "City One Two",
+    "state": "ON",
+    "country": "US",
+    "postalCode": "12569"
+  },
+  {
+    "id": 3,
+    "profile": {
+      "id": 2,
+      "firstName": "First Two",
+      "lastName": "Last Two",
+      "email": "firstlast@two.com",
+      "phone": "9876543210",
+      "password": "password-two",
+      "isValidated": true,
+      "loginAttempts": 4,
+      "status": {
+        "id": 3,
+        "componentName": "PROFILE",
+        "statusName": "Deleted",
+        "statusDesc": "Status Type Desc Three",
+        "createdDate": "2024-08-23T22:06:49.685768",
+        "updatedDate": "2024-08-23T22:46:45.153133",
+        "deletedDate": null
+      },
+      "addresses": null,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": "2024-08-24T22:06:49.685768"
+    },
+    "type": {
+      "id": 1,
+      "typeName": "Mailing",
+      "typeDesc": "Mailing Address",
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null
+    },
+    "street": "Street Two One",
+    "city": "City Two One",
+    "state": "TW",
+    "country": "US",
+    "postalCode": "96521"
+  }
+]

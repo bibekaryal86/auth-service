@@ -1,8 +1,22 @@
 spring:
+  config:
+    activate:
+      on-profile: development
+  datasource:
+    url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_DBNAME}
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:postgresql://${DB_HOST_PROD}:5432/${DB_DBNAME}
+---
+spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres
+    # url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_DBNAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -25,17 +39,13 @@ spring:
             non_contextual_creation: true
         boot:
           allow_jdbc_metadata_access: true
-        show_sql: false # set false here, control from logback.xml
+        show_sql: false # set false here, control from logback-spring.xml
         format_sql: false
         hbm2ddl:
           auto: validate
     open-in-view: false
   jta:
     enabled: true
-
-server:
-  servlet:
-    context-path: /ums
 
 management:
   endpoints:
@@ -49,7 +59,7 @@ springdoc:
   swagger-ui:
     doc-expansion: none
 
-# endpoints of authenv_service
+# endpoints of env service
 endpoint:
   env_service:
     get_properties: https://envsvc.appspot.com/envsvc/api/v1/authservice

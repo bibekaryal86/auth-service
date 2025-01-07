@@ -1,27 +1,24 @@
 [
   {
     "id": 1,
-    "appId": "app-1",
-    "name": "Permission One",
-    "description": "Permission Description One",
+    "permissionName": "PERMISSION_CREATE",
+    "permissionDesc": "Can Add Permission",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": null
   },
   {
     "id": 2,
-    "appId": "app-1",
-    "name": "Permission Two",
-    "description": "Permission Description Two",
+    "permissionName": "PERMISSION_READ",
+    "permissionDesc": "Can View Permission(s)",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": null
   },
   {
     "id": 3,
-    "appId": "app-1",
-    "name": "Permission Three",
-    "description": "Permission Description Three",
+    "permissionName": "PERMISSION_UPDATE",
+    "permissionDesc": "Can Update Permission",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
     "deletedDate": "2024-08-24T22:06:49.685768"

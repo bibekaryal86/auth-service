@@ -10,10 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
-import auth.service.app.model.entity.AppUserEntity;
-import auth.service.app.model.entity.AppsEntity;
-import auth.service.app.model.events.AppUserCreatedEvent;
-import auth.service.app.model.events.AppUserUpdatedEvent;
+import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.util.FileReaderUtils;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
@@ -29,23 +27,23 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 public class EmailServiceTest extends BaseTest {
 
   @MockitoBean private FileReaderUtils fileReaderUtils;
-
   @MockitoBean private MailjetClient mailjetClient;
 
   @Autowired private EmailService emailService;
 
-  private static AppUserEntity appUserEntity;
-  private static AppsEntity appsEntity;
+  private static ProfileEntity profileEntity;
+  private static PlatformEntity platformEntity;
   private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
 
   @BeforeAll
   static void setUp() {
-    appUserEntity = TestData.getAppUserEntities().getFirst();
-    appsEntity = TestData.getAppsEntities().getFirst();
+    profileEntity = TestData.getProfileEntities().getFirst();
+    platformEntity = TestData.getPlatformEntities().getFirst();
   }
 
   @AfterEach
   void tearDown() {
+    reset(fileReaderUtils);
     reset(mailjetClient);
   }
 
@@ -106,55 +104,27 @@ public class EmailServiceTest extends BaseTest {
   }
 
   @Test
-  void testHandleUserCreated() throws Exception {
+  void testSendProfileValidationEmail() throws Exception {
     when(mailjetClient.post(any(MailjetRequest.class)))
         .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
     when(fileReaderUtils.readFileContents(anyString()))
         .thenReturn("{app_name} : {activation_link}");
 
-    AppUserCreatedEvent appUserCreatedEvent =
-        new AppUserCreatedEvent(this, appUserEntity, appsEntity, BASE_URL_FOR_EMAIL);
-    emailService.handleUserCreated(appUserCreatedEvent);
-
-    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    verify(fileReaderUtils, times(1)).readFileContents(anyString());
-  }
-
-  @Test
-  void testHandleUserEmailUpdated() throws Exception {
-    when(mailjetClient.post(any(MailjetRequest.class)))
-        .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
-    when(fileReaderUtils.readFileContents(anyString()))
-        .thenReturn("{app_name} : {activation_link}");
-
-    AppUserUpdatedEvent appUserUpdatedEvent =
-        new AppUserUpdatedEvent(this, appUserEntity, appsEntity, BASE_URL_FOR_EMAIL);
-    emailService.handleUserEmailUpdated(appUserUpdatedEvent);
-    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    verify(fileReaderUtils, times(1)).readFileContents(anyString());
-  }
-
-  @Test
-  void testSendUserValidationEmail() throws Exception {
-    when(mailjetClient.post(any(MailjetRequest.class)))
-        .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
-    when(fileReaderUtils.readFileContents(anyString()))
-        .thenReturn("{app_name} : {activation_link}");
-
-    emailService.sendUserValidationEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
+    emailService.sendProfileValidationEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
     verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
     verify(fileReaderUtils, times(1))
-        .readFileContents(eq("email/templates/email_validate_user.html"));
+        .readFileContents(eq("email/templates/profile_validate_email.html"));
   }
 
   @Test
-  void testSendUserResetEmail() throws Exception {
+  void testSendProfileResetEmail() throws Exception {
     when(mailjetClient.post(any(MailjetRequest.class)))
         .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
     when(fileReaderUtils.readFileContents(anyString())).thenReturn("{app_name} : {reset_link}");
 
-    emailService.sendUserResetEmail(appsEntity, appUserEntity, BASE_URL_FOR_EMAIL);
+    emailService.sendProfileResetEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
     verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    verify(fileReaderUtils, times(1)).readFileContents(eq("email/templates/email_reset_user.html"));
+    verify(fileReaderUtils, times(1))
+        .readFileContents(eq("email/templates/profile_reset_email.html"));
   }
 }

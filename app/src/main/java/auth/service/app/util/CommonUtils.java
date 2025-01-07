@@ -13,11 +13,15 @@ import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.exception.UserForbiddenException;
-import auth.service.app.exception.UserNotActiveException;
-import auth.service.app.exception.UserNotAuthorizedException;
-import auth.service.app.exception.UserNotValidatedException;
+import auth.service.app.exception.ProfileForbiddenException;
+import auth.service.app.exception.ProfileLockedException;
+import auth.service.app.exception.ProfileNotActiveException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -50,13 +54,14 @@ public class CommonUtils {
       return NOT_FOUND;
     } else if (exception instanceof ElementMissingException) {
       return BAD_REQUEST;
-    } else if (exception instanceof UserForbiddenException
-        || exception instanceof UserNotValidatedException
+    } else if (exception instanceof ProfileForbiddenException
+        || exception instanceof ProfileNotValidatedException
         || exception instanceof ElementNotActiveException
-        || exception instanceof UserNotActiveException
+        || exception instanceof ProfileNotActiveException
+        || exception instanceof ProfileLockedException
         || exception instanceof CheckPermissionException) {
       return FORBIDDEN;
-    } else if (exception instanceof UserNotAuthorizedException
+    } else if (exception instanceof ProfileNotAuthorizedException
         || exception instanceof JwtInvalidException) {
       return UNAUTHORIZED;
     } else {
@@ -74,16 +79,31 @@ public class CommonUtils {
         : null;
   }
 
-  public static String convertResponseStatusInfoToJson(
-      final ResponseStatusInfo responseStatusInfo) {
-    return "{"
-        + "\"message\":\""
-        + escapeJson(responseStatusInfo.getMessage())
-        + "\","
-        + "\"errMsg\":\""
-        + escapeJson(responseStatusInfo.getErrMsg())
-        + "\""
-        + "}";
+  public static String getIpAddress(final HttpServletRequest request) {
+    String ipAddress = request.getHeader("X-Forwarded-For");
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getRemoteAddr();
+    }
+    return ipAddress;
+  }
+
+  public static String getUserAgent(final HttpServletRequest request) {
+    return request.getHeader("User-Agent");
+  }
+
+  public static String convertResponseMetadataToJson(final ResponseMetadata responseMetadata) {
+    try {
+      return new ObjectMapper().writeValueAsString(responseMetadata);
+    } catch (JsonProcessingException e) {
+      return "{"
+          + "\"message\":\""
+          + escapeJson(responseMetadata.getResponseStatusInfo().getMessage())
+          + "\","
+          + "\"errMsg\":\""
+          + escapeJson(responseMetadata.getResponseStatusInfo().getErrMsg())
+          + "\""
+          + "}";
+    }
   }
 
   private static String escapeJson(final String value) {

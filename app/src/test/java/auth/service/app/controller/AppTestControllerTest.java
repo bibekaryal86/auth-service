@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class AppTestControllerTest extends BaseTest {
@@ -38,7 +39,7 @@ public class AppTestControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/tests/reset")
-        .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+        .header(HttpHeaders.AUTHORIZATION, "Basic " + basicAuthCredentialsForTest)
         .exchange()
         .expectStatus()
         .isOk()
@@ -58,7 +59,7 @@ public class AppTestControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/tests/reset")
-        .header("Authorization", "Basic someBase64EncodedString")
+        .header(HttpHeaders.AUTHORIZATION, "Basic someBase64EncodedString")
         .exchange()
         .expectStatus()
         .isUnauthorized();

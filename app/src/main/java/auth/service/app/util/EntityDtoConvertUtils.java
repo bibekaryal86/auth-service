@@ -4,34 +4,38 @@ import static auth.service.app.util.CommonUtils.getHttpStatusForErrorResponse;
 import static auth.service.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
-import auth.service.app.model.dto.AppPermissionDto;
-import auth.service.app.model.dto.AppPermissionResponse;
-import auth.service.app.model.dto.AppRoleDto;
-import auth.service.app.model.dto.AppRolePermissionDto;
-import auth.service.app.model.dto.AppRolePermissionResponse;
-import auth.service.app.model.dto.AppRoleResponse;
-import auth.service.app.model.dto.AppUserAddressDto;
-import auth.service.app.model.dto.AppUserDto;
-import auth.service.app.model.dto.AppUserResponse;
-import auth.service.app.model.dto.AppUserRoleDto;
-import auth.service.app.model.dto.AppUserRoleResponse;
-import auth.service.app.model.dto.AppsAppUserDto;
-import auth.service.app.model.dto.AppsAppUserResponse;
-import auth.service.app.model.dto.AppsDto;
-import auth.service.app.model.dto.AppsResponse;
+import auth.service.app.model.dto.AddressTypeDto;
+import auth.service.app.model.dto.AddressTypeResponse;
+import auth.service.app.model.dto.PermissionDto;
+import auth.service.app.model.dto.PermissionResponse;
+import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.PlatformProfileRoleDto;
+import auth.service.app.model.dto.PlatformProfileRoleResponse;
+import auth.service.app.model.dto.PlatformResponse;
+import auth.service.app.model.dto.PlatformRolePermissionDto;
+import auth.service.app.model.dto.PlatformRolePermissionResponse;
+import auth.service.app.model.dto.ProfileAddressDto;
+import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.ProfileDtoPlatformRole;
+import auth.service.app.model.dto.ProfilePasswordTokenResponse;
+import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseCrudInfo;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.model.dto.UserLoginResponse;
-import auth.service.app.model.entity.AppPermissionEntity;
-import auth.service.app.model.entity.AppRoleEntity;
-import auth.service.app.model.entity.AppRolePermissionEntity;
-import auth.service.app.model.entity.AppUserAddressEntity;
-import auth.service.app.model.entity.AppUserEntity;
-import auth.service.app.model.entity.AppUserRoleEntity;
-import auth.service.app.model.entity.AppsAppUserEntity;
-import auth.service.app.model.entity.AppsEntity;
-import auth.service.app.service.AppRolePermissionService;
-import auth.service.app.service.AppUserRoleService;
+import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.dto.RoleDtoPlatformPermission;
+import auth.service.app.model.dto.RoleResponse;
+import auth.service.app.model.entity.AddressTypeEntity;
+import auth.service.app.model.entity.BaseEntity;
+import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
+import auth.service.app.model.entity.ProfileAddressEntity;
+import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.service.PlatformProfileRoleService;
+import auth.service.app.service.PlatformRolePermissionService;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -49,545 +53,760 @@ import org.springframework.util.StringUtils;
 @Component
 @RequiredArgsConstructor
 public class EntityDtoConvertUtils {
-  private final AppUserRoleService appUserRoleService;
-  private final AppRolePermissionService appRolePermissionService;
+  private final PlatformProfileRoleService platformProfileRoleService;
+  private final PlatformRolePermissionService platformRolePermissionService;
 
-  public ResponseEntity<AppsResponse> getResponseSingleApps(final AppsEntity appsEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appsEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appsEntity);
-    final List<AppsDto> appsDtos =
-        appsEntity == null ? Collections.emptyList() : List.of(convertEntityToDtoApps(appsEntity));
-    return new ResponseEntity<>(
-        new AppsResponse(appsDtos, null, null, responseStatusInfo), httpStatus);
-  }
-
-  public ResponseEntity<AppsResponse> getResponseMultipleApps(final List<AppsEntity> appsEntities) {
-    final List<AppsDto> appsDtos = convertEntitiesToDtosApps(appsEntities);
-    return ResponseEntity.ok(new AppsResponse(appsDtos, null, null, null));
-  }
-
-  public ResponseEntity<AppsResponse> getResponseDeleteApps() {
-    return ResponseEntity.ok(
-        new AppsResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
-  }
-
-  public ResponseEntity<AppsResponse> getResponseErrorApps(final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(
-        new AppsResponse(Collections.emptyList(), null, null, responseStatusInfo), httpStatus);
-  }
-
-  public AppsDto convertEntityToDtoApps(final AppsEntity appsEntity) {
-    if (appsEntity == null) {
+  // address type
+  private AddressTypeDto convertEntityToDtoAddressType(final AddressTypeEntity addressTypeEntity) {
+    if (addressTypeEntity == null) {
       return null;
     }
-    return new AppsDto(appsEntity.getId(), appsEntity.getName(), appsEntity.getDescription());
+    final AddressTypeDto addressTypeDto = new AddressTypeDto();
+    BeanUtils.copyProperties(addressTypeEntity, addressTypeDto);
+    return addressTypeDto;
   }
 
-  public List<AppsDto> convertEntitiesToDtosApps(final List<AppsEntity> appsEntities) {
-    if (CollectionUtils.isEmpty(appsEntities)) {
+  private List<AddressTypeDto> convertEntitiesToDtosAddressTypes(
+      final List<AddressTypeEntity> addressTypeEntities) {
+    if (CollectionUtils.isEmpty(addressTypeEntities)) {
       return Collections.emptyList();
     }
-    return appsEntities.stream().map(this::convertEntityToDtoApps).toList();
+    return addressTypeEntities.stream().map(this::convertEntityToDtoAddressType).toList();
   }
 
-  public ResponseEntity<AppPermissionResponse> getResponseSingleAppPermission(
-      final AppPermissionEntity appPermissionEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appPermissionEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appPermissionEntity);
-    final List<AppPermissionDto> appPermissionDtos =
-        appPermissionEntity == null
+  public ResponseEntity<AddressTypeResponse> getResponseSingleAddressType(
+      final AddressTypeEntity addressTypeEntity) {
+    final List<AddressTypeDto> addressTypeDtos =
+        addressTypeEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppPermission(appPermissionEntity));
+            : List.of(convertEntityToDtoAddressType(addressTypeEntity));
     return new ResponseEntity<>(
-        new AppPermissionResponse(appPermissionDtos, null, null, responseStatusInfo), httpStatus);
+        AddressTypeResponse.builder()
+            .addressTypes(addressTypeDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(addressTypeEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(addressTypeEntity));
   }
 
-  public ResponseEntity<AppPermissionResponse> getResponseMultipleAppPermission(
-      final List<AppPermissionEntity> appPermissionEntities) {
-    final List<AppPermissionDto> appPermissionDtos =
-        convertEntitiesToDtosAppPermission(appPermissionEntities);
-    return ResponseEntity.ok(new AppPermissionResponse(appPermissionDtos, null, null, null));
-  }
-
-  public ResponseEntity<AppPermissionResponse> getResponseDeleteAppPermission() {
+  public ResponseEntity<AddressTypeResponse> getResponseMultipleAddressTypes(
+      final List<AddressTypeEntity> addressTypeEntities) {
     return ResponseEntity.ok(
-        new AppPermissionResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
+        AddressTypeResponse.builder()
+            .addressTypes(convertEntitiesToDtosAddressTypes(addressTypeEntities))
+            .build());
   }
 
-  public ResponseEntity<AppPermissionResponse> getResponseErrorAppPermission(
+  public ResponseEntity<AddressTypeResponse> getResponseDeleteAddressType() {
+    return ResponseEntity.ok(
+        AddressTypeResponse.builder()
+            .addressTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<AddressTypeResponse> getResponseErrorAddressType(
       final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
     return new ResponseEntity<>(
-        new AppPermissionResponse(Collections.emptyList(), null, null, responseStatusInfo),
-        httpStatus);
+        AddressTypeResponse.builder()
+            .addressTypes(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 
-  public AppPermissionDto convertEntityToDtoAppPermission(
-      final AppPermissionEntity appPermissionEntity) {
-    if (appPermissionEntity == null) {
+  // permission
+  private PermissionDto convertEntityToDtoPermission(final PermissionEntity permissionEntity) {
+    if (permissionEntity == null) {
       return null;
     }
-    return new AppPermissionDto(
-        appPermissionEntity.getId(),
-        appPermissionEntity.getAppId(),
-        appPermissionEntity.getName(),
-        appPermissionEntity.getDescription());
+    PermissionDto permissionDto = new PermissionDto();
+    BeanUtils.copyProperties(permissionEntity, permissionDto);
+    return permissionDto;
   }
 
-  public List<AppPermissionDto> convertEntitiesToDtosAppPermission(
-      final List<AppPermissionEntity> appPermissionEntities) {
-    if (CollectionUtils.isEmpty(appPermissionEntities)) {
+  private List<PermissionDto> convertEntitiesToDtosPermissions(
+      final List<PermissionEntity> permissionEntities) {
+    if (CollectionUtils.isEmpty(permissionEntities)) {
       return Collections.emptyList();
     }
-    return appPermissionEntities.stream().map(this::convertEntityToDtoAppPermission).toList();
+    return permissionEntities.stream().map(this::convertEntityToDtoPermission).toList();
   }
 
-  public ResponseEntity<AppRoleResponse> getResponseSingleAppRole(
-      final AppRoleEntity appRoleEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appRoleEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appRoleEntity);
-    final List<AppRoleDto> appPermissionDtos =
-        appRoleEntity == null
+  public ResponseEntity<PermissionResponse> getResponseSinglePermission(
+      final PermissionEntity permissionEntity) {
+    final List<PermissionDto> permissionDtos =
+        permissionEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppRole(appRoleEntity, true));
+            : List.of(convertEntityToDtoPermission(permissionEntity));
     return new ResponseEntity<>(
-        new AppRoleResponse(appPermissionDtos, null, null, responseStatusInfo), httpStatus);
+        PermissionResponse.builder()
+            .permissions(permissionDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(permissionEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(permissionEntity));
   }
 
-  public ResponseEntity<AppRoleResponse> getResponseMultipleAppRole(
-      final List<AppRoleEntity> appRoleEntities) {
-    final List<AppRoleDto> appRoleDtos = convertEntitiesToDtosAppRole(appRoleEntities, true);
-    return ResponseEntity.ok(new AppRoleResponse(appRoleDtos, null, null, null));
+  public ResponseEntity<PermissionResponse> getResponseMultiplePermissions(
+      final List<PermissionEntity> permissionEntities) {
+    final List<PermissionDto> permissionDtos = convertEntitiesToDtosPermissions(permissionEntities);
+    return ResponseEntity.ok(PermissionResponse.builder().permissions(permissionDtos).build());
   }
 
-  public ResponseEntity<AppRoleResponse> getResponseDeleteAppRole() {
+  public ResponseEntity<PermissionResponse> getResponseDeletePermission() {
     return ResponseEntity.ok(
-        new AppRoleResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
+        PermissionResponse.builder()
+            .permissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
   }
 
-  public ResponseEntity<AppRoleResponse> getResponseErrorAppRole(final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+  public ResponseEntity<PermissionResponse> getResponseErrorPermission(final Exception exception) {
     return new ResponseEntity<>(
-        new AppRoleResponse(Collections.emptyList(), null, null, responseStatusInfo), httpStatus);
+        PermissionResponse.builder()
+            .permissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 
-  public AppRoleDto convertEntityToDtoAppRole(
-      final AppRoleEntity appRoleEntity, final boolean isIncludePermissions) {
-    if (appRoleEntity == null) {
+  // role
+  private RoleDto convertEntityToDtoRole(
+      final RoleEntity roleEntity, final boolean isIncludePermissions) {
+    if (roleEntity == null) {
       return null;
     }
 
-    AppRoleDto appRoleDto =
-        new AppRoleDto(
-            appRoleEntity.getId(), appRoleEntity.getName(), appRoleEntity.getDescription());
+    RoleDto roleDto = new RoleDto();
+    BeanUtils.copyProperties(roleEntity, roleDto);
 
-    if (isIncludePermissions) {
-      final List<AppRolePermissionEntity> appRolePermissionEntities =
-          appRolePermissionService.readAppRolePermissions(appRoleDto.getId());
-      final List<AppRolePermissionDto> appRolePermissionDtos =
-          convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
-      final List<AppPermissionDto> appPermissionDtos =
-          appRolePermissionDtos.stream().map(AppRolePermissionDto::getPermission).toList();
-      appRoleDto.setPermissions(appPermissionDtos);
+    if (!isIncludePermissions) {
+      roleDto.setPlatformPermissions(Collections.emptyList());
+      return roleDto;
     }
 
-    return appRoleDto;
+    final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
+        platformRolePermissionService.readPlatformRolePermissionsByRoleId(roleEntity.getId());
+
+    final List<PlatformEntity> platformEntities =
+        platformRolePermissionEntities.stream()
+            .map(PlatformRolePermissionEntity::getPlatform)
+            .distinct()
+            .toList();
+    final List<PermissionEntity> permissionEntities =
+        platformRolePermissionEntities.stream()
+            .map(PlatformRolePermissionEntity::getPermission)
+            .distinct()
+            .toList();
+
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+
+    final Map<Long, PermissionDto> permissionIdDtoMap =
+        permissionEntities.stream()
+            .collect(Collectors.toMap(PermissionEntity::getId, this::convertEntityToDtoPermission));
+
+    final List<RoleDtoPlatformPermission> platformPermissions =
+        platformRolePermissionEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                    Collectors.mapping(
+                        prpe -> permissionIdDtoMap.get(prpe.getPermission().getId()),
+                        Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new RoleDtoPlatformPermission(entry.getKey(), entry.getValue()))
+            .toList();
+
+    roleDto.setPlatformPermissions(platformPermissions);
+    return roleDto;
   }
 
-  public List<AppRoleDto> convertEntitiesToDtosAppRole(
-      final List<AppRoleEntity> appRoleEntities, boolean isIncludePermissions) {
-    if (CollectionUtils.isEmpty(appRoleEntities)) {
+  private List<RoleDto> convertEntitiesToDtosRoles(
+      final List<RoleEntity> roleEntities, final boolean isIncludePermissions) {
+    if (CollectionUtils.isEmpty(roleEntities)) {
       return Collections.emptyList();
     }
 
     if (!isIncludePermissions) {
-      return appRoleEntities.stream()
-          .map(appRoleEntity -> convertEntityToDtoAppRole(appRoleEntity, false))
+      return roleEntities.stream()
+          .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, false))
           .toList();
     }
 
-    final List<Integer> appRoleIds = appRoleEntities.stream().map(AppRoleEntity::getId).toList();
-    final List<AppRolePermissionEntity> appRolePermissionEntities =
-        appRolePermissionService.readAppRolePermissions(null, appRoleIds);
-    final List<AppRolePermissionDto> appRolePermissionDtos =
-        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
-
-    final Map<Integer, List<AppPermissionDto>> rolePermissionsMap =
-        appRolePermissionDtos.stream()
+    final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).distinct().toList();
+    final List<PlatformRolePermissionEntity> platformRolePermissionEntities =
+        platformRolePermissionService.readPlatformRolePermissionsByRoleIds(roleIds);
+    final List<PlatformEntity> platformEntities =
+        platformRolePermissionEntities.stream()
+            .map(PlatformRolePermissionEntity::getPlatform)
+            .distinct()
+            .toList();
+    final List<PermissionEntity> permissionEntities =
+        platformRolePermissionEntities.stream()
+            .map(PlatformRolePermissionEntity::getPermission)
+            .distinct()
+            .toList();
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+    final Map<Long, PermissionDto> permissionIdDtoMap =
+        permissionEntities.stream()
+            .collect(Collectors.toMap(PermissionEntity::getId, this::convertEntityToDtoPermission));
+    final Map<Long, List<RoleDtoPlatformPermission>> roleIdPlatformPermissionsMap =
+        platformRolePermissionEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    rolePermission -> rolePermission.getRole().getId(),
-                    Collectors.mapping(AppRolePermissionDto::getPermission, Collectors.toList())));
+                    prpe -> prpe.getRole().getId(),
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                            Collectors.mapping(
+                                prpe -> permissionIdDtoMap.get(prpe.getPermission().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        RoleDtoPlatformPermission.builder()
+                                            .platform(e.getKey())
+                                            .permissions(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
 
-    return appRoleEntities.stream()
+    return roleEntities.stream()
         .map(
-            appRoleEntity -> {
-              AppRoleDto roleDto =
-                  new AppRoleDto(
-                      appRoleEntity.getId(),
-                      appRoleEntity.getName(),
-                      appRoleEntity.getDescription());
-              List<AppPermissionDto> permissions =
-                  rolePermissionsMap.getOrDefault(roleDto.getId(), Collections.emptyList());
-              roleDto.setPermissions(permissions);
+            roleEntity -> {
+              RoleDto roleDto = new RoleDto();
+              BeanUtils.copyProperties(roleEntity, roleDto);
+              final List<RoleDtoPlatformPermission> platformPermissions =
+                  roleIdPlatformPermissionsMap.getOrDefault(
+                      roleDto.getId(), Collections.emptyList());
+              roleDto.setPlatformPermissions(platformPermissions);
               return roleDto;
             })
         .toList();
   }
 
-  public ResponseEntity<AppUserResponse> getResponseSingleAppUser(
-      final AppUserEntity appUserEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appUserEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appUserEntity);
-    final List<AppUserDto> appUserDtos =
-        appUserEntity == null
+  public ResponseEntity<RoleResponse> getResponseSingleRole(final RoleEntity roleEntity) {
+    final List<RoleDto> roleDtos =
+        roleEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppUser(appUserEntity, true));
+            : List.of(convertEntityToDtoRole(roleEntity, true));
     return new ResponseEntity<>(
-        new AppUserResponse(appUserDtos, null, null, responseStatusInfo), httpStatus);
+        RoleResponse.builder()
+            .roles(roleDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(roleEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(roleEntity));
   }
 
-  public ResponseEntity<AppUserResponse> getResponseMultipleAppUser(
-      final List<AppUserEntity> appUserEntities) {
-    final List<AppUserDto> appUserDtos = convertEntitiesToDtosAppUser(appUserEntities, true);
-    return ResponseEntity.ok(new AppUserResponse(appUserDtos, null, null, null));
+  public ResponseEntity<RoleResponse> getResponseMultipleRoles(
+      final List<RoleEntity> roleEntities, final boolean isIncludePermissions) {
+    final List<RoleDto> roleDtos = convertEntitiesToDtosRoles(roleEntities, isIncludePermissions);
+    return ResponseEntity.ok(RoleResponse.builder().roles(roleDtos).build());
   }
 
-  public ResponseEntity<AppUserResponse> getResponseDeleteAppUser() {
+  public ResponseEntity<RoleResponse> getResponseDeleteRole() {
     return ResponseEntity.ok(
-        new AppUserResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
+        RoleResponse.builder()
+            .roles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
   }
 
-  public ResponseEntity<AppUserResponse> getResponseErrorAppUser(final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+  public ResponseEntity<RoleResponse> getResponseErrorRole(final Exception exception) {
     return new ResponseEntity<>(
-        new AppUserResponse(Collections.emptyList(), null, null, responseStatusInfo), httpStatus);
+        RoleResponse.builder()
+            .roles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 
-  public AppUserDto convertEntityToDtoAppUser(
-      final AppUserEntity appUserEntity, final boolean isIncludeRoles) {
-    if (appUserEntity == null) {
+  // platform
+  private PlatformDto convertEntityToDtoPlatform(final PlatformEntity platformEntity) {
+    if (platformEntity == null) {
       return null;
     }
-    AppUserDto appUserDto = new AppUserDto();
-    BeanUtils.copyProperties(appUserEntity, appUserDto, "password");
-
-    if (isIncludeRoles) {
-      final List<AppUserRoleEntity> appUserRoleEntities =
-          appUserRoleService.readAppUserRoles(appUserEntity.getId());
-      final List<AppRoleEntity> appRoleEntities =
-          appUserRoleEntities.stream().map(AppUserRoleEntity::getAppRole).toList();
-      final List<AppRoleDto> appRoleDtos = convertEntitiesToDtosAppRole(appRoleEntities, true);
-      appUserDto.setRoles(appRoleDtos);
-    }
-
-    if (!CollectionUtils.isEmpty(appUserEntity.getAddresses())) {
-      final List<AppUserAddressDto> appUserAddressDtos =
-          convertEntitiesToDtosAppUserAddress(appUserEntity.getAddresses());
-      appUserDto.setAddresses(appUserAddressDtos);
-    }
-
-    return appUserDto;
+    PlatformDto platformDto = new PlatformDto();
+    BeanUtils.copyProperties(platformEntity, platformDto);
+    return platformDto;
   }
 
-  public List<AppUserDto> convertEntitiesToDtosAppUser(
-      final List<AppUserEntity> appUserEntities, final boolean isIncludeRoles) {
-    if (CollectionUtils.isEmpty(appUserEntities)) {
+  private List<PlatformDto> convertEntitiesToDtosPlatforms(
+      final List<PlatformEntity> platformEntities) {
+    if (CollectionUtils.isEmpty(platformEntities)) {
+      return Collections.emptyList();
+    }
+    return platformEntities.stream().map(this::convertEntityToDtoPlatform).toList();
+  }
+
+  public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
+      final PlatformEntity platformEntity) {
+    final List<PlatformDto> platformDtos =
+        platformEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoPlatform(platformEntity));
+    return new ResponseEntity<>(
+        PlatformResponse.builder()
+            .platforms(platformDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(platformEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(platformEntity));
+  }
+
+  public ResponseEntity<PlatformResponse> getResponseMultiplePlatforms(
+      final List<PlatformEntity> platformEntities) {
+    return ResponseEntity.ok(
+        PlatformResponse.builder()
+            .platforms(convertEntitiesToDtosPlatforms(platformEntities))
+            .build());
+  }
+
+  public ResponseEntity<PlatformResponse> getResponseDeletePlatform() {
+    return ResponseEntity.ok(
+        PlatformResponse.builder()
+            .platforms(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<PlatformResponse> getResponseErrorPlatform(final Exception exception) {
+    return new ResponseEntity<>(
+        PlatformResponse.builder()
+            .platforms(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  // profile, profile_address
+  private ProfileAddressDto convertEntityToDtoProfileAddress(
+      final ProfileAddressEntity profileAddressEntity) {
+    if (profileAddressEntity == null) {
+      return null;
+    }
+
+    final ProfileAddressDto profileAddressDto = new ProfileAddressDto();
+    BeanUtils.copyProperties(profileAddressEntity, profileAddressDto, "profile", "type");
+    AddressTypeDto addressTypeDto = convertEntityToDtoAddressType(profileAddressEntity.getType());
+    profileAddressDto.setType(addressTypeDto);
+
+    return profileAddressDto;
+  }
+
+  private List<ProfileAddressDto> convertEntitiesToDtosProfileAddress(
+      final List<ProfileAddressEntity> profileAddressEntities) {
+    if (CollectionUtils.isEmpty(profileAddressEntities)) {
+      return Collections.emptyList();
+    }
+    return profileAddressEntities.stream().map(this::convertEntityToDtoProfileAddress).toList();
+  }
+
+  public ProfileDto convertEntityToDtoProfile(
+      final ProfileEntity profileEntity, final boolean isIncludeRoles) {
+    if (profileEntity == null) {
+      return null;
+    }
+    ProfileDto profileDto = new ProfileDto();
+    BeanUtils.copyProperties(profileEntity, profileDto, "password", "addresses", "status", "roles");
+
+    if (CollectionUtils.isEmpty(profileEntity.getAddresses())) {
+      profileDto.setAddresses(Collections.emptyList());
+    } else {
+      final List<ProfileAddressDto> profileAddressDtos =
+          convertEntitiesToDtosProfileAddress(profileEntity.getAddresses());
+      profileDto.setAddresses(profileAddressDtos);
+    }
+
+    if (!isIncludeRoles) {
+      profileDto.setPlatformRoles(Collections.emptyList());
+      return profileDto;
+    }
+
+    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByProfileId(profileEntity.getId());
+    List<PlatformEntity> platformEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
+            .toList();
+    List<RoleEntity> roleEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
+
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+    final Map<Long, RoleDto> roleIdDtoMap =
+        roleEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    RoleEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
+
+    final List<ProfileDtoPlatformRole> platformRoles =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                    Collectors.mapping(
+                        prpe -> roleIdDtoMap.get(prpe.getRole().getId()), Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new ProfileDtoPlatformRole(entry.getKey(), entry.getValue()))
+            .toList();
+
+    profileDto.setPlatformRoles(platformRoles);
+    return profileDto;
+  }
+
+  private List<ProfileDto> convertEntitiesToDtosProfiles(
+      final List<ProfileEntity> profileEntities, final boolean isIncludeRoles) {
+    if (CollectionUtils.isEmpty(profileEntities)) {
       return Collections.emptyList();
     }
     if (!isIncludeRoles) {
-      return appUserEntities.stream()
-          .map(appUserEntity -> convertEntityToDtoAppUser(appUserEntity, false))
+      return profileEntities.stream()
+          .map(profileEntity -> convertEntityToDtoProfile(profileEntity, false))
           .toList();
     }
 
-    final List<Integer> appUserIds = appUserEntities.stream().map(AppUserEntity::getId).toList();
-    final List<AppUserRoleEntity> appUserRoleEntities =
-        appUserRoleService.readAppUserRoles(appUserIds);
-    final List<Integer> appRoleIds =
-        appUserRoleEntities.stream()
-            .map(appUserRoleEntity -> appUserRoleEntity.getAppRole().getId())
+    final List<Long> profileIds = profileEntities.stream().map(ProfileEntity::getId).toList();
+    final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByProfileIds(profileIds);
+    List<PlatformEntity> platformEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
             .toList();
-    final List<AppRolePermissionEntity> appRolePermissionEntities =
-        appRolePermissionService.readAppRolePermissions(null, appRoleIds);
+    List<RoleEntity> roleEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
 
-    final Map<Integer, List<AppUserRoleEntity>> userRolesMap =
-        appUserRoleEntities.stream()
-            .collect(Collectors.groupingBy(userRole -> userRole.getAppUser().getId()));
-    final Map<Integer, List<AppRolePermissionEntity>> rolePermissionsMap =
-        appRolePermissionEntities.stream()
-            .collect(Collectors.groupingBy(rolePermission -> rolePermission.getAppRole().getId()));
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+    final Map<Long, RoleDto> roleIdDtoMap =
+        roleEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    BaseEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
 
-    return appUserEntities.stream()
+    final Map<Long, List<ProfileDtoPlatformRole>> profileIdPlatformRolesMap =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> prpe.getRole().getId(),
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                            Collectors.mapping(
+                                prpe -> roleIdDtoMap.get(prpe.getRole().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        ProfileDtoPlatformRole.builder()
+                                            .platform(e.getKey())
+                                            .roles(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
+
+    return profileEntities.stream()
         .map(
-            appUserEntity -> {
-              List<AppRoleDto> appRoleDtos =
-                  userRolesMap.getOrDefault(appUserEntity.getId(), Collections.emptyList()).stream()
-                      .map(
-                          appUserRoleEntity ->
-                              convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), false))
-                      .toList();
+            profileEntity -> {
+              ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, isIncludeRoles);
 
-              appRoleDtos.forEach(
-                  roleDto -> {
-                    List<AppPermissionDto> appPermissionDtos =
-                        rolePermissionsMap
-                            .getOrDefault(roleDto.getId(), Collections.emptyList())
-                            .stream()
-                            .map(
-                                appRolePermissionEntity ->
-                                    convertEntityToDtoAppPermission(
-                                        appRolePermissionEntity.getAppPermission()))
-                            .toList();
-                    roleDto.setPermissions(appPermissionDtos);
-                  });
+              List<ProfileDtoPlatformRole> platformRoles =
+                  profileIdPlatformRolesMap.getOrDefault(
+                      profileDto.getId(), Collections.emptyList());
+              profileDto.setPlatformRoles(platformRoles);
 
-              AppUserDto appUserDto = convertEntityToDtoAppUser(appUserEntity, false);
-              appUserDto.setRoles(appRoleDtos);
-              return appUserDto;
+              return profileDto;
             })
         .toList();
   }
 
-  private AppUserAddressDto convertEntityToDtoAppUserAddress(
-      final AppUserAddressEntity appUserAddressEntity) {
-    if (appUserAddressEntity == null) {
-      return null;
-    }
-    final AppUserAddressDto appUserAddressDto = new AppUserAddressDto();
-    BeanUtils.copyProperties(appUserAddressEntity, appUserAddressDto, "appUser");
-    return appUserAddressDto;
-  }
-
-  private List<AppUserAddressDto> convertEntitiesToDtosAppUserAddress(
-      final List<AppUserAddressEntity> appUserAddressEntities) {
-    if (CollectionUtils.isEmpty(appUserAddressEntities)) {
-      return Collections.emptyList();
-    }
-    return appUserAddressEntities.stream().map(this::convertEntityToDtoAppUserAddress).toList();
-  }
-
-  public ResponseEntity<AppRolePermissionResponse> getResponseSingleAppRolePermission(
-      final AppRolePermissionEntity appRolePermissionEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appRolePermissionEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appRolePermissionEntity);
-    final List<AppRolePermissionDto> appRolePermissionDtos =
-        appRolePermissionEntity == null
+  public ResponseEntity<ProfileResponse> getResponseSingleProfile(
+      final ProfileEntity profileEntity) {
+    final List<ProfileDto> profileDtos =
+        profileEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppRolePermission(appRolePermissionEntity));
+            : List.of(convertEntityToDtoProfile(profileEntity, true));
     return new ResponseEntity<>(
-        new AppRolePermissionResponse(appRolePermissionDtos, null, null, responseStatusInfo),
-        httpStatus);
+        ProfileResponse.builder()
+            .profiles(profileDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(profileEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(profileEntity));
   }
 
-  public ResponseEntity<AppRolePermissionResponse> getResponseMultipleAppRolePermission(
-      final List<AppRolePermissionEntity> appRolePermissionEntities) {
-    final List<AppRolePermissionDto> appRolePermissionDtos =
-        convertEntitiesToDtosAppRolePermission(appRolePermissionEntities);
+  public ResponseEntity<ProfileResponse> getResponseMultipleProfiles(
+      final List<ProfileEntity> profileEntities, final boolean isIncludeRoles) {
+    final List<ProfileDto> profileDtos =
+        convertEntitiesToDtosProfiles(profileEntities, isIncludeRoles);
+    return ResponseEntity.ok(ProfileResponse.builder().profiles(profileDtos).build());
+  }
+
+  public ResponseEntity<ProfileResponse> getResponseDeleteProfile() {
     return ResponseEntity.ok(
-        new AppRolePermissionResponse(appRolePermissionDtos, null, null, null));
+        ProfileResponse.builder()
+            .profiles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
   }
 
-  public ResponseEntity<AppRolePermissionResponse> getResponseDeleteAppRolePermission() {
-    return ResponseEntity.ok(
-        new AppRolePermissionResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
-  }
-
-  public ResponseEntity<AppRolePermissionResponse> getResponseErrorAppRolePermission(
-      final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
+  public ResponseEntity<ProfileResponse> getResponseErrorProfile(final Exception exception) {
     return new ResponseEntity<>(
-        new AppRolePermissionResponse(Collections.emptyList(), null, null, responseStatusInfo),
-        httpStatus);
+        ProfileResponse.builder()
+            .profiles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 
-  public AppRolePermissionDto convertEntityToDtoAppRolePermission(
-      final AppRolePermissionEntity appRolePermissionEntity) {
-    if (appRolePermissionEntity == null) {
+  // platform, profile, role
+  private PlatformProfileRoleDto convertEntityToDtoPlatformProfileRole(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
+    if (platformProfileRoleEntity == null) {
       return null;
     }
-    AppRoleDto appRoleDto = convertEntityToDtoAppRole(appRolePermissionEntity.getAppRole(), false);
-    AppPermissionDto appPermissionDto =
-        convertEntityToDtoAppPermission(appRolePermissionEntity.getAppPermission());
-    return new AppRolePermissionDto(
-        appRoleDto, appPermissionDto, appRolePermissionEntity.getAssignedDate());
+    final PlatformDto platformDto =
+        convertEntityToDtoPlatform(platformProfileRoleEntity.getPlatform());
+    final RoleDto roleDto = convertEntityToDtoRole(platformProfileRoleEntity.getRole(), false);
+    final ProfileDto profileDto =
+        convertEntityToDtoProfile(platformProfileRoleEntity.getProfile(), false);
+    return PlatformProfileRoleDto.builder()
+        .platform(platformDto)
+        .profile(profileDto)
+        .role(roleDto)
+        .build();
   }
 
-  public List<AppRolePermissionDto> convertEntitiesToDtosAppRolePermission(
-      final List<AppRolePermissionEntity> appRolePermissionEntities) {
-    if (CollectionUtils.isEmpty(appRolePermissionEntities)) {
+  private List<PlatformProfileRoleDto> convertEntitiesToDtosPlatformProfileRoles(
+      final List<PlatformProfileRoleEntity> platformProfileRoleEntities) {
+    if (CollectionUtils.isEmpty(platformProfileRoleEntities)) {
       return Collections.emptyList();
     }
-    return appRolePermissionEntities.stream()
-        .map(this::convertEntityToDtoAppRolePermission)
+    return platformProfileRoleEntities.stream()
+        .map(this::convertEntityToDtoPlatformProfileRole)
         .toList();
   }
 
-  public ResponseEntity<AppUserRoleResponse> getResponseSingleAppUserRole(
-      final AppUserRoleEntity appUserRoleEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appUserRoleEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appUserRoleEntity);
-    final List<AppUserRoleDto> appUserRoleDtos =
-        appUserRoleEntity == null
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseSinglePlatformProfileRole(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
+    final List<PlatformProfileRoleDto> platformProfileRoleDtos =
+        platformProfileRoleEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppUserRole(appUserRoleEntity));
+            : List.of(convertEntityToDtoPlatformProfileRole(platformProfileRoleEntity));
     return new ResponseEntity<>(
-        new AppUserRoleResponse(appUserRoleDtos, null, null, responseStatusInfo), httpStatus);
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(platformProfileRoleDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        getResponseStatusInfoForSingleResponse(platformProfileRoleEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(platformProfileRoleEntity));
   }
 
-  public ResponseEntity<AppUserRoleResponse> getResponseMultipleAppUserRole(
-      final List<AppUserRoleEntity> appUserRoleEntities) {
-    final List<AppUserRoleDto> appUserRoleDtos =
-        convertEntitiesToDtosAppUserRole(appUserRoleEntities);
-    return ResponseEntity.ok(new AppUserRoleResponse(appUserRoleDtos, null, null, null));
-  }
-
-  public ResponseEntity<AppUserRoleResponse> getResponseDeleteAppUserRole() {
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseMultiplePlatformProfileRoles(
+      final List<PlatformProfileRoleEntity> platformProfileRoleEntities) {
     return ResponseEntity.ok(
-        new AppUserRoleResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(
+                convertEntitiesToDtosPlatformProfileRoles(platformProfileRoleEntities))
+            .build());
   }
 
-  public ResponseEntity<AppUserRoleResponse> getResponseErrorAppUserRole(
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseDeletePlatformProfileRole() {
+    return ResponseEntity.ok(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<PlatformProfileRoleResponse> getResponseErrorPlatformProfileRole(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        PlatformProfileRoleResponse.builder()
+            .platformProfileRoles(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  // platform, role, permission
+  private PlatformRolePermissionDto convertEntityToDtoPlatformRolePermission(
+      final PlatformRolePermissionEntity platformRolePermissionEntity) {
+    if (platformRolePermissionEntity == null) {
+      return null;
+    }
+    final PlatformDto platformDto =
+        convertEntityToDtoPlatform(platformRolePermissionEntity.getPlatform());
+    final RoleDto roleDto = convertEntityToDtoRole(platformRolePermissionEntity.getRole(), false);
+    final PermissionDto permissionDto =
+        convertEntityToDtoPermission(platformRolePermissionEntity.getPermission());
+    return PlatformRolePermissionDto.builder()
+        .platform(platformDto)
+        .role(roleDto)
+        .permission(permissionDto)
+        .build();
+  }
+
+  private List<PlatformRolePermissionDto> convertEntitiesToDtosPlatformRolePermissions(
+      final List<PlatformRolePermissionEntity> platformRolePermissionEntities) {
+    if (CollectionUtils.isEmpty(platformRolePermissionEntities)) {
+      return Collections.emptyList();
+    }
+    return platformRolePermissionEntities.stream()
+        .map(this::convertEntityToDtoPlatformRolePermission)
+        .toList();
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseSinglePlatformRolePermission(
+      final PlatformRolePermissionEntity platformRolePermissionEntity) {
+    final List<PlatformRolePermissionDto> platformRolePermissionDtos =
+        platformRolePermissionEntity == null
+            ? Collections.emptyList()
+            : List.of(convertEntityToDtoPlatformRolePermission(platformRolePermissionEntity));
+    return new ResponseEntity<>(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(platformRolePermissionDtos)
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        getResponseStatusInfoForSingleResponse(platformRolePermissionEntity))
+                    .build())
+            .build(),
+        getHttpStatusForSingleResponse(platformRolePermissionEntity));
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseMultiplePlatformRolePermissions(
+      final List<PlatformRolePermissionEntity> platformRolePermissionEntities) {
+    return ResponseEntity.ok(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(
+                convertEntitiesToDtosPlatformRolePermissions(platformRolePermissionEntities))
+            .build());
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseDeletePlatformRolePermission() {
+    return ResponseEntity.ok(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .build())
+            .build());
+  }
+
+  public ResponseEntity<PlatformRolePermissionResponse> getResponseErrorPlatformRolePermission(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        PlatformRolePermissionResponse.builder()
+            .platformRolePermissions(Collections.emptyList())
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  // others
+  public ResponseEntity<ProfilePasswordTokenResponse> getResponseErrorProfilePassword(
+      final Exception exception) {
+    return new ResponseEntity<>(
+        ProfilePasswordTokenResponse.builder()
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
+  }
+
+  public ResponseEntity<ResponseMetadata> getResponseErrorResponseMetadata(
       final Exception exception) {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
     return new ResponseEntity<>(
-        new AppUserRoleResponse(Collections.emptyList(), null, null, responseStatusInfo),
+        ResponseMetadata.builder()
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+            .build(),
         httpStatus);
   }
 
-  public AppUserRoleDto convertEntityToDtoAppUserRole(final AppUserRoleEntity appUserRoleEntity) {
-    if (appUserRoleEntity == null) {
-      return null;
-    }
-    final AppUserDto appUserDto = convertEntityToDtoAppUser(appUserRoleEntity.getAppUser(), false);
-    final AppRoleDto appRoleDto = convertEntityToDtoAppRole(appUserRoleEntity.getAppRole(), true);
-    return new AppUserRoleDto(appUserDto, appRoleDto, appUserRoleEntity.getAssignedDate());
-  }
-
-  public List<AppUserRoleDto> convertEntitiesToDtosAppUserRole(
-      final List<AppUserRoleEntity> appUserRoleEntities) {
-    if (CollectionUtils.isEmpty(appUserRoleEntities)) {
-      return Collections.emptyList();
-    }
-    return appUserRoleEntities.stream().map(this::convertEntityToDtoAppUserRole).toList();
-  }
-
-  public ResponseEntity<AppsAppUserResponse> getResponseSingleAppsAppUser(
-      final AppsAppUserEntity appsAppUserEntity) {
-    final HttpStatus httpStatus = getHttpStatusForSingleResponse(appsAppUserEntity);
-    final ResponseStatusInfo responseStatusInfo =
-        getResponseStatusInfoForSingleResponse(appsAppUserEntity);
-    final List<AppsAppUserDto> appsAppUserDtos =
-        appsAppUserEntity == null
-            ? Collections.emptyList()
-            : List.of(convertEntityToDtoAppsAppUser(appsAppUserEntity));
-    return new ResponseEntity<>(
-        new AppsAppUserResponse(appsAppUserDtos, null, null, responseStatusInfo), httpStatus);
-  }
-
-  public ResponseEntity<AppsAppUserResponse> getResponseMultipleAppsAppUser(
-      final List<AppsAppUserEntity> appsAppUserEntities) {
-    final List<AppsAppUserDto> appsAppUserDtos =
-        convertEntitiesToDtosAppsAppUser(appsAppUserEntities);
-    return ResponseEntity.ok(new AppsAppUserResponse(appsAppUserDtos, null, null, null));
-  }
-
-  public ResponseEntity<AppsAppUserResponse> getResponseDeleteAppsAppUser() {
-    return ResponseEntity.ok(
-        new AppsAppUserResponse(
-            Collections.emptyList(),
-            ResponseCrudInfo.builder().deletedRowsCount(1).build(),
-            null,
-            null));
-  }
-
-  public ResponseEntity<AppsAppUserResponse> getResponseErrorAppsAppUser(
-      final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(
-        new AppsAppUserResponse(Collections.emptyList(), null, null, responseStatusInfo),
-        httpStatus);
-  }
-
-  public AppsAppUserDto convertEntityToDtoAppsAppUser(final AppsAppUserEntity appsAppUserEntity) {
-    if (appsAppUserEntity == null) {
-      return null;
-    }
-    final AppsDto appsDto = convertEntityToDtoApps(appsAppUserEntity.getApp());
-    final AppUserDto appUserDto = convertEntityToDtoAppUser(appsAppUserEntity.getAppUser(), false);
-    return new AppsAppUserDto(appsDto, appUserDto, appsAppUserEntity.getAssignedDate());
-  }
-
-  public List<AppsAppUserDto> convertEntitiesToDtosAppsAppUser(
-      final List<AppsAppUserEntity> appsAppUserEntities) {
-    if (CollectionUtils.isEmpty(appsAppUserEntities)) {
-      return Collections.emptyList();
-    }
-    return appsAppUserEntities.stream().map(this::convertEntityToDtoAppsAppUser).toList();
-  }
-
-  public ResponseEntity<UserLoginResponse> getResponseErrorAppUserLogin(final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(
-        new UserLoginResponse(null, null, null, responseStatusInfo), httpStatus);
-  }
-
-  public ResponseEntity<ResponseStatusInfo> getResponseErrorResponseStatusInfo(
-      final Exception exception) {
-    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-    final ResponseStatusInfo responseStatusInfo =
-        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build();
-    return new ResponseEntity<>(responseStatusInfo, httpStatus);
-  }
-
-  public ResponseEntity<Void> getResponseValidateUser(
+  public ResponseEntity<Void> getResponseValidateProfile(
       final String redirectUrl, final boolean isValidated) {
     if (!StringUtils.hasText(redirectUrl)) {
       throw new IllegalStateException("Redirect URL cannot be null or empty...");
@@ -599,7 +818,7 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
-  public ResponseEntity<Void> getResponseResetUser(
+  public ResponseEntity<Void> getResponseResetProfile(
       final String redirectUrl, final boolean isReset, final String email) {
     if (!StringUtils.hasText(redirectUrl)) {
       throw new IllegalStateException("Redirect URL cannot be null or empty...");

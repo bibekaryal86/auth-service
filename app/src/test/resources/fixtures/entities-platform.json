@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "platformName": "Auth Service",
+    "platformDesc": "Authentication / Authorization Server with Roles and Permissions",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  },
+  {
+    "id": 2,
+    "platformName": "Env Service",
+    "platformDesc": "Platform to hold runtime variables for different services",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768"
+  },
+  {
+    "id": 3,
+    "platformName": "Personal Expenses Tracking System",
+    "platformDesc": "Application to manage / budget personal finances",
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null
+  }
+]

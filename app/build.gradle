@@ -1,17 +1,17 @@
 buildscript {
     dependencies {
         classpath 'org.postgresql:postgresql:42.7.4'
-        classpath 'org.flywaydb:flyway-database-postgresql:11.0.0'
+        classpath 'org.yaml:snakeyaml:2.3'
     }
 }
 
 plugins {
     id 'application'
     id 'java'
+    id 'jacoco'
     id 'io.freefair.lombok' version '8.11'
     id 'org.springframework.boot' version '3.4.0'
     id 'com.diffplug.spotless' version '6.25.0'
-    id 'org.flywaydb.flyway' version '11.0.0'
 }
 
 dependencies {
@@ -70,6 +70,10 @@ bootJar {
 
 test {
     useJUnitPlatform()
+//    jacoco {
+//        enabled = true
+//    }
+//    finalizedBy jacocoTestReport
 }
 
 application {
@@ -88,11 +92,20 @@ spotless {
     }
 }
 
-flyway {
-    url = 'jdbc:postgresql://expensively-roused-flathead.data-1.usw2.tembo.io:5432/postgres'
-    locations = ['classpath:db/migration']
-    schemas = ['public']
-    // user = 'some.user'
-    // password = 'some.password'
-    // username and password provided as environment variables
+//jacocoTestCoverageVerification {
+//    violationRules {
+//        rule {
+//            enabled = true
+//            element = 'CLASS'
+//                            limit {
+//                                counter = 'LINE'
+//                                value = 'COVEREDRATIO'
+//                                minimum = 0.8
+//                            }
+//        }
+//    }
+//}
+
+jacocoTestReport {
+    dependsOn test
 }
