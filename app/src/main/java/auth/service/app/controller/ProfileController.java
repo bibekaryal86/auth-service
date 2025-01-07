@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -46,13 +47,14 @@ public class ProfileController {
   private final AuditService auditService;
 
   @GetMapping
-  public ResponseEntity<ProfileResponse> readProfiles() {
+  public ResponseEntity<ProfileResponse> readProfiles(
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles) {
     try {
       final List<ProfileEntity> profileEntities = profileService.readProfiles();
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, Boolean.TRUE);
+          filteredProfileEntities, isIncludeRoles);
     } catch (Exception ex) {
       log.error("Read Profiles...", ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -61,7 +63,8 @@ public class ProfileController {
 
   @GetMapping("/platform/{platformId}")
   public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
-      @PathVariable final Long platformId) {
+      @PathVariable final Long platformId,
+      @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles) {
     try {
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
           platformProfileRoleService.readPlatformProfileRolesByProfileId(platformId);
@@ -70,7 +73,7 @@ public class ProfileController {
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, Boolean.TRUE);
+          filteredProfileEntities, isIncludeRoles);
     } catch (Exception ex) {
       log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

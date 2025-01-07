@@ -41,9 +41,3 @@ TODO:
 * GitHub actions for PR and merge to main, check if variables work
 * create a scheduled job to check for user login and set as inactive
 * CrudInfo implementation in ResponseMetadata
-* EntityDtoConvertUtilsTest
-* RoleController -> add query param (default false) to include permissions
-  * include tests
-* ProfileController -> add query param (default false) to include roles
-  * include tests
-

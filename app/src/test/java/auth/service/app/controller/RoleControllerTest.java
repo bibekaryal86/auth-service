@@ -1,5 +1,6 @@
 package auth.service.app.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class RoleControllerTest extends BaseTest {
 
@@ -240,6 +242,45 @@ public class RoleControllerTest extends BaseTest {
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getRoles());
     assertEquals(6, roleResponse.getRoles().size());
+
+    assertAll(
+        "Roles Without Permissions Controller",
+        () -> assertEquals(0, roleResponse.getRoles().get(0).getPlatformPermissions().size()),
+        () -> assertEquals(0, roleResponse.getRoles().get(2).getPlatformPermissions().size()),
+        () -> assertEquals(0, roleResponse.getRoles().get(4).getPlatformPermissions().size()));
+  }
+
+  @Test
+  void testReadRoles_Success_IncludePermissions() {
+    profileDtoWithPermission = TestData.getProfileDtoWithPermission("ROLE_READ", profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    String uri =
+        UriComponentsBuilder.fromPath("/api/v1/roles")
+            .queryParam("isIncludePermissions", true)
+            .toUriString();
+    RoleResponse roleResponse =
+        webTestClient
+            .get()
+            .uri(uri)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(RoleResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(roleResponse);
+    assertNotNull(roleResponse.getRoles());
+    assertEquals(6, roleResponse.getRoles().size());
+
+    assertAll(
+        "Roles With Permissions Controller",
+        () -> assertEquals(1, roleResponse.getRoles().get(0).getPlatformPermissions().size()),
+        () -> assertEquals(1, roleResponse.getRoles().get(2).getPlatformPermissions().size()),
+        () -> assertEquals(1, roleResponse.getRoles().get(4).getPlatformPermissions().size()));
   }
 
   @Test

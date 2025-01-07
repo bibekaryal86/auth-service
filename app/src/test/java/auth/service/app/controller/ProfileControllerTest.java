@@ -1,5 +1,6 @@
 package auth.service.app.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,13 +35,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class ProfileControllerTest extends BaseTest {
 
   private static ProfileEntity profileEntity;
-  private static PlatformEntity platformEntity;
-  private static ProfileDto profileDtoNoPermission;
-  private static ProfileDto profileDtoWithPermission;
   private static String bearerAuthCredentialsNoPermission;
   private static String bearerAuthCredentialsWithPermission;
 
@@ -53,9 +52,10 @@ public class ProfileControllerTest extends BaseTest {
   @BeforeAll
   static void setUpBeforeAll() {
     profileEntity = TestData.getProfileEntities().getFirst();
-    platformEntity = TestData.getPlatformEntities().getFirst();
-    profileDtoNoPermission = TestData.getProfileDto();
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
+    ProfileDto profileDtoNoPermission = TestData.getProfileDto();
+    ProfileDto profileDtoWithPermission =
+        TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
 
     bearerAuthCredentialsNoPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoNoPermission);
@@ -105,6 +105,42 @@ public class ProfileControllerTest extends BaseTest {
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getProfiles());
     assertEquals(6, profileResponse.getProfiles().size());
+
+    assertAll(
+        "Profiles Without Roles Controller",
+        () -> assertEquals(0, profileResponse.getProfiles().get(0).getPlatformRoles().size()),
+        () -> assertEquals(0, profileResponse.getProfiles().get(1).getPlatformRoles().size()),
+        () -> assertEquals(0, profileResponse.getProfiles().get(2).getPlatformRoles().size()));
+  }
+
+  @Test
+  void testReadProfiles_SuccessSuperUser_IncludeRoles() {
+    String uri =
+        UriComponentsBuilder.fromPath("/api/v1/profiles")
+            .queryParam("isIncludeRoles", true)
+            .toUriString();
+
+    ProfileResponse profileResponse =
+        webTestClient
+            .get()
+            .uri(uri)
+            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(ProfileResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profileResponse);
+    assertNotNull(profileResponse.getProfiles());
+    assertEquals(6, profileResponse.getProfiles().size());
+
+    assertAll(
+        "Profiles With Roles Controller",
+        () -> assertEquals(1, profileResponse.getProfiles().get(0).getPlatformRoles().size()),
+        () -> assertEquals(1, profileResponse.getProfiles().get(1).getPlatformRoles().size()),
+        () -> assertEquals(1, profileResponse.getProfiles().get(2).getPlatformRoles().size()));
   }
 
   @Test

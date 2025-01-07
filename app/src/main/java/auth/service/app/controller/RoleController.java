@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -64,10 +65,11 @@ public class RoleController {
 
   @CheckPermission("ROLE_READ")
   @GetMapping
-  public ResponseEntity<RoleResponse> readRoles() {
+  public ResponseEntity<RoleResponse> readRoles(
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePermissions) {
     try {
       final List<RoleEntity> roleEntities = roleService.readRoles();
-      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities, Boolean.TRUE);
+      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities, isIncludePermissions);
     } catch (Exception ex) {
       log.error("Read Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
