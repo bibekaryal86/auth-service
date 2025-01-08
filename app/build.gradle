@@ -133,6 +133,7 @@ def loadAppCredentialsEnvVariables() {
     }
 }
 
+def isGithubActions = System.getenv('CI') == 'true'
 def yamlProperties = loadAppCredentialsEnvVariables()
 
 flyway {
@@ -147,8 +148,10 @@ flyway {
         url = "jdbc:postgresql://${db_host}:5432/${db_name}"
         user = yamlProperties.getProperty('DB_USERNAME')
         password = yamlProperties.getProperty('DB_PASSWORD')
-    } else {
+    } else if (!isGithubActions) {
         throw new GradleException("Flyway DB Host and Name Configuration Error...")
+    } else {
+        println "Flyway DB Host and Name Configuration Warning..."
     }
 }
 
