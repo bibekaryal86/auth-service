@@ -17,7 +17,7 @@ jobs:
       - name: Test Database Connection
         if: github.event_name == 'push'
         run: |
-          psql postgresql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} -c '\l'
+          pg_isready -h ${{ secrets.DB_HOST_PROD }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
 
       - name: Test Database Connection
         if: github.event_name == 'pull_request'
