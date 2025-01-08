@@ -43,7 +43,7 @@ jobs:
       - name: Run Flyway Migrations
         if: github.event_name == 'pull_request'
         run: |
-          flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_DEV }}:5432/${{ secrets.DB_DB }} \
+          flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
                  -user=${{ secrets.DB_USERNAME }} \
                  -password=${{ secrets.DB_PASSWORD }} \
                  -locations=filesystem:app/src/main/resources/db/migration \
