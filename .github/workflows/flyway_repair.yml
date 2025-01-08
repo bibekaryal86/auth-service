@@ -1,15 +1,15 @@
-name: Flyway Validate
+name: Flyway Repair
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment Name to Validate (options: PROD, SANDBOX)"
+        description: "Environment Name to Repair (options: PROD, SANDBOX)"
         required: true
         default: "SANDBOX"
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,37 +20,33 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Test Database Connection
-        if: ${{ inputs.environment == 'PROD' || inputs.environment == 'SANDBOX' }}
         run: |
           if [[ "${{ inputs.environment }}" == "PROD" ]]; then
-            psql postgresql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} -c '\l';
+            pg_isready -h ${{ secrets.DB_HOST_PROD }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
           else
-            psql postgresql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} -c '\l';
+            pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
           fi
 
-      - name: Install Flyway
-        run: |
-          curl -L https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.19.0/flyway-commandline-10.19.0-linux-x64.tar.gz | tar xvz
-          sudo mv flyway-10.19.0 /usr/local/flyway
-          echo "/usr/local/flyway" >> $GITHUB_PATH
-
-      - name: Run Flyway Validation
-        if: ${{ inputs.environment == 'PROD' || inputs.environment == 'SANDBOX' }}
+      - name: Run Flyway Repair
         run: |
           if [[ "${{ inputs.environment }}" == "PROD" ]]; then
-            flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
-                   -user=${{ secrets.DB_USERNAME }} \
-                   -password=${{ secrets.DB_PASSWORD }} \
-                   -locations=filesystem:app/src/main/resources/db/migration \
-                   repair;
+            docker run --rm \
+              -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+              flyway/flyway:11.1.1 \
+              -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
+              -user=${{ secrets.DB_USERNAME }} \
+              -password=${{ secrets.DB_PASSWORD }} \
+              repair
           else
-            flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
-                   -user=${{ secrets.DB_USERNAME }} \
-                   -password=${{ secrets.DB_PASSWORD }} \
-                   -locations=filesystem:app/src/main/resources/db/migration \
-                   repair;
+            docker run --rm \
+              -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+              flyway/flyway:11.1.1 \
+              -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
+              -user=${{ secrets.DB_USERNAME }} \
+              -password=${{ secrets.DB_PASSWORD }} \
+              repair
           fi
