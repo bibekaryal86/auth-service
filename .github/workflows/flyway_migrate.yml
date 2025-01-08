@@ -14,37 +14,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Test Database Connection
+      - name: Test Database Connection Push
         if: github.event_name == 'push'
         run: |
           pg_isready -h ${{ secrets.DB_HOST_PROD }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
 
-      - name: Test Database Connection
+      - name: Test Database Connection Pull
         if: github.event_name == 'pull_request'
         run: |
           pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
 
-      - name: Install Flyway
-        run: |
-          sudo apt-get update && sudo apt-get install -y curl tar
-          curl -L https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.19.0/flyway-commandline-10.19.0-linux-x64.tar.gz | tar xvz
-          sudo mv flyway-10.19.0/flyway /usr/local/bin/flyway
-          echo "/usr/local/bin" >> $GITHUB_PATH
-
-      - name: Run Flyway Migrations
+      - name: Run Flyway Migrations (Production)
         if: github.event_name == 'push'
         run: |
-          flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
-                 -user=${{ secrets.DB_USERNAME }} \
-                 -password=${{ secrets.DB_PASSWORD }} \
-                 -locations=filesystem:app/src/main/resources/db/migration \
-                 migrate
+          docker run --rm \
+          -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+          flyway/flyway:10.19.0 \
+          -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
+          -user=${{ secrets.DB_USERNAME }} \
+          -password=${{ secrets.DB_PASSWORD }} \
+          migrate
 
-      - name: Run Flyway Migrations
+      - name: Run Flyway Migrations (Sandbox)
         if: github.event_name == 'pull_request'
         run: |
-          flyway -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
-                 -user=${{ secrets.DB_USERNAME }} \
-                 -password=${{ secrets.DB_PASSWORD }} \
-                 -locations=filesystem:app/src/main/resources/db/migration \
-                 migrate
+          docker run --rm \
+            -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+            flyway/flyway:10.19.0 \
+            -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
+            -user=${{ secrets.DB_USERNAME }} \
+            -password=${{ secrets.DB_PASSWORD }} \
+            migrate
