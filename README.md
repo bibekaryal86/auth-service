@@ -30,12 +30,6 @@ A small utility for authentication and authorization with platforms, profiles, r
         * This branch is used for local/development instances
         * When a pull request is created, flyway migration is run in this branch to validate schema changes
 
-
-
 * TODO
   * Update this README.md for proper documentation
   * Implement RequestMetadata, ResponseCrudInfo
-  * GitHub actions for flyway
-    * migrate to dev database when pull request is created
-    * migrate to main database when pull request is merged
-    * add flyway repair and validate workflows, but keep them manual only
