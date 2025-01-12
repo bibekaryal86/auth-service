@@ -28,7 +28,7 @@ public class App {
     validateInitArgs();
     SpringApplication app = new SpringApplication(App.class);
     app.setDefaultProperties(
-        singletonMap("server.port", getSystemEnvProperty(ENV_SERVER_PORT, "8080")));
+        singletonMap("server.port", getSystemEnvProperty(ENV_SERVER_PORT, "8001")));
     app.run(args);
     log.info("End application initialization...");
   }
