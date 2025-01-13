@@ -19,6 +19,6 @@ public class InterceptorLoggingUtilsOutgoing implements ExchangeFilterFunction {
       @NotNull final ClientRequest request, @NotNull final ExchangeFunction next) {
     log.info("Request to [{}] [{}]", request.method(), request.url());
     return next.exchange(request)
-        .doOnNext(response -> log.info("Response from {}", response.statusCode()));
+        .doOnNext(response -> log.info("Response [{}] from [{}] [{}]", request.method(), request.url(), response.statusCode()));
   }
 }
