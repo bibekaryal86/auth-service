@@ -4,7 +4,6 @@ import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 
-import auth.service.app.model.client.EnvDetails;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PlatformDto;
 import auth.service.app.model.dto.ProfileAddressRequest;

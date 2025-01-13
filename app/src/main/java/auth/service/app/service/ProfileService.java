@@ -262,7 +262,7 @@ public class ProfileService {
       throw new ProfileNotValidatedException();
     }
 
-    if (profileEntity.getLoginAttempts() >= 5) {
+    if (profileEntity.getLoginAttempts() != null && profileEntity.getLoginAttempts() >= 5) {
       throw new ProfileLockedException();
     }
 

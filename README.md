@@ -33,3 +33,7 @@ A small utility for authentication and authorization with platforms, profiles, r
 * TODO
   * Update this README.md for proper documentation
   * Implement RequestMetadata, ResponseCrudInfo
+
+# ERRORS
+check login response, why aToken and rToken duplicates
+add tests for env svc connector, okhttputils, etc
