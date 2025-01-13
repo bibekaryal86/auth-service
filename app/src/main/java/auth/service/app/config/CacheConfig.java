@@ -13,6 +13,6 @@ public class CacheConfig {
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager(
-        "platforms", "address_types", "status_types", "roles", "permissions", "redirectUrls");
+        "platforms", "address_types", "roles", "permissions", "redirectUrls", "baseUrlForLinkInEmail");
   }
 }
