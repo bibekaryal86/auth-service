@@ -47,6 +47,10 @@ spring:
   jta:
     enabled: true
 
+server:
+  servlet:
+    context-path: /authsvc
+
 management:
   endpoints:
     web:
