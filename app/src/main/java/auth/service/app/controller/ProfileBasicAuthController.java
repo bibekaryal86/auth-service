@@ -5,6 +5,7 @@ import static auth.service.app.util.CommonUtils.getIpAddress;
 import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -59,6 +60,7 @@ public class ProfileBasicAuthController {
   private final EmailService emailService;
   private final TokenService tokenService;
   private final AuditService auditService;
+  private final EnvServiceConnector envServiceConnector;
 
   @PostMapping("/{platformId}/create")
   public ResponseEntity<ProfileResponse> createProfile(
@@ -66,10 +68,13 @@ public class ProfileBasicAuthController {
       @Valid @RequestBody final ProfileRequest profileRequest,
       final HttpServletRequest request) {
     try {
-      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
+      if (baseUrlForLinkInEmail == null) {
+        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+      }
       final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
       final ProfileEntity profileEntity =
-          profileService.createProfile(platformEntity, profileRequest, baseUrl);
+          profileService.createProfile(platformEntity, profileRequest, baseUrlForLinkInEmail);
       runAsync(
           () ->
               auditService.auditProfile(
@@ -259,9 +264,14 @@ public class ProfileBasicAuthController {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(platformId, email);
-      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
+      if (baseUrlForLinkInEmail == null) {
+        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+      }
       emailService.sendProfileValidationEmail(
-          platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
+          platformProfileRoleEntity.getPlatform(),
+          platformProfileRoleEntity.getProfile(),
+          baseUrlForLinkInEmail);
       runAsync(
           () ->
               auditService.auditProfile(
@@ -302,9 +312,14 @@ public class ProfileBasicAuthController {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(platformId, email);
-      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
+      if (baseUrlForLinkInEmail == null) {
+        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+      }
       emailService.sendProfileResetEmail(
-          platformProfileRoleEntity.getPlatform(), platformProfileRoleEntity.getProfile(), baseUrl);
+          platformProfileRoleEntity.getPlatform(),
+          platformProfileRoleEntity.getProfile(),
+          baseUrlForLinkInEmail);
       runAsync(
           () ->
               auditService.auditProfile(

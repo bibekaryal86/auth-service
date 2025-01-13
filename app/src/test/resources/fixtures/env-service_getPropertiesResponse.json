@@ -15,4 +15,14 @@
       "trackcase-service": "https://trackcase-spa.com/home/"
     }
   }
+,
+  {
+    "name": "baseUrlForLinkInEmail",
+    "stringValue": "",
+    "listValue": [],
+    "mapValue": {
+      "development": "http://localhost:8000/authsvc",
+      "production": "https://gatewaysvc.appspot.com/authsvc"
+    }
+  }
 ]
