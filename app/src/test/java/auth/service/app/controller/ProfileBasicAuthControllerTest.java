@@ -16,8 +16,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
@@ -71,6 +73,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @MockitoBean private AuditService auditService;
   @MockitoBean private EmailService emailService;
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
+  @MockitoBean private EnvServiceConnector envServiceConnector;
 
   @Autowired private ProfileRepository profileRepository;
   @Autowired private PlatformRepository platformRepository;
@@ -127,6 +130,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void setUpBeforeEach() {
     clearInvocations(applicationEventPublisher);
     doNothing().when(applicationEventPublisher).publishEvent(any(ProfileEvent.class));
+    when(envServiceConnector.getBaseUrlForLinkInEmail()).thenReturn(null);
   }
 
   @AfterAll

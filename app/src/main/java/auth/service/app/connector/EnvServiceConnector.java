@@ -70,4 +70,23 @@ public class EnvServiceConnector {
 
   @CacheEvict("redirectUrls")
   public void evictRedirectUrlCache() {}
+
+  @CacheEvict("baseUrlForLinkInEmail")
+  public void evictBaseUrlForLinkInEmailCache() {}
+
+  @Cacheable("baseUrlForLinkInEmail")
+  public String getBaseUrlForLinkInEmail() {
+    final boolean isDevelopment = environment.matchesProfiles("development");
+    final String envDetailsName = "baseUrlForLinkInEmail";
+    final List<EnvDetails> envDetails = getAuthServiceEnvProperties();
+    EnvDetails withRedirectUrls =
+        envDetails.stream()
+            .filter(envDetail -> envDetail.getName().equals(envDetailsName))
+            .findFirst()
+            .orElse(null);
+    if (withRedirectUrls == null) {
+      return null;
+    }
+    return withRedirectUrls.getMapValue().get(isDevelopment ? "development" : "production");
+  }
 }

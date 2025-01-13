@@ -3,6 +3,7 @@ package auth.service.app.controller;
 import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -45,6 +46,7 @@ public class ProfileController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final PermissionCheck permissionCheck;
   private final AuditService auditService;
+  private final EnvServiceConnector envServiceConnector;
 
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
@@ -136,13 +138,19 @@ public class ProfileController {
       final HttpServletRequest request) {
     try {
       permissionCheck.checkProfileAccess("", id);
-      final String baseUrl = getBaseUrlForLinkInEmail(request);
+      String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
+      if (baseUrlForLinkInEmail == null) {
+        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+      }
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(
               platformId, profileEmailRequest.getOldEmail());
       final ProfileEntity profileEntity =
           profileService.updateProfileEmail(
-              id, profileEmailRequest, platformProfileRoleEntity.getPlatform(), baseUrl);
+              id,
+              profileEmailRequest,
+              platformProfileRoleEntity.getPlatform(),
+              baseUrlForLinkInEmail);
       runAsync(
           () ->
               auditService.auditProfile(

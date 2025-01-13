@@ -2,6 +2,7 @@ package auth.service.app.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,7 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-public class AuthEnvServiceConnectorTest extends BaseTest {
+public class EnvServiceConnectorTest extends BaseTest {
 
   private EnvServiceConnector envServiceConnector;
   private MockWebServer server;
@@ -44,6 +45,7 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
   void tearDown() throws Exception {
     server.shutdown();
     envServiceConnector.evictRedirectUrlCache();
+    envServiceConnector.evictBaseUrlForLinkInEmailCache();
   }
 
   @Test
@@ -100,5 +102,47 @@ public class AuthEnvServiceConnectorTest extends BaseTest {
           envServiceConnector.getRedirectUrls();
         });
     assertEquals(1, server.getRequestCount());
+  }
+
+  @Test
+  void testGetBaseUrlForLinkInEmail_Development() {
+    when(environment.matchesProfiles("development")).thenReturn(true);
+    server.enqueue(
+        new MockResponse()
+            .setResponseCode(200)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
+    String result = envServiceConnector.getBaseUrlForLinkInEmail();
+
+    assertNotNull(result);
+    assertEquals(
+        TestData.getEnvDetailsResponse().getLast().getMapValue().get("development"), result);
+  }
+
+  @Test
+  void testGetBaseUrlForLinkInEmail_Production() {
+    when(environment.matchesProfiles("development")).thenReturn(false);
+    server.enqueue(
+        new MockResponse()
+            .setResponseCode(200)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody(Objects.requireNonNull(FixtureReader.readFixture(responseJsonFileName))));
+    String result = envServiceConnector.getBaseUrlForLinkInEmail();
+
+    assertNotNull(result);
+    assertEquals(
+        TestData.getEnvDetailsResponse().getLast().getMapValue().get("production"), result);
+  }
+
+  @Test
+  void testGetBaseUrlForLinkInEmail_Null() {
+    when(environment.matchesProfiles("development")).thenReturn(true);
+    server.enqueue(
+        new MockResponse()
+            .setResponseCode(200)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("[]"));
+    String result = envServiceConnector.getBaseUrlForLinkInEmail();
+    assertNull(result);
   }
 }

@@ -11,8 +11,10 @@ import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
+import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -31,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -48,6 +51,7 @@ public class ProfileControllerTest extends BaseTest {
 
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
   @MockitoBean private AuditService auditService;
+  @MockitoBean private EnvServiceConnector envServiceConnector;
 
   @BeforeAll
   static void setUpBeforeAll() {
@@ -61,6 +65,11 @@ public class ProfileControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoNoPermission);
     bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  }
+
+  @BeforeEach
+  void setUpBeforeEach() {
+    when(envServiceConnector.getBaseUrlForLinkInEmail()).thenReturn(null);
   }
 
   @AfterEach
