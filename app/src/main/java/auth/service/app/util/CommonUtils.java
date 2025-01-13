@@ -22,6 +22,10 @@ import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -111,5 +115,20 @@ public class CommonUtils {
       return "";
     }
     return value.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+  }
+
+  public static Gson getGson() {
+    return new GsonBuilder()
+            .setExclusionStrategies(
+                    new ExclusionStrategy() {
+                      public boolean shouldSkipField(FieldAttributes f) {
+                        return (f == null);
+                      }
+
+                      public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                      }
+                    })
+            .create();
   }
 }
