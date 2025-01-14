@@ -69,9 +69,9 @@ public class EnvDetailsResponse implements Serializable {
       if (o == null || getClass() != o.getClass()) return false;
       EnvDetails that = (EnvDetails) o;
       return Objects.equals(name, that.name)
-              && Objects.equals(stringValue, that.stringValue)
-              && Objects.equals(listValue, that.listValue)
-              && Objects.equals(mapValue, that.mapValue);
+          && Objects.equals(stringValue, that.stringValue)
+          && Objects.equals(listValue, that.listValue)
+          && Objects.equals(mapValue, that.mapValue);
     }
 
     @Override

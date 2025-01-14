@@ -1,16 +1,16 @@
 package auth.service.app.util;
 
 import io.micrometer.common.util.StringUtils;
+import java.util.Base64;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import java.util.Base64;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import org.springframework.lang.NonNull;
 
 public class OkHttpUtils {
 
@@ -19,10 +19,7 @@ public class OkHttpUtils {
           .connectTimeout(5, TimeUnit.SECONDS)
           .readTimeout(15, TimeUnit.SECONDS)
           .writeTimeout(15, TimeUnit.SECONDS)
-          .connectionPool(new ConnectionPool(
-                  10,
-                  5,
-                  TimeUnit.MINUTES))
+          .connectionPool(new ConnectionPool(10, 5, TimeUnit.MINUTES))
           .addInterceptor(new InterceptorLoggingUtilsOutgoing())
           .build();
 
@@ -38,8 +35,8 @@ public class OkHttpUtils {
       String responseBody = response.body() == null ? "" : response.body().string();
       return new HttpResponse(responseCode, responseBody);
     } catch (Exception ex) {
-        Map<String, String> errorMap = Map.of("errMsg", ex.getMessage());
-        return new HttpResponse(-1, CommonUtils.getGson().toJson(errorMap));
+      Map<String, String> errorMap = Map.of("errMsg", ex.getMessage());
+      return new HttpResponse(-1, CommonUtils.getGson().toJson(errorMap));
     }
   }
 
@@ -50,7 +47,7 @@ public class OkHttpUtils {
       final Map<String, String> headers,
       final String authorization) {
     RequestBody body =
-            StringUtils.isEmpty(requestBody)
+        StringUtils.isEmpty(requestBody)
             ? null
             : RequestBody.create(requestBody, MediaType.parse("application/json"));
     Request.Builder requestBuilder = new Request.Builder().url(url).method(method, body);
@@ -68,7 +65,8 @@ public class OkHttpUtils {
     return requestBuilder.build();
   }
 
-  public static String createBasicAuthHeader(final String username, final String password) {
+  public static String createBasicAuthHeader(
+      @NonNull final String username, @NonNull final String password) {
     String credentials = username + ":" + password;
     return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
   }

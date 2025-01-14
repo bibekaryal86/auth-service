@@ -119,16 +119,16 @@ public class CommonUtils {
 
   public static Gson getGson() {
     return new GsonBuilder()
-            .setExclusionStrategies(
-                    new ExclusionStrategy() {
-                      public boolean shouldSkipField(FieldAttributes f) {
-                        return (f == null);
-                      }
+        .setExclusionStrategies(
+            new ExclusionStrategy() {
+              public boolean shouldSkipField(FieldAttributes f) {
+                return (f == null);
+              }
 
-                      public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                      }
-                    })
-            .create();
+              public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+              }
+            })
+        .create();
   }
 }

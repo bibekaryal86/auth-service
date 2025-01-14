@@ -4,14 +4,13 @@ import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_PASSWORD;
 import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_USERNAME;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
+import auth.service.app.model.client.EnvDetailsResponse;
+import auth.service.app.util.CommonUtils;
+import auth.service.app.util.OkHttpUtils;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import auth.service.app.model.client.EnvDetailsResponse;
-import auth.service.app.util.CommonUtils;
-import auth.service.app.util.OkHttpUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,13 +33,16 @@ public class EnvServiceConnector {
 
   private List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
     final String url = UriComponentsBuilder.fromUriString(getPropertiesUrl).toUriString();
-    final String credentials = getSystemEnvProperty(ENV_ENVSVC_USERNAME) + ":" + getSystemEnvProperty(ENV_ENVSVC_PASSWORD);
+    final String credentials =
+        getSystemEnvProperty(ENV_ENVSVC_USERNAME) + ":" + getSystemEnvProperty(ENV_ENVSVC_PASSWORD);
     final String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-    final OkHttpUtils.HttpResponse httpResponse = OkHttpUtils.sendRequest(url, "GET", "", Collections.emptyMap(), base64Credentials);
+    final OkHttpUtils.HttpResponse httpResponse =
+        OkHttpUtils.sendRequest(url, "GET", "", Collections.emptyMap(), base64Credentials);
 
     if (httpResponse.statusCode() == 200) {
-      EnvDetailsResponse envDetailsResponse = CommonUtils.getGson().fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
+      EnvDetailsResponse envDetailsResponse =
+          CommonUtils.getGson().fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
       return envDetailsResponse.getEnvDetails();
     }
 

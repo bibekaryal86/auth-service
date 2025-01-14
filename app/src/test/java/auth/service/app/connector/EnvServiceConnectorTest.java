@@ -3,12 +3,14 @@ package auth.service.app.connector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
+import auth.service.app.model.client.EnvDetailsResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import helper.FixtureReader;
+import helper.ObjectMapperProvider;
 import helper.TestData;
 import java.util.Collections;
 import java.util.Map;
@@ -21,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 public class EnvServiceConnectorTest extends BaseTest {
 
@@ -36,9 +36,8 @@ public class EnvServiceConnectorTest extends BaseTest {
     server = new MockWebServer();
     server.start(0);
     String getPropertiesUrl = String.format("%s/getProperties", server.url("/"));
-    WebClient webClient = WebClient.builder().baseUrl(server.url("/").toString()).build();
     environment = mock(Environment.class);
-    envServiceConnector = new EnvServiceConnector(getPropertiesUrl, webClient, environment);
+    envServiceConnector = new EnvServiceConnector(getPropertiesUrl, environment);
   }
 
   @AfterEach
@@ -59,7 +58,7 @@ public class EnvServiceConnectorTest extends BaseTest {
     Map<String, String> result = envServiceConnector.getRedirectUrls();
 
     assertNotNull(result);
-    assertEquals(TestData.getEnvDetailsResponse().getFirst().getMapValue(), result);
+    assertEquals(TestData.getEnvDetailsResponse().getEnvDetails().getFirst().getMapValue(), result);
   }
 
   @Test
@@ -73,35 +72,24 @@ public class EnvServiceConnectorTest extends BaseTest {
     Map<String, String> result = envServiceConnector.getRedirectUrls();
 
     assertNotNull(result);
-    assertEquals(TestData.getEnvDetailsResponse().get(1).getMapValue(), result);
+    assertEquals(TestData.getEnvDetailsResponse().getEnvDetails().get(1).getMapValue(), result);
   }
 
   @Test
-  void testGetRedirectUrls_Empty() {
+  void testGetRedirectUrls_Empty() throws JsonProcessingException {
     when(environment.matchesProfiles("development")).thenReturn(true);
+    EnvDetailsResponse envDetailsResponse = TestData.getEnvDetailsResponse();
+    envDetailsResponse.getEnvDetails().removeFirst();
+    String jsonString = ObjectMapperProvider.objectMapper().writeValueAsString(envDetailsResponse);
+
     server.enqueue(
         new MockResponse()
             .setResponseCode(200)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("[]"));
+            .setBody(jsonString));
     Map<String, String> result = envServiceConnector.getRedirectUrls();
     assertNotNull(result);
     assertEquals(Collections.emptyMap(), result);
-  }
-
-  @Test
-  void testGetRedirectUrls_Unauthorized() {
-    when(environment.matchesProfiles("development")).thenReturn(true);
-    server.enqueue(
-        new MockResponse()
-            .setResponseCode(401)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    assertThrows(
-        WebClientResponseException.Unauthorized.class,
-        () -> {
-          envServiceConnector.getRedirectUrls();
-        });
-    assertEquals(1, server.getRequestCount());
   }
 
   @Test
@@ -116,7 +104,8 @@ public class EnvServiceConnectorTest extends BaseTest {
 
     assertNotNull(result);
     assertEquals(
-        TestData.getEnvDetailsResponse().getLast().getMapValue().get("development"), result);
+        TestData.getEnvDetailsResponse().getEnvDetails().getLast().getMapValue().get("development"),
+        result);
   }
 
   @Test
@@ -131,17 +120,22 @@ public class EnvServiceConnectorTest extends BaseTest {
 
     assertNotNull(result);
     assertEquals(
-        TestData.getEnvDetailsResponse().getLast().getMapValue().get("production"), result);
+        TestData.getEnvDetailsResponse().getEnvDetails().getLast().getMapValue().get("production"),
+        result);
   }
 
   @Test
-  void testGetBaseUrlForLinkInEmail_Null() {
+  void testGetBaseUrlForLinkInEmail_Null() throws JsonProcessingException {
     when(environment.matchesProfiles("development")).thenReturn(true);
+    EnvDetailsResponse envDetailsResponse = TestData.getEnvDetailsResponse();
+    envDetailsResponse.getEnvDetails().removeLast();
+    String jsonString = ObjectMapperProvider.objectMapper().writeValueAsString(envDetailsResponse);
+
     server.enqueue(
         new MockResponse()
             .setResponseCode(200)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("[]"));
+            .setBody(jsonString));
     String result = envServiceConnector.getBaseUrlForLinkInEmail();
     assertNull(result);
   }
