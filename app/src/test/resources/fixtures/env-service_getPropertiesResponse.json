@@ -1,28 +1,30 @@
-[
-  {
-    "name": "redirectUrls_development",
-    "stringValue": "",
-    "listValue": [],
-    "mapValue": {
-      "trackcase-service": "http://localhost:9191/home/"
+{
+  "envDetails": [
+    {
+      "name": "redirectUrls_development",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "trackcase-service": "http://localhost:9191/home/"
+      }
+    },
+    {
+      "name": "redirectUrls_production",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "trackcase-service": "https://trackcase-service.com/home/"
+      }
+    },
+    {
+      "name": "baseUrlForLinkInEmail",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "development": "http://localhost:8000/authsvc",
+        "production": "https://gateway-service.com/authsvc"
+      }
     }
-  },
-  {
-    "name": "redirectUrls_production",
-    "stringValue": "",
-    "listValue": [],
-    "mapValue": {
-      "trackcase-service": "https://trackcase-spa.com/home/"
-    }
-  }
-,
-  {
-    "name": "baseUrlForLinkInEmail",
-    "stringValue": "",
-    "listValue": [],
-    "mapValue": {
-      "development": "http://localhost:8000/authsvc",
-      "production": "https://gatewaysvc.appspot.com/authsvc"
-    }
-  }
-]
+  ],
+  "errMsg": null
+}

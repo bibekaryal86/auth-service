@@ -4,7 +4,7 @@ import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 
-import auth.service.app.model.client.EnvDetails;
+import auth.service.app.model.client.EnvDetailsResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PlatformDto;
 import auth.service.app.model.dto.ProfileAddressRequest;
@@ -56,13 +56,13 @@ public class TestData {
     System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
   }
 
-  public static List<EnvDetails> getEnvDetailsResponse() {
+  public static EnvDetailsResponse getEnvDetailsResponse() {
     String fixtureAsString = FixtureReader.readFixture("env-service_getPropertiesResponse.json");
     try {
       return ObjectMapperProvider.objectMapper()
-          .readValue(fixtureAsString, new TypeReference<>() {});
+          .readValue(fixtureAsString, EnvDetailsResponse.class);
     } catch (JsonProcessingException ex) {
-      return Collections.emptyList();
+      return new EnvDetailsResponse();
     }
   }
 

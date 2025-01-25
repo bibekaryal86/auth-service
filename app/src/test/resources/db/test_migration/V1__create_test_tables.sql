@@ -121,7 +121,7 @@ CREATE TABLE audit_permission
     created_at    TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by    BIGINT,
     ip_address    VARCHAR(50)                                          NOT NULL,
-    user_agent    VARCHAR(250)                                         NOT NULL,
+    user_agent    VARCHAR(1000)                                         NOT NULL,
     FOREIGN KEY (permission_id) REFERENCES permission (id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES profile (id) ON DELETE SET NULL
 );
@@ -136,7 +136,7 @@ CREATE TABLE audit_role
     created_at TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by BIGINT,
     ip_address VARCHAR(50)                                          NOT NULL,
-    user_agent VARCHAR(250)                                         NOT NULL,
+    user_agent VARCHAR(1000)                                         NOT NULL,
     FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES profile (id) ON DELETE SET NULL
 );
@@ -151,7 +151,7 @@ CREATE TABLE audit_profile
     created_at TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by BIGINT,
     ip_address VARCHAR(50)                                          NOT NULL,
-    user_agent VARCHAR(100)                                         NOT NULL,
+    user_agent VARCHAR(1000)                                         NOT NULL,
     FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES profile (id) ON DELETE SET NULL
 );
@@ -166,7 +166,7 @@ CREATE TABLE audit_platform
     created_at  TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by  BIGINT,
     ip_address  VARCHAR(50)                                          NOT NULL,
-    user_agent  VARCHAR(100)                                         NOT NULL,
+    user_agent  VARCHAR(1000)                                         NOT NULL,
     FOREIGN KEY (platform_id) REFERENCES platform (id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES profile (id) ON DELETE SET NULL
 );
