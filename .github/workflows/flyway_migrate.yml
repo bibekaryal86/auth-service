@@ -44,4 +44,4 @@ jobs:
             -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
             -user=${{ secrets.DB_USERNAME }} \
             -password=${{ secrets.DB_PASSWORD }} \
-            migrate -baselineOnMigrate=true
+            migrate
