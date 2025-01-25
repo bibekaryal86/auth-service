@@ -1,0 +1,52 @@
+name: Flyway Migrate with baselineOnMigrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment Name to Repair (options: PROD, SANDBOX)"
+        required: true
+        default: "SANDBOX"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate Input
+        run: |
+          if [[ "${{ inputs.environment }}" != "PROD" && "${{ inputs.environment }}" != "SANDBOX" ]]; then
+            echo "Error: Invalid environment '${{ inputs.environment }}'. Allowed values are PROD or SANDBOX."
+            exit 1
+          fi
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Test Database Connection
+        run: |
+          if [[ "${{ inputs.environment }}" == "PROD" ]]; then
+            pg_isready -h ${{ secrets.DB_HOST_PROD }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
+          else
+            pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
+          fi
+
+      - name: Run Flyway Repair
+        run: |
+          if [[ "${{ inputs.environment }}" == "PROD" ]]; then
+            docker run --rm \
+              -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+              flyway/flyway:11.1.1 \
+              -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
+              -user=${{ secrets.DB_USERNAME }} \
+              -password=${{ secrets.DB_PASSWORD }} \
+              migrate -baselineOnMigrate=true
+          else
+            docker run --rm \
+              -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
+              flyway/flyway:11.1.1 \
+              -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
+              -user=${{ secrets.DB_USERNAME }} \
+              -password=${{ secrets.DB_PASSWORD }} \
+              migrate -baselineOnMigrate=true
+          fi
