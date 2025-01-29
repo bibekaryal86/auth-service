@@ -125,7 +125,8 @@ public class ProfileBasicAuthController {
 
       // increase failed login attempts
       if (profileEntity != null) {
-        int currentLoginAttempts = profileEntity.getLoginAttempts() == null ? 0 : profileEntity.getLoginAttempts();
+        int currentLoginAttempts =
+            profileEntity.getLoginAttempts() == null ? 0 : profileEntity.getLoginAttempts();
         profileEntity.setLoginAttempts(currentLoginAttempts + 1);
         profileService.updateProfile(profileEntity);
       }
