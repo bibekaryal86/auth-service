@@ -16,7 +16,8 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
 
   @Modifying
   @Query(
-      value = "UPDATE token SET deleted_date = NOW() WHERE profile_id = :profileId",
+      value =
+          "UPDATE token SET deleted_date = NOW() WHERE profile_id = :profileId AND created_date >= NOW() - INTERVAL '1 hour'",
       nativeQuery = true)
   int setTokensAsDeletedByProfileId(@Param("profileId") Long profileId);
 }
