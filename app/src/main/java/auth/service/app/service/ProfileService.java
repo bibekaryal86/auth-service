@@ -153,6 +153,7 @@ public class ProfileService {
     return profileEntity;
   }
 
+  @Transactional
   public ProfileEntity updateProfileEmail(
       final Long id,
       final ProfileEmailRequest profileEmailRequest,
@@ -176,9 +177,13 @@ public class ProfileService {
             platformEntity,
             baseUrlForEmail));
 
+    // set tokens as deleted, checked during refresh token only
+    tokenService.setTokenDeletedDateByProfileId(id);
+
     return profileEntityUpdated;
   }
 
+  @Transactional
   public ProfileEntity updateProfilePassword(
       final Long id,
       final ProfilePasswordRequest profilePasswordRequest,
@@ -196,6 +201,9 @@ public class ProfileService {
     applicationEventPublisher.publishEvent(
         new ProfileEvent(
             this, TypeEnums.EventType.UPDATE_PASSWORD, profileEntity, platformEntity, ""));
+
+    // set tokens as deleted, checked during refresh token only
+    tokenService.setTokenDeletedDateByProfileId(id);
 
     return profileEntityUpdated;
   }

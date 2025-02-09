@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TokenRepositoryTest extends BaseTest {
 
@@ -58,6 +59,20 @@ public class TokenRepositoryTest extends BaseTest {
 
     assertTrue(tokenEntityOptional.isPresent());
     assertEquals("some-access-token", tokenEntityOptional.get().getAccessToken());
+  }
+
+  @Test
+  @Transactional
+  public void testSetTokensAsDeletedByProfileId() {
+    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
+    ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
+    TokenEntity tokenEntity1 = TestData.getTokenEntity(101, platformEntity, profileEntity);
+    TokenEntity tokenEntity2 = TestData.getTokenEntity(102, platformEntity, profileEntity);
+    tokenRepository.save(tokenEntity1);
+    tokenRepository.save(tokenEntity2);
+
+    int updated = tokenRepository.setTokensAsDeletedByProfileId(profileEntity.getId());
+    assertEquals(2, updated);
   }
 
   @Test

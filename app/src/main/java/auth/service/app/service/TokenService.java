@@ -58,6 +58,11 @@ public class TokenService {
   // UPDATE
   // handled by save
 
+  public int setTokenDeletedDateByProfileId(final long profileId) {
+    log.debug("Set Token Deleted Date by Profile Id: [{}]", profileId);
+    return tokenRepository.setTokensAsDeletedByProfileId(profileId);
+  }
+
   // DELETE
   // only soft delete, handled by update
 

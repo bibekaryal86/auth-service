@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TokenServiceTest extends BaseTest {
 
@@ -142,5 +143,19 @@ public class TokenServiceTest extends BaseTest {
     TokenEntity tokenEntity = tokenRepository.findById(tokenId).orElse(null);
     assertNotNull(tokenEntity);
     assertNotNull(tokenEntity.getDeletedDate());
+  }
+
+  @Test
+  @Transactional
+  public void testSetTokensAsDeletedByProfileId() {
+    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
+    ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
+    TokenEntity tokenEntity1 = TestData.getTokenEntity(101, platformEntity, profileEntity);
+    TokenEntity tokenEntity2 = TestData.getTokenEntity(102, platformEntity, profileEntity);
+    tokenRepository.save(tokenEntity1);
+    tokenRepository.save(tokenEntity2);
+
+    int updated = tokenService.setTokenDeletedDateByProfileId(profileEntity.getId());
+    assertEquals(2, updated);
   }
 }
