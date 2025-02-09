@@ -165,7 +165,8 @@ public class ProfileController {
                       profileEmailRequest.getNewEmail())));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
-      log.error("Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
+      log.error(
+          "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -191,8 +192,8 @@ public class ProfileController {
                   profileEntity,
                   AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE,
                   String.format(
-                      "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",platformId,
-                      profileEntity.getId(), profileEntity.getEmail())));
+                      "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
+                      platformId, profileEntity.getId(), profileEntity.getEmail())));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error(
