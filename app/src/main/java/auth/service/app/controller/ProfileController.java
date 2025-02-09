@@ -229,7 +229,7 @@ public class ProfileController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE USER")
+  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE PROFILE")
   @DeleteMapping("/profile/{id}")
   public ResponseEntity<ProfileResponse> softDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
