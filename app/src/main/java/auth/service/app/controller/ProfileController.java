@@ -158,13 +158,15 @@ public class ProfileController {
                   profileEntity,
                   AuditEnums.AuditProfile.PROFILE_EMAIL_UPDATE,
                   String.format(
-                      "Profile Update Email  [Id: %s] - [OldEmail: %s] - [NewEmail: %s]",
+                      "Profile Update Email [PlatformId: %s] - [Id: %s] - [OldEmail: %s] - [NewEmail: %s]",
+                      platformId,
                       profileEntity.getId(),
                       profileEmailRequest.getOldEmail(),
                       profileEmailRequest.getNewEmail())));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
-      log.error("Update Profile Email: [{}] | [{}]", id, profileEmailRequest, ex);
+      log.error(
+          "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -190,8 +192,8 @@ public class ProfileController {
                   profileEntity,
                   AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE,
                   String.format(
-                      "Profile Update Password  [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+                      "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
+                      platformId, profileEntity.getId(), profileEntity.getEmail())));
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
     } catch (Exception ex) {
       log.error(
@@ -228,7 +230,7 @@ public class ProfileController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE USER")
+  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE PROFILE")
   @DeleteMapping("/profile/{id}")
   public ResponseEntity<ProfileResponse> softDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {

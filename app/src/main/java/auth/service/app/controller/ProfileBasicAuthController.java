@@ -249,7 +249,7 @@ public class ProfileBasicAuthController {
                   profileEntity,
                   AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR,
                   String.format(
-                      "Profile Reset Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                      "Profile Logout Error [Id: %s] - [Email: %s] - [Platform: %s]",
                       tokenRequest.getProfileId(),
                       profileEntity == null ? "N/A" : profileEntity.getEmail(),
                       platformId)));

@@ -40,7 +40,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testCreateAddressType_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_CREATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_CREATE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     addressTypeRequest = new AddressTypeRequest("NEW_TYPE_NAME", "NEW_TYPE_DESC");
@@ -185,7 +185,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testReadAddressTypes_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_READ", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -248,7 +248,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testReadAddressType_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_READ", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -330,7 +330,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testUpdateAddressType_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_UPDATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_UPDATE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     addressTypeRequest = new AddressTypeRequest("NEW_TYPE_NAME", "NEW_TYPE_DESC");
@@ -479,7 +479,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testSoftDeleteAddressType_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_DELETE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -606,7 +606,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testHardDeleteAddressType_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_DELETE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -669,7 +669,7 @@ public class AddressTypeControllerTest extends BaseTest {
   @Test
   void testRestoreAddressType_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("STATUS_TYPE_RESTORE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("ADDRESS_TYPE_RESTORE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 

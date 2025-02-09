@@ -34,7 +34,7 @@ public class AddressTypeController {
   private final CircularDependencyService circularDependencyService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
 
-  @CheckPermission("STATUS_TYPE_CREATE")
+  @CheckPermission("ADDRESS_TYPE_CREATE")
   @PostMapping("/address_type")
   public ResponseEntity<AddressTypeResponse> createAddressType(
       @Valid @RequestBody final AddressTypeRequest addressTypeRequest) {
@@ -48,7 +48,7 @@ public class AddressTypeController {
     }
   }
 
-  @CheckPermission("STATUS_TYPE_READ")
+  @CheckPermission("ADDRESS_TYPE_READ")
   @GetMapping
   public ResponseEntity<AddressTypeResponse> readAddressTypes() {
     try {
@@ -60,7 +60,7 @@ public class AddressTypeController {
     }
   }
 
-  @CheckPermission("STATUS_TYPE_READ")
+  @CheckPermission("ADDRESS_TYPE_READ")
   @GetMapping("/address_type/{id}")
   public ResponseEntity<AddressTypeResponse> readAddressType(@PathVariable final long id) {
     try {
@@ -72,7 +72,7 @@ public class AddressTypeController {
     }
   }
 
-  @CheckPermission("STATUS_TYPE_UPDATE")
+  @CheckPermission("ADDRESS_TYPE_UPDATE")
   @PutMapping("/address_type/{id}")
   public ResponseEntity<AddressTypeResponse> updateAddressType(
       @PathVariable final long id,
@@ -87,7 +87,7 @@ public class AddressTypeController {
     }
   }
 
-  @CheckPermission("STATUS_TYPE_DELETE")
+  @CheckPermission("ADDRESS_TYPE_DELETE")
   @DeleteMapping("/address_type/{id}")
   public ResponseEntity<AddressTypeResponse> softDeleteAddressType(@PathVariable final long id) {
     try {
