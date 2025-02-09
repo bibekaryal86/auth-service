@@ -23,6 +23,7 @@ import auth.service.app.model.entity.PlatformRolePermissionId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenPermission;
 import auth.service.app.model.token.AuthTokenPlatform;
@@ -367,5 +368,16 @@ public class TestData {
   public static String getBearerAuthCredentialsForTest(
       final PlatformEntity platformEntity, final ProfileDto profileDto) {
     return JwtUtils.encodeAuthCredentials(platformEntity, profileDto, 1000 * 60 * 15);
+  }
+
+  public static TokenEntity getTokenEntity(
+      int integer, PlatformEntity platformEntity, ProfileEntity profileEntity) {
+    TokenEntity tokenEntity = new TokenEntity();
+    tokenEntity.setAccessToken("some-access-token" + integer);
+    tokenEntity.setRefreshToken("some-refresh-token" + integer);
+    tokenEntity.setIpAddress("some-ip-address" + integer);
+    tokenEntity.setPlatform(platformEntity);
+    tokenEntity.setProfile(profileEntity);
+    return tokenEntity;
   }
 }
