@@ -13,6 +13,7 @@ import auth.service.app.util.EntityDtoConvertUtils;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -22,6 +23,7 @@ public class TokenService {
 
   private final TokenRepository tokenRepository;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
+  private final Environment environment;
 
   // CREATE
   // handled by save
@@ -60,7 +62,10 @@ public class TokenService {
 
   public int setTokenDeletedDateByProfileId(final long profileId) {
     log.debug("Set Token Deleted Date by Profile Id: [{}]", profileId);
-    return tokenRepository.setTokensAsDeletedByProfileId(profileId);
+    final boolean isTest = environment.matchesProfiles("springboottest");
+    return isTest
+        ? tokenRepository.setTokensAsDeletedByProfileIdTest(profileId)
+        : tokenRepository.setTokensAsDeletedByProfileId(profileId);
   }
 
   // DELETE
