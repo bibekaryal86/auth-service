@@ -13,7 +13,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -66,7 +65,6 @@ public class AddressTypeService {
   }
 
   @CacheEvict(value = "address_types", allEntries = true, beforeInvocation = true)
-  @Transactional
   public void hardDeleteAddressType(final Long id) {
     log.info("Hard Delete Address Type: [{}]", id);
     final AddressTypeEntity addressTypeEntity = readAddressType(id);

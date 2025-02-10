@@ -229,7 +229,6 @@ public class ProfileService {
     return profileRepository.save(profileEntity);
   }
 
-  @Transactional
   public void hardDeleteProfile(final Long id) {
     log.info("Hard Delete Profile: [{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
@@ -245,7 +244,6 @@ public class ProfileService {
   }
 
   // OTHERS
-  @Transactional
   public ProfilePasswordTokenResponse loginProfile(
       final Long platformId,
       final ProfilePasswordRequest profilePasswordRequest,
