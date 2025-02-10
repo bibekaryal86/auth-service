@@ -86,6 +86,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(getResponseStatusInfoForSingleResponse(addressTypeEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(addressTypeEntity));
@@ -106,6 +108,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -119,6 +123,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -154,6 +160,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(getResponseStatusInfoForSingleResponse(permissionEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(permissionEntity));
@@ -172,6 +180,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -184,6 +194,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -320,6 +332,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(getResponseStatusInfoForSingleResponse(roleEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(roleEntity));
@@ -338,6 +352,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -350,6 +366,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -385,6 +403,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(getResponseStatusInfoForSingleResponse(platformEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(platformEntity));
@@ -405,6 +425,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -417,6 +439,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -586,6 +610,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseStatusInfo(getResponseStatusInfoForSingleResponse(profileEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(profileEntity));
@@ -605,6 +631,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -617,6 +645,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -663,6 +693,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         getResponseStatusInfoForSingleResponse(platformProfileRoleEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(platformProfileRoleEntity));
@@ -684,6 +716,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -697,6 +731,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -743,6 +779,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         getResponseStatusInfoForSingleResponse(platformRolePermissionEntity))
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForSingleResponse(platformRolePermissionEntity));
@@ -764,6 +802,8 @@ public class EntityDtoConvertUtils {
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responseCrudInfo(ResponseCrudInfo.builder().deletedRowsCount(1).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseStatusInfo(CommonUtils.emptyResponseMetadata().getResponseStatusInfo())
                     .build())
             .build());
   }
@@ -777,6 +817,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -791,6 +833,8 @@ public class EntityDtoConvertUtils {
                 ResponseMetadata.builder()
                     .responseStatusInfo(
                         ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
                     .build())
             .build(),
         getHttpStatusForErrorResponse(exception));
@@ -802,6 +846,8 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
             .build(),
         httpStatus);
   }

@@ -4,6 +4,7 @@ import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
 
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import auth.service.app.util.CommonUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +37,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authenticated to access this resource...")
                       .build())
+              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
               .build();
     } else {
       responseMetadata =
@@ -44,6 +47,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authorized to access this resource...")
                       .build())
+              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
               .build();
     }
 

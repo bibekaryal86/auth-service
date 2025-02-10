@@ -105,14 +105,13 @@ public class CommonUtilsTest extends BaseTest {
   void testConvertResponseMetadataToJson() {
     ResponseMetadata responseMetadata =
         ResponseMetadata.builder()
-            .responseStatusInfo(
-                ResponseStatusInfo.builder().message("Success").errMsg("No errors").build())
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg("No errors").build())
             .build();
 
     String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
 
     assertEquals(
-        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":\"Success\",\"errMsg\":\"No errors\"}}",
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"errMsg\":\"No errors\"}}",
         result);
   }
 
@@ -124,7 +123,7 @@ public class CommonUtilsTest extends BaseTest {
             .build();
     String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
     assertEquals(
-        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some errors\"}}",
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"errMsg\":\"Some errors\"}}",
         result);
   }
 
@@ -146,7 +145,7 @@ public class CommonUtilsTest extends BaseTest {
 
     String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
     assertEquals(
-        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"message\":null,\"errMsg\":\"Some Error Message\"}}",
+        "{\"responseCrudInfo\":null,\"responsePageInfo\":null,\"responseStatusInfo\":{\"errMsg\":\"Some Error Message\"}}",
         result);
   }
 }

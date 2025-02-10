@@ -3,6 +3,7 @@ package auth.service.app.exception.handler;
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import auth.service.app.util.CommonUtils;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(ex.getMessage()).build())
+            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
             .build(),
         HttpStatus.FORBIDDEN);
   }
@@ -34,6 +37,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
+            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
             .build(),
         HttpStatus.BAD_REQUEST);
   }

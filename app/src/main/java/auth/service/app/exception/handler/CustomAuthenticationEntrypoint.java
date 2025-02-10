@@ -4,6 +4,7 @@ import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
 
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import auth.service.app.util.CommonUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,8 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
                 ResponseStatusInfo.builder()
                     .errMsg("Profile not authenticated to access this resource...")
                     .build())
+            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
             .build();
     final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
     response.getWriter().write(jsonResponse);
