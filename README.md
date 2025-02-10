@@ -31,4 +31,6 @@ A small utility for authentication and authorization with platforms, profiles, r
 
 * TODO
   * Update this README.md for proper documentation
+  * Use shdsvc dependency
+    * Implement empty ResponseMetadata
   * Implement RequestMetadata, ResponseCrudInfo

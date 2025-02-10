@@ -71,7 +71,7 @@ public class TokenRepositoryTest extends BaseTest {
     tokenRepository.save(tokenEntity1);
     tokenRepository.save(tokenEntity2);
 
-    int updated = tokenRepository.setTokensAsDeletedByProfileId(profileEntity.getId());
+    int updated = tokenRepository.setTokensAsDeletedByProfileIdTest(profileEntity.getId());
     assertEquals(2, updated);
   }
 
