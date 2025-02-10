@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -93,7 +92,6 @@ public class PlatformProfileRoleService {
   // not provided
 
   // DELETE
-  @Transactional
   public void deletePlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
     log.info("Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);

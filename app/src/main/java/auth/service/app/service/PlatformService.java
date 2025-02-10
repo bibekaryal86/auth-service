@@ -13,7 +13,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -65,7 +64,6 @@ public class PlatformService {
   }
 
   @CacheEvict(value = "platforms", allEntries = true, beforeInvocation = true)
-  @Transactional
   public void hardDeletePlatform(final Long id) {
     log.info("Hard Delete Platform: [{}]", id);
     final PlatformEntity platformEntity = readPlatform(id);

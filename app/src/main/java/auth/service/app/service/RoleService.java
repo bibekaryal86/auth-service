@@ -13,7 +13,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -65,7 +64,6 @@ public class RoleService {
   }
 
   @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
-  @Transactional
   public void hardDeleteRole(final Long id) {
     log.info("Hard Delete Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);

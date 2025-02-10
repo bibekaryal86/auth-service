@@ -12,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -64,7 +63,6 @@ public class PermissionService {
   }
 
   @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
-  @Transactional
   public void hardDeletePermission(final Long id) {
     log.info("Hard Delete Permission: [{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
