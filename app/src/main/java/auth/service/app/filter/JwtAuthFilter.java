@@ -9,6 +9,7 @@ import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.service.ProfileService;
+import auth.service.app.util.CommonUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,6 +76,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     final ResponseMetadata responseMetadata =
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
+            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
             .build();
 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());

@@ -18,7 +18,9 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,9 +102,6 @@ public class CommonUtils {
       return new ObjectMapper().writeValueAsString(responseMetadata);
     } catch (JsonProcessingException e) {
       return "{"
-          + "\"message\":\""
-          + escapeJson(responseMetadata.getResponseStatusInfo().getMessage())
-          + "\","
           + "\"errMsg\":\""
           + escapeJson(responseMetadata.getResponseStatusInfo().getErrMsg())
           + "\""
@@ -130,5 +129,20 @@ public class CommonUtils {
               }
             })
         .create();
+  }
+
+  public static ResponseMetadata emptyResponseMetadata() {
+    return ResponseMetadata.builder()
+        .responseStatusInfo(ResponseStatusInfo.builder().errMsg("").build())
+        .responsePageInfo(
+            ResponsePageInfo.builder().totalItems(0).totalPages(0).pageNumber(0).perPage(0).build())
+        .responseCrudInfo(
+            ResponseCrudInfo.builder()
+                .insertedRowsCount(0)
+                .updatedRowsCount(0)
+                .deletedRowsCount(0)
+                .restoredRowsCount(0)
+                .build())
+        .build();
   }
 }
