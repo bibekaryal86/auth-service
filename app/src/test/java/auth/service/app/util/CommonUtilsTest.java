@@ -105,8 +105,7 @@ public class CommonUtilsTest extends BaseTest {
   void testConvertResponseMetadataToJson() {
     ResponseMetadata responseMetadata =
         ResponseMetadata.builder()
-            .responseStatusInfo(
-                ResponseStatusInfo.builder().errMsg("No errors").build())
+            .responseStatusInfo(ResponseStatusInfo.builder().errMsg("No errors").build())
             .build();
 
     String result = CommonUtils.convertResponseMetadataToJson(responseMetadata);
