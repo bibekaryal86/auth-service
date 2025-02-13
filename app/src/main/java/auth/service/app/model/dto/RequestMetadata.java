@@ -1,12 +1,11 @@
 package auth.service.app.model.dto;
 
 import auth.service.app.model.enums.RequestEnums;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -19,9 +18,6 @@ public class RequestMetadata {
   private int perPage;
   private String sortColumn;
   private RequestEnums.SortDirection sortDirection;
-  private String filterColumn;
-  private String filterValue;
-  private RequestEnums.FilterOperation filterOperation;
   private List<String> filterColumns;
   private List<String> filterValues;
   private List<RequestEnums.FilterOperation> filterOperations;

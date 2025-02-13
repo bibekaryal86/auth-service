@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -157,9 +158,9 @@ public class CommonUtils {
         requestMetadata.isIncludeDeleted() || requestMetadata.isIncludeHistory();
     boolean isSortingIncluded = StringUtils.hasText(requestMetadata.getSortColumn());
     boolean isFilterIncluded =
-        StringUtils.hasText(requestMetadata.getFilterColumn())
-            && StringUtils.hasText(requestMetadata.getFilterValue())
-            && requestMetadata.getFilterOperation() != null;
+        !CollectionUtils.isEmpty(requestMetadata.getFilterColumns())
+            && !CollectionUtils.isEmpty(requestMetadata.getFilterValues())
+            && !CollectionUtils.isEmpty(requestMetadata.getFilterOperations());
 
     return isBooleansIncluded || isSortingIncluded || isFilterIncluded;
   }

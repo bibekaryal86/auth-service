@@ -10,11 +10,11 @@ public class RequestEnums {
 
   @Getter
   public enum FilterOperation {
-    EQUAL_TO("eq"),
-    GREATER_THAN("gt"),
-    LESS_THAN("lt"),
-    GREATER_THAN_OR_EQUAL_TO("gte"),
-    LESS_THAN_OR_EQUAL_TO("lte");
+    EQ("eq"),
+    GT("gt"),
+    LT("lt"),
+    GTE("gte"),
+    LTE("lte");
 
     private final String operation;
 
