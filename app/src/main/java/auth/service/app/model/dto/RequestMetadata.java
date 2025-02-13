@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestMetadata {
+  private boolean isIncludeDeleted;
   private boolean isIncludeHistory;
   private int pageNumber;
   private int perPage;
