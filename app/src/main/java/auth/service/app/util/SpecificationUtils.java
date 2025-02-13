@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-public class JpaSpecificationUtils {
+public class SpecificationUtils {
 
   /**
    * Returns a Specification to filter records where the given field is null.
