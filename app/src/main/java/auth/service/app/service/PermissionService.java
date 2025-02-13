@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class PermissionService {
   }
 
   // READ
+  @Cacheable(value = "permissions")
   public List<PermissionEntity> readPermissions() {
     log.debug("Read Permissions...");
     return permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName"));

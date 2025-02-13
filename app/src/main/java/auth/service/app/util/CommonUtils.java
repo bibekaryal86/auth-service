@@ -18,6 +18,7 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
@@ -33,6 +34,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
@@ -144,5 +146,21 @@ public class CommonUtils {
                 .restoredRowsCount(0)
                 .build())
         .build();
+  }
+
+  public static boolean isRequestMetadataIncluded(final RequestMetadata requestMetadata) {
+    if (requestMetadata == null) {
+      return false;
+    }
+
+    boolean isBooleansIncluded =
+        requestMetadata.isIncludeDeleted() || requestMetadata.isIncludeHistory();
+    boolean isSortingIncluded = StringUtils.hasText(requestMetadata.getSortColumn());
+    boolean isFilterIncluded =
+        StringUtils.hasText(requestMetadata.getFilterColumn())
+            && StringUtils.hasText(requestMetadata.getFilterValue())
+            && requestMetadata.getFilterOperation() != null;
+
+    return isBooleansIncluded || isSortingIncluded || isFilterIncluded;
   }
 }
