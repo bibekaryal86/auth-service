@@ -1,7 +1,5 @@
 package auth.service.app.util;
 
-import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
-
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.entity.ProfileEntity;
@@ -40,10 +38,9 @@ public class PermissionCheck {
   public void checkProfileAccess(final String email, final long id) {
     try {
       final AuthToken authToken = getAuthentication();
-      final boolean isSuperUser = checkSuperUser(authToken);
       final boolean isPermitted = checkUserIdEmail(email, id, authToken);
 
-      if (!isSuperUser && !isPermitted) {
+      if (!authToken.isSuperUser() && !isPermitted) {
         throw new CheckPermissionException(
             "Profile does not have required permissions to profile entity...");
       }
@@ -58,9 +55,8 @@ public class PermissionCheck {
   public List<ProfileEntity> filterProfileListByAccess(final List<ProfileEntity> profileEntities) {
     try {
       final AuthToken authToken = getAuthentication();
-      final boolean isSuperUser = checkSuperUser(authToken);
 
-      if (isSuperUser) {
+      if (authToken.isSuperUser()) {
         return profileEntities;
       }
 
@@ -89,11 +85,8 @@ public class PermissionCheck {
     throw new CheckPermissionException("Profile not authorized...");
   }
 
-  private boolean checkUserPermission(
-      final AuthToken authToken, final List<String> requiredPermissions) {
-    final boolean isSuperUser = checkSuperUser(authToken);
-
-    if (isSuperUser) {
+  private boolean checkUserPermission(final AuthToken authToken, final List<String> requiredPermissions) {
+    if (authToken.isSuperUser()) {
       return true;
     }
 
@@ -101,11 +94,6 @@ public class PermissionCheck {
         .anyMatch(
             authTokenPermission ->
                 requiredPermissions.contains(authTokenPermission.getPermissionName()));
-  }
-
-  private boolean checkSuperUser(final AuthToken authToken) {
-    return authToken.getRoles().stream()
-        .anyMatch(authTokenRole -> authTokenRole.getRoleName().equals(ROLE_NAME_SUPERUSER));
   }
 
   private boolean checkUserIdEmail(final String email, final long id, final AuthToken authToken) {
