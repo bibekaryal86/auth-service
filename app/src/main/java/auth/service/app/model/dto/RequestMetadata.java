@@ -19,6 +19,6 @@ public class RequestMetadata {
   private String sortColumn;
   private RequestEnums.SortDirection sortDirection;
   private List<String> filterColumns;
-  private List<String> filterValues;
+  private List<Object> filterValues;
   private List<RequestEnums.FilterOperation> filterOperations;
 }

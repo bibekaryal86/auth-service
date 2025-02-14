@@ -1,5 +1,6 @@
 package auth.service.app.util;
 
+import auth.service.app.model.enums.RequestEnums;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-public class SpecificationUtils {
+public class JpaDataUtils {
 
   /**
    * Returns a Specification to filter records where the given field is null.
@@ -128,7 +129,9 @@ public class SpecificationUtils {
    * @throws IllegalArgumentException If the sort direction is invalid.
    */
   public static <T> Sort createSort(
-      final String sortColumn, final String sortDirection, final Class<T> entityClass) {
+      final String sortColumn,
+      final RequestEnums.SortDirection sortDirection,
+      final Class<T> entityClass) {
     if (!StringUtils.hasText(sortColumn)) {
       throw new IllegalArgumentException("Sort column cannot be null or empty");
     }
@@ -136,11 +139,11 @@ public class SpecificationUtils {
     validateSortColumn(sortColumn, entityClass);
 
     Sort.Direction direction;
-    if (!StringUtils.hasText(sortDirection)) {
+    if (sortDirection == null) {
       direction = Sort.Direction.ASC;
     } else {
       try {
-        direction = Sort.Direction.fromString(sortDirection);
+        direction = Sort.Direction.fromString(sortDirection.name());
       } catch (IllegalArgumentException e) {
         throw new IllegalArgumentException("Invalid sort direction. Must be 'ASC' or 'DESC'");
       }
@@ -184,7 +187,7 @@ public class SpecificationUtils {
       final int pageNumber,
       final int perPageSize,
       final String sortColumn,
-      final String sortDirection,
+      final RequestEnums.SortDirection sortDirection,
       final Class<T> entityClass) {
     final int validatedPageNumber = Math.max(pageNumber, 0);
     final int validatedPerPageSize = (perPageSize <= 10 || perPageSize > 1000) ? 100 : perPageSize;

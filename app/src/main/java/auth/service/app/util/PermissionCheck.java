@@ -85,7 +85,8 @@ public class PermissionCheck {
     throw new CheckPermissionException("Profile not authorized...");
   }
 
-  private boolean checkUserPermission(final AuthToken authToken, final List<String> requiredPermissions) {
+  private boolean checkUserPermission(
+      final AuthToken authToken, final List<String> requiredPermissions) {
     if (authToken.isSuperUser()) {
       return true;
     }

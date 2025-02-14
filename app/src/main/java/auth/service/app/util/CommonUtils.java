@@ -154,7 +154,8 @@ public class CommonUtils {
       return false;
     }
 
-    boolean isBooleansIncluded = requestMetadata.isIncludeDeleted() || requestMetadata.isIncludeHistory();
+    boolean isBooleansIncluded =
+        requestMetadata.isIncludeDeleted() || requestMetadata.isIncludeHistory();
     boolean isSortingIncluded = StringUtils.hasText(requestMetadata.getSortColumn());
     boolean isFilterIncluded =
         !CollectionUtils.isEmpty(requestMetadata.getFilterColumns())

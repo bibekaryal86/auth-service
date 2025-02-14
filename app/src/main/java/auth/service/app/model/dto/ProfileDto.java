@@ -1,5 +1,7 @@
 package auth.service.app.model.dto;
 
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
+
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenPermission;
@@ -15,8 +17,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.util.CollectionUtils;
-
-import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
 
 @Data
 @Builder
@@ -76,7 +76,8 @@ public class ProfileDto {
                                     .permissionName(permissionDto.getPermissionName())
                                     .build()))
             .toList();
-    final boolean isSuperUser = authTokenRoles.stream()
+    final boolean isSuperUser =
+        authTokenRoles.stream()
             .anyMatch(authTokenRole -> authTokenRole.getRoleName().equals(ROLE_NAME_SUPERUSER));
     return AuthToken.builder()
         .platform(authTokenPlatform)

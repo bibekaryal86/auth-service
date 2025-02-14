@@ -11,6 +11,7 @@ public class RequestEnums {
   @Getter
   public enum FilterOperation {
     EQ("eq"),
+    NQ("neq"),
     GT("gt"),
     LT("lt"),
     GTE("gte"),
