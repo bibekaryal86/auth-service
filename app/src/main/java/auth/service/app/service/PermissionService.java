@@ -2,15 +2,21 @@ package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PermissionRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.repository.PermissionRepository;
+import auth.service.app.util.CommonUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -30,9 +36,18 @@ public class PermissionService {
   }
 
   // READ
+  @Cacheable(value = "permissions")
   public List<PermissionEntity> readPermissions() {
     log.debug("Read Permissions...");
     return permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName"));
+  }
+
+  public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
+    log.debug("Read Permissions: [{}]", requestMetadata);
+    Specification<PermissionEntity> specification =
+        CommonUtils.getQuerySpecification(requestMetadata);
+    Pageable pageable = CommonUtils.getQueryPageable(requestMetadata, "permissionName");
+    return permissionRepository.findAll(specification, pageable);
   }
 
   /** Use {@link CircularDependencyService#readPermission(Long)} */

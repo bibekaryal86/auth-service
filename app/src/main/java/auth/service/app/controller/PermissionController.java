@@ -5,17 +5,21 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,10 +70,23 @@ public class PermissionController {
 
   @CheckPermission("PERMISSION_READ")
   @GetMapping
-  public ResponseEntity<PermissionResponse> readPermissions() {
+  public ResponseEntity<PermissionResponse> readPermissions(final RequestMetadata requestMetadata) {
     try {
-      final List<PermissionEntity> permissionEntities = permissionService.readPermissions();
-      return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
+      if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
+        final Page<PermissionEntity> permissionEntityPage =
+            permissionService.readPermissions(requestMetadata);
+        final List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
+        final ResponsePageInfo responsePageInfo =
+            CommonUtils.defaultResponsePageInfo(permissionEntityPage);
+        return entityDtoConvertUtils.getResponseMultiplePermissions(
+            permissionEntities, responsePageInfo);
+      } else {
+        final List<PermissionEntity> permissionEntities = permissionService.readPermissions();
+        final ResponsePageInfo responsePageInfo =
+            CommonUtils.defaultResponsePageInfo(permissionEntities);
+        return entityDtoConvertUtils.getResponseMultiplePermissions(
+            permissionEntities, responsePageInfo);
+      }
     } catch (Exception ex) {
       log.error("Read Permissions...", ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);

@@ -29,6 +29,7 @@ import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseMetadata;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.entity.AddressTypeEntity;
@@ -202,7 +203,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultiplePermissions_EmptyList() {
     ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseMultiplePermissions(Collections.emptyList());
+        entityDtoConvertUtils.getResponseMultiplePermissions(
+            Collections.emptyList(), CommonUtils.emptyResponseMetadata().getResponsePageInfo());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -214,7 +216,14 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultiplePermissions_NonEmptyList() {
     ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
+        entityDtoConvertUtils.getResponseMultiplePermissions(
+            permissionEntities,
+            ResponsePageInfo.builder()
+                .totalItems(permissionEntities.size())
+                .totalPages(1)
+                .pageNumber(1)
+                .perPage(permissionEntities.size())
+                .build());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
