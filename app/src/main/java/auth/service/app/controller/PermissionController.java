@@ -5,17 +5,22 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponseCrudInfo;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,7 +62,8 @@ public class PermissionController {
                   String.format(
                       "Permission Create [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Create Permission: [{}]", permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -66,10 +72,15 @@ public class PermissionController {
 
   @CheckPermission("PERMISSION_READ")
   @GetMapping
-  public ResponseEntity<PermissionResponse> readPermissions() {
+  public ResponseEntity<PermissionResponse> readPermissions(final RequestMetadata requestMetadata) {
     try {
-      final List<PermissionEntity> permissionEntities = permissionService.readPermissions();
-      return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
+      final Page<PermissionEntity> permissionEntityPage =
+          permissionService.readPermissions(requestMetadata);
+      final List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
+      final ResponsePageInfo responsePageInfo =
+          CommonUtils.defaultResponsePageInfo(permissionEntityPage);
+      return entityDtoConvertUtils.getResponseMultiplePermissions(
+          permissionEntities, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Permissions...", ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -81,7 +92,7 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> readPermission(@PathVariable final long id) {
     try {
       final PermissionEntity permissionEntity = circularDependencyService.readPermission(id);
-      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
+      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity, null);
     } catch (Exception ex) {
       log.error("Read Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -106,7 +117,8 @@ public class PermissionController {
                   String.format(
                       "Permission Update [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Update Permission: [{}] | [{}]", id, permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -129,7 +141,9 @@ public class PermissionController {
                   String.format(
                       "Permission Delete Soft [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      return entityDtoConvertUtils.getResponseDeletePermission();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSinglePermission(
+          new PermissionEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Soft Delete Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -152,7 +166,9 @@ public class PermissionController {
                   String.format(
                       "Permission Delete Hard [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      return entityDtoConvertUtils.getResponseDeletePermission();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSinglePermission(
+          new PermissionEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Hard Delete Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
@@ -174,7 +190,8 @@ public class PermissionController {
                   String.format(
                       "Permission Restore [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+      return entityDtoConvertUtils.getResponseSinglePermission(permissionEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Restore Permission: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);

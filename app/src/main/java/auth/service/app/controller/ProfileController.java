@@ -9,12 +9,16 @@ import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponseCrudInfo;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.ProfileService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import auth.service.app.util.PermissionCheck;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +26,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,13 +55,16 @@ public class ProfileController {
 
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
+      final RequestMetadata requestMetadata) {
     try {
-      final List<ProfileEntity> profileEntities = profileService.readProfiles();
+      final Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
       final List<ProfileEntity> filteredProfileEntities =
-          permissionCheck.filterProfileListByAccess(profileEntities);
+          permissionCheck.filterProfileListByAccess(profileEntityPage.toList());
+      final ResponsePageInfo responsePageInfo =
+          CommonUtils.defaultResponsePageInfo(profileEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles);
+          filteredProfileEntities, isIncludeRoles, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Profiles...", ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -66,16 +74,22 @@ public class ProfileController {
   @GetMapping("/platform/{platformId}")
   public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
       @PathVariable final Long platformId,
-      @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles) {
+      @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles,
+      final RequestMetadata requestMetadata) {
     try {
+      final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
+          platformProfileRoleService.readPlatformProfileRolesByPlatformId(
+              platformId, requestMetadata);
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRolesByProfileId(platformId);
+          platformProfileRoleEntityPage.toList();
       final List<ProfileEntity> profileEntities =
           platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
+      final ResponsePageInfo responsePageInfo =
+          CommonUtils.defaultResponsePageInfo(platformProfileRoleEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles);
+          filteredProfileEntities, isIncludeRoles, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -87,7 +101,7 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess("", id);
       final ProfileEntity profileEntity = profileService.readProfile(id);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, null);
     } catch (Exception ex) {
       log.error("Read Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -99,7 +113,7 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess(email, 0);
       final ProfileEntity profileEntity = profileService.readProfileByEmail(email);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, null);
     } catch (Exception ex) {
       log.error("Read Profile By Email: [{}]", email, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -123,7 +137,8 @@ public class ProfileController {
                   String.format(
                       "Profile Update [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Update Profile: [{}] | [{}]", id, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -163,7 +178,8 @@ public class ProfileController {
                       profileEntity.getId(),
                       profileEmailRequest.getOldEmail(),
                       profileEmailRequest.getNewEmail())));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error(
           "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
@@ -194,7 +210,8 @@ public class ProfileController {
                   String.format(
                       "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
                       platformId, profileEntity.getId(), profileEntity.getEmail())));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error(
           "Update Profile Password: [{}] | [{}] | [{}]",
@@ -223,7 +240,8 @@ public class ProfileController {
                   String.format(
                       "Profile Delete Address [Id: %s] - [Email: %s] - [AddressId: %s]",
                       profileEntity.getId(), profileEntity.getEmail(), addressId)));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Delete Profile Address: [{}] | [{}]", profileId, addressId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -246,7 +264,8 @@ public class ProfileController {
                   String.format(
                       "Profile Delete Soft [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
-      return entityDtoConvertUtils.getResponseDeleteProfile();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(new ProfileEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Soft Delete Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -269,7 +288,8 @@ public class ProfileController {
                   String.format(
                       "Profile Delete Hard [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
-      return entityDtoConvertUtils.getResponseDeleteProfile();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(new ProfileEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Hard Delete Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -291,7 +311,8 @@ public class ProfileController {
                   String.format(
                       "Profile Restore [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Restore Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

@@ -1,17 +1,20 @@
 package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.RoleRepository;
+import auth.service.app.util.CommonUtils;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -22,7 +25,6 @@ public class RoleService {
   private final RoleRepository roleRepository;
 
   // CREATE
-  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public RoleEntity createRole(final RoleRequest roleRequest) {
     log.debug("Create Role: [{}]", roleRequest);
     RoleEntity roleEntity = new RoleEntity();
@@ -31,10 +33,14 @@ public class RoleService {
   }
 
   // READ
-  @Cacheable(value = "roles")
-  public List<RoleEntity> readRoles() {
-    log.debug("Read Roles...");
-    return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "roleName"));
+  public Page<RoleEntity> readRoles(final RequestMetadata requestMetadata) {
+    log.debug("Read Roles: [{}]", requestMetadata);
+    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
+      Specification<RoleEntity> specification = CommonUtils.getQuerySpecification(requestMetadata);
+      Pageable pageable = CommonUtils.getQueryPageable(requestMetadata, "roleName");
+      return roleRepository.findAll(specification, pageable);
+    }
+    return new PageImpl<>(roleRepository.findAll(Sort.by(Sort.Direction.ASC, "roleName")));
   }
 
   /** Use {@link CircularDependencyService#readRole(Long)} */
@@ -46,7 +52,6 @@ public class RoleService {
   }
 
   // UPDATE
-  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public RoleEntity updateRole(final Long id, final RoleRequest roleRequest) {
     log.debug("Update Role: [{}], [{}]", id, roleRequest);
     final RoleEntity roleEntity = readRole(id);
@@ -55,7 +60,6 @@ public class RoleService {
   }
 
   // DELETE
-  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public RoleEntity softDeleteRole(final Long id) {
     log.info("Soft Delete Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);
@@ -63,7 +67,6 @@ public class RoleService {
     return roleRepository.save(roleEntity);
   }
 
-  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public void hardDeleteRole(final Long id) {
     log.info("Hard Delete Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);
@@ -71,7 +74,6 @@ public class RoleService {
   }
 
   // RESTORE
-  @CacheEvict(value = "roles", allEntries = true, beforeInvocation = true)
   public RoleEntity restoreSoftDeletedRole(final Long id) {
     log.info("Restore Soft Deleted Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);

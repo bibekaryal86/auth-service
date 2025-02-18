@@ -76,8 +76,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     final ResponseMetadata responseMetadata =
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
-            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
             .build();
 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());

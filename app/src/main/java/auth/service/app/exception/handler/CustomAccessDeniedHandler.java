@@ -37,8 +37,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authenticated to access this resource...")
                       .build())
-              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
               .build();
     } else {
       responseMetadata =
@@ -47,8 +47,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authorized to access this resource...")
                       .build())
-              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
               .build();
     }
 

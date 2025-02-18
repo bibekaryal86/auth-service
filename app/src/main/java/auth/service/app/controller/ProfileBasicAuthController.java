@@ -12,6 +12,7 @@ import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
+import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
@@ -26,6 +27,7 @@ import auth.service.app.service.EmailService;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.ProfileService;
 import auth.service.app.service.TokenService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -85,7 +87,8 @@ public class ProfileBasicAuthController {
                       "Profile Create [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
 
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

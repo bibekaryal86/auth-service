@@ -2,15 +2,19 @@ package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PermissionRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.repository.PermissionRepository;
+import auth.service.app.util.CommonUtils;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -21,7 +25,6 @@ public class PermissionService {
   private final PermissionRepository permissionRepository;
 
   // CREATE
-  @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
   public PermissionEntity createPermission(final PermissionRequest permissionRequest) {
     log.debug("Create Permission: [{}]", permissionRequest);
     PermissionEntity permissionEntity = new PermissionEntity();
@@ -30,9 +33,16 @@ public class PermissionService {
   }
 
   // READ
-  public List<PermissionEntity> readPermissions() {
-    log.debug("Read Permissions...");
-    return permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName"));
+  public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
+    log.debug("Read Permissions: [{}]", requestMetadata);
+    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
+      Specification<PermissionEntity> specification =
+          CommonUtils.getQuerySpecification(requestMetadata);
+      Pageable pageable = CommonUtils.getQueryPageable(requestMetadata, "permissionName");
+      return permissionRepository.findAll(specification, pageable);
+    }
+    return new PageImpl<>(
+        permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName")));
   }
 
   /** Use {@link CircularDependencyService#readPermission(Long)} */
@@ -44,7 +54,6 @@ public class PermissionService {
   }
 
   // UPDATE
-  @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
   public PermissionEntity updatePermission(
       final Long id, final PermissionRequest permissionRequest) {
     log.debug("Update Permission: [{}], [{}]", id, permissionRequest);
@@ -54,7 +63,6 @@ public class PermissionService {
   }
 
   // DELETE
-  @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
   public PermissionEntity softDeletePermission(final Long id) {
     log.info("Soft Delete Permission: [{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
@@ -62,7 +70,6 @@ public class PermissionService {
     return permissionRepository.save(permissionEntity);
   }
 
-  @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
   public void hardDeletePermission(final Long id) {
     log.info("Hard Delete Permission: [{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
@@ -70,7 +77,6 @@ public class PermissionService {
   }
 
   // RESTORE
-  @CacheEvict(value = "permissions", allEntries = true, beforeInvocation = true)
   public PermissionEntity restoreSoftDeletedPermission(final Long id) {
     log.info("Restore Soft Deleted Permission: [{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);

@@ -2,16 +2,21 @@ package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.PlatformProfileRoleRepository;
+import auth.service.app.util.CommonUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -45,23 +50,31 @@ public class PlatformProfileRoleService {
   }
 
   // READ
-  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileId() {
-    log.debug("Read Platform Profile Role...");
-    return platformProfileRoleRepository.findAll(
-        Sort.by(
-            Sort.Order.asc("platform.platformName"),
-            Sort.Order.asc("profile.email"),
-            Sort.Order.asc("role.roleName")));
-  }
+  public Page<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformId(
+      final Long platformId, final RequestMetadata requestMetadata) {
+    log.debug(
+        "Read Platform Profile Roles By Platform Id: [{}] | [{}]", platformId, requestMetadata);
 
-  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileId(final Long profileId) {
-    log.debug("Read Platform Profile Roles: [{}]", profileId);
-    return platformProfileRoleRepository.findByProfileId(profileId);
+    final Pageable pageable =
+        PageRequest.of(
+            Math.max(requestMetadata.getPageNumber(), 0),
+            (requestMetadata.getPerPage() < 10 || requestMetadata.getPerPage() > 1000)
+                ? 100
+                : requestMetadata.getPerPage(),
+            Sort.by(
+                Sort.Order.asc("platform.platformName"),
+                Sort.Order.asc("profile.email"),
+                Sort.Order.asc("role.roleName")));
+
+    if (CommonUtils.shouldIncludeDeletedRecords(requestMetadata)) {
+      return platformProfileRoleRepository.findByPlatformId(platformId, pageable);
+    }
+    return platformProfileRoleRepository.findByPlatformIdNoDeleted(platformId, pageable);
   }
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileIds(
       final List<Long> profileIds) {
-    log.debug("Read Platform Profile Roles: [{}]", profileIds);
+    log.debug("Read Platform Profile Roles By Profile Ids: [{}]", profileIds);
     return platformProfileRoleRepository.findByProfileIds(profileIds);
   }
 

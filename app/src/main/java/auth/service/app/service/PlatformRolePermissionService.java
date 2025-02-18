@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -28,12 +27,9 @@ public class PlatformRolePermissionService {
       final PlatformRolePermissionRequest platformRolePermissionRequest) {
     log.debug("Create Platform Role Permission: [{}]", platformRolePermissionRequest);
     PlatformRolePermissionEntity platformRolePermissionEntity = new PlatformRolePermissionEntity();
-    final PlatformEntity platformEntity =
-        circularDependencyService.readPlatform(platformRolePermissionRequest.getPlatformId());
-    final RoleEntity roleEntity =
-        circularDependencyService.readRole(platformRolePermissionRequest.getRoleId());
-    final PermissionEntity permissionEntity =
-        circularDependencyService.readPermission(platformRolePermissionRequest.getPermissionId());
+    final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformRolePermissionRequest.getPlatformId());
+    final RoleEntity roleEntity = circularDependencyService.readRole(platformRolePermissionRequest.getRoleId());
+    final PermissionEntity permissionEntity = circularDependencyService.readPermission(platformRolePermissionRequest.getPermissionId());
     platformRolePermissionEntity.setPlatform(platformEntity);
     platformRolePermissionEntity.setRole(roleEntity);
     platformRolePermissionEntity.setPermission(permissionEntity);
@@ -45,23 +41,8 @@ public class PlatformRolePermissionService {
   }
 
   // READ
-  public List<PlatformRolePermissionEntity> readPlatformRolePermissions() {
-    log.debug("Read Platform Role Permissions...");
-    return platformRolePermissionRepository.findAll(
-        Sort.by(
-            Sort.Order.asc("platform.platformName"),
-            Sort.Order.asc("role.roleName"),
-            Sort.Order.asc("permission.permissionName")));
-  }
-
-  public List<PlatformRolePermissionEntity> readPlatformRolePermissionsByRoleId(final Long roleId) {
-    log.debug("Read Platform Role Permissions: [{}]", roleId);
-    return platformRolePermissionRepository.findByRoleId(roleId);
-  }
-
-  public List<PlatformRolePermissionEntity> readPlatformRolePermissionsByRoleIds(
-      final List<Long> roleIds) {
-    log.debug("Read Platform Role Permissions: [{}]", roleIds);
+  public List<PlatformRolePermissionEntity> readPlatformRolePermissionsByRoleIds(final List<Long> roleIds) {
+    log.debug("Read Platform Role Permissions By Role Ids: [{}]", roleIds);
     return platformRolePermissionRepository.findByRoleIds(roleIds);
   }
 

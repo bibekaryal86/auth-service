@@ -17,6 +17,7 @@ import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
@@ -26,6 +27,7 @@ import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.PasswordUtils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +36,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -102,9 +108,15 @@ public class ProfileService {
   }
 
   // READ
-  public List<ProfileEntity> readProfiles() {
-    log.debug("Read App Users...");
-    return profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
+  public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
+    log.debug("Read Profiles: [{}]", requestMetadata);
+    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
+      Specification<ProfileEntity> specification =
+          CommonUtils.getQuerySpecification(requestMetadata);
+      Pageable pageable = CommonUtils.getQueryPageable(requestMetadata, "lastName");
+      return profileRepository.findAll(specification, pageable);
+    }
+    return new PageImpl<>(profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName")));
   }
 
   /** Use {@link CircularDependencyService#readProfile(Long)} */

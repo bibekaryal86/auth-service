@@ -33,3 +33,9 @@ A small utility for authentication and authorization with platforms, profiles, r
   * Update this README.md for proper documentation
   * Implement RequestMetadata, ResponseCrudInfo
   * Implement queryParam for superusers for includeDeleted
+
+
+
+* check for deleted when converting and adding platform/permissions, platform/roles, etc
+* check roles for platform-profile-role/platform-role-permission
+  * what if someone has role read permission but not profile read permission

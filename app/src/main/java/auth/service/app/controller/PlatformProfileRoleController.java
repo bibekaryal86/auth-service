@@ -5,20 +5,20 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.PlatformProfileRoleResponse;
+import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.PlatformProfileRoleService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,39 +57,11 @@ public class PlatformProfileRoleController {
                       platformProfileRoleEntity.getProfile().getId(),
                       platformProfileRoleEntity.getRole().getId())));
 
-      return entityDtoConvertUtils.getResponseSinglePlatformProfileRole(platformProfileRoleEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatformProfileRole(
+          platformProfileRoleEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_PROFILE_ROLE_READ")
-  @GetMapping
-  public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRoles() {
-    try {
-      final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleService.readPlatformProfileRolesByProfileId();
-      return entityDtoConvertUtils.getResponseMultiplePlatformProfileRoles(
-          platformProfileRoleEntities);
-    } catch (Exception ex) {
-      log.error("Read Platform Profile Roles...", ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
-    }
-  }
-
-  @CheckPermission("PLATFORM_PROFILE_ROLE_READ")
-  @GetMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<PlatformProfileRoleResponse> readPlatformProfileRole(
-      @PathVariable final long platformId,
-      @PathVariable final long profileId,
-      @PathVariable final long roleId) {
-    try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleService.readPlatformProfileRole(platformId, profileId, roleId);
-      return entityDtoConvertUtils.getResponseSinglePlatformProfileRole(platformProfileRoleEntity);
-    } catch (Exception ex) {
-      log.error("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
       return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
     }
   }
@@ -116,7 +88,10 @@ public class PlatformProfileRoleController {
                       platformProfileRoleEntity.getPlatform().getId(),
                       platformProfileRoleEntity.getProfile().getId(),
                       platformProfileRoleEntity.getRole().getId())));
-      return entityDtoConvertUtils.getResponseDeletePlatformProfileRole();
+
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatformProfileRole(
+          new PlatformProfileRoleEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error(
           "Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);

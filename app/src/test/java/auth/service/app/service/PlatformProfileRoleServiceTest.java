@@ -17,13 +17,8 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   @Autowired private PlatformProfileRoleService platformProfileRoleService;
 
   @Test
-  void testReadPlatformProfileRoles() {
-    assertEquals(6, platformProfileRoleService.readPlatformProfileRolesByProfileId().size());
-  }
-
-  @Test
   void testReadPlatformProfileRolesByProfileId() {
-    assertEquals(3, platformProfileRoleService.readPlatformProfileRolesByProfileId(4L).size());
+    assertEquals(3, platformProfileRoleService.readPlatformProfileRolesByPlatformId(4L).size());
   }
 
   @Test

@@ -32,8 +32,8 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
                 ResponseStatusInfo.builder()
                     .errMsg("Profile not authenticated to access this resource...")
                     .build())
-            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
             .build();
     final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
     response.getWriter().write(jsonResponse);
