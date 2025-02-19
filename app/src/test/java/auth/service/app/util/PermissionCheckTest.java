@@ -53,7 +53,7 @@ public class PermissionCheckTest extends BaseTest {
   void testCheckPermission() {
     CheckPermission checkPermission = mock(CheckPermission.class);
     when(checkPermission.value())
-        .thenReturn(new String[] {"PERMISSION_READ", "SOME_OTHER_PERMISSION"});
+        .thenReturn(new String[] {"PERMISSION-1", "SOME_OTHER_PERMISSION"});
 
     assertDoesNotThrow(() -> permissionCheck.checkPermission(checkPermission));
     verify(securityContext).getAuthentication();
@@ -64,6 +64,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
 
     CheckPermission checkPermission = mock(CheckPermission.class);
@@ -102,6 +103,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -134,6 +136,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 

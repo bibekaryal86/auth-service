@@ -42,7 +42,7 @@ public class EnvServiceConnector {
 
     if (httpResponse.statusCode() == 200) {
       EnvDetailsResponse envDetailsResponse =
-          CommonUtils.getGson().fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
+          CommonUtils.GSON.fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
       return envDetailsResponse.getEnvDetails();
     }
 

@@ -31,5 +31,6 @@ A small utility for authentication and authorization with platforms, profiles, r
 
 * TODO
   * Update this README.md for proper documentation
-  * Implement RequestMetadata, ResponseCrudInfo
-  * Implement queryParam for superusers for includeDeleted
+
+
+REDO TESTS

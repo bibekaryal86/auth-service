@@ -1,5 +1,7 @@
 package auth.service.app.model.dto;
 
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_SUPERUSER;
+
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.model.token.AuthTokenPermission;
@@ -34,22 +36,22 @@ public class ProfileDto {
   private Integer loginAttempts;
   private LocalDateTime lastLogin;
 
-  private List<ProfileAddressDto> addresses;
+  private ProfileAddressDto profileAddress;
   private List<ProfileDtoPlatformRole> platformRoles;
 
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
-    AuthTokenPlatform authTokenPlatform =
+    final AuthTokenPlatform authTokenPlatform =
         AuthTokenPlatform.builder()
             .id(platformEntity.getId())
             .platformName(platformEntity.getPlatformName())
             .build();
-    AuthTokenProfile authTokenProfile =
+    final AuthTokenProfile authTokenProfile =
         AuthTokenProfile.builder().id(this.getId()).email(this.getEmail()).build();
-    List<RoleDto> roleDtos =
+    final List<RoleDto> roleDtos =
         platformRoles.stream()
             .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
             .toList();
-    List<AuthTokenRole> authTokenRoles =
+    final List<AuthTokenRole> authTokenRoles =
         CollectionUtils.isEmpty(roleDtos)
             ? Collections.emptyList()
             : roleDtos.stream()
@@ -60,13 +62,11 @@ public class ProfileDto {
                             .roleName(appRoleDto.getRoleName())
                             .build())
                 .toList();
-    List<AuthTokenPermission> authTokenPermissions =
+    final List<AuthTokenPermission> authTokenPermissions =
         roleDtos.stream()
             .flatMap(
                 roleDto ->
-                    roleDto.getPlatformPermissions().stream()
-                        .filter(entry -> entry.getPlatform().getId().equals(platformEntity.getId()))
-                        .flatMap(entry -> entry.getPermissions().stream())
+                    roleDto.getPermissions().stream()
                         .map(
                             permissionDto ->
                                 AuthTokenPermission.builder()
@@ -74,11 +74,15 @@ public class ProfileDto {
                                     .permissionName(permissionDto.getPermissionName())
                                     .build()))
             .toList();
+    final boolean isSuperUser =
+        authTokenRoles.stream()
+            .anyMatch(authTokenRole -> authTokenRole.getRoleName().equals(ROLE_NAME_SUPERUSER));
     return AuthToken.builder()
         .platform(authTokenPlatform)
         .profile(authTokenProfile)
         .roles(authTokenRoles)
         .permissions(authTokenPermissions)
+        .isSuperUser(isSuperUser)
         .build();
   }
 }

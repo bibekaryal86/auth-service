@@ -1,7 +1,6 @@
 package auth.service.app.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,5 +24,5 @@ public class ProfileRequest {
   @ToString.Exclude private String password;
 
   private boolean guestUser;
-  private List<ProfileAddressRequest> addresses;
+  private ProfileAddressRequest addressRequest;
 }

@@ -10,7 +10,6 @@ import lombok.Getter;
 public class ProfileAddressRequest {
   private Long id; // needed in request for updates from within profile
   private Long profileId;
-  private Long typeId;
   private String street;
   private String city;
   private String state;

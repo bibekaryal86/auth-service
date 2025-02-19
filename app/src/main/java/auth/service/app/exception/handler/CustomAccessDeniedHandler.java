@@ -1,7 +1,5 @@
 package auth.service.app.exception.handler;
 
-import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
-
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.util.CommonUtils;
@@ -37,8 +35,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authenticated to access this resource...")
                       .build())
-              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
               .build();
     } else {
       responseMetadata =
@@ -47,12 +45,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                   ResponseStatusInfo.builder()
                       .errMsg("Profile is not authorized to access this resource...")
                       .build())
-              .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
               .build();
     }
 
-    final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
+    final String jsonResponse = CommonUtils.GSON.toJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 }

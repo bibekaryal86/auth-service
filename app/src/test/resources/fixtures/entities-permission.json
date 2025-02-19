@@ -1,26 +1,210 @@
 [
   {
     "id": 1,
-    "permissionName": "PERMISSION_CREATE",
-    "permissionDesc": "Can Add Permission",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": null,
+    "permissionName": "PERMISSION-1",
+    "permissionDesc": "PERMISSION ONE",
+    "role": {
+      "id": 1,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-1",
+      "roleDesc": "ROLE ONE"
+    }
   },
   {
     "id": 2,
-    "permissionName": "PERMISSION_READ",
-    "permissionDesc": "Can View Permission(s)",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": null,
+    "permissionName": "PERMISSION-1",
+    "permissionDesc": "PERMISSION ONE",
+    "role": {
+      "id": 2,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-2",
+      "roleDesc": "ROLE TWO"
+    }
   },
   {
     "id": 3,
-    "permissionName": "PERMISSION_UPDATE",
-    "permissionDesc": "Can Update Permission",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": "2024-08-24T22:06:49.685768"
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "permissionName": "PERMISSION-3",
+    "permissionDesc": "PERMISSION THREE",
+    "role": {
+      "id": 1,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-1",
+      "roleDesc": "ROLE ONE"
+    }
+  },
+  {
+    "id": 4,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-4",
+    "permissionDesc": "PERMISSION FOUR",
+    "role": {
+      "id": 2,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-2",
+      "roleDesc": "ROLE TWO"
+    }
+  },
+  {
+    "id": 5,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-5",
+    "permissionDesc": "PERMISSION FIVE",
+    "role": {
+      "id": 5,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-5",
+      "roleDesc": "ROLE FIVE"
+    }
+  },
+  {
+    "id": 6,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "permissionName": "PERMISSION-6",
+    "permissionDesc": "PERMISSION SIX",
+    "role": {
+      "id": 6,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-6",
+      "roleDesc": "ROLE SIX"
+    }
+  },
+  {
+    "id": 7,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-7",
+    "permissionDesc": "PERMISSION SEVEN",
+    "role": {
+      "id": 6,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-6",
+      "roleDesc": "ROLE SIX"
+    }
+  },
+  {
+    "id": 8,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-8",
+    "permissionDesc": "PERMISSION EIGHT",
+    "role": {
+      "id": 10,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-10",
+      "roleDesc": "ROLE TEN"
+    }
+  },
+  {
+    "id": 9,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "permissionName": "PERMISSION-9",
+    "permissionDesc": "PERMISSION NINE",
+    "role": {
+      "id": 10,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-10",
+      "roleDesc": "ROLE TEN"
+    }
+  },
+  {
+    "id": 10,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-10",
+    "permissionDesc": "PERMISSION TEN",
+    "role": {
+      "id": 10,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-10",
+      "roleDesc": "ROLE TEN"
+    }
+  },
+  {
+    "id": 11,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-11",
+    "permissionDesc": "PERMISSION ELEVEN",
+    "role": {
+      "id": 1,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-1",
+      "roleDesc": "ROLE ONE"
+    }
+  },
+  {
+    "id": 12,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "permissionName": "PERMISSION-12",
+    "permissionDesc": "PERMISSION TWELVE",
+    "role": {
+      "id": 1,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-1",
+      "roleDesc": "ROLE ONE"
+    }
+  },
+  {
+    "id": 13,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "permissionName": "PERMISSION-13",
+    "permissionDesc": "PERMISSION THIRTEEN",
+    "role": {
+      "id": 13,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "roleName": "ROLE-13",
+      "roleDesc": "ROLE THIRTEEN"
+    }
   }
 ]

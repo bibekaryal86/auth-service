@@ -5,17 +5,22 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponseCrudInfo;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PlatformService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -55,7 +61,8 @@ public class PlatformController {
                   String.format(
                       "Platform Create [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Create Platform: [{}]", platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -64,10 +71,14 @@ public class PlatformController {
 
   @CheckPermission("ONLY SUPERUSER CAN READ PLATFORM")
   @GetMapping
-  public ResponseEntity<PlatformResponse> readPlatforms() {
+  public ResponseEntity<PlatformResponse> readPlatforms(final RequestMetadata requestMetadata) {
     try {
-      final List<PlatformEntity> platformEntities = platformService.readPlatforms();
-      return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities);
+      final Page<PlatformEntity> platformEntityPage =
+          platformService.readPlatforms(requestMetadata);
+      final List<PlatformEntity> platformEntities = platformEntityPage.toList();
+      final ResponsePageInfo responsePageInfo =
+          CommonUtils.defaultResponsePageInfo(platformEntityPage);
+      return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Platforms...", ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -76,10 +87,13 @@ public class PlatformController {
 
   @CheckPermission("ONLY SUPERUSER CAN READ PLATFORM")
   @GetMapping("/platform/{id}")
-  public ResponseEntity<PlatformResponse> readPlatform(@PathVariable final long id) {
+  public ResponseEntity<PlatformResponse> readPlatform(
+      @PathVariable final long id,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
+      final PlatformEntity platformEntity =
+          circularDependencyService.readPlatform(id, isIncludeDeleted);
+      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, null);
     } catch (Exception ex) {
       log.error("Read Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -103,7 +117,8 @@ public class PlatformController {
                   String.format(
                       "Platform Update [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Update Platform: [{}] | [{}]", id, platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -115,7 +130,7 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> softDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, false);
       platformService.softDeletePlatform(id);
       runAsync(
           () ->
@@ -126,7 +141,9 @@ public class PlatformController {
                   String.format(
                       "Platform Delete Soft [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      return entityDtoConvertUtils.getResponseDeletePlatform();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          new PlatformEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Soft Delete Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -138,7 +155,7 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> hardDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id);
+      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, true);
       platformService.hardDeletePlatform(id);
       runAsync(
           () ->
@@ -149,7 +166,9 @@ public class PlatformController {
                   String.format(
                       "Platform Delete Hard [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      return entityDtoConvertUtils.getResponseDeletePlatform();
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          new PlatformEntity(), responseCrudInfo);
     } catch (Exception ex) {
       log.error("Hard Delete Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -171,7 +190,8 @@ public class PlatformController {
                   String.format(
                       "Platform Restore [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity);
+      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
     } catch (Exception ex) {
       log.error("Restore Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
