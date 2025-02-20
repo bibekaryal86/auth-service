@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -144,6 +145,17 @@ public class CommonUtils {
         .deletedRowsCount(deleted)
         .restoredRowsCount(restored)
         .build();
+  }
+
+  public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
+    return RequestMetadata.builder()
+            .isIncludeDeleted(false)
+            .isIncludeHistory(false)
+            .pageNumber(0)
+            .perPage(100)
+            .sortColumn(sortColumn)
+            .sortDirection(Sort.Direction.ASC)
+            .build();
   }
 
   public static boolean isRequestMetadataIncluded(final RequestMetadata requestMetadata) {

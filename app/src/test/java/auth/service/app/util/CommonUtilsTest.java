@@ -2,6 +2,7 @@ package auth.service.app.util;
 
 import static auth.service.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -279,6 +280,17 @@ public class CommonUtilsTest extends BaseTest {
   void testDefaultResponseCrudInfo(int inserted, int updated, int deleted, int restored, ResponseCrudInfo expected) {
     ResponseCrudInfo actual = CommonUtils.defaultResponseCrudInfo(inserted, updated, deleted, restored);
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void testDefaultRequestMetadata() {
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("someSortColumn");
+    assertFalse(requestMetadata.isIncludeDeleted());
+    assertFalse(requestMetadata.isIncludeHistory());
+    assertEquals(0, requestMetadata.getPageNumber());
+    assertEquals(100, requestMetadata.getPerPage());
+    assertEquals("someSortColumn", requestMetadata.getSortColumn());
+    assertEquals(Sort.Direction.ASC, requestMetadata.getSortDirection());
   }
 
   private static Stream<Arguments> provideRequestMetadataDeleted() {
