@@ -26,12 +26,6 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
     @Test
     void testFindByPlatformId() {
         List<PlatformProfileRoleEntity> platformProfileRoleEntities = platformProfileRoleRepository.findAll();
-        System.out.println("****************");
-        for (PlatformProfileRoleEntity platformProfileRoleEntity : platformProfileRoleEntities) {
-            System.out.println(platformProfileRoleEntity.getPlatform().getId());
-        }
-        System.out.println("****************");
-
         final Pageable pageable =
                 PageRequest.of(0, 100,
                         Sort.by(
@@ -66,7 +60,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                 "Entity 0",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-1",
+                                                "PLATFORM-01",
                                                 platformProfileRoleEntities.get(0).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -74,13 +68,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(0).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-1", platformProfileRoleEntities.get(0).getRole().getRoleName())),
+                                                "ROLE-01", platformProfileRoleEntities.get(0).getRole().getRoleName())),
                 () ->
                         assertAll(
                                 "Entity 1",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-2",
+                                                "PLATFORM-02",
                                                 platformProfileRoleEntities.get(1).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -88,13 +82,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(1).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-2", platformProfileRoleEntities.get(1).getRole().getRoleName())),
+                                                "ROLE-02", platformProfileRoleEntities.get(1).getRole().getRoleName())),
                 () ->
                         assertAll(
                                 "Entity 2",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-3",
+                                                "PLATFORM-03",
                                                 platformProfileRoleEntities.get(2).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -102,13 +96,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(2).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-3", platformProfileRoleEntities.get(2).getRole().getRoleName())),
+                                                "ROLE-03", platformProfileRoleEntities.get(2).getRole().getRoleName())),
                 () ->
                         assertAll(
                                 "Entity 3",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-4",
+                                                "PLATFORM-04",
                                                 platformProfileRoleEntities.get(3).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -116,13 +110,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(3).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-4", platformProfileRoleEntities.get(3).getRole().getRoleName())),
+                                                "ROLE-04", platformProfileRoleEntities.get(3).getRole().getRoleName())),
                 () ->
                         assertAll(
                                 "Entity 4",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-4",
+                                                "PLATFORM-04",
                                                 platformProfileRoleEntities.get(4).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -130,13 +124,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(4).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-5", platformProfileRoleEntities.get(4).getRole().getRoleName())),
+                                                "ROLE-05", platformProfileRoleEntities.get(4).getRole().getRoleName())),
                 () ->
                         assertAll(
                                 "Entity 5",
                                 () ->
                                         assertEquals(
-                                                "PLATFORM-4",
+                                                "PLATFORM-04",
                                                 platformProfileRoleEntities.get(5).getPlatform().getPlatformName()),
                                 () ->
                                         assertEquals(
@@ -144,6 +138,6 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                                                 platformProfileRoleEntities.get(5).getProfile().getEmail()),
                                 () ->
                                         assertEquals(
-                                                "ROLE-6", platformProfileRoleEntities.get(5).getRole().getRoleName())));
+                                                "ROLE-06", platformProfileRoleEntities.get(5).getRole().getRoleName())));
     }
 }

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -74,6 +75,7 @@ public class TokenService {
   // RESTORE
   // not available
 
+  @Transactional
   public ProfilePasswordTokenResponse saveToken(
       final Long id,
       final LocalDateTime deletedDate,

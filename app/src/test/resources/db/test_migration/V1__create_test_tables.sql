@@ -180,43 +180,43 @@ CREATE INDEX idx_audit_permission_permission_id ON audit_permission (permission_
 
 -- create test data, match with fixtures
 
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-1', 'PLATFORM ONE');
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-2', 'PLATFORM TWO');
-INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-3', 'PLATFORM THREE', '2024-08-24T22:06:49.685768');
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-4', 'PLATFORM FOUR');
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-5', 'PLATFORM FIVE');
-INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-6', 'PLATFORM SIX', '2024-08-24T22:06:49.685768');
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-7', 'PLATFORM SEVEN');
-INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-8', 'PLATFORM EIGHT');
-INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-9', 'PLATFORM NINE', '2024-08-24T22:06:49.685768');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-01', 'PLATFORM ONE');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-02', 'PLATFORM TWO');
+INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-03', 'PLATFORM THREE', '2024-08-24T22:06:49.685768');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-04', 'PLATFORM FOUR');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-05', 'PLATFORM FIVE');
+INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-06', 'PLATFORM SIX', '2024-08-24T22:06:49.685768');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-07', 'PLATFORM SEVEN');
+INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-08', 'PLATFORM EIGHT');
+INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-09', 'PLATFORM NINE', '2024-08-24T22:06:49.685768');
 INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-10', 'PLATFORM TEN');
 INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-11', 'PLATFORM ELEVEN');
 INSERT INTO platform (platform_name, platform_desc, deleted_date) VALUES ('PLATFORM-12', 'PLATFORM TWELVE', '2024-08-24T22:06:49.685768');
 INSERT INTO platform (platform_name, platform_desc) VALUES ('PLATFORM-13', 'PLATFORM THIRTEEN');
 
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-1', 'ROLE ONE');
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-2', 'ROLE TWO');
-INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-3', 'ROLE THREE', '2024-08-24T22:06:49.685768');
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-4', 'ROLE FOUR');
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-5', 'ROLE FIVE');
-INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-6', 'ROLE SIX', '2024-08-24T22:06:49.685768');
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-7', 'ROLE SEVEN');
-INSERT INTO role (role_name, role_desc) VALUES ('ROLE-8', 'ROLE EIGHT');
-INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-9', 'ROLE NINE', '2024-08-24T22:06:49.685768');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-01', 'ROLE ONE');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-02', 'ROLE TWO');
+INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-03', 'ROLE THREE', '2024-08-24T22:06:49.685768');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-04', 'ROLE FOUR');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-05', 'ROLE FIVE');
+INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-06', 'ROLE SIX', '2024-08-24T22:06:49.685768');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-07', 'ROLE SEVEN');
+INSERT INTO role (role_name, role_desc) VALUES ('ROLE-08', 'ROLE EIGHT');
+INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-09', 'ROLE NINE', '2024-08-24T22:06:49.685768');
 INSERT INTO role (role_name, role_desc) VALUES ('ROLE-10', 'ROLE TEN');
 INSERT INTO role (role_name, role_desc) VALUES ('ROLE-11', 'ROLE ELEVEN');
 INSERT INTO role (role_name, role_desc, deleted_date) VALUES ('ROLE-12', 'ROLE TWELVE', '2024-08-24T22:06:49.685768');
 INSERT INTO role (role_name, role_desc) VALUES ('ROLE-13', 'ROLE THIRTEEN');
 
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (1, 'PERMISSION-1', 'PERMISSION ONE');
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (2, 'PERMISSION-1', 'PERMISSION ONE');
-INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (1, 'PERMISSION-3', 'PERMISSION THREE', '2024-08-24T22:06:49.685768');
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (2, 'PERMISSION-4', 'PERMISSION FOUR');
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (5, 'PERMISSION-5', 'PERMISSION FIVE');
-INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (6, 'PERMISSION-6', 'PERMISSION SIX', '2024-08-24T22:06:49.685768');
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (6, 'PERMISSION-7', 'PERMISSION SEVEN');
-INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (10, 'PERMISSION-8', 'PERMISSION EIGHT');
-INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (10, 'PERMISSION-9', 'PERMISSION NINE', '2024-08-24T22:06:49.685768');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (1, 'PERMISSION-01', 'PERMISSION ONE');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (2, 'PERMISSION-01', 'PERMISSION ONE');
+INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (1, 'PERMISSION-03', 'PERMISSION THREE', '2024-08-24T22:06:49.685768');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (2, 'PERMISSION-04', 'PERMISSION FOUR');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (5, 'PERMISSION-05', 'PERMISSION FIVE');
+INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (6, 'PERMISSION-06', 'PERMISSION SIX', '2024-08-24T22:06:49.685768');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (6, 'PERMISSION-07', 'PERMISSION SEVEN');
+INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (10, 'PERMISSION-08', 'PERMISSION EIGHT');
+INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (10, 'PERMISSION-09', 'PERMISSION NINE', '2024-08-24T22:06:49.685768');
 INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (10, 'PERMISSION-10', 'PERMISSION TEN');
 INSERT INTO permission (role_id, permission_name, permission_desc) VALUES (1, 'PERMISSION-11', 'PERMISSION ELEVEN');
 INSERT INTO permission (role_id, permission_name, permission_desc, deleted_date) VALUES (1, 'PERMISSION-12', 'PERMISSION TWELVE', '2024-08-24T22:06:49.685768');
@@ -250,11 +250,11 @@ INSERT INTO profile (first_name, last_name, email, phone, password, is_validated
 VALUES ('First Thirteen', 'Last Thirteen', 'firstlast@thirteen.com', '9876543210', 'password-thirteen', true, 0, null, null);
 
 INSERT INTO profile_address (profile_id, street, city, state, country, postal_code)
-VALUES (1, 'Street-1', 'City-1', 'ST-1', 'Country-1', 'Postal-1');
+VALUES (1, 'Street-01', 'City-01', 'ST-01', 'Country-01', 'Postal-01');
 INSERT INTO profile_address (profile_id, street, city, state, country, postal_code)
-VALUES (2, 'Street-2', 'City-2', 'ST-2', 'Country-1', 'Postal-2');
+VALUES (2, 'Street-02', 'City-02', 'ST-02', 'Country-01', 'Postal-02');
 INSERT INTO profile_address (profile_id, street, city, state, country, postal_code, deleted_date)
-VALUES (3, 'Street-3', 'City-3', 'ST-3', 'Country-1', 'Postal-3', '2024-08-24T22:06:49.685768');
+VALUES (3, 'Street-03', 'City-03', 'ST-03', 'Country-01', 'Postal-03', '2024-08-24T22:06:49.685768');
 
 INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
 VALUES (1, 1, 1);
