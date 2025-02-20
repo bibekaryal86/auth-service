@@ -37,12 +37,13 @@ public class RoleService {
   // READ
   public Page<RoleEntity> readRoles(final RequestMetadata requestMetadata) {
     log.debug("Read Roles: [{}]", requestMetadata);
-    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
-      Specification<RoleEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadata);
-      Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata, "roleName");
-      return roleRepository.findAll(specification, pageable);
-    }
-    return new PageImpl<>(roleRepository.findAll(Sort.by(Sort.Direction.ASC, "roleName")));
+
+    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+            ? requestMetadata
+            : CommonUtils.defaultRequestMetadata("roleName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "roleName");
+    final Specification<RoleEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    return roleRepository.findAll(specification, pageable);
   }
 
   /** Use {@link CircularDependencyService#readRole(Long, Boolean)} */

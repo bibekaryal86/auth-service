@@ -72,7 +72,7 @@ public class JpaDataUtils {
     Specification<T> specification = Specification.where(null);
 
     if (!shouldIncludeDeletedRecords(requestMetadata)) {
-      specification.and(JpaDataUtils.isFieldNull(ConstantUtils.DELETED_DATE));
+      specification = specification.and(isFieldNull("deletedDate"));
     }
 
     return specification;
