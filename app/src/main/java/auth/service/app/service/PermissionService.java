@@ -37,14 +37,12 @@ public class PermissionService {
   // READ
   public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
     log.debug("Read Permissions: [{}]", requestMetadata);
-    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
-      Specification<PermissionEntity> specification =
-          JpaDataUtils.getQuerySpecification(requestMetadata);
-      Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata, "permissionName");
-      return permissionRepository.findAll(specification, pageable);
-    }
-    return new PageImpl<>(
-        permissionRepository.findAll(Sort.by(Sort.Direction.ASC, "permissionName")));
+    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+            ? requestMetadata
+            : CommonUtils.defaultRequestMetadata("permissionName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "permissionName");
+    final Specification<PermissionEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    return permissionRepository.findAll(specification, pageable);
   }
 
   /** Use {@link CircularDependencyService#readPermission(Long, Boolean)} */

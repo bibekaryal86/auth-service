@@ -114,13 +114,12 @@ public class ProfileService {
   // READ
   public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
     log.debug("Read Profiles: [{}]", requestMetadata);
-    if (CommonUtils.isRequestMetadataIncluded(requestMetadata)) {
-      Specification<ProfileEntity> specification =
-          JpaDataUtils.getQuerySpecification(requestMetadata);
-      Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata, "lastName");
-      return profileRepository.findAll(specification, pageable);
-    }
-    return new PageImpl<>(profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName")));
+    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+            ? requestMetadata
+            : CommonUtils.defaultRequestMetadata("lastName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "lastName");
+    final Specification<ProfileEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    return profileRepository.findAll(specification, pageable);
   }
 
   /** Use {@link CircularDependencyService#readProfile(Long, Boolean)} */
