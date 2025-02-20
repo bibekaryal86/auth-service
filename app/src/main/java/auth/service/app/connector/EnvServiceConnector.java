@@ -5,7 +5,7 @@ import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_USERNAME;
 import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import auth.service.app.model.client.EnvDetailsResponse;
-import auth.service.app.util.CommonUtils;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.OkHttpUtils;
 import java.util.Base64;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class EnvServiceConnector {
 
     if (httpResponse.statusCode() == 200) {
       EnvDetailsResponse envDetailsResponse =
-          CommonUtils.GSON.fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
+          ConstantUtils.GSON.fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
       return envDetailsResponse.getEnvDetails();
     }
 

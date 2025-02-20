@@ -42,20 +42,6 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
 
-  public static final Gson GSON =
-      new GsonBuilder()
-          .setExclusionStrategies(
-              new ExclusionStrategy() {
-                public boolean shouldSkipField(FieldAttributes f) {
-                  return (f == null);
-                }
-
-                public boolean shouldSkipClass(Class<?> clazz) {
-                  return false;
-                }
-              })
-          .create();
-
   public static String getBaseUrlForLinkInEmail(final HttpServletRequest request) {
     final String scheme = request.getScheme();
     final String serverName = request.getServerName();

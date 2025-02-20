@@ -7,6 +7,7 @@ import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.service.ProfileService;
 import auth.service.app.util.CommonUtils;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -81,7 +82,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final String jsonResponse = CommonUtils.GSON.toJson(responseMetadata);
+    final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 

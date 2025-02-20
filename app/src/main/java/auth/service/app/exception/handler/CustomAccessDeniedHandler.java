@@ -3,6 +3,7 @@ package auth.service.app.exception.handler;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.util.CommonUtils;
+import auth.service.app.util.ConstantUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,7 +51,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
               .build();
     }
 
-    final String jsonResponse = CommonUtils.GSON.toJson(responseMetadata);
+    final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 }

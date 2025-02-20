@@ -24,7 +24,8 @@ public interface PlatformProfileRoleRepository
   Page<PlatformProfileRoleEntity> findByPlatformId(@Param("platformId") final Long platformId, final Pageable pageable);
 
   @Query(
-      "SELECT ppre FROM PlatformProfileRoleEntity ppre WHERE ppre.id.platformId = :platformId")
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre WHERE ppre.id.platformId = :platformId " +
+              "AND ppre.platform.deletedDate IS NULL AND ppre.profile.deletedDate IS NULL and ppre.role.deletedDate IS NULL")
   Page<PlatformProfileRoleEntity> findByPlatformIdNoDeleted(@Param("platformId") final Long platformId, final Pageable pageable);
 
   @Query(

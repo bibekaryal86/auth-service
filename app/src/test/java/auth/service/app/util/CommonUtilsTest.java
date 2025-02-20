@@ -4,13 +4,17 @@ import static auth.service.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 import auth.service.BaseTest;
+import auth.service.app.connector.EnvServiceConnector;
+import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
@@ -24,11 +28,21 @@ import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.token.AuthToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
+
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +51,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,11 +59,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 public class CommonUtilsTest extends BaseTest {
 
   @Mock private HttpServletRequest request;
+  @Mock private SecurityContext securityContext;
+
+  @BeforeEach
+  void setUp() {
+    reset(request);
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+  }
 
   @Test
   void testGetBaseUrlForLinkInEmail_WithHttp() {
@@ -211,6 +238,49 @@ public class CommonUtilsTest extends BaseTest {
     assertEquals(expected, actual);
   }
 
+  private static Stream<Arguments> provideCrudInfo() {
+    return Stream.of(
+            Arguments.of(
+                    1, 0, 0, 0,
+                    ResponseCrudInfo.builder()
+                            .insertedRowsCount(1)
+                            .updatedRowsCount(0)
+                            .deletedRowsCount(0)
+                            .restoredRowsCount(0)
+                            .build()),
+            Arguments.of(
+                    0, 1, 0, 0,
+                    ResponseCrudInfo.builder()
+                            .insertedRowsCount(0)
+                            .updatedRowsCount(1)
+                            .deletedRowsCount(0)
+                            .restoredRowsCount(0)
+                            .build()),
+            Arguments.of(
+                    0, 0, 1, 0,
+                    ResponseCrudInfo.builder()
+                            .insertedRowsCount(0)
+                            .updatedRowsCount(0)
+                            .deletedRowsCount(1)
+                            .restoredRowsCount(0)
+                            .build()),
+            Arguments.of(
+                    0, 0, 0, 1,
+                    ResponseCrudInfo.builder()
+                            .insertedRowsCount(0)
+                            .updatedRowsCount(0)
+                            .deletedRowsCount(0)
+                            .restoredRowsCount(1)
+                            .build()));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideCrudInfo")
+  void testDefaultResponseCrudInfo(int inserted, int updated, int deleted, int restored, ResponseCrudInfo expected) {
+    ResponseCrudInfo actual = CommonUtils.defaultResponseCrudInfo(inserted, updated, deleted, restored);
+    assertEquals(expected, actual);
+  }
+
   private static Stream<Arguments> provideRequestMetadataDeleted() {
     return Stream.of(
         Arguments.of(null, false),
@@ -242,5 +312,78 @@ public class CommonUtilsTest extends BaseTest {
   void testIsHistoryToBeIncluded(RequestMetadata requestMetadata, boolean expected) {
     boolean actual = CommonUtils.isHistoryToBeIncluded(requestMetadata);
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void testGetAuthentication() {
+    AuthToken expected = TestData.getAuthToken();
+    Authentication authentication = new TestingAuthenticationToken(EMAIL, expected, Collections.emptyList());
+    authentication.setAuthenticated(true);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    AuthToken actual = CommonUtils.getAuthentication();
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void testGetAuthentication_nullAuthentication() {
+    when(securityContext.getAuthentication()).thenReturn(null);
+    assertThrows(CheckPermissionException.class, CommonUtils::getAuthentication, "Profile not authenticated...");
+  }
+
+  @Test
+  void testGetAuthentication_nullPrincipal() {
+    AuthToken expected = TestData.getAuthToken();
+    Authentication authentication = new TestingAuthenticationToken(null, expected, Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    assertThrows(CheckPermissionException.class, CommonUtils::getAuthentication, "Profile not authenticated...");
+  }
+
+  @Test
+  void testGetAuthentication_isNotAuthenticated() {
+    AuthToken expected = TestData.getAuthToken();
+    Authentication authentication = new TestingAuthenticationToken(EMAIL, expected, Collections.emptyList());
+    authentication.setAuthenticated(false);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    assertThrows(CheckPermissionException.class, CommonUtils::getAuthentication, "Profile not authenticated...");
+  }
+
+  @Test
+  void testGetAuthentication_nullCredentials() {
+    Authentication authentication = new TestingAuthenticationToken(EMAIL, null, Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    assertThrows(CheckPermissionException.class, CommonUtils::getAuthentication, "Profile not authorized...");
+  }
+
+  @Test
+  void testGetAuthentication_invalidCredentials() {
+    Authentication authentication = new TestingAuthenticationToken(EMAIL, "something-else", Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    assertThrows(CheckPermissionException.class, CommonUtils::getAuthentication, "Profile not authorized...");
+  }
+
+  @Test
+  void testValidatePlatformProfileRoleNotDeleted() {
+    PlatformProfileRoleEntity platformProfileRoleEntity = TestData.getPlatformProfileRoleEntities().getFirst();
+    // Should not throw any exception
+    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
+  }
+
+  @Test
+  void testValidatePlatformProfileRoleNotDeleted_platformDeleted() {
+    PlatformProfileRoleEntity platformProfileRoleEntity = TestData.getPlatformProfileRoleEntities().getFirst();
+    platformProfileRoleEntity.getPlatform().setDeletedDate(LocalDateTime.now());
+    assertThrows(
+            ElementNotActiveException.class,
+            () -> CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity));
+  }
+
+  @Test
+  void testValidatePlatformProfileRoleNotDeleted_profileDeleted() {
+    PlatformProfileRoleEntity platformProfileRoleEntity = TestData.getPlatformProfileRoleEntities().getFirst();
+    platformProfileRoleEntity.getProfile().setDeletedDate(LocalDateTime.now());
+    assertThrows(
+            ElementNotActiveException.class,
+            () -> CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity));
   }
 }
