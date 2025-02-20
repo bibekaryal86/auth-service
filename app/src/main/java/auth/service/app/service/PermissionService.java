@@ -9,6 +9,8 @@ import auth.service.app.repository.PermissionRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -25,12 +27,14 @@ import org.springframework.stereotype.Service;
 public class PermissionService {
 
   private final PermissionRepository permissionRepository;
+  private final CircularDependencyService circularDependencyService;
 
   // CREATE
   public PermissionEntity createPermission(final PermissionRequest permissionRequest) {
     log.debug("Create Permission: [{}]", permissionRequest);
     PermissionEntity permissionEntity = new PermissionEntity();
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
+    permissionEntity.setRole(circularDependencyService.readRole(permissionRequest.getRoleId(), false));
     return permissionRepository.save(permissionEntity);
   }
 
@@ -64,6 +68,11 @@ public class PermissionService {
     }
 
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
+
+    if (!Objects.equals(permissionEntity.getRole().getId(), permissionRequest.getRoleId())) {
+      permissionEntity.setRole(circularDependencyService.readRole(permissionRequest.getRoleId(), false));
+    }
+
     return permissionRepository.save(permissionEntity);
   }
 
