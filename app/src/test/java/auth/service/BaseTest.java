@@ -28,7 +28,9 @@ public abstract class BaseTest {
   @Autowired protected WebTestClient webTestClient;
 
   protected static final Long ID = 1L;
+  protected static final Long ID_DELETED = 3L;
   protected static final String EMAIL = "firstlast@one.com";
+  protected static final boolean INCLUDE_DELETED = true;
 
   protected String basicAuthCredentialsForTest =
       Base64.getEncoder()
