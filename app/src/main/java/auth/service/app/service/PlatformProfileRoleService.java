@@ -85,9 +85,19 @@ public class PlatformProfileRoleService {
     return platformProfileRoleRepository.findByPlatformIdNoDeleted(platformId, pageable);
   }
 
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformIds(final List<Long> platformIds) {
+    log.debug("Read Platform Profile Roles By Platform Ids: [{}]", platformIds);
+    return platformProfileRoleRepository.findByPlatformIds(platformIds);
+  }
+
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileIds(final List<Long> profileIds) {
     log.debug("Read Platform Profile Roles By Profile Ids: [{}]", profileIds);
     return platformProfileRoleRepository.findByProfileIds(profileIds);
+  }
+
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByRoleIds(final List<Long> roleIds) {
+    log.debug("Read Platform Profile Roles By Role Ids: [{}]", roleIds);
+    return platformProfileRoleRepository.findByRoleIds(roleIds);
   }
 
   private PlatformProfileRoleEntity readPlatformProfileRole(final Long platformId, final Long profileId, final Long roleId) {

@@ -29,9 +29,21 @@ public interface PlatformProfileRoleRepository
   Page<PlatformProfileRoleEntity> findByPlatformIdNoDeleted(@Param("platformId") final Long platformId, final Pageable pageable);
 
   @Query(
+          "SELECT ppre FROM PlatformProfileRoleEntity ppre "
+                  + "WHERE ppre.id.platformId in (:platformIds) "
+                  + "ORDER BY ppre.platform.platformName, ppre.profile.lastName, ppre.role.roleName")
+  List<PlatformProfileRoleEntity> findByPlatformIds(@Param("platformIds") final List<Long> platformIds);
+
+  @Query(
       "SELECT ppre FROM PlatformProfileRoleEntity ppre "
           + "WHERE ppre.id.profileId in (:profileIds) "
           + "ORDER BY ppre.platform.platformName, ppre.profile.lastName, ppre.role.roleName")
   List<PlatformProfileRoleEntity> findByProfileIds(
       @Param("profileIds") final List<Long> profileIds);
+
+  @Query(
+          "SELECT ppre FROM PlatformProfileRoleEntity ppre "
+                  + "WHERE ppre.id.roleId in (:roleIds) "
+                  + "ORDER BY ppre.platform.platformName, ppre.profile.lastName, ppre.role.roleName")
+  List<PlatformProfileRoleEntity> findByRoleIds(@Param("roleIds") final List<Long> roleIds);
 }

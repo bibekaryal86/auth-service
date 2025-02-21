@@ -1,6 +1,8 @@
 package auth.service.app.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +20,6 @@ public class PlatformDto {
 
   private String platformName;
   private String platformDesc;
+
+  private List<PlatformDtoProfileRole> profileRoles;
 }
