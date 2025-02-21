@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.RoleEntity;

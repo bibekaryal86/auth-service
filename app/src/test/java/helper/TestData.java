@@ -185,9 +185,8 @@ public class TestData {
     return profileEntity;
   }
 
-  public static ProfileRequest getProfileRequest(
-      String firstName, String lastName, String email, String password) {
-    return new ProfileRequest(firstName, lastName, email, null, password, true, null);
+  public static ProfileRequest getProfileRequest(String firstName, String lastName, String email, String password, ProfileAddressRequest addressRequest) {
+    return new ProfileRequest(firstName, lastName, email, null, password, true, addressRequest);
   }
 
   public static ProfileDto getProfileDto() {
