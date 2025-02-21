@@ -13,12 +13,10 @@ import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
-
-import java.util.Collections;
-import java.util.List;
-
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,166 +28,167 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class PermissionServiceTest extends BaseTest {
 
-    @Mock
-    private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
-    @Autowired private PermissionService permissionService;
+  @Autowired private PermissionService permissionService;
 
-    @Test
-    void testReadPermissions_noRequestMetadata() {
-        Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(null);
-        List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
-        assertEquals(9, permissionEntities.size());
-        assertEquals(1, permissionEntityPage.getTotalPages());
-        assertEquals(100, permissionEntityPage.getSize());
-        // check sorted by name
-        assertEquals("PERMISSION-01", permissionEntities.getFirst().getPermissionName());
-        assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
-    }
+  @Test
+  void testReadPermissions_noRequestMetadata() {
+    Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(null);
+    List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
+    assertEquals(9, permissionEntities.size());
+    assertEquals(1, permissionEntityPage.getTotalPages());
+    assertEquals(100, permissionEntityPage.getSize());
+    // check sorted by name
+    assertEquals("PERMISSION-01", permissionEntities.getFirst().getPermissionName());
+    assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
+  }
 
-    @Test
-    void testReadPermissions_requestMetadata() {
-        reset(securityContext);
-        SecurityContextHolder.setContext(securityContext);
-        AuthToken authToken = TestData.getAuthToken();
-        authToken.setSuperUser(true);
-        Authentication authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
-        authentication.setAuthenticated(true);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+  @Test
+  void testReadPermissions_requestMetadata() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    AuthToken authToken = TestData.getAuthToken();
+    authToken.setSuperUser(true);
+    Authentication authentication =
+        new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    authentication.setAuthenticated(true);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
 
-        Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(RequestMetadata.builder().isIncludeDeleted(true).build());
-        List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
-        assertEquals(13, permissionEntities.size());
-        assertEquals(1, permissionEntityPage.getTotalPages());
-        assertEquals(100, permissionEntityPage.getSize());
-        // check sorted by name
-        assertEquals("PERMISSION-01", permissionEntities.getFirst().getPermissionName());
-        assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
-    }
+    Page<PermissionEntity> permissionEntityPage =
+        permissionService.readPermissions(RequestMetadata.builder().isIncludeDeleted(true).build());
+    List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
+    assertEquals(13, permissionEntities.size());
+    assertEquals(1, permissionEntityPage.getTotalPages());
+    assertEquals(100, permissionEntityPage.getSize());
+    // check sorted by name
+    assertEquals("PERMISSION-01", permissionEntities.getFirst().getPermissionName());
+    assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
+  }
 
-    @Test
-    void testPermissionService_CRUD() {
-        String newName = "PermissionNewName";
-        String newDesc = "PermissionNewDesc";
-        String updatedDesc = "PermissionUpdatedDesc";
-        PermissionRequest request = new PermissionRequest(ID, newName, newDesc);
+  @Test
+  void testPermissionService_CRUD() {
+    String newName = "PermissionNewName";
+    String newDesc = "PermissionNewDesc";
+    String updatedDesc = "PermissionUpdatedDesc";
+    PermissionRequest request = new PermissionRequest(ID, newName, newDesc);
 
-        // Create
-        Long id = assertCreate(request);
+    // Create
+    Long id = assertCreate(request);
 
-        // Create fails
-        request = new PermissionRequest(ID_DELETED, newName, newDesc);
-        assertCreateFailsForDeletedRole(request);
+    // Create fails
+    request = new PermissionRequest(ID_DELETED, newName, newDesc);
+    assertCreateFailsForDeletedRole(request);
 
-        // Update
-        request = new PermissionRequest(ID, newName, updatedDesc);
-        assertUpdate(id, request);
+    // Update
+    request = new PermissionRequest(ID, newName, updatedDesc);
+    assertUpdate(id, request);
 
-        // Update fails for deleted Permission
-        assertUpdateFailsForDeletedPermission(ID_DELETED, request);
+    // Update fails for deleted Permission
+    assertUpdateFailsForDeletedPermission(ID_DELETED, request);
 
-        // Update fails for deleted Role
-        request = new PermissionRequest(ID_DELETED, newName, newDesc);
-        assertUpdateFailsForDeletedRole(id, request);
+    // Update fails for deleted Role
+    request = new PermissionRequest(ID_DELETED, newName, newDesc);
+    assertUpdateFailsForDeletedRole(id, request);
 
-        // Read
-        // readPermission has private access
+    // Read
+    // readPermission has private access
 
-        // Soft delete
-        assertDeleteSoft(id);
+    // Soft delete
+    assertDeleteSoft(id);
 
-        // Soft delete fails for deleted Permission
-        assertDeleteSoftFailsForDeletedPermission(ID_DELETED);
+    // Soft delete fails for deleted Permission
+    assertDeleteSoftFailsForDeletedPermission(ID_DELETED);
 
-        // Restore
-        assertRestoreSoftDeleted(id);
+    // Restore
+    assertRestoreSoftDeleted(id);
 
-        // deleteHard
-        assertDeleteHard(id);
-    }
+    // deleteHard
+    assertDeleteHard(id);
+  }
 
-    private Long assertCreate(PermissionRequest request) {
-        PermissionEntity entity = permissionService.createPermission(request);
-        assertNotNull(entity);
-        assertNotNull(entity.getId());
-        return entity.getId();
-    }
+  private Long assertCreate(PermissionRequest request) {
+    PermissionEntity entity = permissionService.createPermission(request);
+    assertNotNull(entity);
+    assertNotNull(entity.getId());
+    return entity.getId();
+  }
 
-    private void assertCreateFailsForDeletedRole(PermissionRequest request) {
-        ElementNotActiveException exception =
-                assertThrows(
-                        ElementNotActiveException.class,
-                        () -> permissionService.createPermission(request),
-                        "Expected ElementNotFoundException after hard delete...");
-        assertEquals(
-                String.format("Active Role Not Found for [%s]", request.getRoleId()),
-                exception.getMessage(),
-                "Exception message mismatch...");
-    }
+  private void assertCreateFailsForDeletedRole(PermissionRequest request) {
+    ElementNotActiveException exception =
+        assertThrows(
+            ElementNotActiveException.class,
+            () -> permissionService.createPermission(request),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Active Role Not Found for [%s]", request.getRoleId()),
+        exception.getMessage(),
+        "Exception message mismatch...");
+  }
 
-    private void assertUpdate(Long id, PermissionRequest request) {
-        PermissionEntity entity = permissionService.updatePermission(id, request);
-        assertNotNull(entity);
-    }
+  private void assertUpdate(Long id, PermissionRequest request) {
+    PermissionEntity entity = permissionService.updatePermission(id, request);
+    assertNotNull(entity);
+  }
 
-    private void assertUpdateFailsForDeletedPermission(Long id, PermissionRequest request) {
-        ElementNotActiveException exception =
-                assertThrows(
-                        ElementNotActiveException.class,
-                        () -> permissionService.updatePermission(id, request),
-                        "Expected ElementNotFoundException after hard delete...");
-        assertEquals(
-                String.format("Active Permission Not Found for [%s]", id),
-                exception.getMessage(),
-                "Exception message mismatch...");
-    }
+  private void assertUpdateFailsForDeletedPermission(Long id, PermissionRequest request) {
+    ElementNotActiveException exception =
+        assertThrows(
+            ElementNotActiveException.class,
+            () -> permissionService.updatePermission(id, request),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Active Permission Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+  }
 
-    private void assertUpdateFailsForDeletedRole(Long id, PermissionRequest request) {
-        ElementNotActiveException exception =
-                assertThrows(
-                        ElementNotActiveException.class,
-                        () -> permissionService.updatePermission(id, request),
-                        "Expected ElementNotFoundException after hard delete...");
-        assertEquals(
-                String.format("Active Role Not Found for [%s]", request.getRoleId()),
-                exception.getMessage(),
-                "Exception message mismatch...");
-    }
+  private void assertUpdateFailsForDeletedRole(Long id, PermissionRequest request) {
+    ElementNotActiveException exception =
+        assertThrows(
+            ElementNotActiveException.class,
+            () -> permissionService.updatePermission(id, request),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Active Role Not Found for [%s]", request.getRoleId()),
+        exception.getMessage(),
+        "Exception message mismatch...");
+  }
 
-    private void assertDeleteSoft(Long id) {
-        PermissionEntity entity = permissionService.softDeletePermission(id);
-        assertNotNull(entity);
-        assertNotNull(entity.getDeletedDate());
-    }
+  private void assertDeleteSoft(Long id) {
+    PermissionEntity entity = permissionService.softDeletePermission(id);
+    assertNotNull(entity);
+    assertNotNull(entity.getDeletedDate());
+  }
 
-    private void assertDeleteSoftFailsForDeletedPermission(Long id) {
-        ElementNotActiveException exception =
-                assertThrows(
-                        ElementNotActiveException.class,
-                        () -> permissionService.softDeletePermission(id),
-                        "Expected ElementNotFoundException after hard delete...");
-        assertEquals(
-                String.format("Active Permission Not Found for [%s]", id),
-                exception.getMessage(),
-                "Exception message mismatch...");
-    }
+  private void assertDeleteSoftFailsForDeletedPermission(Long id) {
+    ElementNotActiveException exception =
+        assertThrows(
+            ElementNotActiveException.class,
+            () -> permissionService.softDeletePermission(id),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Active Permission Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+  }
 
-    private void assertRestoreSoftDeleted(Long id) {
-        PermissionEntity entity = permissionService.restoreSoftDeletedPermission(id);
-        assertNotNull(entity);
-        assertNull(entity.getDeletedDate());
-    }
+  private void assertRestoreSoftDeleted(Long id) {
+    PermissionEntity entity = permissionService.restoreSoftDeletedPermission(id);
+    assertNotNull(entity);
+    assertNull(entity.getDeletedDate());
+  }
 
-    private void assertDeleteHard(Long id) {
-        permissionService.hardDeletePermission(id);
-        ElementNotFoundException exception =
-                assertThrows(
-                        ElementNotFoundException.class,
-                        () -> permissionService.hardDeletePermission(id),
-                        "Expected ElementNotFoundException after hard delete...");
-        assertEquals(
-                String.format("Permission Not Found for [%s]", id),
-                exception.getMessage(),
-                "Exception message mismatch...");
-    }
+  private void assertDeleteHard(Long id) {
+    permissionService.hardDeletePermission(id);
+    ElementNotFoundException exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> permissionService.hardDeletePermission(id),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Permission Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+  }
 }

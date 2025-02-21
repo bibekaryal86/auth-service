@@ -26,105 +26,105 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class EmailServiceTest extends BaseTest {
 
-    @MockitoBean private FileReaderUtils fileReaderUtils;
-    @MockitoBean private MailjetClient mailjetClient;
+  @MockitoBean private FileReaderUtils fileReaderUtils;
+  @MockitoBean private MailjetClient mailjetClient;
 
-    @Autowired private EmailService emailService;
+  @Autowired private EmailService emailService;
 
-    private static ProfileEntity profileEntity;
-    private static PlatformEntity platformEntity;
-    private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
+  private static ProfileEntity profileEntity;
+  private static PlatformEntity platformEntity;
+  private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
 
-    @BeforeAll
-    static void setUp() {
-        profileEntity = TestData.getProfileEntities().getFirst();
-        platformEntity = TestData.getPlatformEntities().getFirst();
-    }
+  @BeforeAll
+  static void setUp() {
+    profileEntity = TestData.getProfileEntities().getFirst();
+    platformEntity = TestData.getPlatformEntities().getFirst();
+  }
 
-    @AfterEach
-    void tearDown() {
-        reset(fileReaderUtils);
-        reset(mailjetClient);
-    }
+  @AfterEach
+  void tearDown() {
+    reset(fileReaderUtils);
+    reset(mailjetClient);
+  }
 
-    @Test
-    void testSendEmail_Success() throws Exception {
-        when(mailjetClient.post(any(MailjetRequest.class)))
-                .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
+  @Test
+  void testSendEmail_Success() throws Exception {
+    when(mailjetClient.post(any(MailjetRequest.class)))
+        .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
 
-        String appName = "Test App";
-        String emailTo = "test@example.com";
-        String emailToFullName = "Test User";
-        String subject = "Test Email";
-        String text = "Test email text";
-        String html = "<p>Test email html</p>";
-        String attachmentFileName = "test.txt";
-        String attachment = "Test attachment content";
+    String appName = "Test App";
+    String emailTo = "test@example.com";
+    String emailToFullName = "Test User";
+    String subject = "Test Email";
+    String text = "Test email text";
+    String html = "<p>Test email html</p>";
+    String attachmentFileName = "test.txt";
+    String attachment = "Test attachment content";
 
-        assertDoesNotThrow(
-                () ->
-                        emailService.sendEmail(
-                                appName,
-                                emailTo,
-                                emailToFullName,
-                                subject,
-                                text,
-                                html,
-                                attachmentFileName,
-                                attachment));
-        verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    }
+    assertDoesNotThrow(
+        () ->
+            emailService.sendEmail(
+                appName,
+                emailTo,
+                emailToFullName,
+                subject,
+                text,
+                html,
+                attachmentFileName,
+                attachment));
+    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
+  }
 
-    @Test
-    void testSendEmail_Failure_ErrorNotThrown() throws Exception {
-        when(mailjetClient.post(any(MailjetRequest.class)))
-                .thenThrow(new MailjetException("something happened"));
+  @Test
+  void testSendEmail_Failure_ErrorNotThrown() throws Exception {
+    when(mailjetClient.post(any(MailjetRequest.class)))
+        .thenThrow(new MailjetException("something happened"));
 
-        String appName = "Test App";
-        String emailTo = "test@example.com";
-        String emailToFullName = "Test User";
-        String subject = "Test Email";
-        String text = "Test email text";
-        String html = "<p>Test email html</p>";
-        String attachmentFileName = "test.txt";
-        String attachment = "Test attachment content";
+    String appName = "Test App";
+    String emailTo = "test@example.com";
+    String emailToFullName = "Test User";
+    String subject = "Test Email";
+    String text = "Test email text";
+    String html = "<p>Test email html</p>";
+    String attachmentFileName = "test.txt";
+    String attachment = "Test attachment content";
 
-        assertDoesNotThrow(
-                () ->
-                        emailService.sendEmail(
-                                appName,
-                                emailTo,
-                                emailToFullName,
-                                subject,
-                                text,
-                                html,
-                                attachmentFileName,
-                                attachment));
-        verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-    }
+    assertDoesNotThrow(
+        () ->
+            emailService.sendEmail(
+                appName,
+                emailTo,
+                emailToFullName,
+                subject,
+                text,
+                html,
+                attachmentFileName,
+                attachment));
+    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
+  }
 
-    @Test
-    void testSendProfileValidationEmail() throws Exception {
-        when(mailjetClient.post(any(MailjetRequest.class)))
-                .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
-        when(fileReaderUtils.readFileContents(anyString()))
-                .thenReturn("{app_name} : {activation_link}");
+  @Test
+  void testSendProfileValidationEmail() throws Exception {
+    when(mailjetClient.post(any(MailjetRequest.class)))
+        .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
+    when(fileReaderUtils.readFileContents(anyString()))
+        .thenReturn("{app_name} : {activation_link}");
 
-        emailService.sendProfileValidationEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
-        verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-        verify(fileReaderUtils, times(1))
-                .readFileContents(eq("email/templates/profile_validate_email.html"));
-    }
+    emailService.sendProfileValidationEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
+    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
+    verify(fileReaderUtils, times(1))
+        .readFileContents(eq("email/templates/profile_validate_email.html"));
+  }
 
-    @Test
-    void testSendProfileResetEmail() throws Exception {
-        when(mailjetClient.post(any(MailjetRequest.class)))
-                .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
-        when(fileReaderUtils.readFileContents(anyString())).thenReturn("{app_name} : {reset_link}");
+  @Test
+  void testSendProfileResetEmail() throws Exception {
+    when(mailjetClient.post(any(MailjetRequest.class)))
+        .thenReturn(new MailjetResponse(200, "{\"status\": \"OK\"}"));
+    when(fileReaderUtils.readFileContents(anyString())).thenReturn("{app_name} : {reset_link}");
 
-        emailService.sendProfileResetEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
-        verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
-        verify(fileReaderUtils, times(1))
-                .readFileContents(eq("email/templates/profile_reset_email.html"));
-    }
+    emailService.sendProfileResetEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
+    verify(mailjetClient, times(1)).post(any(MailjetRequest.class));
+    verify(fileReaderUtils, times(1))
+        .readFileContents(eq("email/templates/profile_reset_email.html"));
+  }
 }

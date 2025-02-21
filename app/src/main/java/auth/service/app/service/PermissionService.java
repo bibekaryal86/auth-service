@@ -10,14 +10,11 @@ import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -34,18 +31,21 @@ public class PermissionService {
     log.debug("Create Permission: [{}]", permissionRequest);
     PermissionEntity permissionEntity = new PermissionEntity();
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
-    permissionEntity.setRole(circularDependencyService.readRole(permissionRequest.getRoleId(), false));
+    permissionEntity.setRole(
+        circularDependencyService.readRole(permissionRequest.getRoleId(), false));
     return permissionRepository.save(permissionEntity);
   }
 
   // READ
   public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
     log.debug("Read Permissions: [{}]", requestMetadata);
-    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+    final RequestMetadata requestMetadataToUse =
+        CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("permissionName");
     final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "permissionName");
-    final Specification<PermissionEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    final Specification<PermissionEntity> specification =
+        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return permissionRepository.findAll(specification, pageable);
   }
 
@@ -70,7 +70,8 @@ public class PermissionService {
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
 
     if (!Objects.equals(permissionEntity.getRole().getId(), permissionRequest.getRoleId())) {
-      permissionEntity.setRole(circularDependencyService.readRole(permissionRequest.getRoleId(), false));
+      permissionEntity.setRole(
+          circularDependencyService.readRole(permissionRequest.getRoleId(), false));
     }
 
     return permissionRepository.save(permissionEntity);

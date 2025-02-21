@@ -71,7 +71,8 @@ public class ProfileService {
     profileEntity.setIsValidated(false);
 
     // profile_address
-    ProfileAddressEntity profileAddressEntity = convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, true);
+    ProfileAddressEntity profileAddressEntity =
+        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, true);
 
     // platform_profile_role
     final String roleName = profileRequest.isGuestUser() ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
@@ -84,7 +85,9 @@ public class ProfileService {
       profileAddressRepository.save(profileAddressEntity);
     }
     // save platform profile role
-    PlatformProfileRoleRequest platformProfileRoleRequest = new PlatformProfileRoleRequest(platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
+    PlatformProfileRoleRequest platformProfileRoleRequest =
+        new PlatformProfileRoleRequest(
+            platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
     platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
     // publish event for validation email
@@ -97,11 +100,13 @@ public class ProfileService {
   // READ
   public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
     log.debug("Read Profiles: [{}]", requestMetadata);
-    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+    final RequestMetadata requestMetadataToUse =
+        CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("lastName");
     final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "lastName");
-    final Specification<ProfileEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    final Specification<ProfileEntity> specification =
+        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return profileRepository.findAll(specification, pageable);
   }
 
@@ -146,7 +151,8 @@ public class ProfileService {
     // profile
     BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "profileAddress");
     // profile_address
-    ProfileAddressEntity profileAddressEntity = convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
+    ProfileAddressEntity profileAddressEntity =
+        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
 
     // save profile
     profileEntity = updateProfile(profileEntity);
@@ -261,13 +267,18 @@ public class ProfileService {
       final Long platformId,
       final ProfilePasswordRequest profilePasswordRequest,
       final String ipAddress) {
-    log.info("Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
-    final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.readPlatformProfileRole(platformId, profilePasswordRequest.getEmail());
+    log.info(
+        "Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, profilePasswordRequest.getEmail());
     final PlatformEntity platformEntity = platformProfileRoleEntity.getPlatform();
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
     loginProfileValidate(platformEntity, profileEntity);
 
-    final boolean isLoginSuccess = passwordUtils.verifyPassword(profilePasswordRequest.getPassword(), profileEntity.getPassword());
+    final boolean isLoginSuccess =
+        passwordUtils.verifyPassword(
+            profilePasswordRequest.getPassword(), profileEntity.getPassword());
 
     if (!isLoginSuccess) {
       throw new ProfileNotAuthorizedException();
@@ -329,7 +340,8 @@ public class ProfileService {
     }
   }
 
-  private void loginProfileValidate(final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
+  private void loginProfileValidate(
+      final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
     if (platformEntity.getDeletedDate() != null) {
       throw new ElementNotActiveException("Platform", String.valueOf(platformEntity.getId()));
     }
@@ -346,7 +358,8 @@ public class ProfileService {
       throw new ProfileLockedException();
     }
 
-    if (profileEntity.getLastLogin() != null && profileEntity.getLastLogin().isBefore(LocalDateTime.now().minusDays(45))) {
+    if (profileEntity.getLastLogin() != null
+        && profileEntity.getLastLogin().isBefore(LocalDateTime.now().minusDays(45))) {
       throw new ProfileNotActiveException();
     }
   }

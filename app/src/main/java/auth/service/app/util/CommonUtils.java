@@ -25,10 +25,6 @@ import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -149,13 +145,13 @@ public class CommonUtils {
 
   public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
     return RequestMetadata.builder()
-            .isIncludeDeleted(false)
-            .isIncludeHistory(false)
-            .pageNumber(0)
-            .perPage(100)
-            .sortColumn(sortColumn)
-            .sortDirection(Sort.Direction.ASC)
-            .build();
+        .isIncludeDeleted(false)
+        .isIncludeHistory(false)
+        .pageNumber(0)
+        .perPage(100)
+        .sortColumn(sortColumn)
+        .sortDirection(Sort.Direction.ASC)
+        .build();
   }
 
   public static boolean isRequestMetadataIncluded(final RequestMetadata requestMetadata) {
@@ -185,14 +181,15 @@ public class CommonUtils {
     throw new CheckPermissionException("Profile not authorized...");
   }
 
-  public static void validatePlatformProfileRoleNotDeleted(final PlatformProfileRoleEntity platformProfileRoleEntity) {
+  public static void validatePlatformProfileRoleNotDeleted(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
     if (platformProfileRoleEntity.getPlatform().getDeletedDate() != null) {
       throw new ElementNotActiveException(
-              "Platform", String.valueOf(platformProfileRoleEntity.getPlatform().getId()));
+          "Platform", String.valueOf(platformProfileRoleEntity.getPlatform().getId()));
     }
     if (platformProfileRoleEntity.getProfile().getDeletedDate() != null) {
       throw new ElementNotActiveException(
-              "Profile", String.valueOf(platformProfileRoleEntity.getProfile().getId()));
+          "Profile", String.valueOf(platformProfileRoleEntity.getProfile().getId()));
     }
   }
 }

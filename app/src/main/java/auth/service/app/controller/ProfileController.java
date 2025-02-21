@@ -4,7 +4,6 @@ import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.connector.EnvServiceConnector;
-import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -80,7 +79,8 @@ public class ProfileController {
       @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles,
       final RequestMetadata requestMetadata) {
     try {
-      final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage = platformProfileRoleService.readPlatformProfileRolesByPlatformId(
+      final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
+          platformProfileRoleService.readPlatformProfileRolesByPlatformId(
               platformId, requestMetadata);
       final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
           platformProfileRoleEntityPage.toList();

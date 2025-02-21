@@ -13,32 +13,32 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 public class PlatformRepositoryTest extends BaseTest {
 
-    @Autowired private PlatformRepository platformRepository;
+  @Autowired private PlatformRepository platformRepository;
 
-    @Test
-    void testUniqueConstraint_platformName() {
-        PlatformEntity platformEntityInput = TestData.getPlatformEntities().getFirst();
-        final String original = platformEntityInput.getPlatformName();
-        ;
-        PlatformEntity platformEntityOutput = new PlatformEntity();
-        BeanUtils.copyProperties(platformEntityInput, platformEntityOutput, "id");
+  @Test
+  void testUniqueConstraint_platformName() {
+    PlatformEntity platformEntityInput = TestData.getPlatformEntities().getFirst();
+    final String original = platformEntityInput.getPlatformName();
+    ;
+    PlatformEntity platformEntityOutput = new PlatformEntity();
+    BeanUtils.copyProperties(platformEntityInput, platformEntityOutput, "id");
 
-        // Variable used in lambda expression should be final or effectively final
-        PlatformEntity finalPlatformEntityOutput = platformEntityOutput;
-        // throws exception for same name
-        assertThrows(
-                DataIntegrityViolationException.class,
-                () -> platformRepository.save(finalPlatformEntityOutput));
+    // Variable used in lambda expression should be final or effectively final
+    PlatformEntity finalPlatformEntityOutput = platformEntityOutput;
+    // throws exception for same name
+    assertThrows(
+        DataIntegrityViolationException.class,
+        () -> platformRepository.save(finalPlatformEntityOutput));
 
-        // does not throw exception for different name
-        platformEntityOutput.setPlatformName("Some New Platform");
-        platformEntityOutput = platformRepository.save(platformEntityOutput);
-        assertEquals("Some New Platform", platformEntityOutput.getPlatformName());
+    // does not throw exception for different name
+    platformEntityOutput.setPlatformName("Some New Platform");
+    platformEntityOutput = platformRepository.save(platformEntityOutput);
+    assertEquals("Some New Platform", platformEntityOutput.getPlatformName());
 
-        // make sure original entity remains unchanged as its used in other tests
-        assertEquals(original, platformEntityInput.getPlatformName());
+    // make sure original entity remains unchanged as its used in other tests
+    assertEquals(original, platformEntityInput.getPlatformName());
 
-        // cleanup
-        platformRepository.deleteById(platformEntityOutput.getId());
-    }
+    // cleanup
+    platformRepository.deleteById(platformEntityOutput.getId());
+  }
 }

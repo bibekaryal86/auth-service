@@ -1,11 +1,10 @@
 package auth.service.app.util;
 
-import java.util.List;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -14,17 +13,17 @@ public class ConstantUtils {
 
   public static final Gson GSON =
       new GsonBuilder()
-              .setExclusionStrategies(
-                      new ExclusionStrategy() {
-                        public boolean shouldSkipField(FieldAttributes f) {
-                          return (f == null);
-                        }
+          .setExclusionStrategies(
+              new ExclusionStrategy() {
+                public boolean shouldSkipField(FieldAttributes f) {
+                  return (f == null);
+                }
 
-                        public boolean shouldSkipClass(Class<?> clazz) {
-                          return false;
-                        }
-                      })
-              .create();
+                public boolean shouldSkipClass(Class<?> clazz) {
+                  return false;
+                }
+              })
+          .create();
 
   // provided at runtime
   public static final String ENV_SERVER_PORT = "PORT";

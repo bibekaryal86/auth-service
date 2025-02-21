@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +36,13 @@ public class RoleService {
   public Page<RoleEntity> readRoles(final RequestMetadata requestMetadata) {
     log.debug("Read Roles: [{}]", requestMetadata);
 
-    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+    final RequestMetadata requestMetadataToUse =
+        CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("roleName");
     final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "roleName");
-    final Specification<RoleEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    final Specification<RoleEntity> specification =
+        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return roleRepository.findAll(specification, pageable);
   }
 

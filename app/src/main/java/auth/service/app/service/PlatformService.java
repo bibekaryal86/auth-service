@@ -5,7 +5,6 @@ import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
@@ -14,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -39,11 +36,13 @@ public class PlatformService {
   public Page<PlatformEntity> readPlatforms(final RequestMetadata requestMetadata) {
     log.debug("Read Platforms: [{}]", requestMetadata);
 
-    final RequestMetadata requestMetadataToUse = CommonUtils.isRequestMetadataIncluded(requestMetadata)
+    final RequestMetadata requestMetadataToUse =
+        CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("platformName");
     final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "platformName");
-    final Specification<PlatformEntity> specification = JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    final Specification<PlatformEntity> specification =
+        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return platformRepository.findAll(specification, pageable);
   }
 

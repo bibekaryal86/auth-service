@@ -11,6 +11,7 @@ import auth.service.BaseTest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -21,12 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Collections;
-
 public class JpaDataUtilsTest extends BaseTest {
 
-  @Mock
-  private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
   @BeforeEach
   void setUp() {
@@ -66,7 +64,7 @@ public class JpaDataUtilsTest extends BaseTest {
     assertEquals(20, result.getPageSize());
     assertEquals(requestMetadata.getSortColumn(), result.getSort().iterator().next().getProperty());
     assertEquals(
-            requestMetadata.getSortDirection(), result.getSort().iterator().next().getDirection());
+        requestMetadata.getSortDirection(), result.getSort().iterator().next().getDirection());
   }
 
   @Test
@@ -112,7 +110,8 @@ public class JpaDataUtilsTest extends BaseTest {
   void testShouldIncludeDeletedRecords_isIncludeDeletedTrueButNoSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
-    Authentication authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    Authentication authentication =
+        new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -125,7 +124,8 @@ public class JpaDataUtilsTest extends BaseTest {
   void testShouldIncludeDeletedRecords_isIncludeDeletedTrueWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
-    Authentication authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    Authentication authentication =
+        new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -138,7 +138,8 @@ public class JpaDataUtilsTest extends BaseTest {
   void testShouldIncludeDeletedRecords_isIncludeDeletedFalseWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
-    Authentication authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    Authentication authentication =
+        new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 

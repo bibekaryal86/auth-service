@@ -21,80 +21,80 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class TokenRepositoryTest extends BaseTest {
 
-    @Autowired private TokenRepository tokenRepository;
+  @Autowired private TokenRepository tokenRepository;
 
-    @BeforeAll
-    static void setUp(@Autowired TokenRepository tokenRepository) {
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setAccessToken("some-access-token");
-        tokenEntity.setRefreshToken("some-refresh-token");
-        tokenEntity.setIpAddress("some-ip-address");
+  @BeforeAll
+  static void setUp(@Autowired TokenRepository tokenRepository) {
+    TokenEntity tokenEntity = new TokenEntity();
+    tokenEntity.setAccessToken("some-access-token");
+    tokenEntity.setRefreshToken("some-refresh-token");
+    tokenEntity.setIpAddress("some-ip-address");
 
-        PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
-        ProfileEntity profileEntity = TestData.getProfileEntities().getFirst();
-        tokenEntity.setPlatform(platformEntity);
-        tokenEntity.setProfile(profileEntity);
+    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
+    ProfileEntity profileEntity = TestData.getProfileEntities().getFirst();
+    tokenEntity.setPlatform(platformEntity);
+    tokenEntity.setProfile(profileEntity);
 
-        tokenRepository.save(tokenEntity);
+    tokenRepository.save(tokenEntity);
+  }
+
+  @AfterAll
+  static void tearDown(@Autowired TokenRepository tokenRepository) {
+    tokenRepository.deleteAll();
+  }
+
+  @Test
+  public void testFindByAccessToken() {
+    Optional<TokenEntity> tokenEntityOptional =
+        tokenRepository.findByAccessToken("some-access-token");
+
+    assertTrue(tokenEntityOptional.isPresent());
+    assertEquals("some-refresh-token", tokenEntityOptional.get().getRefreshToken());
+  }
+
+  @Test
+  public void testFindByRefreshToken() {
+    Optional<TokenEntity> tokenEntityOptional =
+        tokenRepository.findByRefreshToken("some-refresh-token");
+
+    assertTrue(tokenEntityOptional.isPresent());
+    assertEquals("some-access-token", tokenEntityOptional.get().getAccessToken());
+  }
+
+  @Test
+  @Transactional
+  public void testSetTokensAsDeletedByProfileId() {
+    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
+    ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
+    TokenEntity tokenEntity1 = TestData.getTokenEntity(101, platformEntity, profileEntity);
+    TokenEntity tokenEntity2 = TestData.getTokenEntity(102, platformEntity, profileEntity);
+    tokenRepository.save(tokenEntity1);
+    tokenRepository.save(tokenEntity2);
+
+    int updated = tokenRepository.setTokensAsDeletedByProfileIdTest(profileEntity.getId());
+    assertEquals(2, updated);
+  }
+
+  @Test
+  public void testUniqueConstraints_accessRefreshToken() {
+    TokenEntity tokenEntity = tokenRepository.findByAccessToken("some-access-token").orElse(null);
+
+    if (tokenEntity == null) {
+      fail("Token Entity Not Found...");
     }
 
-    @AfterAll
-    static void tearDown(@Autowired TokenRepository tokenRepository) {
-        tokenRepository.deleteAll();
-    }
+    TokenEntity tokenEntityOne = new TokenEntity();
+    BeanUtils.copyProperties(tokenEntity, tokenEntityOne, "id");
 
-    @Test
-    public void testFindByAccessToken() {
-        Optional<TokenEntity> tokenEntityOptional =
-                tokenRepository.findByAccessToken("some-access-token");
+    // throws exception for same access token
+    assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
 
-        assertTrue(tokenEntityOptional.isPresent());
-        assertEquals("some-refresh-token", tokenEntityOptional.get().getRefreshToken());
-    }
+    tokenEntityOne.setAccessToken("some-access-token-1");
+    // throws exception for same refresh token
+    assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
 
-    @Test
-    public void testFindByRefreshToken() {
-        Optional<TokenEntity> tokenEntityOptional =
-                tokenRepository.findByRefreshToken("some-refresh-token");
-
-        assertTrue(tokenEntityOptional.isPresent());
-        assertEquals("some-access-token", tokenEntityOptional.get().getAccessToken());
-    }
-
-    @Test
-    @Transactional
-    public void testSetTokensAsDeletedByProfileId() {
-        PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
-        ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
-        TokenEntity tokenEntity1 = TestData.getTokenEntity(101, platformEntity, profileEntity);
-        TokenEntity tokenEntity2 = TestData.getTokenEntity(102, platformEntity, profileEntity);
-        tokenRepository.save(tokenEntity1);
-        tokenRepository.save(tokenEntity2);
-
-        int updated = tokenRepository.setTokensAsDeletedByProfileIdTest(profileEntity.getId());
-        assertEquals(2, updated);
-    }
-
-    @Test
-    public void testUniqueConstraints_accessRefreshToken() {
-        TokenEntity tokenEntity = tokenRepository.findByAccessToken("some-access-token").orElse(null);
-
-        if (tokenEntity == null) {
-            fail("Token Entity Not Found...");
-        }
-
-        TokenEntity tokenEntityOne = new TokenEntity();
-        BeanUtils.copyProperties(tokenEntity, tokenEntityOne, "id");
-
-        // throws exception for same access token
-        assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
-
-        tokenEntityOne.setAccessToken("some-access-token-1");
-        // throws exception for same refresh token
-        assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
-
-        tokenEntityOne.setRefreshToken("some-refresh-token-2");
-        // does not throw exception for different access and refresh token
-        tokenRepository.save(tokenEntityOne);
-    }
+    tokenEntityOne.setRefreshToken("some-refresh-token-2");
+    // does not throw exception for different access and refresh token
+    tokenRepository.save(tokenEntityOne);
+  }
 }

@@ -128,7 +128,8 @@ public class EntityDtoConvertUtils {
     BeanUtils.copyProperties(roleEntity, roleDto);
 
     if (isIncludePermissions) {
-      List<PermissionDto> permissionDtos = convertEntitiesToDtosPermissions(roleEntity.getPermissionEntities());
+      List<PermissionDto> permissionDtos =
+          convertEntitiesToDtosPermissions(roleEntity.getPermissionEntities());
       roleDto.setPermissions(permissionDtos);
     } else {
       roleDto.setPermissions(Collections.emptyList());
@@ -144,8 +145,8 @@ public class EntityDtoConvertUtils {
     }
 
     return roleEntities.stream()
-            .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, isIncludePermissions))
-            .toList();
+        .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, isIncludePermissions))
+        .toList();
   }
 
   public ResponseEntity<RoleResponse> getResponseSingleRole(
@@ -300,7 +301,8 @@ public class EntityDtoConvertUtils {
     BeanUtils.copyProperties(profileEntity, profileDto, "password", "profileAddress");
 
     if (profileEntity.getProfileAddress() != null) {
-      profileDto.setProfileAddress(convertEntityToDtoProfileAddress(profileEntity.getProfileAddress()));
+      profileDto.setProfileAddress(
+          convertEntityToDtoProfileAddress(profileEntity.getProfileAddress()));
     }
 
     if (!isIncludeRoles) {
@@ -526,16 +528,17 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PlatformProfileRoleResponse> getResponseErrorPlatformProfileRole(
-          final Exception exception) {
+      final Exception exception) {
     return new ResponseEntity<>(
-            PlatformProfileRoleResponse.builder()
-                    .responseMetadata(
-                            ResponseMetadata.builder()
-                                    .responseStatusInfo(ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                                    .build())
-                    .build(),
-            getHttpStatusForErrorResponse(exception));
+        PlatformProfileRoleResponse.builder()
+            .responseMetadata(
+                ResponseMetadata.builder()
+                    .responseStatusInfo(
+                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
+                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
+                    .build())
+            .build(),
+        getHttpStatusForErrorResponse(exception));
   }
 }

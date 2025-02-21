@@ -66,7 +66,8 @@ public class TestData {
   public static List<PermissionEntity> getPermissionEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-permission.json");
     try {
-      return ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
@@ -83,7 +84,8 @@ public class TestData {
   public static List<RoleEntity> getRoleEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-role.json");
     try {
-      return ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
@@ -99,7 +101,8 @@ public class TestData {
   public static List<PlatformEntity> getPlatformEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-platform.json");
     try {
-      return ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
@@ -115,7 +118,8 @@ public class TestData {
   public static List<ProfileAddressEntity> getProfileAddressEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-profile-address.json");
     try {
-      return ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
     } catch (JsonProcessingException ex) {
       return Collections.emptyList();
     }
@@ -132,7 +136,8 @@ public class TestData {
     return profileAddressEntity;
   }
 
-  public static ProfileAddressRequest getProfileAddressRequest(Long id, Long profileId, String street, boolean isDeleteAddress) {
+  public static ProfileAddressRequest getProfileAddressRequest(
+      Long id, Long profileId, String street, boolean isDeleteAddress) {
     ProfileAddressEntity profileAddressEntity = getNewProfileAddressEntity();
     return new ProfileAddressRequest(
         id,
@@ -154,13 +159,11 @@ public class TestData {
       List<ProfileAddressEntity> profileAddressEntities = getProfileAddressEntities();
 
       Map<Long, ProfileAddressEntity> addressMap =
-              profileAddressEntities.stream()
-                      .collect(
-                              Collectors.toMap(
-                                      profileAddressEntity -> profileAddressEntity.getProfile().getId(),
-                                      profileAddressEntity -> profileAddressEntity
-                              )
-                      );
+          profileAddressEntities.stream()
+              .collect(
+                  Collectors.toMap(
+                      profileAddressEntity -> profileAddressEntity.getProfile().getId(),
+                      profileAddressEntity -> profileAddressEntity));
 
       profileEntities.forEach(
           profile -> {
@@ -186,7 +189,12 @@ public class TestData {
     return profileEntity;
   }
 
-  public static ProfileRequest getProfileRequest(String firstName, String lastName, String email, String password, ProfileAddressRequest addressRequest) {
+  public static ProfileRequest getProfileRequest(
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      ProfileAddressRequest addressRequest) {
     return new ProfileRequest(firstName, lastName, email, null, password, true, addressRequest);
   }
 
@@ -196,7 +204,8 @@ public class TestData {
     RoleEntity roleEntity = getRoleEntities().getLast();
 
     ProfileDto profileDto = new ProfileDto();
-    BeanUtils.copyProperties(profileEntity, profileDto, "password", "addresses", "status", "platformRoles");
+    BeanUtils.copyProperties(
+        profileEntity, profileDto, "password", "addresses", "status", "platformRoles");
 
     PlatformDto platformDto = new PlatformDto();
     BeanUtils.copyProperties(platformEntity, platformDto);
@@ -249,18 +258,21 @@ public class TestData {
             .build();
 
     List<RoleDto> roleDtos =
-            profileDtoInput.getPlatformRoles().stream()
-                    .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
-                    .toList();
+        profileDtoInput.getPlatformRoles().stream()
+            .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
+            .toList();
     roleDtos.forEach(roleDto -> roleDto.setPermissions(List.of(permissionDto)));
     profileDtoOutput.setPlatformRoles(
         List.of(ProfileDtoPlatformRole.builder().platform(platformDto).roles(roleDtos).build()));
     return profileDtoOutput;
   }
 
-  public static PlatformProfileRoleEntity getPlatformProfileRoleEntity(PlatformEntity platformEntity, ProfileEntity profileEntity, RoleEntity roleEntity) {
+  public static PlatformProfileRoleEntity getPlatformProfileRoleEntity(
+      PlatformEntity platformEntity, ProfileEntity profileEntity, RoleEntity roleEntity) {
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
-    PlatformProfileRoleId platformProfileRoleId = new PlatformProfileRoleId(platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
+    PlatformProfileRoleId platformProfileRoleId =
+        new PlatformProfileRoleId(
+            platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
     platformProfileRoleEntity.setId(platformProfileRoleId);
     platformProfileRoleEntity.setPlatform(platformEntity);
     platformProfileRoleEntity.setProfile(profileEntity);
@@ -276,17 +288,29 @@ public class TestData {
     List<RoleEntity> roleEntities = getRoleEntities();
 
     // 1, 1, 1
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(0), profileEntities.get(0), roleEntities.get(0)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(0), profileEntities.get(0), roleEntities.get(0)));
     // 2, 2, 2
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(1), profileEntities.get(1), roleEntities.get(1)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(1), profileEntities.get(1), roleEntities.get(1)));
     // 3, 3, 3
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(2), profileEntities.get(2), roleEntities.get(2)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(2), profileEntities.get(2), roleEntities.get(2)));
     // 4, 4, 4
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(3)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(3)));
     // 4, 4, 5
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(4)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(4)));
     // 4, 4, 6
-    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(5)));
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(5)));
 
     return platformProfileRoleEntities;
   }

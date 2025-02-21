@@ -14,32 +14,32 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 public class PermissionRepositoryTest extends BaseTest {
 
-    @Autowired private PermissionRepository permissionRepository;
+  @Autowired private PermissionRepository permissionRepository;
 
-    @Test
-    void testUniqueConstraint_roleIdPermissionName() {
-        RoleEntity roleEntity = TestData.getRoleEntities().getLast();
-        PermissionEntity permissionEntityInput = TestData.getPermissionEntities().getFirst();
-        final Long original = permissionEntityInput.getRole().getId();
-        PermissionEntity permissionEntityOutput = new PermissionEntity();
-        BeanUtils.copyProperties(permissionEntityInput, permissionEntityOutput, "id");
+  @Test
+  void testUniqueConstraint_roleIdPermissionName() {
+    RoleEntity roleEntity = TestData.getRoleEntities().getLast();
+    PermissionEntity permissionEntityInput = TestData.getPermissionEntities().getFirst();
+    final Long original = permissionEntityInput.getRole().getId();
+    PermissionEntity permissionEntityOutput = new PermissionEntity();
+    BeanUtils.copyProperties(permissionEntityInput, permissionEntityOutput, "id");
 
-        // Variable used in lambda expression should be final or effectively final
-        final PermissionEntity finalPermissionEntityOutput = permissionEntityOutput;
-        // throws exception for same name
-        assertThrows(
-                DataIntegrityViolationException.class,
-                () -> permissionRepository.save(finalPermissionEntityOutput));
+    // Variable used in lambda expression should be final or effectively final
+    final PermissionEntity finalPermissionEntityOutput = permissionEntityOutput;
+    // throws exception for same name
+    assertThrows(
+        DataIntegrityViolationException.class,
+        () -> permissionRepository.save(finalPermissionEntityOutput));
 
-        // does not throw exception for same name, different role
-        permissionEntityOutput.setRole(roleEntity);
-        permissionEntityOutput = permissionRepository.save(permissionEntityOutput);
-        assertEquals(roleEntity, permissionEntityOutput.getRole());
+    // does not throw exception for same name, different role
+    permissionEntityOutput.setRole(roleEntity);
+    permissionEntityOutput = permissionRepository.save(permissionEntityOutput);
+    assertEquals(roleEntity, permissionEntityOutput.getRole());
 
-        // make sure original entity remains unchanged as its used in other tests
-        assertEquals(original, permissionEntityInput.getRole().getId());
+    // make sure original entity remains unchanged as its used in other tests
+    assertEquals(original, permissionEntityInput.getRole().getId());
 
-        // cleanup
-        permissionRepository.deleteById(permissionEntityOutput.getId());
-    }
+    // cleanup
+    permissionRepository.deleteById(permissionEntityOutput.getId());
+  }
 }

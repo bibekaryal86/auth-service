@@ -43,7 +43,8 @@ public class PlatformProfileRoleController {
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
+      final PlatformProfileRoleEntity platformProfileRoleEntity =
+          platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
       runAsync(
           () ->
@@ -59,12 +60,14 @@ public class PlatformProfileRoleController {
 
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
 
-      return ResponseEntity.ok(PlatformProfileRoleResponse.builder()
-                      .responseMetadata(ResponseMetadata.builder()
-                              .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                              .responseCrudInfo(responseCrudInfo)
-                              .build())
+      return ResponseEntity.ok(
+          PlatformProfileRoleResponse.builder()
+              .responseMetadata(
+                  ResponseMetadata.builder()
+                      .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
+                      .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+                      .responseCrudInfo(responseCrudInfo)
+                      .build())
               .build());
     } catch (Exception ex) {
       log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
@@ -80,7 +83,8 @@ public class PlatformProfileRoleController {
       @PathVariable final long roleId,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
+      final PlatformProfileRoleEntity platformProfileRoleEntity =
+          platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
 
       runAsync(
           () ->
@@ -95,8 +99,10 @@ public class PlatformProfileRoleController {
                       platformProfileRoleEntity.getRole().getId())));
 
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return ResponseEntity.ok(PlatformProfileRoleResponse.builder()
-              .responseMetadata(ResponseMetadata.builder()
+      return ResponseEntity.ok(
+          PlatformProfileRoleResponse.builder()
+              .responseMetadata(
+                  ResponseMetadata.builder()
                       .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
                       .responsePageInfo(CommonUtils.emptyResponsePageInfo())
                       .responseCrudInfo(responseCrudInfo)

@@ -14,33 +14,34 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 public class ProfileAddressRepositoryTest extends BaseTest {
 
-    @Autowired private ProfileAddressRepository profileAddressRepository;
+  @Autowired private ProfileAddressRepository profileAddressRepository;
 
-    @Test
-    void testUniqueConstraint_profile() {
-        // setup
-        ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
-        ProfileAddressEntity profileAddressEntityInput = TestData.getProfileAddressEntities().getFirst();
-        final Long original = profileAddressEntityInput.getProfile().getId();
-        ProfileAddressEntity profileAddressEntityOutput = new ProfileAddressEntity();
-        BeanUtils.copyProperties(profileAddressEntityInput, profileAddressEntityOutput, "id");
+  @Test
+  void testUniqueConstraint_profile() {
+    // setup
+    ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
+    ProfileAddressEntity profileAddressEntityInput =
+        TestData.getProfileAddressEntities().getFirst();
+    final Long original = profileAddressEntityInput.getProfile().getId();
+    ProfileAddressEntity profileAddressEntityOutput = new ProfileAddressEntity();
+    BeanUtils.copyProperties(profileAddressEntityInput, profileAddressEntityOutput, "id");
 
-        // Variable used in lambda expression should be final or effectively final
-        final ProfileAddressEntity finalProfileAddressEntityOutput = profileAddressEntityOutput;
-        // throws exception for same profile same type
-        assertThrows(
-                DataIntegrityViolationException.class,
-                () -> profileAddressRepository.save(finalProfileAddressEntityOutput));
+    // Variable used in lambda expression should be final or effectively final
+    final ProfileAddressEntity finalProfileAddressEntityOutput = profileAddressEntityOutput;
+    // throws exception for same profile same type
+    assertThrows(
+        DataIntegrityViolationException.class,
+        () -> profileAddressRepository.save(finalProfileAddressEntityOutput));
 
-        // does not throw exception for same address, different profile
-        profileAddressEntityOutput.setProfile(profileEntity);
-        profileAddressEntityOutput = profileAddressRepository.save(profileAddressEntityOutput);
-        assertEquals(13L, profileAddressEntityOutput.getProfile().getId());
+    // does not throw exception for same address, different profile
+    profileAddressEntityOutput.setProfile(profileEntity);
+    profileAddressEntityOutput = profileAddressRepository.save(profileAddressEntityOutput);
+    assertEquals(13L, profileAddressEntityOutput.getProfile().getId());
 
-        // make sure original entity remains unchanged as its used in other tests
-        assertEquals(original, profileAddressEntityInput.getProfile().getId());
+    // make sure original entity remains unchanged as its used in other tests
+    assertEquals(original, profileAddressEntityInput.getProfile().getId());
 
-        // cleanup
-        profileAddressRepository.deleteById(profileAddressEntityOutput.getId());
-    }
+    // cleanup
+    profileAddressRepository.deleteById(profileAddressEntityOutput.getId());
+  }
 }
