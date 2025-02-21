@@ -258,12 +258,9 @@ public class TestData {
     return profileDtoOutput;
   }
 
-  public static PlatformProfileRoleEntity getPlatformProfileRoleEntity(
-      PlatformEntity platformEntity, ProfileEntity profileEntity, RoleEntity roleEntity) {
+  public static PlatformProfileRoleEntity getPlatformProfileRoleEntity(PlatformEntity platformEntity, ProfileEntity profileEntity, RoleEntity roleEntity) {
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
-    PlatformProfileRoleId platformProfileRoleId =
-        new PlatformProfileRoleId(
-            platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
+    PlatformProfileRoleId platformProfileRoleId = new PlatformProfileRoleId(platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
     platformProfileRoleEntity.setId(platformProfileRoleId);
     platformProfileRoleEntity.setPlatform(platformEntity);
     platformProfileRoleEntity.setProfile(profileEntity);
@@ -278,11 +275,18 @@ public class TestData {
     List<ProfileEntity> profileEntities = getProfileEntities();
     List<RoleEntity> roleEntities = getRoleEntities();
 
-    for (int i = 0; i < platformEntities.size(); i++) {
-      platformProfileRoleEntities.add(
-          getPlatformProfileRoleEntity(
-              platformEntities.get(i), profileEntities.get(i), roleEntities.get(i)));
-    }
+    // 1, 1, 1
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(0), profileEntities.get(0), roleEntities.get(0)));
+    // 2, 2, 2
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(1), profileEntities.get(1), roleEntities.get(1)));
+    // 3, 3, 3
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(2), profileEntities.get(2), roleEntities.get(2)));
+    // 4, 4, 4
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(3)));
+    // 4, 4, 5
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(4)));
+    // 4, 4, 6
+    platformProfileRoleEntities.add(getPlatformProfileRoleEntity(platformEntities.get(3), profileEntities.get(3), roleEntities.get(5)));
 
     return platformProfileRoleEntities;
   }

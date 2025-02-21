@@ -39,11 +39,11 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
   @PostMapping
-  public ResponseEntity<PlatformProfileRoleResponse> createPlatformProfileRole(
+  public ResponseEntity<PlatformProfileRoleResponse> assignPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.createPlatformProfileRole(platformProfileRoleRequest);
+      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
       runAsync(
           () ->
@@ -74,13 +74,13 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<PlatformProfileRoleResponse> deletePlatformProfileRole(
+  public ResponseEntity<PlatformProfileRoleResponse> unassignPlatformProfileRole(
       @PathVariable final long platformId,
       @PathVariable final long profileId,
       @PathVariable final long roleId,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.softDeletePlatformProfileRoleEntity(platformId, profileId, roleId);
+      final PlatformProfileRoleEntity platformProfileRoleEntity = platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
 
       runAsync(
           () ->
