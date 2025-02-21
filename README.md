@@ -36,3 +36,6 @@ A small utility for authentication and authorization with platforms, profiles, r
 * Add PlatformDtoProfileRoles for isIncludeProfiles
 * Add RoleDtoPlatformProfiles for isIncludePlatforms
 * EntityDtoConvertUtils TEST
+* When deleting role, delete all permissions and PPRs
+* When deleting platform, delete all PPRs
+* When deleting profile, delete all PPRs

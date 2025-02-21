@@ -70,7 +70,7 @@ public class ProfileService {
     profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
 
-    // profile_addresses
+    // profile_address
     ProfileAddressEntity profileAddressEntity = convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, true);
 
     // platform_profile_role
@@ -144,7 +144,7 @@ public class ProfileService {
     }
 
     // profile
-    BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "addresses");
+    BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "profileAddress");
     // profile_address
     ProfileAddressEntity profileAddressEntity = convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
 
@@ -154,8 +154,10 @@ public class ProfileService {
     if (profileAddressEntity != null) {
       if (profileRequest.getAddressRequest().isDeleteAddress()) {
         profileAddressRepository.deleteById(profileRequest.getAddressRequest().getId());
+        profileEntity.setProfileAddress(null);
       } else {
-        profileAddressRepository.save(profileAddressEntity);
+        profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
+        profileEntity.setProfileAddress(profileAddressEntity);
       }
     }
 

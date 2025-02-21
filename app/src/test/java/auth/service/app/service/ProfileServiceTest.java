@@ -27,6 +27,7 @@ import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
@@ -304,9 +305,8 @@ public class ProfileServiceTest extends BaseTest {
         assertThrows(DataIntegrityViolationException.class, () -> profileService.hardDeleteProfile(profileId));
 
         // delete from platform profile role service first
-        // TODO this will not work because unassign does not actually delete it
         Long roleId = circularDependencyService.readRoleByName(ROLE_NAME_GUEST, false).getId();
-        platformProfileRoleService.unassignPlatformProfileRole(platformEntity.getId(), profileId, roleId);
+        platformProfileRoleRepository.deleteById(new PlatformProfileRoleId(platformEntity.getId(), profileId, roleId));
 
         // delete profile
         profileService.hardDeleteProfile(profileId);
