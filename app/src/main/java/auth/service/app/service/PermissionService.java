@@ -49,7 +49,7 @@ public class PermissionService {
     return permissionRepository.findAll(specification, pageable);
   }
 
-  /** Use {@link CircularDependencyService#readPermission(Long, Boolean)} */
+  /** Use {@link CircularDependencyService#readPermission(Long, boolean)} */
   private PermissionEntity readPermission(final Long id) {
     log.debug("Read Permission: [{}]", id);
     return permissionRepository

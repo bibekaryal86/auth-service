@@ -46,7 +46,7 @@ public class RoleService {
     return roleRepository.findAll(specification, pageable);
   }
 
-  /** Use {@link CircularDependencyService#readRole(Long, Boolean)} */
+  /** Use {@link CircularDependencyService#readRole(Long, boolean)} */
   private RoleEntity readRole(final Long id) {
     log.debug("Read Role: [{}]", id);
     return roleRepository

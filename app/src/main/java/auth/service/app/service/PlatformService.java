@@ -47,7 +47,7 @@ public class PlatformService {
     return platformRepository.findAll(specification, pageable);
   }
 
-  /** Use {@link CircularDependencyService#readPlatform(Long, Boolean)} */
+  /** Use {@link CircularDependencyService#readPlatform(Long, boolean)} */
   private PlatformEntity readPlatform(final Long id) {
     log.debug("Read Platform: [{}]", id);
     return platformRepository
