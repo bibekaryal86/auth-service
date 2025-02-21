@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -13,8 +14,11 @@ import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
+import auth.service.app.repository.PermissionRepository;
 import helper.TestData;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,7 @@ public class PermissionServiceTest extends BaseTest {
   @Mock private SecurityContext securityContext;
 
   @Autowired private PermissionService permissionService;
+  @Autowired private PermissionRepository permissionRepository;
 
   @Test
   void testReadPermissions_noRequestMetadata() {
@@ -64,6 +69,29 @@ public class PermissionServiceTest extends BaseTest {
     // check sorted by name
     assertEquals("PERMISSION-01", permissionEntities.getFirst().getPermissionName());
     assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
+  }
+
+  // @Test
+  void testHardDeletePermissionsByRoleId() {
+    // setup
+    RoleEntity roleEntity = new RoleEntity();
+    roleEntity.setId(11L);
+
+    List<Long> permissionIds = new ArrayList<>();
+    for (int i = 1; i < 4; i++) {
+      PermissionEntity permissionEntity = new PermissionEntity();
+      permissionEntity.setRole(roleEntity);
+      permissionEntity.setPermissionName("P_NAME_" + i);
+      permissionEntity.setPermissionDesc("P_DESC_" + i);
+      permissionEntity = permissionRepository.save(permissionEntity);
+      permissionIds.add(permissionEntity.getId());
+    }
+
+    permissionService.hardDeletePermissionsByRoleId(roleEntity.getId());
+
+    for (Long permissionId : permissionIds) {
+      assertTrue(permissionRepository.findById(permissionId).isEmpty());
+    }
   }
 
   @Test

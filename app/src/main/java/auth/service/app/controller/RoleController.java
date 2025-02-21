@@ -79,7 +79,8 @@ public class RoleController {
       final Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);
       final List<RoleEntity> roleEntities = roleEntityPage.toList();
       final ResponsePageInfo responsePageInfo = CommonUtils.defaultResponsePageInfo(roleEntityPage);
-      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities, isIncludePermissions, isIncludePlatforms, responsePageInfo);
+      return entityDtoConvertUtils.getResponseMultipleRoles(
+          roleEntities, isIncludePermissions, isIncludePlatforms, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);

@@ -2,11 +2,14 @@ package auth.service.app.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.RoleEntity;
 import helper.TestData;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +44,28 @@ public class PermissionRepositoryTest extends BaseTest {
 
     // cleanup
     permissionRepository.deleteById(permissionEntityOutput.getId());
+  }
+
+  @Test
+  void testDeleteByRoleId() {
+    // setup
+    RoleEntity roleEntity = new RoleEntity();
+    roleEntity.setId(11L);
+
+    List<Long> permissionIds = new ArrayList<>();
+    for (int i = 1; i < 4; i++) {
+      PermissionEntity permissionEntity = new PermissionEntity();
+      permissionEntity.setRole(roleEntity);
+      permissionEntity.setPermissionName("P_NAME_" + i);
+      permissionEntity.setPermissionDesc("P_DESC_" + i);
+      permissionEntity = permissionRepository.save(permissionEntity);
+      permissionIds.add(permissionEntity.getId());
+    }
+
+    permissionRepository.deleteByRoleId(roleEntity.getId());
+
+    for (Long permissionId : permissionIds) {
+      assertTrue(permissionRepository.findById(permissionId).isEmpty());
+    }
   }
 }

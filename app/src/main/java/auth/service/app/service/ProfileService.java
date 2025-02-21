@@ -31,6 +31,7 @@ import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import auth.service.app.util.PasswordUtils;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -248,9 +249,19 @@ public class ProfileService {
     return profileRepository.save(profileEntity);
   }
 
+  @Transactional
   public void hardDeleteProfile(final Long id) {
     log.info("Hard Delete Profile: [{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
+
+    // before Profile can be deleted, we need to delete entities in PlatformProfileRole
+    platformProfileRoleService.hardDeletePlatformProfileRolesByProfileIds(List.of(id));
+    // also delete ProfileAddress
+    if (profileEntity.getProfileAddress() != null
+        && profileEntity.getProfileAddress().getId() != null) {
+      profileAddressRepository.deleteById(profileEntity.getProfileAddress().getId());
+    }
+    // now Profile can be deleted
     profileRepository.delete(profileEntity);
   }
 

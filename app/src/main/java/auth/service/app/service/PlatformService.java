@@ -9,6 +9,7 @@ import auth.service.app.repository.PlatformRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class PlatformService {
 
   private final PlatformRepository platformRepository;
+  private final PlatformProfileRoleService platformProfileRoleService;
 
   // CREATE
   public PlatformEntity createPlatform(final PlatformRequest platformRequest) {
@@ -80,9 +83,14 @@ public class PlatformService {
     return platformRepository.save(platformEntity);
   }
 
+  @Transactional
   public void hardDeletePlatform(final Long id) {
     log.info("Hard Delete Platform: [{}]", id);
     final PlatformEntity platformEntity = readPlatform(id);
+
+    // before Platform can be deleted, we need to delete entities in PlatformProfileRole
+    platformProfileRoleService.hardDeletePlatformProfileRolesByPlatformIds(List.of(id));
+    // now Platform can be deleted
     platformRepository.delete(platformEntity);
   }
 

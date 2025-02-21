@@ -9,6 +9,7 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Service;
 public class RoleService {
 
   private final RoleRepository roleRepository;
+  private final PlatformProfileRoleService platformProfileRoleService;
+  private final PermissionService permissionService;
 
   // CREATE
   public RoleEntity createRole(final RoleRequest roleRequest) {
@@ -83,6 +86,12 @@ public class RoleService {
   public void hardDeleteRole(final Long id) {
     log.info("Hard Delete Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);
+
+    // before Role can be deleted, we need to delete entities in PlatformProfileRole
+    platformProfileRoleService.hardDeletePlatformProfileRolesByPlatformIds(List.of(id));
+    // before Role can be deleted, we need to delete entities in Permission
+    permissionService.hardDeletePermissionsByRoleId(id);
+    // now Role can be deleted
     roleRepository.delete(roleEntity);
   }
 

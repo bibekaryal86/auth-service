@@ -96,6 +96,11 @@ public class PermissionService {
     permissionRepository.delete(permissionEntity);
   }
 
+  public void hardDeletePermissionsByRoleId(final Long roleId) {
+    log.info("Hard Delete Permission by Role Id: [{}]", roleId);
+    permissionRepository.deleteByRoleId(roleId);
+  }
+
   // RESTORE
   public PermissionEntity restoreSoftDeletedPermission(final Long id) {
     log.info("Restore Soft Deleted Permission: [{}]", id);
