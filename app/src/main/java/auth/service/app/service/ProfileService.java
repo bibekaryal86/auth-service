@@ -66,7 +66,7 @@ public class ProfileService {
 
     // profile
     ProfileEntity profileEntity = new ProfileEntity();
-    BeanUtils.copyProperties(profileRequest, profileEntity, "password", "addresses");
+    BeanUtils.copyProperties(profileRequest, profileEntity, "password", "profileAddress");
     profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
 
@@ -146,13 +146,18 @@ public class ProfileService {
     // profile
     BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "addresses");
     // profile_address
-    ProfileAddressEntity profileAddressEntity =
-        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
+    ProfileAddressEntity profileAddressEntity = convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
 
     // save profile
     profileEntity = updateProfile(profileEntity);
     // save profile_address
-    profileAddressRepository.save(profileAddressEntity);
+    if (profileAddressEntity != null) {
+      if (profileRequest.getAddressRequest().isDeleteAddress()) {
+        profileAddressRepository.deleteById(profileRequest.getAddressRequest().getId());
+      } else {
+        profileAddressRepository.save(profileAddressEntity);
+      }
+    }
 
     return profileEntity;
   }
@@ -306,11 +311,12 @@ public class ProfileService {
 
     ProfileAddressEntity entity = new ProfileAddressEntity();
     if (isIgnoreId) {
-      BeanUtils.copyProperties(request, entity, "id", "profileId", "typeId");
+      BeanUtils.copyProperties(request, entity, "id", "profileId");
     } else {
-      BeanUtils.copyProperties(request, entity, "profileId", "typeId");
+      BeanUtils.copyProperties(request, entity, "profileId");
     }
     entity.setProfile(profileEntity);
+
     return entity;
   }
 

@@ -132,16 +132,17 @@ public class TestData {
     return profileAddressEntity;
   }
 
-  public static ProfileAddressRequest getProfileAddressRequest(Long profileId, String street) {
+  public static ProfileAddressRequest getProfileAddressRequest(Long id, Long profileId, String street, boolean isDeleteAddress) {
     ProfileAddressEntity profileAddressEntity = getNewProfileAddressEntity();
     return new ProfileAddressRequest(
-        null,
+        id,
         profileId,
         street,
         profileAddressEntity.getCity(),
         profileAddressEntity.getState(),
         profileAddressEntity.getCountry(),
-        profileAddressEntity.getPostalCode());
+        profileAddressEntity.getPostalCode(),
+        isDeleteAddress);
   }
 
   public static List<ProfileEntity> getProfileEntities() {

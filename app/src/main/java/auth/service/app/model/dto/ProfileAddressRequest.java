@@ -15,4 +15,5 @@ public class ProfileAddressRequest {
   private String state;
   private String country;
   private String postalCode;
+  private boolean isDeleteAddress;
 }
