@@ -125,7 +125,7 @@ public class TestData {
     ProfileAddressEntity profileAddressEntity = new ProfileAddressEntity();
     profileAddressEntity.setStreet("Street-99");
     profileAddressEntity.setCity("City-99");
-    profileAddressEntity.setState("State-99");
+    profileAddressEntity.setState("ST-99");
     profileAddressEntity.setCountry("Country-99");
     profileAddressEntity.setPostalCode("Postal-99");
     profileAddressEntity.setProfile(null);

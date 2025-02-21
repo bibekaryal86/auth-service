@@ -76,7 +76,6 @@ public class ProfileService {
     // platform_profile_role
     final String roleName = profileRequest.isGuestUser() ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
     final RoleEntity roleEntity = circularDependencyService.readRoleByName(roleName, false);
-    PlatformProfileRoleRequest platformProfileRoleRequest = new PlatformProfileRoleRequest(platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
 
     // save profile
     profileEntity = profileRepository.save(profileEntity);
@@ -85,6 +84,7 @@ public class ProfileService {
       profileAddressRepository.save(profileAddressEntity);
     }
     // save platform profile role
+    PlatformProfileRoleRequest platformProfileRoleRequest = new PlatformProfileRoleRequest(platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
     platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
     // publish event for validation email

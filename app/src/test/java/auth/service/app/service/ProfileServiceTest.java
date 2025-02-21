@@ -24,15 +24,18 @@ import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 
@@ -70,6 +73,7 @@ public class ProfileServiceTest extends BaseTest {
     @Autowired private PlatformProfileRoleRepository platformProfileRoleRepository;
     @Autowired private PlatformProfileRoleService platformProfileRoleService;
     @Autowired private CircularDependencyService circularDependencyService;
+    @Autowired private RoleService roleService;
     @Autowired private PasswordUtils passwordUtils;
 
     @BeforeAll
@@ -90,9 +94,9 @@ public class ProfileServiceTest extends BaseTest {
         assertEquals(9, profileEntities.size());
         assertEquals(1, profileEntityPage.getTotalPages());
         assertEquals(100, profileEntityPage.getSize());
-        // check sorted by name
-        assertEquals("Last One", profileEntities.getFirst().getLastName());
-        assertEquals("Last Thirteen", profileEntities.getLast().getLastName());
+        // check sorted by last name
+        assertEquals("Last Eight", profileEntities.getFirst().getLastName());
+        assertEquals("Last Two", profileEntities.getLast().getLastName());
     }
 
     @Test
@@ -111,8 +115,8 @@ public class ProfileServiceTest extends BaseTest {
         assertEquals(1, profileEntityPage.getTotalPages());
         assertEquals(100, profileEntityPage.getSize());
         // check sorted by name
-        assertEquals("Last One", profileEntities.getFirst().getLastName());
-        assertEquals("Last Thirteen", profileEntities.getLast().getLastName());
+        assertEquals("Last Eight", profileEntities.getFirst().getLastName());
+        assertEquals("Last Two", profileEntities.getLast().getLastName());
     }
 
     @Test
@@ -143,6 +147,9 @@ public class ProfileServiceTest extends BaseTest {
         String oldLastName = "Old Last";
         String newFirstName = "New First";
         String newLastName = "New Last";
+
+        // insert GUEST role as its used in create profile
+        RoleEntity roleEntity = roleService.createRole(new RoleRequest(ROLE_NAME_GUEST, "something"));
 
         // Create
         ProfileRequest profileRequest = TestData.getProfileRequest(oldFirstName, oldLastName, OLD_EMAIL, null, null);
@@ -184,6 +191,10 @@ public class ProfileServiceTest extends BaseTest {
 
         // Hard Delete
         assertDeleteHard(profileId);
+
+        // cleanup
+        // delete GUEST role
+        roleService.hardDeleteRole(roleEntity.getId());
     }
 
     void assertCreate_FailureOnMissingPassword(ProfileRequest profileRequest) {
