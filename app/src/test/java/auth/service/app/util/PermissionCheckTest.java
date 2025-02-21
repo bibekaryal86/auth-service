@@ -109,7 +109,7 @@ public class PermissionCheckTest extends BaseTest {
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", 99));
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", ID_NOT_FOUND));
     verify(securityContext).getAuthentication();
   }
 
@@ -118,7 +118,7 @@ public class PermissionCheckTest extends BaseTest {
     CheckPermissionException exception =
         assertThrows(
             CheckPermissionException.class,
-            () -> permissionCheck.checkProfileAccess("some@email.com", 99));
+            () -> permissionCheck.checkProfileAccess("some@email.com", ID_NOT_FOUND));
 
     assertEquals(
         "Permission Denied: Profile does not have required permissions to profile entity...",

@@ -88,7 +88,7 @@ public class CircularDependencyServiceTest extends BaseTest {
 
     @Test
     void testReadPermission_NotFound() {
-        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readPermission(99L, INCLUDE_DELETED));
+        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readPermission(ID_NOT_FOUND, INCLUDE_DELETED));
         assertEquals("Permission Not Found for [99]", exception.getMessage());
     }
 
@@ -132,7 +132,7 @@ public class CircularDependencyServiceTest extends BaseTest {
 
     @Test
     void testReadPlatform_NotFound() {
-        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readPlatform(99L, INCLUDE_DELETED));
+        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readPlatform(ID_NOT_FOUND, INCLUDE_DELETED));
         assertEquals("Platform Not Found for [99]", exception.getMessage());
     }
 
@@ -176,7 +176,7 @@ public class CircularDependencyServiceTest extends BaseTest {
 
     @Test
     void testReadRole_NotFound() {
-        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readRole(99L, INCLUDE_DELETED));
+        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readRole(ID_NOT_FOUND, INCLUDE_DELETED));
         assertEquals("Role Not Found for [99]", exception.getMessage());
     }
 
@@ -264,7 +264,7 @@ public class CircularDependencyServiceTest extends BaseTest {
 
     @Test
     void testReadProfile_NotFound() {
-        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readProfile(99L, INCLUDE_DELETED));
+        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> circularDependencyService.readProfile(ID_NOT_FOUND, INCLUDE_DELETED));
         assertEquals("Profile Not Found for [99]", exception.getMessage());
     }
 }
