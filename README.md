@@ -35,3 +35,4 @@ A small utility for authentication and authorization with platforms, profiles, r
     * Current execution is effective but not efficient and leads to a lot of duplication between roles
 * Add PlatformDtoProfileRoles for isIncludeProfiles
 * Add RoleDtoPlatformProfiles for isIncludePlatforms
+* EntityDtoConvertUtils TEST
