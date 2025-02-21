@@ -21,4 +21,5 @@ public class RoleDto {
   private String roleDesc;
 
   private List<PermissionDto> permissions;
+  private List<RoleDtoPlatformProfile> platformProfiles;
 }
