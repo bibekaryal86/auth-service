@@ -71,14 +71,15 @@ public class PlatformController {
 
   @CheckPermission("ONLY SUPERUSER CAN READ PLATFORM")
   @GetMapping
-  public ResponseEntity<PlatformResponse> readPlatforms(final RequestMetadata requestMetadata) {
+  public ResponseEntity<PlatformResponse> readPlatforms(@RequestParam(required = false, defaultValue = "false") final boolean isIncludeProfiles,
+                                                        final RequestMetadata requestMetadata) {
     try {
       final Page<PlatformEntity> platformEntityPage =
           platformService.readPlatforms(requestMetadata);
       final List<PlatformEntity> platformEntities = platformEntityPage.toList();
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(platformEntityPage);
-      return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities, responsePageInfo);
+      return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities, isIncludeProfiles, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Platforms...", ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);

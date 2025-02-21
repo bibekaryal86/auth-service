@@ -73,13 +73,13 @@ public class RoleController {
   @GetMapping
   public ResponseEntity<RoleResponse> readRoles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludePermissions,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
       final RequestMetadata requestMetadata) {
     try {
       final Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);
       final List<RoleEntity> roleEntities = roleEntityPage.toList();
       final ResponsePageInfo responsePageInfo = CommonUtils.defaultResponsePageInfo(roleEntityPage);
-      return entityDtoConvertUtils.getResponseMultipleRoles(
-          roleEntities, isIncludePermissions, responsePageInfo);
+      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities, isIncludePermissions, isIncludePlatforms, responsePageInfo);
     } catch (Exception ex) {
       log.error("Read Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);

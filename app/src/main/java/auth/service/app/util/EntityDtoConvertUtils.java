@@ -7,6 +7,7 @@ import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleRe
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.PlatformDtoProfileRole;
 import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.ProfileAddressDto;
@@ -19,8 +20,8 @@ import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.dto.RoleDtoPlatformProfile;
 import auth.service.app.model.dto.RoleResponse;
-import auth.service.app.model.entity.BaseEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -119,7 +120,9 @@ public class EntityDtoConvertUtils {
 
   // role
   private RoleDto convertEntityToDtoRole(
-      final RoleEntity roleEntity, final boolean isIncludePermissions) {
+      final RoleEntity roleEntity,
+      final boolean isIncludePermissions,
+      final boolean isIncludePlatforms) {
     if (roleEntity == null) {
       return null;
     }
@@ -135,17 +138,125 @@ public class EntityDtoConvertUtils {
       roleDto.setPermissions(Collections.emptyList());
     }
 
+    if (!isIncludePlatforms) {
+      roleDto.setPlatformProfiles(Collections.emptyList());
+      return roleDto;
+    }
+
+    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByRoleIds(List.of(roleEntity.getId()));
+    List<PlatformEntity> platformEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
+            .toList();
+    List<ProfileEntity> profileEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getProfile)
+            .distinct()
+            .toList();
+
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    PlatformEntity::getId,
+                    platformEntity -> convertEntityToDtoPlatform(platformEntity, false)));
+    final Map<Long, ProfileDto> profileIdDtoMap =
+        profileEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    ProfileEntity::getId,
+                    profileEntity -> convertEntityToDtoProfile(profileEntity, false)));
+
+    final List<RoleDtoPlatformProfile> platformProfiles =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                    Collectors.mapping(
+                        prpe -> profileIdDtoMap.get(prpe.getProfile().getId()),
+                        Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new RoleDtoPlatformProfile(entry.getKey(), entry.getValue()))
+            .toList();
+
+    roleDto.setPlatformProfiles(platformProfiles);
     return roleDto;
   }
 
   private List<RoleDto> convertEntitiesToDtosRoles(
-      final List<RoleEntity> roleEntities, final boolean isIncludePermissions) {
+      final List<RoleEntity> roleEntities,
+      final boolean isIncludePermissions,
+      final boolean isIncludePlatforms) {
     if (CollectionUtils.isEmpty(roleEntities)) {
       return Collections.emptyList();
     }
 
+    if (!isIncludePlatforms) {
+      return roleEntities.stream()
+          .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, isIncludePermissions, false))
+          .toList();
+    }
+
+    final List<Long> roleIds = roleEntities.stream().map(RoleEntity::getId).toList();
+    final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByRoleIds(roleIds);
+    List<PlatformEntity> platformEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getPlatform)
+            .distinct()
+            .toList();
+    List<ProfileEntity> profileEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getProfile)
+            .distinct()
+            .toList();
+
+    final Map<Long, PlatformDto> platformIdDtoMap =
+        platformEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    PlatformEntity::getId,
+                    platformEntity -> convertEntityToDtoPlatform(platformEntity, false)));
+    final Map<Long, ProfileDto> profileIdDtoMap =
+        profileEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    ProfileEntity::getId,
+                    profileEntity -> convertEntityToDtoProfile(profileEntity, true)));
+
+    final Map<Long, List<RoleDtoPlatformProfile>> roleIdPlatformProfilesMap =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> prpe.getProfile().getId(),
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
+                            Collectors.mapping(
+                                prpe -> profileIdDtoMap.get(prpe.getProfile().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        RoleDtoPlatformProfile.builder()
+                                            .platform(e.getKey())
+                                            .profiles(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
     return roleEntities.stream()
-        .map(appRoleEntity -> convertEntityToDtoRole(appRoleEntity, isIncludePermissions))
+        .map(
+            roleEntity -> {
+              final RoleDto roleDto =
+                  convertEntityToDtoRole(roleEntity, isIncludePermissions, false);
+              final List<RoleDtoPlatformProfile> platformProfiles =
+                  roleIdPlatformProfilesMap.getOrDefault(roleDto.getId(), Collections.emptyList());
+              roleDto.setPlatformProfiles(platformProfiles);
+              return roleDto;
+            })
         .toList();
   }
 
@@ -154,7 +265,7 @@ public class EntityDtoConvertUtils {
     final List<RoleDto> roleDtos =
         roleEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoRole(roleEntity, true));
+            : List.of(convertEntityToDtoRole(roleEntity, true, true));
     return new ResponseEntity<>(
         RoleResponse.builder()
             .roles(roleDtos)
@@ -174,8 +285,10 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<RoleResponse> getResponseMultipleRoles(
       final List<RoleEntity> roleEntities,
       final boolean isIncludePermissions,
+      final boolean isIncludePlatforms,
       final ResponsePageInfo responsePageInfo) {
-    final List<RoleDto> roleDtos = convertEntitiesToDtosRoles(roleEntities, isIncludePermissions);
+    final List<RoleDto> roleDtos =
+        convertEntitiesToDtosRoles(roleEntities, isIncludePermissions, isIncludePlatforms);
     return ResponseEntity.ok(
         RoleResponse.builder()
             .roles(roleDtos)
@@ -204,21 +317,132 @@ public class EntityDtoConvertUtils {
   }
 
   // platform
-  private PlatformDto convertEntityToDtoPlatform(final PlatformEntity platformEntity) {
+  private PlatformDto convertEntityToDtoPlatform(
+      final PlatformEntity platformEntity, final boolean isIncludeProfiles) {
     if (platformEntity == null) {
       return null;
     }
     PlatformDto platformDto = new PlatformDto();
     BeanUtils.copyProperties(platformEntity, platformDto);
+
+    if (!isIncludeProfiles) {
+      platformDto.setProfileRoles(Collections.emptyList());
+      return platformDto;
+    }
+
+    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByPlatformIds(
+            List.of(platformEntity.getId()));
+    List<ProfileEntity> profileEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getProfile)
+            .distinct()
+            .toList();
+    List<RoleEntity> roleEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
+
+    final Map<Long, ProfileDto> profileIdDtoMap =
+        profileEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    ProfileEntity::getId,
+                    profileEntity -> convertEntityToDtoProfile(profileEntity, false)));
+    final Map<Long, RoleDto> roleIdDtoMap =
+        roleEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    RoleEntity::getId,
+                    roleEntity -> convertEntityToDtoRole(roleEntity, false, false)));
+
+    final List<PlatformDtoProfileRole> profileRoles =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> profileIdDtoMap.get(prpe.getProfile().getId()),
+                    Collectors.mapping(
+                        prpe -> roleIdDtoMap.get(prpe.getRole().getId()), Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new PlatformDtoProfileRole(entry.getKey(), entry.getValue()))
+            .toList();
+
+    platformDto.setProfileRoles(profileRoles);
     return platformDto;
   }
 
   private List<PlatformDto> convertEntitiesToDtosPlatforms(
-      final List<PlatformEntity> platformEntities) {
+      final List<PlatformEntity> platformEntities, final boolean isIncludeProfiles) {
     if (CollectionUtils.isEmpty(platformEntities)) {
       return Collections.emptyList();
     }
-    return platformEntities.stream().map(this::convertEntityToDtoPlatform).toList();
+
+    if (!isIncludeProfiles) {
+      return platformEntities.stream()
+          .map(platformEntity -> convertEntityToDtoPlatform(platformEntity, false))
+          .toList();
+    }
+
+    final List<Long> platformIds = platformEntities.stream().map(PlatformEntity::getId).toList();
+    final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleService.readPlatformProfileRolesByPlatformIds(platformIds);
+    final List<ProfileEntity> profileEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getProfile)
+            .distinct()
+            .toList();
+    final List<RoleEntity> roleEntities =
+        platformProfileRoleEntities.stream()
+            .map(PlatformProfileRoleEntity::getRole)
+            .distinct()
+            .toList();
+
+    final Map<Long, ProfileDto> profileIdDtoMap =
+        profileEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    ProfileEntity::getId,
+                    profileEntity -> convertEntityToDtoProfile(profileEntity, false)));
+    final Map<Long, RoleDto> roleIdDtoMap =
+        roleEntities.stream()
+            .collect(
+                Collectors.toMap(
+                    RoleEntity::getId,
+                    roleEntity -> convertEntityToDtoRole(roleEntity, false, false)));
+    final Map<Long, List<PlatformDtoProfileRole>> platformIdProfileRolesMap =
+        platformProfileRoleEntities.stream()
+            .collect(
+                Collectors.groupingBy(
+                    prpe -> prpe.getRole().getId(),
+                    Collectors.collectingAndThen(
+                        Collectors.groupingBy(
+                            prpe -> profileIdDtoMap.get(prpe.getProfile().getId()),
+                            Collectors.mapping(
+                                prpe -> roleIdDtoMap.get(prpe.getRole().getId()),
+                                Collectors.toList())),
+                        map ->
+                            map.entrySet().stream()
+                                .map(
+                                    e ->
+                                        PlatformDtoProfileRole.builder()
+                                            .profile(e.getKey())
+                                            .roles(e.getValue())
+                                            .build())
+                                .collect(Collectors.toList()))));
+
+    return platformEntities.stream()
+        .map(
+            platformEntity -> {
+              final PlatformDto platformDto = convertEntityToDtoPlatform(platformEntity, false);
+              final List<PlatformDtoProfileRole> profileRoles =
+                  platformIdProfileRolesMap.getOrDefault(
+                      platformDto.getId(), Collections.emptyList());
+              platformDto.setProfileRoles(profileRoles);
+              return platformDto;
+            })
+        .toList();
   }
 
   public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
@@ -226,7 +450,7 @@ public class EntityDtoConvertUtils {
     final List<PlatformDto> platformDtos =
         platformEntity == null
             ? Collections.emptyList()
-            : List.of(convertEntityToDtoPlatform(platformEntity));
+            : List.of(convertEntityToDtoPlatform(platformEntity, true));
     return new ResponseEntity<>(
         PlatformResponse.builder()
             .platforms(platformDtos)
@@ -244,10 +468,12 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PlatformResponse> getResponseMultiplePlatforms(
-      final List<PlatformEntity> platformEntities, final ResponsePageInfo responsePageInfo) {
+      final List<PlatformEntity> platformEntities,
+      final boolean isIncludeProfiles,
+      final ResponsePageInfo responsePageInfo) {
     return ResponseEntity.ok(
         PlatformResponse.builder()
-            .platforms(convertEntitiesToDtosPlatforms(platformEntities))
+            .platforms(convertEntitiesToDtosPlatforms(platformEntities, isIncludeProfiles))
             .responseMetadata(
                 ResponseMetadata.builder()
                     .responsePageInfo(responsePageInfo)
@@ -284,14 +510,6 @@ public class EntityDtoConvertUtils {
     return profileAddressDto;
   }
 
-  private List<ProfileAddressDto> convertEntitiesToDtosProfileAddress(
-      final List<ProfileAddressEntity> profileAddressEntities) {
-    if (CollectionUtils.isEmpty(profileAddressEntities)) {
-      return Collections.emptyList();
-    }
-    return profileAddressEntities.stream().map(this::convertEntityToDtoProfileAddress).toList();
-  }
-
   public ProfileDto convertEntityToDtoProfile(
       final ProfileEntity profileEntity, final boolean isIncludeRoles) {
     if (profileEntity == null) {
@@ -326,12 +544,16 @@ public class EntityDtoConvertUtils {
 
     final Map<Long, PlatformDto> platformIdDtoMap =
         platformEntities.stream()
-            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+            .collect(
+                Collectors.toMap(
+                    PlatformEntity::getId,
+                    platformEntity -> convertEntityToDtoPlatform(platformEntity, false)));
     final Map<Long, RoleDto> roleIdDtoMap =
         roleEntities.stream()
             .collect(
                 Collectors.toMap(
-                    RoleEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
+                    RoleEntity::getId,
+                    roleEntity -> convertEntityToDtoRole(roleEntity, true, false)));
 
     final List<ProfileDtoPlatformRole> platformRoles =
         platformProfileRoleEntities.stream()
@@ -363,12 +585,12 @@ public class EntityDtoConvertUtils {
     final List<Long> profileIds = profileEntities.stream().map(ProfileEntity::getId).toList();
     final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleService.readPlatformProfileRolesByProfileIds(profileIds);
-    List<PlatformEntity> platformEntities =
+    final List<PlatformEntity> platformEntities =
         platformProfileRoleEntities.stream()
             .map(PlatformProfileRoleEntity::getPlatform)
             .distinct()
             .toList();
-    List<RoleEntity> roleEntities =
+    final List<RoleEntity> roleEntities =
         platformProfileRoleEntities.stream()
             .map(PlatformProfileRoleEntity::getRole)
             .distinct()
@@ -376,12 +598,16 @@ public class EntityDtoConvertUtils {
 
     final Map<Long, PlatformDto> platformIdDtoMap =
         platformEntities.stream()
-            .collect(Collectors.toMap(PlatformEntity::getId, this::convertEntityToDtoPlatform));
+            .collect(
+                Collectors.toMap(
+                    PlatformEntity::getId,
+                    platformEntity -> convertEntityToDtoPlatform(platformEntity, false)));
     final Map<Long, RoleDto> roleIdDtoMap =
         roleEntities.stream()
             .collect(
                 Collectors.toMap(
-                    BaseEntity::getId, roleEntity -> convertEntityToDtoRole(roleEntity, true)));
+                    RoleEntity::getId,
+                    roleEntity -> convertEntityToDtoRole(roleEntity, true, false)));
 
     final Map<Long, List<ProfileDtoPlatformRole>> profileIdPlatformRolesMap =
         platformProfileRoleEntities.stream()
@@ -407,13 +633,12 @@ public class EntityDtoConvertUtils {
     return profileEntities.stream()
         .map(
             profileEntity -> {
-              ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, isIncludeRoles);
-
-              List<ProfileDtoPlatformRole> platformRoles =
+              // send isIncludeRoles as false here, roles already included
+              final ProfileDto profileDto = convertEntityToDtoProfile(profileEntity, false);
+              final List<ProfileDtoPlatformRole> platformRoles =
                   profileIdPlatformRolesMap.getOrDefault(
                       profileDto.getId(), Collections.emptyList());
               profileDto.setPlatformRoles(platformRoles);
-
               return profileDto;
             })
         .toList();
