@@ -112,6 +112,21 @@ public class PlatformProfileRoleService {
     return platformProfileRoleRepository.findByRoleIds(roleIds);
   }
 
+  public void deletedPlatformProfileRolesByPlatformIds(final List<Long> platformIds) {
+    log.info("Delete Platform Profile Roles By Platform Ids: [{}]", platformIds);
+    platformProfileRoleRepository.deleteByPlatformIds(platformIds);
+  }
+
+  public void deletedPlatformProfileRolesByProfileIds(final List<Long> profileIds) {
+    log.info("Delete Platform Profile Roles By Profile Ids: [{}]", profileIds);
+    platformProfileRoleRepository.deleteByProfileIds(profileIds);
+  }
+
+  public void deletedPlatformProfileRolesByRoleIds(final List<Long> roleIds) {
+    log.info("Delete Platform Profile Roles By Role Ids: [{}]", roleIds);
+    platformProfileRoleRepository.deleteByRoleIds(roleIds);
+  }
+
   private PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
     log.debug("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);

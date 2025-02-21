@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface PlatformProfileRoleRepository
@@ -47,4 +49,19 @@ public interface PlatformProfileRoleRepository
           + "WHERE ppre.id.roleId in (:roleIds) "
           + "ORDER BY ppre.platform.platformName, ppre.profile.lastName, ppre.role.roleName")
   List<PlatformProfileRoleEntity> findByRoleIds(@Param("roleIds") final List<Long> roleIds);
+
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM PlatformProfileRoleEntity ppre WHERE ppre.id.platformId IN (:platformIds)")
+  void deleteByPlatformIds(@Param("platformIds") List<Long> platformIds);
+
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM PlatformProfileRoleEntity ppre WHERE ppre.id.profileId IN (:profileIds)")
+  void deleteByProfileIds(@Param("profileIds") List<Long> profileIds);
+
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM PlatformProfileRoleEntity ppre WHERE ppre.id.roleId IN (:roleIds)")
+  void deleteByRoleIds(@Param("roleIds") List<Long> roleIds);
 }

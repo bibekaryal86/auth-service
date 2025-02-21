@@ -2,10 +2,17 @@ package auth.service.app.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import auth.service.app.model.entity.PlatformProfileRoleId;
+import helper.TestData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -252,5 +259,66 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                 () ->
                     assertEquals(
                         "ROLE-06", platformProfileRoleEntities.get(2).getRole().getRoleName())));
+  }
+
+  @Test
+  void testDeletedByPlatformIds() {
+    for (int i=10; i<13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleRepository.deleteByPlatformIds(List.of(11L, 12L, 13L));
+
+    for (int i=10; i<13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional = platformProfileRoleRepository.findById(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      assertTrue(pprOptional.isEmpty());
+    }
+  }
+
+  @Test
+  void testDeletedByProfileIds() {
+    // setup
+    for (int i=10; i<13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleRepository.deleteByProfileIds(List.of(11L, 12L, 13L));
+
+    for (int i=10; i<13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional = platformProfileRoleRepository.findById(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      assertTrue(pprOptional.isEmpty());
+    }
+  }
+
+  @Test
+  void testDeletedByRoleIds() {
+    for (int i=10; i<13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleRepository.deleteByProfileIds(List.of(11L, 12L, 13L));
+
+    for (int i=10; i<13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional = platformProfileRoleRepository.findById(new PlatformProfileRoleId((long) (i+1), (long) i+1, (long) i+1));
+      assertTrue(pprOptional.isEmpty());
+    }
   }
 }
