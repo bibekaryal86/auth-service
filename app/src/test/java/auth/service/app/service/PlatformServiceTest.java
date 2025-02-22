@@ -10,9 +10,11 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import java.util.Collections;
@@ -31,6 +33,8 @@ public class PlatformServiceTest extends BaseTest {
   @Mock private SecurityContext securityContext;
 
   @Autowired private PlatformService platformService;
+  @Autowired private PlatformProfileRoleService platformProfileRoleService;
+  @Autowired private CircularDependencyService circularDependencyService;
 
   @Test
   void testReadPlatforms_noRequestMetadata() {
@@ -148,14 +152,49 @@ public class PlatformServiceTest extends BaseTest {
   }
 
   private void assertDeleteHard(Long id) {
+    // setup
+    PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(id, ID, ID);
+    PlatformProfileRoleEntity pprEntity =
+        platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(id, EMAIL));
+
+    pprRequest = new PlatformProfileRoleRequest(id, 2L, 2L);
+    pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(id, "firstlast@two.com"));
+
     platformService.hardDeletePlatform(id);
+
+    // assert Platform is Deleted
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> platformService.hardDeletePlatform(id),
+            () -> circularDependencyService.readPlatform(id, false),
             "Expected ElementNotFoundException after hard delete...");
     assertEquals(
         String.format("Platform Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    // assert PPRs are Deleted
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(id, EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Platform Profile Role Not Found for [%s,%s]", id, EMAIL),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(id, "firstlast@two.com"),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Platform Profile Role Not Found for [%s,%s]", id, "firstlast@two.com"),
         exception.getMessage(),
         "Exception message mismatch...");
   }

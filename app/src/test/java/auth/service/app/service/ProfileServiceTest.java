@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -27,7 +28,6 @@ import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
@@ -46,7 +46,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -312,21 +311,48 @@ public class ProfileServiceTest extends BaseTest {
     assertNull(profileEntity.getProfileAddress());
   }
 
-  private void assertDeleteHard(Long profileId) {
-    Long roleId = circularDependencyService.readRoleByName(ROLE_NAME_GUEST, false).getId();
-    platformProfileRoleRepository.deleteById(
-        new PlatformProfileRoleId(platformEntity.getId(), profileId, roleId));
+  private void assertDeleteHard(Long id) {
+    // setup
+    // create PPRs
+    PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(2L, id, ID);
+    PlatformProfileRoleEntity pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL));
+    // PPR was created during create Profile
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL));
 
-    // delete profile
-    profileService.hardDeleteProfile(profileId);
+    profileService.hardDeleteProfile(id);
+
+    // assert Profile is deleted
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> profileService.hardDeleteProfile(profileId),
+            () -> circularDependencyService.readProfile(id, false),
             "Expected ElementNotFoundException after hard delete...");
     assertEquals(
-        String.format("Profile Not Found for [%s]", profileId),
+        String.format("Profile Not Found for [%s]", id),
         exception.getMessage(),
         "Exception message mismatch...");
+
+    // assert PPRs are Deleted
+    exception =
+            assertThrows(
+                    ElementNotFoundException.class,
+                    () -> platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL),
+                    "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+            String.format("Platform Profile Role Not Found for [%s,%s]", 2L, NEW_EMAIL),
+            exception.getMessage(),
+            "Exception message mismatch...");
+
+    exception =
+            assertThrows(
+                    ElementNotFoundException.class,
+                    () -> platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL),
+                    "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+            String.format("Platform Profile Role Not Found for [%s,%s]", platformEntity.getId(), NEW_EMAIL),
+            exception.getMessage(),
+            "Exception message mismatch...");
   }
 }

@@ -34,6 +34,3 @@ A small utility for authentication and authorization with platforms, profiles, r
   * Refactor Role/Permission to use Join table like PlatformProfileRole
     * Current execution is effective but not efficient and leads to a lot of duplication between roles
 * EntityDtoConvertUtils TEST
-* When deleting role, delete all permissions and PPRs
-* When deleting platform, delete all PPRs
-* When deleting profile, delete all PPRs

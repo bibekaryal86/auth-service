@@ -10,11 +10,16 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.PermissionRequest;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
+import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -31,6 +36,9 @@ public class RoleServiceTest extends BaseTest {
   @Mock private SecurityContext securityContext;
 
   @Autowired private RoleService roleService;
+  @Autowired private PermissionService permissionService;
+  @Autowired private PlatformProfileRoleService platformProfileRoleService;
+  @Autowired private CircularDependencyService circularDependencyService;
 
   @Test
   void testReadRoles_noRequestMetadata() {
@@ -148,14 +156,84 @@ public class RoleServiceTest extends BaseTest {
   }
 
   private void assertDeleteHard(Long id) {
+    // setup
+    // create PPRs
+    PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(ID, ID, id);
+    PlatformProfileRoleEntity pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(ID, EMAIL));
+
+    pprRequest = new PlatformProfileRoleRequest(2L, 2L, id);
+    pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(2L, "firstlast@two.com"));
+
+    // create permissions
+    List<Long> permissionEntityIds = new ArrayList<>();
+    PermissionRequest permissionRequest = new PermissionRequest(id, "Name1", "Desc1");
+    PermissionEntity permissionEntity = permissionService.createPermission(permissionRequest);
+    assertNotNull(permissionEntity);
+    assertNotNull(circularDependencyService.readPermission(permissionEntity.getId(), false));
+    permissionEntityIds.add(permissionEntity.getId());
+
+    permissionRequest = new PermissionRequest(id, "Name2", "Desc2");
+    permissionEntity = permissionService.createPermission(permissionRequest);
+    assertNotNull(permissionEntity);
+    assertNotNull(circularDependencyService.readPermission(permissionEntity.getId(), false));
+    permissionEntityIds.add(permissionEntity.getId());
+
     roleService.hardDeleteRole(id);
+
+    // assert Role is deleted
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> roleService.hardDeleteRole(id),
+            () -> circularDependencyService.readRole(id, false),
             "Expected ElementNotFoundException after hard delete...");
     assertEquals(
         String.format("Role Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    // assert PPRs are Deleted
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(id, EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Platform Profile Role Not Found for [%s,%s]", id, EMAIL),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(id, "firstlast@two.com"),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Platform Profile Role Not Found for [%s,%s]", id, "firstlast@two.com"),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    // assert Permission are deleted
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> circularDependencyService.readPermission(permissionEntityIds.getFirst(), false),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Permission Not Found for [%s]", permissionEntityIds.getFirst()),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> circularDependencyService.readPermission(permissionEntityIds.getLast(), false),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Permission Not Found for [%s]", permissionEntityIds.getLast()),
         exception.getMessage(),
         "Exception message mismatch...");
   }

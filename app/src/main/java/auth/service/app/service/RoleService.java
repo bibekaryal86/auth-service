@@ -88,7 +88,7 @@ public class RoleService {
     final RoleEntity roleEntity = readRole(id);
 
     // before Role can be deleted, we need to delete entities in PlatformProfileRole
-    platformProfileRoleService.hardDeletePlatformProfileRolesByPlatformIds(List.of(id));
+    platformProfileRoleService.hardDeletePlatformProfileRolesByRoleIds(List.of(id));
     // before Role can be deleted, we need to delete entities in Permission
     permissionService.hardDeletePermissionsByRoleId(id);
     // now Role can be deleted
