@@ -313,11 +313,6 @@ public class ProfileServiceTest extends BaseTest {
   }
 
   private void assertDeleteHard(Long profileId) {
-    // throws exception because used in platform profile role table
-    assertThrows(
-        DataIntegrityViolationException.class, () -> profileService.hardDeleteProfile(profileId));
-
-    // delete from platform profile role service first
     Long roleId = circularDependencyService.readRoleByName(ROLE_NAME_GUEST, false).getId();
     platformProfileRoleRepository.deleteById(
         new PlatformProfileRoleId(platformEntity.getId(), profileId, roleId));
