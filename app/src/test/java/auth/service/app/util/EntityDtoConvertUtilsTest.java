@@ -1,5 +1,12 @@
 package auth.service.app.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import auth.service.BaseTest;
 import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
@@ -16,22 +23,13 @@ import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import helper.EntityDtoComparator;
 import helper.TestData;
-
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EntityDtoConvertUtilsTest extends BaseTest {
 
@@ -52,11 +50,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     platformProfileRoleEntities = TestData.getPlatformProfileRoleEntities();
   }
 
-  // TODO in permissions check empty response metadata, null response crud info, null response page info
+  // TODO in permissions check empty response metadata, null response crud info, null response page
+  // info
 
   @Test
   void testGetResponseSingleProfile_nullEntity() {
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseSingleProfile(null, null);
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseSingleProfile(null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getProfiles());
@@ -67,7 +67,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSingleProfile_nonNullEntity() {
     ProfileEntity entity = profileEntities.getFirst();
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseSingleProfile(entity, null);
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseSingleProfile(entity, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -84,8 +85,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseMultipleProfiles_emptyList() {
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseMultipleProfiles(Collections.emptyList(),
-            Boolean.TRUE, null);
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            Collections.emptyList(), Boolean.TRUE, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -96,7 +98,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseMultipleProfiles_noRoles() {
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.FALSE, null);
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.FALSE, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -115,7 +118,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseMultipleProfiles_withRoles() {
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.TRUE, null);
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.TRUE, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -134,7 +138,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseErrorProfile() {
-    ResponseEntity<ProfileResponse> response = entityDtoConvertUtils.getResponseErrorProfile(new ProfileNotValidatedException());
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseErrorProfile(new ProfileNotValidatedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -146,7 +151,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseErrorProfilePassword() {
     ResponseEntity<ProfilePasswordTokenResponse> response =
-            entityDtoConvertUtils.getResponseErrorProfilePassword(new ProfileNotActiveException());
+        entityDtoConvertUtils.getResponseErrorProfilePassword(new ProfileNotActiveException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -158,7 +163,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseErrorResponseMetadata() {
-    ResponseEntity<ResponseMetadata> response = entityDtoConvertUtils.getResponseErrorResponseMetadata(new ProfileLockedException());
+    ResponseEntity<ResponseMetadata> response =
+        entityDtoConvertUtils.getResponseErrorResponseMetadata(new ProfileLockedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -171,13 +177,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     String redirectUrl = "https://example.com/redirect";
     boolean isValidated = true;
     ResponseEntity<Void> response =
-            entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
     assertEquals(HttpStatus.FOUND, response.getStatusCode());
     assertEquals(
-            redirectUrl + "?is_validated=true", response.getHeaders().getLocation().toString());
+        redirectUrl + "?is_validated=true", response.getHeaders().getLocation().toString());
   }
 
   @Test
@@ -185,20 +191,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     String redirectUrl = "https://example.com/redirect";
     boolean isValidated = false;
     ResponseEntity<Void> response =
-            entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
+        entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, isValidated);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
     assertEquals(HttpStatus.FOUND, response.getStatusCode());
     assertEquals(
-            redirectUrl + "?is_validated=false", response.getHeaders().getLocation().toString());
+        redirectUrl + "?is_validated=false", response.getHeaders().getLocation().toString());
   }
 
   @Test
   void testGetResponseValidateProfile_emptyRedirectUrl() {
     assertThrows(
-            IllegalStateException.class,
-            () -> entityDtoConvertUtils.getResponseValidateProfile("", true));
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseValidateProfile("", true));
   }
 
   @Test
@@ -207,14 +213,14 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     boolean isReset = true;
     String email = "user@example.com";
     ResponseEntity<Void> response =
-            entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
     assertEquals(HttpStatus.FOUND, response.getStatusCode());
     assertEquals(
-            redirectUrl + "?is_reset=true&to_reset=" + email,
-            response.getHeaders().getLocation().toString());
+        redirectUrl + "?is_reset=true&to_reset=" + email,
+        response.getHeaders().getLocation().toString());
   }
 
   @Test
@@ -223,7 +229,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     boolean isReset = false;
     String email = "";
     ResponseEntity<Void> response =
-            entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
+        entityDtoConvertUtils.getResponseResetProfile(redirectUrl, isReset, email);
 
     assertNotNull(response);
     assertNotNull(response.getHeaders().getLocation());
@@ -234,14 +240,15 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseResetProfile_emptyRedirectUrl() {
     assertThrows(
-            IllegalStateException.class,
-            () -> entityDtoConvertUtils.getResponseResetProfile("", true, "some-email"));
+        IllegalStateException.class,
+        () -> entityDtoConvertUtils.getResponseResetProfile("", true, "some-email"));
   }
 
   @Test
   void testGetResponseErrorPlatformProfileRole() {
-    ResponseEntity<PlatformProfileRoleResponse> response = entityDtoConvertUtils.getResponseErrorPlatformProfileRole(
-                    new RuntimeException("something anything"));
+    ResponseEntity<PlatformProfileRoleResponse> response =
+        entityDtoConvertUtils.getResponseErrorPlatformProfileRole(
+            new RuntimeException("something anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());

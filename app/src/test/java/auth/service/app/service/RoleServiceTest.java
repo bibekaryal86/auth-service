@@ -159,7 +159,8 @@ public class RoleServiceTest extends BaseTest {
     // setup
     // create PPRs
     PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(ID, ID, id);
-    PlatformProfileRoleEntity pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    PlatformProfileRoleEntity pprEntity =
+        platformProfileRoleService.assignPlatformProfileRole(pprRequest);
     assertNotNull(pprEntity.getId());
     assertNotNull(platformProfileRoleService.readPlatformProfileRole(ID, EMAIL));
 

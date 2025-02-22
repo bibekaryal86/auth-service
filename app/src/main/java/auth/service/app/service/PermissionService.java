@@ -9,6 +9,7 @@ import auth.service.app.repository.PermissionRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,11 @@ public class PermissionService {
     final Specification<PermissionEntity> specification =
         JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return permissionRepository.findAll(specification, pageable);
+  }
+
+  public List<PermissionEntity> readPermissionsByRoleIds(final List<Long> roleIds) {
+    log.debug("Read Permissions By Role Ids: [{}]", roleIds);
+    return permissionRepository.findByRoleIds(roleIds);
   }
 
   /** Use {@link CircularDependencyService#readPermission(Long, boolean)} */

@@ -71,7 +71,24 @@ public class PermissionServiceTest extends BaseTest {
     assertEquals("PERMISSION-13", permissionEntities.getLast().getPermissionName());
   }
 
-  // @Test
+  @Test
+  void testReadPermissionsByRoleIds() {
+    List<PermissionEntity> permissionEntities =
+        permissionService.readPermissionsByRoleIds(List.of(1L, 13L));
+    List<PermissionEntity> permissionEntities1 =
+        permissionEntities.stream()
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == 1L)
+            .toList();
+    List<PermissionEntity> permissionEntities13 =
+        permissionEntities.stream()
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == 13L)
+            .toList();
+
+    assertEquals(4, permissionEntities1.size());
+    assertEquals(1, permissionEntities13.size());
+  }
+
+  @Test
   void testHardDeletePermissionsByRoleId() {
     // setup
     RoleEntity roleEntity = new RoleEntity();

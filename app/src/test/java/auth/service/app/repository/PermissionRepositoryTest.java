@@ -1,6 +1,7 @@
 package auth.service.app.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.CollectionUtils;
 
 public class PermissionRepositoryTest extends BaseTest {
 
@@ -67,5 +69,24 @@ public class PermissionRepositoryTest extends BaseTest {
     for (Long permissionId : permissionIds) {
       assertTrue(permissionRepository.findById(permissionId).isEmpty());
     }
+  }
+
+  @Test
+  void testFindByRoleIds() {
+    List<PermissionEntity> permissionEntities =
+        permissionRepository.findByRoleIds(List.of(1L, 13L));
+    assertFalse(CollectionUtils.isEmpty(permissionEntities));
+
+    List<PermissionEntity> permissionEntities1 =
+        permissionEntities.stream()
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == 1L)
+            .toList();
+    List<PermissionEntity> permissionEntities13 =
+        permissionEntities.stream()
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == 13L)
+            .toList();
+
+    assertEquals(4, permissionEntities1.size());
+    assertEquals(1, permissionEntities13.size());
   }
 }

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 
 public class TokenRepositoryTest extends BaseTest {
 
@@ -62,7 +61,6 @@ public class TokenRepositoryTest extends BaseTest {
   }
 
   @Test
-  @Transactional
   public void testSetTokensAsDeletedByProfileId() {
     PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
     ProfileEntity profileEntity = TestData.getProfileEntities().getLast();

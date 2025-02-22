@@ -315,11 +315,13 @@ public class ProfileServiceTest extends BaseTest {
     // setup
     // create PPRs
     PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(2L, id, ID);
-    PlatformProfileRoleEntity pprEntity = platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    PlatformProfileRoleEntity pprEntity =
+        platformProfileRoleService.assignPlatformProfileRole(pprRequest);
     assertNotNull(pprEntity.getId());
     assertNotNull(platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL));
     // PPR was created during create Profile
-    assertNotNull(platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL));
+    assertNotNull(
+        platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL));
 
     profileService.hardDeleteProfile(id);
 
@@ -336,23 +338,26 @@ public class ProfileServiceTest extends BaseTest {
 
     // assert PPRs are Deleted
     exception =
-            assertThrows(
-                    ElementNotFoundException.class,
-                    () -> platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL),
-                    "Expected ElementNotFoundException after hard delete...");
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
     assertEquals(
-            String.format("Platform Profile Role Not Found for [%s,%s]", 2L, NEW_EMAIL),
-            exception.getMessage(),
-            "Exception message mismatch...");
+        String.format("Platform Profile Role Not Found for [%s,%s]", 2L, NEW_EMAIL),
+        exception.getMessage(),
+        "Exception message mismatch...");
 
     exception =
-            assertThrows(
-                    ElementNotFoundException.class,
-                    () -> platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL),
-                    "Expected ElementNotFoundException after hard delete...");
+        assertThrows(
+            ElementNotFoundException.class,
+            () ->
+                platformProfileRoleService.readPlatformProfileRole(
+                    platformEntity.getId(), NEW_EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
     assertEquals(
-            String.format("Platform Profile Role Not Found for [%s,%s]", platformEntity.getId(), NEW_EMAIL),
-            exception.getMessage(),
-            "Exception message mismatch...");
+        String.format(
+            "Platform Profile Role Not Found for [%s,%s]", platformEntity.getId(), NEW_EMAIL),
+        exception.getMessage(),
+        "Exception message mismatch...");
   }
 }
