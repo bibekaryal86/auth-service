@@ -274,6 +274,7 @@ public class ProfileService {
   }
 
   // OTHERS
+  @Transactional
   public ProfilePasswordTokenResponse loginProfile(
       final Long platformId,
       final ProfilePasswordRequest profilePasswordRequest,
