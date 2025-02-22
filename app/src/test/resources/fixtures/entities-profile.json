@@ -11,7 +11,18 @@
     "password": "password-one",
     "isValidated": true,
     "loginAttempts": 0,
-    "lastLogin": null
+    "lastLogin": null,
+    "profileAddress": {
+      "id": 1,
+      "createdDate": "2024-08-23T22:06:49.685768",
+      "updatedDate": "2024-08-23T22:46:45.153133",
+      "deletedDate": null,
+      "street": "Street-01",
+      "city": "City-01",
+      "state": "ST-01",
+      "country": "Country-01",
+      "postalCode": "Postal-01"
+    }
   },
   {
     "id": 2,
