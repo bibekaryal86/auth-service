@@ -16,7 +16,7 @@ public class RoleRepositoryTest extends BaseTest {
   @Autowired private RoleRepository roleRepository;
 
   @Test
-  void testUniqueConstraint_roleName() {
+  void testUniqueConstraint_RoleName() {
     RoleEntity roleEntityInput = TestData.getRoleEntities().getFirst();
     final String original = roleEntityInput.getRoleName();
     RoleEntity roleEntityOutput = new RoleEntity();

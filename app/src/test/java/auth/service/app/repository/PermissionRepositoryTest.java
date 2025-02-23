@@ -22,7 +22,7 @@ public class PermissionRepositoryTest extends BaseTest {
   @Autowired private PermissionRepository permissionRepository;
 
   @Test
-  void testUniqueConstraint_roleIdPermissionName() {
+  void testUniqueConstraint_RoleIdPermissionName() {
     RoleEntity roleEntity = TestData.getRoleEntities().getLast();
     PermissionEntity permissionEntityInput = TestData.getPermissionEntities().getFirst();
     final Long original = permissionEntityInput.getRole().getId();

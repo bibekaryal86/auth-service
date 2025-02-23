@@ -38,7 +38,7 @@ public class PermissionServiceTest extends BaseTest {
   @Autowired private PermissionRepository permissionRepository;
 
   @Test
-  void testReadPermissions_noRequestMetadata() {
+  void testReadPermissions_NoRequestMetadata() {
     Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(null);
     List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
     assertEquals(9, permissionEntities.size());
@@ -50,7 +50,7 @@ public class PermissionServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPermissions_requestMetadata() {
+  void testReadPermissions_RequestMetadata() {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();

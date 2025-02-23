@@ -25,6 +25,7 @@ import auth.service.app.model.token.AuthTokenPermission;
 import auth.service.app.model.token.AuthTokenPlatform;
 import auth.service.app.model.token.AuthTokenProfile;
 import auth.service.app.model.token.AuthTokenRole;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -233,6 +234,7 @@ public class TestData {
     RoleEntity roleEntity = getRoleEntities().getFirst();
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
+    roleDto.setRoleName(ConstantUtils.ROLE_NAME_SUPERUSER);
 
     profileDtoOutput.setPlatformRoles(
         List.of(

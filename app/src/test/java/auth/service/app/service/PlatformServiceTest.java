@@ -37,7 +37,7 @@ public class PlatformServiceTest extends BaseTest {
   @Autowired private CircularDependencyService circularDependencyService;
 
   @Test
-  void testReadPlatforms_noRequestMetadata() {
+  void testReadPlatforms_NoRequestMetadata() {
     Page<PlatformEntity> platformEntityPage = platformService.readPlatforms(null);
     List<PlatformEntity> platformEntities = platformEntityPage.toList();
     assertEquals(9, platformEntities.size());
@@ -49,7 +49,7 @@ public class PlatformServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatforms_requestMetadata() {
+  void testReadPlatforms_RequestMetadata() {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();

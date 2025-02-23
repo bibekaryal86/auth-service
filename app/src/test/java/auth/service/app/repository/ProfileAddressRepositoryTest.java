@@ -17,7 +17,7 @@ public class ProfileAddressRepositoryTest extends BaseTest {
   @Autowired private ProfileAddressRepository profileAddressRepository;
 
   @Test
-  void testUniqueConstraint_profile() {
+  void testUniqueConstraint_Profile() {
     // setup
     ProfileEntity profileEntity = TestData.getProfileEntities().getLast();
     ProfileAddressEntity profileAddressEntityInput =

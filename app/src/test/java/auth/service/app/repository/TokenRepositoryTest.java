@@ -74,7 +74,7 @@ public class TokenRepositoryTest extends BaseTest {
   }
 
   @Test
-  public void testUniqueConstraints_accessRefreshToken() {
+  public void testUniqueConstraints_AccessRefreshToken() {
     TokenEntity tokenEntity = tokenRepository.findByAccessToken("some-access-token").orElse(null);
 
     if (tokenEntity == null) {

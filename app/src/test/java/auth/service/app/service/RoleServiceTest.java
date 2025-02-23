@@ -41,7 +41,7 @@ public class RoleServiceTest extends BaseTest {
   @Autowired private CircularDependencyService circularDependencyService;
 
   @Test
-  void testReadRoles_noRequestMetadata() {
+  void testReadRoles_NoRequestMetadata() {
     Page<RoleEntity> roleEntityPage = roleService.readRoles(null);
     List<RoleEntity> roleEntities = roleEntityPage.toList();
     assertEquals(9, roleEntities.size());
@@ -53,7 +53,7 @@ public class RoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRoles_requestMetadata() {
+  void testReadRoles_RequestMetadata() {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();

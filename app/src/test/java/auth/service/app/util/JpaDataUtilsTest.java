@@ -33,7 +33,7 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetQueryPageable_defaultSortColumn() {
+  void testGetQueryPageable_DefaultSortColumn() {
     RequestMetadata requestMetadata = new RequestMetadata();
     requestMetadata.setPageNumber(1);
     requestMetadata.setPerPage(10);
@@ -49,7 +49,7 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetQueryPageable_customSortColumn() {
+  void testGetQueryPageable_CustomSortColumn() {
     RequestMetadata requestMetadata = new RequestMetadata();
     requestMetadata.setPageNumber(2);
     requestMetadata.setPerPage(20);
@@ -68,7 +68,7 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetQueryPageable_emptySortColumn() {
+  void testGetQueryPageable_EmptySortColumn() {
     RequestMetadata requestMetadata = new RequestMetadata();
     requestMetadata.setPageNumber(1);
     requestMetadata.setPerPage(100);
@@ -100,14 +100,14 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testShouldIncludeDeletedRecords_isIncludeDeletedFalse() {
+  void testShouldIncludeDeletedRecords_IsIncludeDeletedFalse() {
     RequestMetadata requestMetadata = RequestMetadata.builder().isIncludeDeleted(false).build();
     boolean actual = JpaDataUtils.shouldIncludeDeletedRecords(requestMetadata);
     assertFalse(actual);
   }
 
   @Test
-  void testShouldIncludeDeletedRecords_isIncludeDeletedTrueButNoSuperUser() {
+  void testShouldIncludeDeletedRecords_IsIncludeDeletedTrueButNoSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -121,7 +121,7 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testShouldIncludeDeletedRecords_isIncludeDeletedTrueWithSuperUser() {
+  void testShouldIncludeDeletedRecords_IsIncludeDeletedTrueWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -135,7 +135,7 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testShouldIncludeDeletedRecords_isIncludeDeletedFalseWithSuperUser() {
+  void testShouldIncludeDeletedRecords_IsIncludeDeletedFalseWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =

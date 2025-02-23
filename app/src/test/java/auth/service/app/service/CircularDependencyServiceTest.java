@@ -47,14 +47,14 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPermission_notDeleted() {
+  void testReadPermission_NotDeleted() {
     PermissionEntity result = circularDependencyService.readPermission(ID, !INCLUDE_DELETED);
     assertNotNull(result);
     assertEquals(ID, result.getId());
   }
 
   @Test
-  void testReadPermission_deleteWithIncludeDeletedAndSuperuser() {
+  void testReadPermission_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -68,7 +68,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPermission_deletedWithIncludeDeletedButNoSuperuser() {
+  void testReadPermission_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -85,7 +85,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPermission_deletedNotIncludeDeleted() {
+  void testReadPermission_DeletedNotIncludeDeleted() {
     ElementNotActiveException exception =
         assertThrows(
             ElementNotActiveException.class,
@@ -104,14 +104,14 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatform_notDeleted() {
+  void testReadPlatform_NotDeleted() {
     PlatformEntity result = circularDependencyService.readPlatform(ID, !INCLUDE_DELETED);
     assertNotNull(result);
     assertEquals(ID, result.getId());
   }
 
   @Test
-  void testReadPlatform_deleteWithIncludeDeletedAndSuperuser() {
+  void testReadPlatform_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -125,7 +125,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatform_deletedWithIncludeDeletedButNoSuperuser() {
+  void testReadPlatform_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -142,7 +142,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatform_deletedNotIncludeDeleted() {
+  void testReadPlatform_DeletedNotIncludeDeleted() {
     ElementNotActiveException exception =
         assertThrows(
             ElementNotActiveException.class,
@@ -161,14 +161,14 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRole_notDeleted() {
+  void testReadRole_NotDeleted() {
     RoleEntity result = circularDependencyService.readRole(ID, !INCLUDE_DELETED);
     assertNotNull(result);
     assertEquals(ID, result.getId());
   }
 
   @Test
-  void testReadRole_deleteWithIncludeDeletedAndSuperuser() {
+  void testReadRole_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -182,7 +182,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRole_deletedWithIncludeDeletedButNoSuperuser() {
+  void testReadRole_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -199,7 +199,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRole_deletedNotIncludeDeleted() {
+  void testReadRole_DeletedNotIncludeDeleted() {
     ElementNotActiveException exception =
         assertThrows(
             ElementNotActiveException.class,
@@ -218,14 +218,14 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRoleByName_notDeleted() {
+  void testReadRoleByName_NotDeleted() {
     RoleEntity result = circularDependencyService.readRoleByName("ROLE-01", !INCLUDE_DELETED);
     assertNotNull(result);
     assertEquals(ID, result.getId());
   }
 
   @Test
-  void testReadRoleByName_deleteWithIncludeDeletedAndSuperuser() {
+  void testReadRoleByName_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -239,7 +239,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRoleByName_deletedWithIncludeDeletedButNoSuperuser() {
+  void testReadRoleByName_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -255,7 +255,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadRoleByName_deletedNotIncludeDeleted() {
+  void testReadRoleByName_DeletedNotIncludeDeleted() {
     ElementNotActiveException exception =
         assertThrows(
             ElementNotActiveException.class,
@@ -280,7 +280,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadProfile_deleteWithIncludeDeletedAndSuperuser() {
+  void testReadProfile_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(true);
     Authentication authentication =
@@ -294,7 +294,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadProfile_deletedWithIncludeDeletedButNoSuperuser() {
+  void testReadProfile_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setSuperUser(false);
     Authentication authentication =
@@ -311,7 +311,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadProfile_deletedNotIncludeDeleted() {
+  void testReadProfile_DeletedNotIncludeDeleted() {
     ElementNotActiveException exception =
         assertThrows(
             ElementNotActiveException.class,

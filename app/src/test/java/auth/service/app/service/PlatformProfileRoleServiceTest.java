@@ -60,7 +60,7 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testPlatformProfileRoleService_assignUnassign() {
+  void testPlatformProfileRoleService_AssignUnassign() {
     Long platformId = 7L;
     Long profileId = 7L;
     Long roleId = 7L;
@@ -87,7 +87,7 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testAssignPlatformProfileRole_platformErrors() {
+  void testAssignPlatformProfileRole_PlatformErrors() {
     ElementNotFoundException elementNotFoundException =
         assertThrows(
             ElementNotFoundException.class,
@@ -108,7 +108,7 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testAssignPlatformProfileRole_profileErrors() {
+  void testAssignPlatformProfileRole_ProfileErrors() {
     ElementNotFoundException elementNotFoundException =
         assertThrows(
             ElementNotFoundException.class,
@@ -129,7 +129,7 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testAssignPlatformProfileRole_roleErrors() {
+  void testAssignPlatformProfileRole_RoleErrors() {
     ElementNotFoundException elementNotFoundException =
         assertThrows(
             ElementNotFoundException.class,

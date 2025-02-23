@@ -339,7 +339,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetAuthentication_nullAuthentication() {
+  void testGetAuthentication_NullAuthentication() {
     when(securityContext.getAuthentication()).thenReturn(null);
     assertThrows(
         CheckPermissionException.class,
@@ -348,7 +348,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetAuthentication_nullPrincipal() {
+  void testGetAuthentication_NullPrincipal() {
     AuthToken expected = TestData.getAuthToken();
     Authentication authentication =
         new TestingAuthenticationToken(null, expected, Collections.emptyList());
@@ -360,7 +360,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetAuthentication_isNotAuthenticated() {
+  void testGetAuthentication_IsNotAuthenticated() {
     AuthToken expected = TestData.getAuthToken();
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, expected, Collections.emptyList());
@@ -373,7 +373,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetAuthentication_nullCredentials() {
+  void testGetAuthentication_NullCredentials() {
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, null, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -384,7 +384,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetAuthentication_invalidCredentials() {
+  void testGetAuthentication_InvalidCredentials() {
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, "something-else", Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -403,7 +403,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testValidatePlatformProfileRoleNotDeleted_platformDeleted() {
+  void testValidatePlatformProfileRoleNotDeleted_PlatformDeleted() {
     PlatformProfileRoleEntity platformProfileRoleEntity =
         TestData.getPlatformProfileRoleEntities().getFirst();
     platformProfileRoleEntity.getPlatform().setDeletedDate(LocalDateTime.now());
@@ -413,7 +413,7 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testValidatePlatformProfileRoleNotDeleted_profileDeleted() {
+  void testValidatePlatformProfileRoleNotDeleted_ProfileDeleted() {
     PlatformProfileRoleEntity platformProfileRoleEntity =
         TestData.getPlatformProfileRoleEntities().getFirst();
     platformProfileRoleEntity.getProfile().setDeletedDate(LocalDateTime.now());

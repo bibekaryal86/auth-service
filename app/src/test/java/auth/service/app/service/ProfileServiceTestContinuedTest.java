@@ -92,7 +92,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_success() {
+  void testLoginProfile_Success() {
     ProfilePasswordTokenResponse profilePasswordTokenResponse =
         profileService.loginProfile(
             platformId, new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD), "some-ip-address");
@@ -102,7 +102,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_failure() {
+  void testLoginProfile_Failure() {
     ProfileNotAuthorizedException exception =
         assertThrows(
             ProfileNotAuthorizedException.class,
@@ -117,7 +117,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_deletedPlatform() {
+  void testLoginProfile_DeletedPlatform() {
     PlatformEntity platformEntity = platformRepository.findById(platformId).orElse(null);
     assertNotNull(platformEntity);
     platformEntity.setDeletedDate(LocalDateTime.now());
@@ -142,7 +142,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_deletedProfile() {
+  void testLoginProfile_DeletedProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setDeletedDate(LocalDateTime.now());
@@ -166,7 +166,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_notValidatedProfile() {
+  void testLoginProfile_NotValidatedProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setIsValidated(false);
@@ -191,7 +191,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_notActiveProfile() {
+  void testLoginProfile_NotActiveProfile() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));
@@ -214,7 +214,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_exceedLoginAttempts() {
+  void testLoginProfile_ExceedLoginAttempts() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setLoginAttempts(5);
@@ -237,7 +237,7 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
   }
 
   @Test
-  void testLoginProfile_lastLoginBefore45Days() {
+  void testLoginProfile_LastLoginBefore45Days() {
     ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
     assertNotNull(profileEntity);
     profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));

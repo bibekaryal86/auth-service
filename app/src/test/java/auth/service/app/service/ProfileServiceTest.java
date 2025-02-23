@@ -86,7 +86,7 @@ public class ProfileServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadProfiles_noRequestMetadata() {
+  void testReadProfiles_NoRequestMetadata() {
     Page<ProfileEntity> profileEntityPage = profileService.readProfiles(null);
     List<ProfileEntity> profileEntities = profileEntityPage.toList();
     assertEquals(9, profileEntities.size());
@@ -98,7 +98,7 @@ public class ProfileServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadProfiles_requestMetadata() {
+  void testReadProfiles_RequestMetadata() {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();

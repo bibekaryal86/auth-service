@@ -31,8 +31,6 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
 
   @Test
   void testFindByPlatformId() {
-    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-        platformProfileRoleRepository.findAll();
     final Pageable pageable =
         PageRequest.of(
             0,
@@ -41,8 +39,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                 Sort.Order.asc("platform.platformName"),
                 Sort.Order.asc("profile.email"),
                 Sort.Order.asc("role.roleName")));
-    Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
-        platformProfileRoleRepository.findByPlatformId(4L, pageable);
+    Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage = platformProfileRoleRepository.findByPlatformId(4L, pageable);
     assertEquals(3, platformProfileRoleEntityPage.toList().size());
   }
 
