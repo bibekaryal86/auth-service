@@ -245,7 +245,7 @@ public class EntityDtoConvertUtils {
         platformProfileRoleEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    prpe -> prpe.getProfile().getId(),
+                    prpe -> prpe.getRole().getId(),
                     Collectors.collectingAndThen(
                         Collectors.groupingBy(
                             prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),
@@ -442,7 +442,7 @@ public class EntityDtoConvertUtils {
         platformProfileRoleEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    prpe -> prpe.getRole().getId(),
+                    prpe -> prpe.getPlatform().getId(),
                     Collectors.collectingAndThen(
                         Collectors.groupingBy(
                             prpe -> profileIdDtoMap.get(prpe.getProfile().getId()),
@@ -664,7 +664,7 @@ public class EntityDtoConvertUtils {
         platformProfileRoleEntities.stream()
             .collect(
                 Collectors.groupingBy(
-                    prpe -> prpe.getRole().getId(),
+                    prpe -> prpe.getProfile().getId(),
                     Collectors.collectingAndThen(
                         Collectors.groupingBy(
                             prpe -> platformIdDtoMap.get(prpe.getPlatform().getId()),

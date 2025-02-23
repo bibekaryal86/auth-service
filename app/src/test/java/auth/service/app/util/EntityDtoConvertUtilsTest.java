@@ -25,6 +25,8 @@ import helper.EntityDtoComparator;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,9 +132,19 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     assertNotNull(profileDtos.getFirst().getProfileAddress());
 
-    // TODO check PlatformRoles for Id = 1 and 4
-    // when id = 1, size = 1, platformId = 1 and roleId = 1
-    // when id = 4, size = 1, platformId = 4 and roleId = 4, 5, 6
+    ProfileDto profileDto1st = profileDtos.stream().filter(profileDto -> Objects.equals(profileDto.getId(), ID)).findFirst().orElse(null);
+    assertNotNull(profileDto1st);
+    assertEquals(1, profileDtos.getFirst().getPlatformRoles().size());
+    assertEquals(1, profileDtos.getFirst().getPlatformRoles().getFirst().getPlatform().getId());
+    assertEquals(1, profileDtos.getFirst().getPlatformRoles().getFirst().getRoles().size());
+    assertEquals(1, profileDtos.getFirst().getPlatformRoles().getFirst().getRoles().getFirst().getId());
+
+    ProfileDto profileDto4th = profileDtos.stream().filter(profileDto -> profileDto.getId() == 4L).findFirst().orElse(null);
+    assertNotNull(profileDto4th);
+    assertEquals(4L, profileDto4th.getPlatformRoles().getFirst().getPlatform().getId());
+    assertEquals(3, profileDto4th.getPlatformRoles().getFirst().getRoles().size());
+    assertEquals(4, profileDto4th.getPlatformRoles().getFirst().getRoles().getFirst().getId());
+    assertEquals(6, profileDto4th.getPlatformRoles().getFirst().getRoles().getLast().getId());
   }
 
   @Test
