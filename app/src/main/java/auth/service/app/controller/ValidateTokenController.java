@@ -1,13 +1,12 @@
 package auth.service.app.controller;
 
 import auth.service.app.model.token.AuthToken;
+import auth.service.app.util.CommonUtils;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +21,8 @@ public class ValidateTokenController {
   public ResponseEntity<AuthToken> validateToken(@PathVariable final Long platformId) {
     // Token is validated by Spring Security already, now need to return AuthToken
     try {
-      final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      if (authentication != null
-          && authentication.getCredentials() != null
-          && authentication.getCredentials() instanceof AuthToken authToken
+      final AuthToken authToken = CommonUtils.getAuthentication();
+      if (authToken != null
           && authToken.getPlatform() != null
           && Objects.equals(platformId, authToken.getPlatform().getId())) {
         return ResponseEntity.ok(authToken);

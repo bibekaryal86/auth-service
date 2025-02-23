@@ -11,6 +11,7 @@ import auth.service.app.model.token.AuthTokenRole;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -66,13 +67,15 @@ public class ProfileDto {
         roleDtos.stream()
             .flatMap(
                 roleDto ->
-                    roleDto.getPermissions().stream()
-                        .map(
-                            permissionDto ->
-                                AuthTokenPermission.builder()
-                                    .id(permissionDto.getId())
-                                    .permissionName(permissionDto.getPermissionName())
-                                    .build()))
+                    roleDto.getPermissions() == null
+                        ? Stream.empty()
+                        : roleDto.getPermissions().stream()
+                            .map(
+                                permissionDto ->
+                                    AuthTokenPermission.builder()
+                                        .id(permissionDto.getId())
+                                        .permissionName(permissionDto.getPermissionName())
+                                        .build()))
             .toList();
     final boolean isSuperUser =
         authTokenRoles.stream()
