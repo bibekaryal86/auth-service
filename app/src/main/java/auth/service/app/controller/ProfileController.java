@@ -73,7 +73,7 @@ public class ProfileController {
               .isIncludeHistory(isIncludeHistory)
               .pageNumber(pageNumber)
               .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+              .sortColumn(sortColumn.isEmpty() ? "lastName" : sortColumn)
               .sortDirection(sortDirection)
               .build();
 
@@ -93,7 +93,7 @@ public class ProfileController {
   @GetMapping("/platform/{platformId}")
   public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
       @PathVariable final Long platformId,
-      @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
       @RequestParam(required = false, defaultValue = "0") final int pageNumber,
@@ -108,7 +108,7 @@ public class ProfileController {
               .isIncludeHistory(isIncludeHistory)
               .pageNumber(pageNumber)
               .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+              .sortColumn(sortColumn.isEmpty() ? "lastName" : sortColumn)
               .sortDirection(sortDirection)
               .build();
 

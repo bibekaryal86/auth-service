@@ -73,7 +73,7 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<PermissionResponse> getResponseSinglePermission(
       final PermissionEntity permissionEntity, final ResponseCrudInfo responseCrudInfo) {
     final List<PermissionDto> permissionDtos =
-            (permissionEntity == null || permissionEntity.getId() == null)
+        (permissionEntity == null || permissionEntity.getId() == null)
             ? Collections.emptyList()
             : List.of(convertEntityToDtoPermission(permissionEntity));
     return new ResponseEntity<>(
@@ -288,7 +288,7 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<RoleResponse> getResponseSingleRole(
       final RoleEntity roleEntity, final ResponseCrudInfo responseCrudInfo) {
     final List<PermissionEntity> permissionEntitiesRole =
-            (roleEntity == null || roleEntity.getId() == null)
+        (roleEntity == null || roleEntity.getId() == null)
             ? Collections.emptyList()
             : permissionService.readPermissionsByRoleIds(List.of(roleEntity.getId()));
     final List<RoleDto> roleDtos =
@@ -706,7 +706,7 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<ProfileResponse> getResponseSingleProfile(
       final ProfileEntity profileEntity, final ResponseCrudInfo responseCrudInfo) {
     final List<ProfileDto> profileDtos =
-            (profileEntity == null || profileEntity.getId() == null)
+        (profileEntity == null || profileEntity.getId() == null)
             ? Collections.emptyList()
             : List.of(convertEntityToDtoProfile(profileEntity, true));
     return new ResponseEntity<>(

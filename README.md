@@ -31,7 +31,8 @@ A small utility for authentication and authorization with platforms, profiles, r
 
 * TODO
   * Update this README.md for proper documentation
-  * Provide option to include history
-    * Provide separate pagination option for history within request/response
+  * Provide option to include history for single read operation
+    * Include history for a given month
+    * Default to current month if not provided
   * Refactor Role/Permission to use Join table like PlatformProfileRole
     * Current execution is effective but not efficient and leads to a lot of duplication between roles
