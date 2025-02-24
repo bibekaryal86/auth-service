@@ -36,6 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -74,154 +75,6 @@ public class ProfileControllerTest extends BaseTest {
     }
 
     @Test
-    void testReadProfiles_Success() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri("/api/v1/profiles")
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(1, profileResponse.getProfiles().size());
-        assertEquals(ID, profileResponse.getProfiles().getFirst().getId());
-    }
-
-    @Test
-    void testReadProfiles_SuccessSuperUser() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri("/api/v1/profiles")
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(6, profileResponse.getProfiles().size());
-
-        assertAll(
-                "Profiles Without Roles Controller",
-                () -> assertEquals(0, profileResponse.getProfiles().get(0).getPlatformRoles().size()),
-                () -> assertEquals(0, profileResponse.getProfiles().get(1).getPlatformRoles().size()),
-                () -> assertEquals(0, profileResponse.getProfiles().get(2).getPlatformRoles().size()));
-    }
-
-    @Test
-    void testReadProfiles_SuccessSuperUser_IncludeRoles() {
-        String uri =
-                UriComponentsBuilder.fromPath("/api/v1/profiles")
-                        .queryParam("isIncludeRoles", true)
-                        .toUriString();
-
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(uri)
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(6, profileResponse.getProfiles().size());
-
-        assertAll(
-                "Profiles With Roles Controller",
-                () -> assertEquals(1, profileResponse.getProfiles().get(0).getPlatformRoles().size()),
-                () -> assertEquals(1, profileResponse.getProfiles().get(1).getPlatformRoles().size()),
-                () -> assertEquals(1, profileResponse.getProfiles().get(2).getPlatformRoles().size()));
-    }
-
-    @Test
-    void testReadProfiles_FailureNoAuth() {
-        webTestClient.get().uri("/api/v1/profiles").exchange().expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void testReadProfilesByPlatformId_Success() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/platform/%s", ID))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(1, profileResponse.getProfiles().size());
-        assertEquals(ID, profileResponse.getProfiles().getFirst().getId());
-    }
-
-    @Test
-    void testReadProfilesByPlatformId_SuccessButEmpty() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/platform/%s", 4))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(0, profileResponse.getProfiles().size());
-    }
-
-    @Test
-    void testReadProfilesByPlatformId_SuccessSuperUser() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/platform/%s", 4))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(3, profileResponse.getProfiles().size());
-    }
-
-    @Test
-    void testReadProfilesByPlatform_FailureNoAuth() {
-        webTestClient
-                .get()
-                .uri(String.format("/api/v1/profiles/platform/%s", ID))
-                .exchange()
-                .expectStatus()
-                .isUnauthorized();
-    }
-
-    @Test
     void testReadProfile_Success() {
         ProfileResponse profileResponse =
                 webTestClient
@@ -242,11 +95,11 @@ public class ProfileControllerTest extends BaseTest {
     }
 
     @Test
-    void testReadProfile_SuccessButEmpty() {
+    void testReadProfile_SuccessButNoPermission() {
         ProfileResponse profileResponse =
                 webTestClient
                         .get()
-                        .uri(String.format("/api/v1/profiles/profile/%s", 4))
+                        .uri(String.format("/api/v1/profiles/profile/%s", 4L))
                         .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
                         .exchange()
                         .expectStatus()
@@ -267,11 +120,30 @@ public class ProfileControllerTest extends BaseTest {
     }
 
     @Test
-    void testReadProfile_SuccessSuperUser() {
+    void testReadProfile_SuperUser_IncludeDeletedFalse() {
         ProfileResponse profileResponse =
                 webTestClient
                         .get()
-                        .uri(String.format("/api/v1/profiles/profile/%s", 4))
+                        .uri(String.format("/api/v1/profiles/profile/%s", ID_DELETED))
+                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
+                        .exchange()
+                        .expectStatus()
+                        .isForbidden()
+                        .expectBody(ProfileResponse.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        assertNotNull(profileResponse);
+        assertNotNull(profileResponse.getProfiles());
+        assertEquals(0, profileResponse.getProfiles().size());
+    }
+
+    @Test
+    void testReadProfile_SuperUser_IncludeDeletedTrue() {
+        ProfileResponse profileResponse =
+                webTestClient
+                        .get()
+                        .uri(String.format("/api/v1/profiles/profile/%s?isIncludeDeleted=true", ID_DELETED))
                         .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
                         .exchange()
                         .expectStatus()
@@ -300,7 +172,7 @@ public class ProfileControllerTest extends BaseTest {
         ProfileResponse profileResponse =
                 webTestClient
                         .get()
-                        .uri(String.format("/api/v1/profiles/profile/%s", 99))
+                        .uri(String.format("/api/v1/profiles/profile/%s", ID_NOT_FOUND))
                         .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
                         .exchange()
                         .expectStatus()
@@ -314,102 +186,6 @@ public class ProfileControllerTest extends BaseTest {
         assertNotNull(profileResponse.getResponseMetadata());
         assertEquals(
                 "Profile Not Found for [99]",
-                profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
-    }
-
-    @Test
-    void testReadProfileByEmail_Success() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/profile/email/%s", EMAIL))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(1, profileResponse.getProfiles().size());
-        assertEquals(ID, profileResponse.getProfiles().getFirst().getId());
-    }
-
-    @Test
-    void testReadProfileByEmail_SuccessButEmpty() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/profile/email/%s", "firstlast-1@one.com"))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isForbidden()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertEquals(0, profileResponse.getProfiles().size());
-        assertNotNull(profileResponse.getResponseMetadata());
-        assertTrue(
-                profileResponse
-                        .getResponseMetadata()
-                        .getResponseStatusInfo()
-                        .getErrMsg()
-                        .contains("Profile does not have required permissions to profile entity"));
-    }
-
-    @Test
-    void testReadProfileByEmail_SuccessSuperUser() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/profile/email/%s", "firstlast-1@one.com"))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertNotNull(profileResponse.getProfiles());
-        assertEquals(1, profileResponse.getProfiles().size());
-    }
-
-    @Test
-    void testReadProfileByEmail_FailureNoAuth() {
-        webTestClient
-                .get()
-                .uri(String.format("/api/v1/profiles/profile/email/%s", EMAIL))
-                .exchange()
-                .expectStatus()
-                .isUnauthorized();
-    }
-
-    @Test
-    void testReadProfileByEmail_FailureNotFound() {
-        ProfileResponse profileResponse =
-                webTestClient
-                        .get()
-                        .uri(String.format("/api/v1/profiles/profile/email/%s", "firstlast-99@one.com"))
-                        .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-                        .exchange()
-                        .expectStatus()
-                        .isNotFound()
-                        .expectBody(ProfileResponse.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        assertNotNull(profileResponse);
-        assertTrue(profileResponse.getProfiles().isEmpty());
-        assertNotNull(profileResponse.getResponseMetadata());
-        assertEquals(
-                "Profile Not Found for [firstlast-99@one.com]",
                 profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
     }
 
