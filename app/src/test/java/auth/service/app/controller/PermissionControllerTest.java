@@ -184,8 +184,9 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata);
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
-    assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            &&
+            responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
                 .getResponseStatusInfo()
                 .getErrMsg()
@@ -663,12 +664,13 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata);
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
-    assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            &&
+            responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
