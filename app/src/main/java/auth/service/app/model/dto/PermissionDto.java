@@ -18,4 +18,6 @@ public class PermissionDto {
 
   private String permissionName;
   private String permissionDesc;
+
+  private RoleDto role;
 }
