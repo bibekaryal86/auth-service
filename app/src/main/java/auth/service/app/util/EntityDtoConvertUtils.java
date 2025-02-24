@@ -59,7 +59,8 @@ public class EntityDtoConvertUtils {
     }
     PermissionDto permissionDto = new PermissionDto();
     BeanUtils.copyProperties(permissionEntity, permissionDto, "role");
-    permissionDto.setRole(convertEntityToDtoRole(permissionEntity.getRole(), Collections.emptyList(), false));
+    permissionDto.setRole(
+        convertEntityToDtoRole(permissionEntity.getRole(), Collections.emptyList(), false));
     return permissionDto;
   }
 

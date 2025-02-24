@@ -454,7 +454,8 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse.getPermissions().getFirst().getRole());
     assertEquals(1L, permissionResponse.getPermissions().getFirst().getRole().getId());
     assertTrue(permissionResponse.getPermissions().getFirst().getRole().getPermissions().isEmpty());
-    assertTrue(permissionResponse.getPermissions().getFirst().getRole().getPlatformProfiles().isEmpty());
+    assertTrue(
+        permissionResponse.getPermissions().getFirst().getRole().getPlatformProfiles().isEmpty());
   }
 
   @Test
