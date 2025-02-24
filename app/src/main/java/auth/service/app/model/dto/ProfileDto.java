@@ -57,10 +57,10 @@ public class ProfileDto {
             ? Collections.emptyList()
             : roleDtos.stream()
                 .map(
-                    appRoleDto ->
+                    roleDto ->
                         AuthTokenRole.builder()
-                            .id(appRoleDto.getId())
-                            .roleName(appRoleDto.getRoleName())
+                            .id(roleDto.getId())
+                            .roleName(roleDto.getRoleName())
                             .build())
                 .toList();
     final List<AuthTokenPermission> authTokenPermissions =
