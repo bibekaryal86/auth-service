@@ -93,7 +93,9 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PermissionResponse> getResponseMultiplePermissions(
-          final List<PermissionEntity> permissionEntities, final ResponsePageInfo responsePageInfo, final RequestMetadata requestMetadata) {
+      final List<PermissionEntity> permissionEntities,
+      final ResponsePageInfo responsePageInfo,
+      final RequestMetadata requestMetadata) {
     final List<PermissionDto> permissionDtos = convertEntitiesToDtosPermissions(permissionEntities);
     return ResponseEntity.ok(
         PermissionResponse.builder()
@@ -313,7 +315,8 @@ public class EntityDtoConvertUtils {
       final List<RoleEntity> roleEntities,
       final boolean isIncludePermissions,
       final boolean isIncludePlatforms,
-      final ResponsePageInfo responsePageInfo, final RequestMetadata requestMetadata) {
+      final ResponsePageInfo responsePageInfo,
+      final RequestMetadata requestMetadata) {
     final List<RoleDto> roleDtos =
         convertEntitiesToDtosRoles(roleEntities, isIncludePermissions, isIncludePlatforms);
     return ResponseEntity.ok(
@@ -501,8 +504,7 @@ public class EntityDtoConvertUtils {
       final List<PlatformEntity> platformEntities,
       final boolean isIncludeProfiles,
       final ResponsePageInfo responsePageInfo,
-      final RequestMetadata requestMetadata
-  ) {
+      final RequestMetadata requestMetadata) {
     return ResponseEntity.ok(
         PlatformResponse.builder()
             .platforms(convertEntitiesToDtosPlatforms(platformEntities, isIncludeProfiles))
@@ -512,7 +514,7 @@ public class EntityDtoConvertUtils {
                     .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
                     .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
                     .build())
-                .requestMetadata(requestMetadata)
+            .requestMetadata(requestMetadata)
             .build());
   }
 
@@ -726,7 +728,8 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<ProfileResponse> getResponseMultipleProfiles(
       final List<ProfileEntity> profileEntities,
       final boolean isIncludeRoles,
-      final ResponsePageInfo responsePageInfo, final RequestMetadata requestMetadata) {
+      final ResponsePageInfo responsePageInfo,
+      final RequestMetadata requestMetadata) {
     final List<ProfileDto> profileDtos =
         convertEntitiesToDtosProfiles(profileEntities, isIncludeRoles);
     return ResponseEntity.ok(
@@ -738,7 +741,7 @@ public class EntityDtoConvertUtils {
                     .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
                     .responsePageInfo(responsePageInfo)
                     .build())
-                .requestMetadata(requestMetadata)
+            .requestMetadata(requestMetadata)
             .build());
   }
 

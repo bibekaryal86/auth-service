@@ -28,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.StringUtils;
@@ -268,52 +269,84 @@ public class RoleControllerTest extends BaseTest {
             assertTrue(
                 roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
 
-    assertNotNull(roleResponse.getResponseMetadata());
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(roleResponse.getRequestMetadata()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, roleResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(100, roleResponse.getRequestMetadata().getPerPage()),
+        () -> assertEquals("roleName", roleResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(Sort.Direction.ASC, roleResponse.getRequestMetadata().getSortDirection()));
   }
 
   @Test
   void testReadRoles_Success_RequestMetadata() {
-    profileDtoWithPermission = TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
-    String bearerAuthCredentialsWithPermission = TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
     RoleResponse roleResponse =
-            webTestClient
-                    .get()
-                    .uri("/api/v1/roles?isIncludePermission=true&isIncludePlatforms=true&pageNumber=0&perPage=10&sortColumn=roleDesc")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
-                    .exchange()
-                    .expectStatus()
-                    .isOk()
-                    .expectBody(RoleResponse.class)
-                    .returnResult()
-                    .getResponseBody();
+        webTestClient
+            .get()
+            .uri(
+                "/api/v1/roles?isIncludePermissions=true&isIncludePlatforms=true&pageNumber=0&perPage=10&sortColumn=roleDesc&sortDirection=DESC")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(RoleResponse.class)
+            .returnResult()
+            .getResponseBody();
 
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getRoles());
     assertEquals(9, roleResponse.getRoles().size());
+    assertFalse(roleResponse.getRoles().getFirst().getPermissions().isEmpty());
+    assertFalse(roleResponse.getRoles().getFirst().getPlatformProfiles().isEmpty());
 
     assertAll(
-            "Response Metadata",
-            () -> assertNotNull(roleResponse.getResponseMetadata()),
-            () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
-            () ->
-                    assertFalse(
-                            StringUtils.hasText(
-                                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-            () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
-            () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
-            () ->
-                    assertTrue(
-                            roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-            () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-            () ->
-                    assertTrue(
-                            roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-            () ->
-                    assertTrue(
-                            roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+        "Response Metadata",
+        () -> assertNotNull(roleResponse.getResponseMetadata()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
 
-    assertNotNull(roleResponse.getResponseMetadata());
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(roleResponse.getRequestMetadata()),
+        () -> assertTrue(roleResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertTrue(roleResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, roleResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(10, roleResponse.getRequestMetadata().getPerPage()),
+        () -> assertEquals("roleDesc", roleResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.DESC, roleResponse.getRequestMetadata().getSortDirection()));
   }
 
   @Test

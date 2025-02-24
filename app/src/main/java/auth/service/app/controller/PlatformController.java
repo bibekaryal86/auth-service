@@ -82,15 +82,15 @@ public class PlatformController {
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
       final RequestMetadata requestMetadata =
-              RequestMetadata.builder()
-                      .isIncludeProfiles(isIncludeProfiles)
-                      .isIncludeDeleted(isIncludeDeleted)
-                      .isIncludeHistory(isIncludeHistory)
-                      .pageNumber(pageNumber)
-                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-                      .sortColumn(sortColumn.isEmpty() ? "platformName" : sortColumn)
-                      .sortDirection(sortDirection)
-                      .build();
+          RequestMetadata.builder()
+              .isIncludeProfiles(isIncludeProfiles)
+              .isIncludeDeleted(isIncludeDeleted)
+              .isIncludeHistory(isIncludeHistory)
+              .pageNumber(pageNumber)
+              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+              .sortColumn(sortColumn.isEmpty() ? "platformName" : sortColumn)
+              .sortDirection(sortDirection)
+              .build();
 
       final Page<PlatformEntity> platformEntityPage =
           platformService.readPlatforms(requestMetadata);

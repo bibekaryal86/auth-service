@@ -64,7 +64,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSinglePermission_NullEntity() {
     ResponseEntity<PermissionResponse> response =
-            entityDtoConvertUtils.getResponseSinglePermission(null, null);
+        entityDtoConvertUtils.getResponseSinglePermission(null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getPermissions());
@@ -121,7 +121,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody().getPermissions());
     assertEquals(13, response.getBody().getPermissions().size());
 
-    assertEquals(response.getBody().getResponseMetadata().getResponsePageInfo(), defaultResponsePageInfo);
+    assertEquals(
+        response.getBody().getResponseMetadata().getResponsePageInfo(), defaultResponsePageInfo);
     assertEquals(response.getBody().getRequestMetadata(), defaultRequestMetadata);
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -403,7 +404,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultiplePlatforms_NoProfiles() {
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities, Boolean.FALSE, null, null);
+        entityDtoConvertUtils.getResponseMultiplePlatforms(
+            platformEntities, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -421,7 +423,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultiplePlatforms_WithProfiles() {
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities, Boolean.TRUE, null, null);
+        entityDtoConvertUtils.getResponseMultiplePlatforms(
+            platformEntities, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -513,7 +516,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultipleProfiles_NoRoles() {
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.FALSE, null, null);
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -533,7 +537,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseMultipleProfiles_WithRoles() {
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.TRUE, null, null);
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());

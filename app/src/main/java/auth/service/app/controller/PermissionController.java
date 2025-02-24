@@ -75,22 +75,22 @@ public class PermissionController {
   @CheckPermission("AUTHSVC_PERMISSION_READ")
   @GetMapping
   public ResponseEntity<PermissionResponse> readPermissions(
-            @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-            @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-            @RequestParam(required = false, defaultValue = "0") final int pageNumber,
-            @RequestParam(required = false, defaultValue = "100") final int perPage,
-            @RequestParam(required = false, defaultValue = "") final String sortColumn,
-            @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "100") final int perPage,
+      @RequestParam(required = false, defaultValue = "") final String sortColumn,
+      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
       final RequestMetadata requestMetadata =
-              RequestMetadata.builder()
-                      .isIncludeDeleted(isIncludeDeleted)
-                      .isIncludeHistory(isIncludeHistory)
-                      .pageNumber(pageNumber)
-                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-                      .sortColumn(sortColumn.isEmpty() ? "permissionName" : sortColumn)
-                      .sortDirection(sortDirection)
-                      .build();
+          RequestMetadata.builder()
+              .isIncludeDeleted(isIncludeDeleted)
+              .isIncludeHistory(isIncludeHistory)
+              .pageNumber(pageNumber)
+              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+              .sortColumn(sortColumn.isEmpty() ? "permissionName" : sortColumn)
+              .sortDirection(sortDirection)
+              .build();
 
       final Page<PermissionEntity> permissionEntityPage =
           permissionService.readPermissions(requestMetadata);

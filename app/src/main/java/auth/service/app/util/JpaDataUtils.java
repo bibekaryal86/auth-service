@@ -42,7 +42,10 @@ public class JpaDataUtils {
     if (requestMetadata == null) {
       return PageRequest.of(0, 100);
     }
-    return PageRequest.of(requestMetadata.getPageNumber(), requestMetadata.getPerPage(), Sort.by(requestMetadata.getSortDirection(), requestMetadata.getSortColumn()));
+    return PageRequest.of(
+        requestMetadata.getPageNumber(),
+        requestMetadata.getPerPage(),
+        Sort.by(requestMetadata.getSortDirection(), requestMetadata.getSortColumn()));
   }
 
   /**

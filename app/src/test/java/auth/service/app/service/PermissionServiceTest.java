@@ -65,7 +65,8 @@ public class PermissionServiceTest extends BaseTest {
     RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("permissionName");
     requestMetadata.setSortDirection(Sort.Direction.ASC);
     requestMetadata.setIncludeDeleted(true);
-    Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(requestMetadata);
+    Page<PermissionEntity> permissionEntityPage =
+        permissionService.readPermissions(requestMetadata);
     List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
     assertEquals(13, permissionEntities.size());
     assertEquals(1, permissionEntityPage.getTotalPages());

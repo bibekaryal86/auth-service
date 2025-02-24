@@ -67,15 +67,15 @@ public class ProfileController {
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
       final RequestMetadata requestMetadata =
-              RequestMetadata.builder()
-                      .isIncludeRoles(isIncludeRoles)
-                      .isIncludeDeleted(isIncludeDeleted)
-                      .isIncludeHistory(isIncludeHistory)
-                      .pageNumber(pageNumber)
-                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-                      .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
-                      .sortDirection(sortDirection)
-                      .build();
+          RequestMetadata.builder()
+              .isIncludeRoles(isIncludeRoles)
+              .isIncludeDeleted(isIncludeDeleted)
+              .isIncludeHistory(isIncludeHistory)
+              .pageNumber(pageNumber)
+              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+              .sortDirection(sortDirection)
+              .build();
 
       final Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
       final List<ProfileEntity> filteredProfileEntities =
@@ -102,15 +102,15 @@ public class ProfileController {
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
       final RequestMetadata requestMetadata =
-              RequestMetadata.builder()
-                      .isIncludeRoles(isIncludeRoles)
-                      .isIncludeDeleted(isIncludeDeleted)
-                      .isIncludeHistory(isIncludeHistory)
-                      .pageNumber(pageNumber)
-                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-                      .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
-                      .sortDirection(sortDirection)
-                      .build();
+          RequestMetadata.builder()
+              .isIncludeRoles(isIncludeRoles)
+              .isIncludeDeleted(isIncludeDeleted)
+              .isIncludeHistory(isIncludeHistory)
+              .pageNumber(pageNumber)
+              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+              .sortDirection(sortDirection)
+              .build();
 
       final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
           platformProfileRoleService.readPlatformProfileRolesByPlatformId(
