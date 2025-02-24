@@ -43,7 +43,8 @@ public class ProfileNoAuthController {
       final HttpServletRequest request) {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
+      final PlatformEntity platformEntity =
+          circularDependencyService.readPlatform(platformId, false);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
@@ -87,7 +88,8 @@ public class ProfileNoAuthController {
       final HttpServletRequest request) {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(platformId);
+      final PlatformEntity platformEntity =
+          circularDependencyService.readPlatform(platformId, false);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =

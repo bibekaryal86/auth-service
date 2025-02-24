@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ProfileServiceProfilePasswordTest extends BaseTest {
+public class ProfileServiceTestContinuedTest extends BaseTest {
 
   private static Long profileId;
   private static Long platformId;
@@ -89,50 +89,6 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
     platformProfileRoleRepository.deleteById(
         new PlatformProfileRoleId(platformId, profileId, roleId));
     profileRepository.deleteById(profileId);
-  }
-
-  @Test
-  void testResetProfile() {
-    ProfileEntity profileEntity =
-        profileService.resetProfile(
-            platformId, new ProfilePasswordRequest(USER_EMAIL, NEW_PASSWORD));
-    assertNotNull(profileEntity);
-    assertFalse(passwordUtils.verifyPassword(OLD_PASSWORD, profileEntity.getPassword()));
-    assertTrue(passwordUtils.verifyPassword(NEW_PASSWORD, profileEntity.getPassword()));
-
-    // reset so that other test cases pass
-    profileEntity =
-        profileService.resetProfile(
-            platformId, new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD));
-    assertNotNull(profileEntity);
-    assertTrue(passwordUtils.verifyPassword(OLD_PASSWORD, profileEntity.getPassword()));
-    assertFalse(passwordUtils.verifyPassword(NEW_PASSWORD, profileEntity.getPassword()));
-  }
-
-  @Test
-  void testValidateAndResetProfile() {
-    ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
-    assertNotNull(profileEntity);
-
-    // set it as false for testing
-    profileEntity.setIsValidated(false);
-    profileRepository.save(profileEntity);
-
-    try (MockedStatic<JwtUtils> mockedStatic = mockStatic(JwtUtils.class)) {
-      mockedStatic
-          .when(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED))
-          .thenReturn(USER_EMAIL);
-
-      profileEntity = profileService.validateAndResetProfile(platformId, USER_EMAIL_ENCODED, false);
-      assertNotNull(profileEntity);
-      assertFalse(profileEntity.getIsValidated());
-
-      profileEntity = profileService.validateAndResetProfile(platformId, USER_EMAIL_ENCODED, true);
-      assertNotNull(profileEntity);
-      assertTrue(profileEntity.getIsValidated());
-
-      mockedStatic.verify(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED), times(2));
-    }
   }
 
   @Test
@@ -278,5 +234,74 @@ public class ProfileServiceProfilePasswordTest extends BaseTest {
     profileEntity.setLoginAttempts(0);
     profileRepository.save(profileEntity);
     assertNotNull(profileEntity);
+  }
+
+  @Test
+  void testLoginProfile_LastLoginBefore45Days() {
+    ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
+    assertNotNull(profileEntity);
+    profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));
+    profileRepository.save(profileEntity);
+
+    ProfileNotActiveException exception =
+        assertThrows(
+            ProfileNotActiveException.class,
+            () ->
+                profileService.loginProfile(
+                    platformId,
+                    new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD),
+                    "some-ip-address"));
+    assertEquals(
+        "Profile is not active, please revalidate or reset your account!", exception.getMessage());
+
+    // reset
+    profileEntity.setLoginAttempts(0);
+    profileEntity.setLastLogin(LocalDateTime.now().minusDays(1));
+    profileRepository.save(profileEntity);
+    assertNotNull(profileEntity);
+  }
+
+  @Test
+  void testResetProfile() {
+    ProfileEntity profileEntity =
+        profileService.resetProfile(
+            platformId, new ProfilePasswordRequest(USER_EMAIL, NEW_PASSWORD));
+    assertNotNull(profileEntity);
+    assertFalse(passwordUtils.verifyPassword(OLD_PASSWORD, profileEntity.getPassword()));
+    assertTrue(passwordUtils.verifyPassword(NEW_PASSWORD, profileEntity.getPassword()));
+
+    // reset so that other test cases pass
+    profileEntity =
+        profileService.resetProfile(
+            platformId, new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD));
+    assertNotNull(profileEntity);
+    assertTrue(passwordUtils.verifyPassword(OLD_PASSWORD, profileEntity.getPassword()));
+    assertFalse(passwordUtils.verifyPassword(NEW_PASSWORD, profileEntity.getPassword()));
+  }
+
+  @Test
+  void testValidateAndResetProfile() {
+    ProfileEntity profileEntity = profileRepository.findById(profileId).orElse(null);
+    assertNotNull(profileEntity);
+
+    // set it as false for testing
+    profileEntity.setIsValidated(false);
+    profileRepository.save(profileEntity);
+
+    try (MockedStatic<JwtUtils> mockedStatic = mockStatic(JwtUtils.class)) {
+      mockedStatic
+          .when(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED))
+          .thenReturn(USER_EMAIL);
+
+      profileEntity = profileService.validateAndResetProfile(platformId, USER_EMAIL_ENCODED, false);
+      assertNotNull(profileEntity);
+      assertFalse(profileEntity.getIsValidated());
+
+      profileEntity = profileService.validateAndResetProfile(platformId, USER_EMAIL_ENCODED, true);
+      assertNotNull(profileEntity);
+      assertTrue(profileEntity.getIsValidated());
+
+      mockedStatic.verify(() -> JwtUtils.decodeEmailAddress(USER_EMAIL_ENCODED), times(2));
+    }
   }
 }

@@ -1,5 +1,6 @@
 package auth.service.app.controller;
 
+import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,6 +27,7 @@ import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.ResponseMetadata;
+import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -43,12 +45,13 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
+import auth.service.app.service.ProfileService;
+import auth.service.app.service.RoleService;
 import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -79,6 +82,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Autowired private PlatformRepository platformRepository;
   @Autowired private PlatformProfileRoleRepository platformProfileRoleRepository;
   @Autowired private TokenRepository tokenRepository;
+  @Autowired private RoleService roleService;
+  @Autowired private ProfileService profileService;
 
   @BeforeAll
   static void setUp(
@@ -156,9 +161,13 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Test
   void testCreateProfile_Success() {
+    // setup
+    // insert GUEST role as its used in create profile
+    RoleEntity roleEntity = roleService.createRole(new RoleRequest(ROLE_NAME_GUEST, "something"));
+
     ProfileRequest profileRequest =
         TestData.getProfileRequest(
-            "Request", "Success", "success" + NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
+            "Request", "Success", "success_" + NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD, null);
 
     ProfileResponse profileResponse =
         webTestClient
@@ -204,17 +213,16 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             stringArgumentCaptor.capture());
 
     // cleanup
-    Long profileId = profileResponse.getProfiles().getFirst().getId();
-    platformProfileRoleRepository.deleteById(
-        new PlatformProfileRoleId(ID, profileId, GUEST_ROLE_ID));
-    profileRepository.deleteById(profileId);
+    profileService.hardDeleteProfile(profileResponse.getProfiles().getFirst().getId());
+    // delete GUEST role
+    roleService.hardDeleteRole(roleEntity.getId());
   }
 
   @Test
   void testCreateProfile_FailureNoAuth() {
     ProfileRequest profileRequest =
         TestData.getProfileRequest(
-            "Request", "Failure", "failure" + NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
+            "Request", "Failure", "failure_" + NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD, null);
 
     webTestClient
         .post()
@@ -229,8 +237,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Test
   void testCreateProfile_FailureBadRequest() {
     ProfileRequest profileRequest =
-        new ProfileRequest(
-            "", null, "", "some-phone", "some-password", true, Collections.emptyList());
+        new ProfileRequest("", null, "", "some-phone", "some-password", true, null);
     ResponseMetadata responseMetadata =
         webTestClient
             .post()
@@ -260,7 +267,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Test
   void testCreateProfile_FailureValidation() {
     ProfileRequest profileRequest =
-        TestData.getProfileRequest("Request", "Failure", "failure" + NEW_USER_NEW_EMAIL, "");
+        TestData.getProfileRequest("Request", "Failure", "failure_" + NEW_USER_NEW_EMAIL, "", null);
 
     ProfileResponse profileResponse =
         webTestClient
@@ -290,8 +297,13 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Test
   void testCreateProfile_FailureException() {
+    // setup
+    // insert GUEST role as its used in create profile
+    RoleEntity roleEntity = roleService.createRole(new RoleRequest(ROLE_NAME_GUEST, "something"));
+
     ProfileRequest profileRequest =
-        TestData.getProfileRequest("Request", "Failure", NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD);
+        TestData.getProfileRequest(
+            "Request", "Failure", NEW_USER_NEW_EMAIL, NEW_USER_NEW_PASSWORD, null);
 
     ProfileResponse profileResponse =
         webTestClient
@@ -311,6 +323,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo());
     assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
     verifyNoInteractions(auditService);
+
+    // cleanup
+    // delete GUEST role
+    roleService.hardDeleteRole(roleEntity.getId());
   }
 
   @Test

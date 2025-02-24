@@ -27,9 +27,9 @@ public class ProfileRepositoryTest extends BaseTest {
   }
 
   @Test
-  void testUniqueConstraint_email() {
+  void testUniqueConstraint_Email() {
     // create (email cannot be duplicate)
-    ProfileEntity profileEntityInput = TestData.getProfileEntities().getFirst();
+    ProfileEntity profileEntityInput = TestData.getProfileEntities().getLast();
     final String original = profileEntityInput.getEmail();
     ProfileEntity profileEntityOutput = new ProfileEntity();
     BeanUtils.copyProperties(profileEntityInput, profileEntityOutput, "id", "addresses");

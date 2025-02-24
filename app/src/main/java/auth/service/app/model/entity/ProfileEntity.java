@@ -4,15 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "profile")
@@ -45,7 +42,6 @@ public class ProfileEntity extends BaseEntity {
   @Column(name = "last_login")
   private LocalDateTime lastLogin;
 
-  @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Fetch(FetchMode.JOIN)
-  private List<ProfileAddressEntity> addresses;
+  @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+  private ProfileAddressEntity profileAddress;
 }

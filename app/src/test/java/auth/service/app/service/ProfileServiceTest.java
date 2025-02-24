@@ -4,43 +4,55 @@ import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
 import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotFoundException;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
+import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class ProfileServiceTest extends BaseTest {
@@ -53,6 +65,7 @@ public class ProfileServiceTest extends BaseTest {
   private static final String USER_EMAIL_ENCODED = "very-encoded-email-address";
   private static PlatformEntity platformEntity;
 
+  @Mock private SecurityContext securityContext;
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
 
   @Autowired private ProfileRepository profileRepository;
@@ -60,6 +73,7 @@ public class ProfileServiceTest extends BaseTest {
   @Autowired private PlatformProfileRoleRepository platformProfileRoleRepository;
   @Autowired private PlatformProfileRoleService platformProfileRoleService;
   @Autowired private CircularDependencyService circularDependencyService;
+  @Autowired private RoleService roleService;
   @Autowired private PasswordUtils passwordUtils;
 
   @BeforeAll
@@ -74,25 +88,39 @@ public class ProfileServiceTest extends BaseTest {
   }
 
   @Test
-  void testCreateProfile_FailureOnMissingPassword() {
-    ProfileRequest profileRequestNoPassword =
-        TestData.getProfileRequest("First", "Last", "some@email.com", null);
-    ElementMissingException exception =
-        assertThrows(
-            ElementMissingException.class,
-            () ->
-                profileService.createProfile(
-                    platformEntity, profileRequestNoPassword, BASE_URL_FOR_EMAIL));
-    assertEquals("[password] is Missing in [Profile] request", exception.getMessage());
+  void testReadProfiles_NoRequestMetadata() {
+    Page<ProfileEntity> profileEntityPage = profileService.readProfiles(null);
+    List<ProfileEntity> profileEntities = profileEntityPage.toList();
+    assertEquals(9, profileEntities.size());
+    assertEquals(1, profileEntityPage.getTotalPages());
+    assertEquals(100, profileEntityPage.getSize());
+    // check sorted by last name
+    assertEquals("Last Eight", profileEntities.getFirst().getLastName());
+    assertEquals("Last Two", profileEntities.getLast().getLastName());
   }
 
   @Test
-  void testReadProfiles() {
-    List<ProfileEntity> profileEntities = profileService.readProfiles();
-    assertEquals(6, profileEntities.size());
-    // check sorted by last name
-    assertEquals("Last One", profileEntities.getFirst().getLastName());
-    assertEquals("Last Two-1", profileEntities.getLast().getLastName());
+  void testReadProfiles_RequestMetadata() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    AuthToken authToken = TestData.getAuthToken();
+    authToken.setSuperUser(true);
+    Authentication authentication =
+        new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    authentication.setAuthenticated(true);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("lastName");
+    requestMetadata.setSortDirection(Sort.Direction.ASC);
+    requestMetadata.setIncludeDeleted(true);
+    Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
+    List<ProfileEntity> profileEntities = profileEntityPage.toList();
+    assertEquals(13, profileEntities.size());
+    assertEquals(1, profileEntityPage.getTotalPages());
+    assertEquals(100, profileEntityPage.getSize());
+    // check sorted by name
+    assertEquals("Last Eight", profileEntities.getFirst().getLastName());
+    assertEquals("Last Two", profileEntities.getLast().getLastName());
   }
 
   @Test
@@ -118,14 +146,22 @@ public class ProfileServiceTest extends BaseTest {
 
   @Test
   void testProfileService_CRUD() {
+    // setup
     String oldFirstName = "Old First";
     String oldLastName = "Old Last";
     String newFirstName = "New First";
     String newLastName = "New Last";
 
+    // insert GUEST role as its used in create profile
+    RoleEntity roleEntity = roleService.createRole(new RoleRequest(ROLE_NAME_GUEST, "something"));
+
     // Create
     ProfileRequest profileRequest =
-        TestData.getProfileRequest(oldFirstName, oldLastName, OLD_EMAIL, OLD_PASSWORD);
+        TestData.getProfileRequest(oldFirstName, oldLastName, OLD_EMAIL, null, null);
+    assertCreate_FailureOnMissingPassword(profileRequest);
+
+    profileRequest =
+        TestData.getProfileRequest(oldFirstName, oldLastName, OLD_EMAIL, OLD_PASSWORD, null);
     ProfileEntity profileEntityCreated = assertCreate(profileRequest);
 
     Long profileId = profileEntityCreated.getId();
@@ -133,14 +169,14 @@ public class ProfileServiceTest extends BaseTest {
 
     // Update
     ProfileAddressRequest profileAddressRequest =
-        TestData.getProfileAddressRequest(profileId, 1L, "some-street");
-    profileRequest = TestData.getProfileRequest(newFirstName, newLastName, NEW_EMAIL, NEW_PASSWORD);
-    profileRequest.getAddresses().add(profileAddressRequest);
-    assertUpdate(profileId, profileRequest, oldHashedPassword);
+        TestData.getProfileAddressRequest(null, profileId, "some-street", false);
+    profileRequest =
+        TestData.getProfileRequest(
+            newFirstName, newLastName, NEW_EMAIL, NEW_PASSWORD, profileAddressRequest);
+    ProfileEntity profileEntityUpdated = assertUpdate(profileId, profileRequest, oldHashedPassword);
 
     // Read
-    ProfileAddressEntity profileAddressEntity = assertRead(profileId, newFirstName, newLastName);
-    Long addressId = profileAddressEntity.getId();
+    // read Profile has private access
 
     // Update Email
     ProfileEmailRequest profileEmailRequest = new ProfileEmailRequest(OLD_EMAIL, NEW_EMAIL);
@@ -158,10 +194,29 @@ public class ProfileServiceTest extends BaseTest {
     assertRestoreSoftDeleted(profileId);
 
     // Delete Profile Address
-    assertDeleteProfileAddress(profileId, addressId);
+    ProfileAddressEntity profileAddressEntity = profileEntityUpdated.getProfileAddress();
+    profileAddressRequest =
+        TestData.getProfileAddressRequest(
+            profileAddressEntity.getId(), profileId, profileAddressEntity.getStreet(), true);
+    profileRequest =
+        TestData.getProfileRequest(
+            newFirstName, newLastName, NEW_EMAIL, NEW_PASSWORD, profileAddressRequest);
+    assertDeleteProfileAddress(profileId, profileRequest);
 
     // Hard Delete
     assertDeleteHard(profileId);
+
+    // cleanup
+    // delete GUEST role
+    roleService.hardDeleteRole(roleEntity.getId());
+  }
+
+  void assertCreate_FailureOnMissingPassword(ProfileRequest profileRequest) {
+    ElementMissingException exception =
+        assertThrows(
+            ElementMissingException.class,
+            () -> profileService.createProfile(platformEntity, profileRequest, BASE_URL_FOR_EMAIL));
+    assertEquals("[password] is Missing in [Profile] request", exception.getMessage());
   }
 
   private ProfileEntity assertCreate(ProfileRequest request) {
@@ -169,7 +224,7 @@ public class ProfileServiceTest extends BaseTest {
         profileService.createProfile(platformEntity, request, BASE_URL_FOR_EMAIL);
     assertNotNull(profileEntity);
     assertNotNull(profileEntity.getId());
-    assertNull(profileEntity.getAddresses());
+    assertNull(profileEntity.getProfileAddress());
 
     // verify platform profile role created
     PlatformProfileRoleEntity platformProfileRoleEntity =
@@ -193,22 +248,15 @@ public class ProfileServiceTest extends BaseTest {
     return profileEntity;
   }
 
-  private void assertUpdate(Long id, ProfileRequest request, String oldHashedPassword) {
+  private ProfileEntity assertUpdate(Long id, ProfileRequest request, String oldHashedPassword) {
     ProfileEntity profileEntity = profileService.updateProfile(id, request);
     assertNotNull(profileEntity);
+    assertNotNull(profileEntity.getProfileAddress());
     // email, password doesn't change on update
     assertEquals(OLD_EMAIL, profileEntity.getEmail());
     assertEquals(oldHashedPassword, profileEntity.getPassword());
-  }
 
-  private ProfileAddressEntity assertRead(Long id, String expectedName, String expectedLastName) {
-    ProfileEntity profileEntity = profileService.readProfile(id);
-    assertNotNull(profileEntity);
-    assertEquals(expectedName, profileEntity.getFirstName());
-    assertEquals(expectedLastName, profileEntity.getLastName());
-    assertNull(profileEntity.getDeletedDate());
-    assertFalse(profileEntity.getAddresses().isEmpty());
-    return profileEntity.getAddresses().getFirst();
+    return profileEntity;
   }
 
   private void assertUpdateEmail(Long id, ProfileEmailRequest profileEmailRequest) {
@@ -261,29 +309,58 @@ public class ProfileServiceTest extends BaseTest {
     assertNull(profileEntity.getDeletedDate());
   }
 
-  private void assertDeleteProfileAddress(Long profileId, Long addressId) {
-    ProfileEntity profileEntity = profileService.deleteProfileAddress(profileId, addressId);
+  private void assertDeleteProfileAddress(Long id, ProfileRequest request) {
+    ProfileEntity profileEntity = profileService.updateProfile(id, request);
     assertNotNull(profileEntity);
-    assertTrue(profileEntity.getAddresses().isEmpty());
+    assertNull(profileEntity.getProfileAddress());
   }
 
-  private void assertDeleteHard(Long profileId) {
-    // throws exception because used in platform profile role table
-    assertThrows(
-        DataIntegrityViolationException.class, () -> profileService.hardDeleteProfile(profileId));
-    // delete from platform profile role service first
-    Long roleId = circularDependencyService.readRoleByName(ROLE_NAME_GUEST).getId();
-    platformProfileRoleService.deletePlatformProfileRole(platformEntity.getId(), profileId, roleId);
+  private void assertDeleteHard(Long id) {
+    // setup
+    // create PPRs
+    PlatformProfileRoleRequest pprRequest = new PlatformProfileRoleRequest(2L, id, ID);
+    PlatformProfileRoleEntity pprEntity =
+        platformProfileRoleService.assignPlatformProfileRole(pprRequest);
+    assertNotNull(pprEntity.getId());
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL));
+    // PPR was created during create Profile
+    assertNotNull(
+        platformProfileRoleService.readPlatformProfileRole(platformEntity.getId(), NEW_EMAIL));
 
-    // delete profile
-    profileService.hardDeleteProfile(profileId);
+    profileService.hardDeleteProfile(id);
+
+    // assert Profile is deleted
     ElementNotFoundException exception =
         assertThrows(
             ElementNotFoundException.class,
-            () -> profileService.readProfile(profileId),
+            () -> circularDependencyService.readProfile(id, false),
             "Expected ElementNotFoundException after hard delete...");
     assertEquals(
-        String.format("Profile Not Found for [%s]", profileId),
+        String.format("Profile Not Found for [%s]", id),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    // assert PPRs are Deleted
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () -> platformProfileRoleService.readPlatformProfileRole(2L, NEW_EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format("Platform Profile Role Not Found for [%s,%s]", 2L, NEW_EMAIL),
+        exception.getMessage(),
+        "Exception message mismatch...");
+
+    exception =
+        assertThrows(
+            ElementNotFoundException.class,
+            () ->
+                platformProfileRoleService.readPlatformProfileRole(
+                    platformEntity.getId(), NEW_EMAIL),
+            "Expected ElementNotFoundException after hard delete...");
+    assertEquals(
+        String.format(
+            "Platform Profile Role Not Found for [%s,%s]", platformEntity.getId(), NEW_EMAIL),
         exception.getMessage(),
         "Exception message mismatch...");
   }

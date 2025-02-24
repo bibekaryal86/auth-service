@@ -1,26 +1,106 @@
 [
   {
     "id": 1,
-    "platformName": "Auth Service",
-    "platformDesc": "Authentication / Authorization Server with Roles and Permissions",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": null,
+    "platformName": "PLATFORM-01",
+    "platformDesc": "PLATFORM ONE"
   },
   {
     "id": 2,
-    "platformName": "Env Service",
-    "platformDesc": "Platform to hold runtime variables for different services",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": "2024-08-24T22:06:49.685768"
+    "deletedDate": null,
+    "platformName": "PLATFORM-02",
+    "platformDesc": "PLATFORM TWO"
   },
   {
     "id": 3,
-    "platformName": "Personal Expenses Tracking System",
-    "platformDesc": "Application to manage / budget personal finances",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "platformName": "PLATFORM-03",
+    "platformDesc": "PLATFORM THREE"
+  },
+  {
+    "id": 4,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-04",
+    "platformDesc": "PLATFORM FOUR"
+  },
+  {
+    "id": 5,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-05",
+    "platformDesc": "PLATFORM FIVE"
+  },
+  {
+    "id": 6,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "platformName": "PLATFORM-06",
+    "platformDesc": "PLATFORM SIX"
+  },
+  {
+    "id": 7,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-07",
+    "platformDesc": "PLATFORM SEVEN"
+  },
+  {
+    "id": 8,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-08",
+    "platformDesc": "PLATFORM EIGHT"
+  },
+  {
+    "id": 9,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "platformName": "PLATFORM-09",
+    "platformDesc": "PLATFORM NINE"
+  },
+  {
+    "id": 10,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-10",
+    "platformDesc": "PLATFORM TEN"
+  },
+  {
+    "id": 11,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-11",
+    "platformDesc": "PLATFORM ELEVEN"
+  },
+  {
+    "id": 12,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "platformName": "PLATFORM-12",
+    "platformDesc": "PLATFORM TWELVE"
+  },
+  {
+    "id": 13,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "platformName": "PLATFORM-13",
+    "platformDesc": "PLATFORM THIRTEEN"
   }
 ]

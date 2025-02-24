@@ -12,14 +12,10 @@ import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileDtoPlatformRole;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RoleDto;
-import auth.service.app.model.dto.RoleDtoPlatformPermission;
-import auth.service.app.model.entity.AddressTypeEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
-import auth.service.app.model.entity.PlatformRolePermissionEntity;
-import auth.service.app.model.entity.PlatformRolePermissionId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
@@ -29,6 +25,7 @@ import auth.service.app.model.token.AuthTokenPermission;
 import auth.service.app.model.token.AuthTokenPlatform;
 import auth.service.app.model.token.AuthTokenProfile;
 import auth.service.app.model.token.AuthTokenRole;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -67,23 +64,6 @@ public class TestData {
     }
   }
 
-  public static List<AddressTypeEntity> getAddressTypeEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-address-type.json");
-    try {
-      return ObjectMapperProvider.objectMapper()
-          .readValue(fixtureAsString, new TypeReference<>() {});
-    } catch (JsonProcessingException ex) {
-      return Collections.emptyList();
-    }
-  }
-
-  public static AddressTypeEntity getNewAddressTypeEntity() {
-    AddressTypeEntity addressTypeEntity = new AddressTypeEntity();
-    addressTypeEntity.setTypeName("New Address Type");
-    addressTypeEntity.setTypeDesc("New Address Type Entity for Test");
-    return addressTypeEntity;
-  }
-
   public static List<PermissionEntity> getPermissionEntities() {
     String fixtureAsString = FixtureReader.readFixture("entities-permission.json");
     try {
@@ -96,8 +76,9 @@ public class TestData {
 
   public static PermissionEntity getNewPermissionEntity() {
     PermissionEntity permissionEntity = new PermissionEntity();
-    permissionEntity.setPermissionName("New Permission");
-    permissionEntity.setPermissionDesc("New Permission Entity for Test");
+    permissionEntity.setRole(getRoleEntities().getFirst());
+    permissionEntity.setPermissionName("PERMISSION-99");
+    permissionEntity.setPermissionDesc("PERMISSION Ninety Nine");
     return permissionEntity;
   }
 
@@ -113,8 +94,8 @@ public class TestData {
 
   public static RoleEntity getNewRoleEntity() {
     RoleEntity roleEntity = new RoleEntity();
-    roleEntity.setRoleName("New Role");
-    roleEntity.setRoleDesc("New Role Entity for Test");
+    roleEntity.setRoleName("ROLE-99");
+    roleEntity.setRoleDesc("ROLE NINETY NINE");
     return roleEntity;
   }
 
@@ -130,8 +111,8 @@ public class TestData {
 
   public static PlatformEntity getNewPlatformEntity() {
     PlatformEntity platformEntity = new PlatformEntity();
-    platformEntity.setPlatformName("New Platform");
-    platformEntity.setPlatformDesc("New Platform Entity for Test");
+    platformEntity.setPlatformName("PLATFORM-99");
+    platformEntity.setPlatformDesc("PLATFORM NINETY NINE");
     return platformEntity;
   }
 
@@ -147,28 +128,27 @@ public class TestData {
 
   public static ProfileAddressEntity getNewProfileAddressEntity() {
     ProfileAddressEntity profileAddressEntity = new ProfileAddressEntity();
-    profileAddressEntity.setStreet("New Street");
-    profileAddressEntity.setCity("New City");
-    profileAddressEntity.setState("NS");
-    profileAddressEntity.setCountry("NC");
-    profileAddressEntity.setPostalCode("13579");
+    profileAddressEntity.setStreet("Street-99");
+    profileAddressEntity.setCity("City-99");
+    profileAddressEntity.setState("ST-99");
+    profileAddressEntity.setCountry("Country-99");
+    profileAddressEntity.setPostalCode("Postal-99");
     profileAddressEntity.setProfile(null);
-    profileAddressEntity.setType(null);
     return profileAddressEntity;
   }
 
   public static ProfileAddressRequest getProfileAddressRequest(
-      Long profileId, Long typeId, String street) {
+      Long id, Long profileId, String street, boolean isDeleteAddress) {
     ProfileAddressEntity profileAddressEntity = getNewProfileAddressEntity();
     return new ProfileAddressRequest(
-        null,
+        id,
         profileId,
-        typeId,
         street,
         profileAddressEntity.getCity(),
         profileAddressEntity.getState(),
         profileAddressEntity.getCountry(),
-        profileAddressEntity.getPostalCode());
+        profileAddressEntity.getPostalCode(),
+        isDeleteAddress);
   }
 
   public static List<ProfileEntity> getProfileEntities() {
@@ -179,17 +159,17 @@ public class TestData {
 
       List<ProfileAddressEntity> profileAddressEntities = getProfileAddressEntities();
 
-      Map<Long, List<ProfileAddressEntity>> addressMap =
+      Map<Long, ProfileAddressEntity> addressMap =
           profileAddressEntities.stream()
               .collect(
-                  Collectors.groupingBy(
-                      profileAddressEntity -> profileAddressEntity.getProfile().getId()));
+                  Collectors.toMap(
+                      profileAddressEntity -> profileAddressEntity.getProfile().getId(),
+                      profileAddressEntity -> profileAddressEntity));
 
       profileEntities.forEach(
           profile -> {
-            List<ProfileAddressEntity> addresses =
-                addressMap.getOrDefault(profile.getId(), Collections.emptyList());
-            profile.setAddresses(addresses);
+            ProfileAddressEntity profileAddress = addressMap.getOrDefault(profile.getId(), null);
+            profile.setProfileAddress(profileAddress);
           });
 
       return profileEntities;
@@ -200,19 +180,23 @@ public class TestData {
 
   public static ProfileEntity getNewProfileEntity() {
     ProfileEntity profileEntity = new ProfileEntity();
-    profileEntity.setFirstName("New First");
-    profileEntity.setLastName("New Last");
-    profileEntity.setEmail("new@email.com");
-    profileEntity.setPassword("some-password");
+    profileEntity.setFirstName("First Ninety Nine");
+    profileEntity.setLastName("Last Ninety Nine");
+    profileEntity.setEmail("firstlast@ninetynine.com");
+    profileEntity.setPassword("password-99");
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
-    profileEntity.setAddresses(Collections.emptyList());
+    profileEntity.setProfileAddress(null);
     return profileEntity;
   }
 
   public static ProfileRequest getProfileRequest(
-      String firstName, String lastName, String email, String password) {
-    return new ProfileRequest(firstName, lastName, email, null, password, true, new ArrayList<>());
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      ProfileAddressRequest addressRequest) {
+    return new ProfileRequest(firstName, lastName, email, null, password, true, addressRequest);
   }
 
   public static ProfileDto getProfileDto() {
@@ -229,12 +213,6 @@ public class TestData {
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
 
-    roleDto.setPlatformPermissions(
-        List.of(
-            RoleDtoPlatformPermission.builder()
-                .platform(platformDto)
-                .permissions(new ArrayList<>())
-                .build()));
     profileDto.setPlatformRoles(
         List.of(
             ProfileDtoPlatformRole.builder()
@@ -256,7 +234,7 @@ public class TestData {
     RoleEntity roleEntity = getRoleEntities().getFirst();
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
-    roleDto.setPlatformPermissions(new ArrayList<>());
+    roleDto.setRoleName(ConstantUtils.ROLE_NAME_SUPERUSER);
 
     profileDtoOutput.setPlatformRoles(
         List.of(
@@ -274,25 +252,18 @@ public class TestData {
 
     PlatformDto platformDto = profileDtoInput.getPlatformRoles().getFirst().getPlatform();
 
-    List<RoleDto> roleDtos =
-        profileDtoInput.getPlatformRoles().stream()
-            .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
-            .toList();
     PermissionDto permissionDto =
         PermissionDto.builder()
             .id(-1L)
             .permissionName(permissionName)
             .permissionDesc(permissionName)
             .build();
-    roleDtos
-        .getFirst()
-        .setPlatformPermissions(
-            List.of(
-                RoleDtoPlatformPermission.builder()
-                    .platform(platformDto)
-                    .permissions(List.of(permissionDto))
-                    .build()));
 
+    List<RoleDto> roleDtos =
+        profileDtoInput.getPlatformRoles().stream()
+            .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
+            .toList();
+    roleDtos.forEach(roleDto -> roleDto.setPermissions(List.of(permissionDto)));
     profileDtoOutput.setPlatformRoles(
         List.of(ProfileDtoPlatformRole.builder().platform(platformDto).roles(roleDtos).build()));
     return profileDtoOutput;
@@ -318,50 +289,41 @@ public class TestData {
     List<ProfileEntity> profileEntities = getProfileEntities();
     List<RoleEntity> roleEntities = getRoleEntities();
 
-    for (int i = 0; i < platformEntities.size(); i++) {
-      platformProfileRoleEntities.add(
-          getPlatformProfileRoleEntity(
-              platformEntities.get(i), profileEntities.get(i), roleEntities.get(i)));
-    }
+    // 1, 1, 1
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(0), profileEntities.get(0), roleEntities.get(0)));
+    // 2, 2, 2
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(1), profileEntities.get(1), roleEntities.get(1)));
+    // 3, 3, 3
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(2), profileEntities.get(2), roleEntities.get(2)));
+    // 4, 4, 4
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(3)));
+    // 4, 4, 5
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(4)));
+    // 4, 4, 6
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(3), profileEntities.get(3), roleEntities.get(5)));
 
     return platformProfileRoleEntities;
   }
 
-  public static PlatformRolePermissionEntity getPlatformRolePermissionEntity(
-      PlatformEntity platformEntity, RoleEntity roleEntity, PermissionEntity permissionEntity) {
-    PlatformRolePermissionEntity platformRolePermissionEntity = new PlatformRolePermissionEntity();
-    PlatformRolePermissionId platformRolePermissionId =
-        new PlatformRolePermissionId(
-            platformEntity.getId(), roleEntity.getId(), permissionEntity.getId());
-    platformRolePermissionEntity.setId(platformRolePermissionId);
-    platformRolePermissionEntity.setPlatform(platformEntity);
-    platformRolePermissionEntity.setRole(roleEntity);
-    platformRolePermissionEntity.setPermission(permissionEntity);
-    return platformRolePermissionEntity;
-  }
-
-  public static List<PlatformRolePermissionEntity> getPlatformRolePermissionEntities() {
-    List<PlatformRolePermissionEntity> platformRolePermissionEntities = new ArrayList<>();
-    List<PlatformEntity> platformEntities = getPlatformEntities();
-    List<RoleEntity> roleEntities = getRoleEntities();
-    List<PermissionEntity> permissionEntities = getPermissionEntities();
-
-    for (int i = 0; i < platformEntities.size(); i++) {
-      platformRolePermissionEntities.add(
-          getPlatformRolePermissionEntity(
-              platformEntities.get(i), roleEntities.get(i), permissionEntities.get(i)));
-    }
-
-    return platformRolePermissionEntities;
-  }
-
   public static AuthToken getAuthToken() {
     return AuthToken.builder()
-        .platform(AuthTokenPlatform.builder().id(1L).platformName("Auth Service").build())
+        .platform(AuthTokenPlatform.builder().id(1L).platformName("PLATFORM-1").build())
         .profile(AuthTokenProfile.builder().id(1L).email("firstlast@one.com").build())
-        .roles(List.of(AuthTokenRole.builder().id(3L).roleName("STANDARD").build()))
+        .roles(List.of(AuthTokenRole.builder().id(1L).roleName("ROLE-1").build()))
         .permissions(
-            List.of(AuthTokenPermission.builder().id(2L).permissionName("PERMISSION_READ").build()))
+            List.of(AuthTokenPermission.builder().id(2L).permissionName("PERMISSION-1").build()))
         .build();
   }
 

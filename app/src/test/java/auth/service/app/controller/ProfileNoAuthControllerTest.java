@@ -71,7 +71,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
   }
 
   @Test
-  public void testValidateAppUserExit_Failure() {
+  public void testValidateProfileExit_Failure() {
     webTestClient
         .get()
         .uri(
@@ -92,7 +92,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
   }
 
   @Test
-  public void testResetAppUserExit_Success() {
+  public void testResetProfileExit_Success() {
     webTestClient
         .get()
         .uri(
@@ -114,7 +114,7 @@ public class ProfileNoAuthControllerTest extends BaseTest {
   }
 
   @Test
-  public void testResetAppUserExit_Failure() {
+  public void testResetProfileExit_Failure() {
     webTestClient
         .get()
         .uri(String.format("/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s", ID, EMAIL))

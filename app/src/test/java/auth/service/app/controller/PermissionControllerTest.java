@@ -1,6 +1,8 @@
 package auth.service.app.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,8 +28,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.StringUtils;
 
 public class PermissionControllerTest extends BaseTest {
 
@@ -58,10 +62,10 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testCreatePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_CREATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_CREATE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -102,7 +106,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -140,7 +144,7 @@ public class PermissionControllerTest extends BaseTest {
 
   @Test
   void testCreatePermission_FailureNoAuth() {
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .post()
         .uri("/api/v1/permissions/permission")
@@ -153,7 +157,7 @@ public class PermissionControllerTest extends BaseTest {
 
   @Test
   void testCreatePermission_FailureNoPermission() {
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .post()
         .uri("/api/v1/permissions/permission")
@@ -170,7 +174,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("", null);
+    permissionRequest = new PermissionRequest(-1L, "", null);
 
     ResponseMetadata responseMetadata =
         webTestClient
@@ -189,7 +193,8 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
                 .getResponseStatusInfo()
                 .getErrMsg()
@@ -205,7 +210,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionEntity permissionEntity = TestData.getPermissionEntities().getFirst();
     permissionRequest =
         new PermissionRequest(
-            permissionEntity.getPermissionName(), permissionEntity.getPermissionDesc());
+            ID, permissionEntity.getPermissionName(), permissionEntity.getPermissionDesc());
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -232,7 +237,7 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermissions_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -250,7 +255,116 @@ public class PermissionControllerTest extends BaseTest {
 
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
-    assertEquals(6, permissionResponse.getPermissions().size());
+    assertEquals(9, permissionResponse.getPermissions().size());
+
+    assertAll(
+        "Response Metadata",
+        () -> assertNotNull(permissionResponse.getResponseMetadata()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
+                    >= 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
+                    > 0));
+
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(permissionResponse.getRequestMetadata()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(100, permissionResponse.getRequestMetadata().getPerPage()),
+        () ->
+            assertEquals("permissionName", permissionResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.ASC, permissionResponse.getRequestMetadata().getSortDirection()));
+  }
+
+  @Test
+  void testReadPermissions_Success_RequestMetadata() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionResponse permissionResponse =
+        webTestClient
+            .get()
+            .uri(
+                "/api/v1/permissions?pageNumber=0&perPage=10&sortColumn=permissionDesc&sortDirection=DESC")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PermissionResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(permissionResponse);
+    assertNotNull(permissionResponse.getPermissions());
+    assertEquals(9, permissionResponse.getPermissions().size());
+
+    assertAll(
+        "Response Metadata",
+        () -> assertNotNull(permissionResponse.getResponseMetadata()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
+                    >= 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
+                    > 0));
+
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(permissionResponse.getRequestMetadata()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(10, permissionResponse.getRequestMetadata().getPerPage()),
+        () ->
+            assertEquals("permissionDesc", permissionResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.DESC, permissionResponse.getRequestMetadata().getSortDirection()));
   }
 
   @Test
@@ -273,7 +387,30 @@ public class PermissionControllerTest extends BaseTest {
 
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
-    assertEquals(6, permissionResponse.getPermissions().size());
+    assertEquals(9, permissionResponse.getPermissions().size());
+  }
+
+  @Test
+  void testReadPermissions_SuccessSuperUser_IncludeDeleted() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionResponse permissionResponse =
+        webTestClient
+            .get()
+            .uri("/api/v1/permissions?isIncludeDeleted=true")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PermissionResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(permissionResponse);
+    assertNotNull(permissionResponse.getPermissions());
+    assertEquals(13, permissionResponse.getPermissions().size());
   }
 
   @Test
@@ -295,7 +432,7 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -303,6 +440,53 @@ public class PermissionControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri("/api/v1/permissions/permission/1")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PermissionResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(permissionResponse);
+    assertNotNull(permissionResponse.getPermissions());
+    assertEquals(1, permissionResponse.getPermissions().size());
+  }
+
+  @Test
+  void testReadPermission_Success_IncludeDeletedFalse() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionResponse permissionResponse =
+        webTestClient
+            .get()
+            .uri("/api/v1/permissions/permission/3?isIncludeDeleted=true")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isForbidden()
+            .expectBody(PermissionResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(permissionResponse);
+    assertNotNull(permissionResponse.getPermissions());
+    assertEquals(0, permissionResponse.getPermissions().size());
+  }
+
+  @Test
+  void testReadPermission_Success_IncludeDeletedTrue() {
+    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionResponse permissionResponse =
+        webTestClient
+            .get()
+            .uri("/api/v1/permissions/permission/3?isIncludeDeleted=true")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -378,13 +562,13 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testUpdatePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_UPDATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_UPDATE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
 
     PermissionEntity permissionEntityOriginal =
-        permissionRepository.findById(1L).orElse(TestData.getPermissionEntities().getFirst());
+        permissionRepository.findById(ID).orElse(TestData.getPermissionEntities().getFirst());
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -425,10 +609,10 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
 
     PermissionEntity permissionEntityOriginal =
-        permissionRepository.findById(1L).orElse(TestData.getPermissionEntities().getFirst());
+        permissionRepository.findById(ID).orElse(TestData.getPermissionEntities().getFirst());
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -466,7 +650,7 @@ public class PermissionControllerTest extends BaseTest {
 
   @Test
   void testUpdatePermission_FailureNoAuth() {
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .put()
         .uri("/api/v1/permissions/permission/1")
@@ -479,7 +663,7 @@ public class PermissionControllerTest extends BaseTest {
 
   @Test
   void testUpdatePermission_FailureNoPermission() {
-    permissionRequest = new PermissionRequest("NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .put()
         .uri("/api/v1/permissions/permission/1")
@@ -496,7 +680,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("", null);
+    permissionRequest = new PermissionRequest(-1L, "", null);
 
     ResponseMetadata responseMetadata =
         webTestClient
@@ -515,7 +699,8 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
                 .getResponseStatusInfo()
                 .getErrMsg()
@@ -528,7 +713,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest("UPDATED_NAME", "UPDATED_DESC");
+    permissionRequest = new PermissionRequest(ID, "UPDATED_NAME", "UPDATED_DESC");
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -555,9 +740,12 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testSoftDeletePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_DELETE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionEntity permissionEntityOriginal =
+        permissionRepository.findById(ID).orElse(TestData.getPermissionEntities().getFirst());
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -584,6 +772,9 @@ public class PermissionControllerTest extends BaseTest {
             argThat(
                 eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
             any(String.class));
+
+    // reset
+    permissionRepository.save(permissionEntityOriginal);
   }
 
   @Test
@@ -592,6 +783,9 @@ public class PermissionControllerTest extends BaseTest {
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
+    PermissionEntity permissionEntityOriginal =
+        permissionRepository.findById(ID).orElse(TestData.getPermissionEntities().getFirst());
+
     PermissionResponse permissionResponse =
         webTestClient
             .delete()
@@ -617,6 +811,9 @@ public class PermissionControllerTest extends BaseTest {
             argThat(
                 eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
             any(String.class));
+
+    // reset
+    permissionRepository.save(permissionEntityOriginal);
   }
 
   @Test
@@ -709,7 +906,7 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testHardDeletePermission_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_DELETE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -788,7 +985,7 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testRestorePermission_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PERMISSION_RESTORE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_RESTORE", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 

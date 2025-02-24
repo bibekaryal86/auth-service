@@ -1,6 +1,8 @@
 package auth.service.app.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,14 +27,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.StringUtils;
 
 public class PlatformControllerTest extends BaseTest {
 
   private static PlatformEntity platformEntity;
-  private static ProfileDto profileDtoNoPermission;
-  private static ProfileDto profileDtoWithPermission;
+  private static ProfileDto profileDtoNoPlatform;
+  private static ProfileDto profileDtoWithPlatform;
+  private static String bearerAuthCredentialsNoPlatform;
 
   private static PlatformRequest platformRequest;
 
@@ -43,7 +48,9 @@ public class PlatformControllerTest extends BaseTest {
   @BeforeAll
   static void setUpBeforeAll() {
     platformEntity = TestData.getPlatformEntities().getFirst();
-    profileDtoNoPermission = TestData.getProfileDto();
+    profileDtoNoPlatform = TestData.getProfileDto();
+    bearerAuthCredentialsNoPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoNoPlatform);
   }
 
   @AfterEach
@@ -52,10 +59,10 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatform_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testCreatePlatform_SuccessSuperUser() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
 
     PlatformResponse platformResponse =
@@ -63,7 +70,7 @@ public class PlatformControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/platforms/platform")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -92,6 +99,25 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
+  void testCreatePlatform_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_CREATE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+    platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
+
+    webTestClient
+        .post()
+        .uri("/api/v1/platforms/platform")
+        .bodyValue(platformRequest)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testCreatePlatform_FailureNoAuth() {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
@@ -105,18 +131,13 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatform_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_CREATE", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
+  void testCreatePlatform_FailureNoPlatform() {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
         .post()
         .uri("/api/v1/platforms/platform")
         .bodyValue(platformRequest)
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -125,9 +146,9 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testCreatePlatform_FailureBadRequest() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("", null);
 
     ResponseMetadata responseMetadata =
@@ -135,7 +156,7 @@ public class PlatformControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/platforms/platform")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -157,9 +178,9 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testCreatePlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
     platformRequest =
         new PlatformRequest(platformEntity.getPlatformName(), platformEntity.getPlatformDesc());
@@ -169,7 +190,7 @@ public class PlatformControllerTest extends BaseTest {
             .post()
             .uri("/api/v1/platforms/platform")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .is5xxServerError()
@@ -187,16 +208,16 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatforms_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testReadPlatforms_SuccessSuperUser() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     PlatformResponse platformResponse =
         webTestClient
             .get()
             .uri("/api/v1/platforms")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -206,7 +227,125 @@ public class PlatformControllerTest extends BaseTest {
 
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getPlatforms());
-    assertEquals(6, platformResponse.getPlatforms().size());
+    assertEquals(9, platformResponse.getPlatforms().size());
+
+    assertAll(
+        "Response Metadata",
+        () -> assertNotNull(platformResponse.getResponseMetadata()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(platformResponse.getRequestMetadata()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, platformResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(100, platformResponse.getRequestMetadata().getPerPage()),
+        () -> assertEquals("platformName", platformResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.ASC, platformResponse.getRequestMetadata().getSortDirection()));
+  }
+
+  @Test
+  void testReadPlatforms_SuccessSuperUser_RequestMetadata() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    PlatformResponse platformResponse =
+        webTestClient
+            .get()
+            .uri(
+                "/api/v1/platforms?isIncludeProfiles=true&pageNumber=0&perPage=10&sortColumn=platformDesc&sortDirection=DESC")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PlatformResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(platformResponse);
+    assertNotNull(platformResponse.getPlatforms());
+    assertEquals(9, platformResponse.getPlatforms().size());
+
+    assertAll(
+        "Response Metadata",
+        () -> assertNotNull(platformResponse.getResponseMetadata()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(platformResponse.getRequestMetadata()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertTrue(platformResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(platformResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(0, platformResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(10, platformResponse.getRequestMetadata().getPerPage()),
+        () -> assertEquals("platformDesc", platformResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.DESC, platformResponse.getRequestMetadata().getSortDirection()));
+  }
+
+  @Test
+  void testReadPlatforms_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_READ", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    webTestClient
+        .get()
+        .uri("/api/v1/platforms")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
   }
 
   @Test
@@ -215,32 +354,27 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatforms_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_READ", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
+  void testReadPlatforms_FailureNoPlatform() {
     webTestClient
         .get()
         .uri("/api/v1/platforms")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
   }
 
   @Test
-  void testReadPlatform_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testReadPlatform_SuccessSuperUser() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     PlatformResponse platformResponse =
         webTestClient
             .get()
             .uri("/api/v1/platforms/platform/1")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -254,6 +388,68 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
+  void testReadPlatform_SuccessSuperUser_IncludeDeletedFalse() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    PlatformResponse platformResponse =
+        webTestClient
+            .get()
+            .uri("/api/v1/platforms/platform/3?isIncludeDeleted=false")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+            .exchange()
+            .expectStatus()
+            .isForbidden()
+            .expectBody(PlatformResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(platformResponse);
+    assertNotNull(platformResponse.getPlatforms());
+    assertEquals(0, platformResponse.getPlatforms().size());
+  }
+
+  @Test
+  void testReadPlatform_SuccessSuperUser_IncludeDeletedTrue() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    PlatformResponse platformResponse =
+        webTestClient
+            .get()
+            .uri("/api/v1/platforms/platform/3?isIncludeDeleted=true")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PlatformResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(platformResponse);
+    assertNotNull(platformResponse.getPlatforms());
+    assertEquals(1, platformResponse.getPlatforms().size());
+  }
+
+  @Test
+  void testReadPlatform_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_READ", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    webTestClient
+        .get()
+        .uri("/api/v1/platforms/platform/1")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
   void testReadPlatform_FailureNoAuth() {
     webTestClient
         .get()
@@ -264,16 +460,11 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatform_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_READ", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
+  void testReadPlatform_FailureNoPlatform() {
     webTestClient
         .get()
         .uri("/api/v1/platforms/platform/1")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -281,35 +472,35 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testReadPlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .get()
         .uri("/api/v1/platforms/platform/9999")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isNotFound();
   }
 
   @Test
-  void testUpdatePlatform_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testUpdatePlatform_SuccessSuperUser() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
 
     PlatformEntity platformEntityOriginal =
-        platformRepository.findById(1L).orElse(TestData.getPlatformEntities().getFirst());
+        platformRepository.findById(ID).orElse(TestData.getPlatformEntities().getFirst());
 
     PlatformResponse platformResponse =
         webTestClient
             .put()
             .uri("/api/v1/platforms/platform/1")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -338,6 +529,26 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
+  void testUpdatePlatform_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_UPDATE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+    platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
+
+    webTestClient
+        .put()
+        .uri("/api/v1/platforms/platform/1")
+        .bodyValue(platformRequest)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testUpdatePlatform_FailureNoAuth() {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
@@ -351,18 +562,13 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testUpdatePlatform_NoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_UPDATE", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
+  void testUpdatePlatform_FailureNoPlatform() {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
         .put()
         .uri("/api/v1/platforms/platform/1")
         .bodyValue(platformRequest)
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -371,9 +577,9 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testUpdatePlatform_FailureBadRequest() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("", null);
 
     ResponseMetadata responseMetadata =
@@ -381,7 +587,7 @@ public class PlatformControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/platforms/platform/1")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isBadRequest()
@@ -403,9 +609,9 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testUpdatePlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("UPDATED_NAME", "UPDATED_DESC");
 
     PlatformResponse platformResponse =
@@ -413,7 +619,7 @@ public class PlatformControllerTest extends BaseTest {
             .put()
             .uri("/api/v1/platforms/platform/9999")
             .bodyValue(platformRequest)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isNotFound()
@@ -431,16 +637,19 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeletePlatform_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testSoftDeletePlatform_SuccessSuperUser() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    PlatformEntity platformEntityOriginal =
+        platformRepository.findById(ID).orElse(TestData.getPlatformEntities().getFirst());
 
     PlatformResponse platformResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/platforms/platform/%s", ID))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -460,6 +669,26 @@ public class PlatformControllerTest extends BaseTest {
             any(PlatformEntity.class),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT)),
             any(String.class));
+
+    // reset
+    platformRepository.save(platformEntityOriginal);
+  }
+
+  @Test
+  void testSoftDeletePlatform_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_DELETE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    webTestClient
+        .delete()
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
   }
 
   @Test
@@ -474,16 +703,11 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testSoftDeletePlatform_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_DELETE", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
+  void testSoftDeletePlatform_FailureNoPlatform() {
     webTestClient
         .delete()
         .uri(String.format("/api/v1/platforms/platform/%s", ID))
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -492,14 +716,14 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testSoftDeletePlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .delete()
         .uri("/api/v1/platforms/platform/9999")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -511,15 +735,15 @@ public class PlatformControllerTest extends BaseTest {
     // setup
     PlatformEntity platformEntity = platformRepository.save(TestData.getNewPlatformEntity());
 
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     PlatformResponse platformResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/platforms/platform/%s/hard", platformEntity.getId()))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -553,16 +777,16 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testHardDeletePlatform_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_DELETE", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testHardDeletePlatform_FailureNoPlatform() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_DELETE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .delete()
         .uri(String.format("/api/v1/platforms/platform/%s/hard", ID))
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -571,14 +795,14 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testHardDeletePlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .delete()
         .uri("/api/v1/platforms/platform/9999/hard")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isNotFound();
@@ -587,15 +811,15 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testRestorePlatform_Success() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     PlatformResponse platformResponse =
         webTestClient
             .patch()
             .uri(String.format("/api/v1/platforms/platform/%s/restore", ID))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
             .isOk()
@@ -620,6 +844,23 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
+  void testRestorePlatform_FailureNoSuperUser() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_RESTORE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    webTestClient
+        .patch()
+        .uri(String.format("/api/v1/platforms/platform/%s/restore", ID))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
   void testRestorePlatform_FailureNoAuth() {
     webTestClient
         .patch()
@@ -631,16 +872,16 @@ public class PlatformControllerTest extends BaseTest {
   }
 
   @Test
-  void testRestorePlatform_FailureNoPermission() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_RESTORE", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+  void testRestorePlatform_FailureNoPlatform() {
+    profileDtoWithPlatform =
+        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_RESTORE", profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .patch()
         .uri(String.format("/api/v1/platforms/platform/%s/restore", ID))
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isForbidden();
@@ -649,14 +890,14 @@ public class PlatformControllerTest extends BaseTest {
 
   @Test
   void testRestorePlatform_FailureException() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
     webTestClient
         .patch()
         .uri("/api/v1/platforms/platform/9999/restore")
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
         .isNotFound();

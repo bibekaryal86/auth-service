@@ -3,15 +3,14 @@
 A small utility for authentication and authorization with platforms, profiles, roles and permissions management
 
 ## Local Development
+  * Navigate to project root
+  * `./gradlew bootrun`
+  * The bootrun process reads environment variables from gcp folder's `app-credentials.yaml` file
+  * There is an example `app-credentials_DUMMY.yaml` file provided, create `app-credentials.yaml` file and update values
+  * These environment variables are checked during application start, and if not present the application won't start
+  * During the build process, these variables are used in flyway and bootrun scripts
 
-* Navigate to project root
-* `./gradlew bootrun`
-* The bootrun process reads environment variables from gcp folder's `app-credentials.yaml` file
-* There is an example `app-credentials_DUMMY.yaml` file provided, create `app-credentials.yaml` file and update values
-* These environment variables are checked during application start, and if not present the application won't start
-* During the build process, these variables are used in flyway and bootrun scripts
-
-* Flyway
+## Flyway
   * Run flyway command as `./gradlew flywayMigrate`
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
   * Clear database (DELETES EVERYTHING)
@@ -29,7 +28,10 @@ A small utility for authentication and authorization with platforms, profiles, r
         * This branch is used for local/development instances
         * When a pull request is created, flyway migration is run in this branch to validate schema changes
 
-* TODO
+## TODO
   * Update this README.md for proper documentation
-  * Implement RequestMetadata, ResponseCrudInfo
-  * Implement queryParam for superusers for includeDeleted
+  * Provide option to include history for single read operation
+    * Include history for a given month
+    * Default to current month if not provided
+  * Refactor Role/Permission to use Join table like PlatformProfileRole
+    * Current execution is effective but not efficient and leads to a lot of duplication between roles

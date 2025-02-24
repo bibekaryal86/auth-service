@@ -1,26 +1,106 @@
 [
   {
     "id": 1,
-    "roleName": "SUPERUSER",
-    "roleDesc": "User has all and unlimited access, including hard delete",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": null,
+    "roleName": "ROLE-01",
+    "roleDesc": "ROLE ONE"
   },
   {
     "id": 2,
-    "roleName": "POWERUSER",
-    "roleDesc": "User has all access, including soft delete. View access to ref/admin data",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": null
+    "deletedDate": null,
+    "roleName": "ROLE-02",
+    "roleDesc": "ROLE TWO"
   },
   {
     "id": 3,
-    "roleName": "GUEST",
-    "roleDesc": "User has create, read and update access. No access to ref/admin data",
     "createdDate": "2024-08-23T22:06:49.685768",
     "updatedDate": "2024-08-23T22:46:45.153133",
-    "deletedDate": "2024-08-24T22:06:49.685768"
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "roleName": "ROLE-03",
+    "roleDesc": "ROLE THREE"
+  },
+  {
+    "id": 4,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-04",
+    "roleDesc": "ROLE FOUR"
+  },
+  {
+    "id": 5,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-05",
+    "roleDesc": "ROLE FIVE"
+  },
+  {
+    "id": 6,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "roleName": "ROLE-06",
+    "roleDesc": "ROLE SIX"
+  },
+  {
+    "id": 7,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-07",
+    "roleDesc": "ROLE SEVEN"
+  },
+  {
+    "id": 8,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-08",
+    "roleDesc": "ROLE EIGHT"
+  },
+  {
+    "id": 9,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "roleName": "ROLE-09",
+    "roleDesc": "ROLE NINE"
+  },
+  {
+    "id": 10,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-10",
+    "roleDesc": "ROLE TEN"
+  },
+  {
+    "id": 11,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-11",
+    "roleDesc": "ROLE ELEVEN"
+  },
+  {
+    "id": 12,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": "2024-08-24T22:06:49.685768",
+    "roleName": "ROLE-12",
+    "roleDesc": "ROLE TWELVE"
+  },
+  {
+    "id": 13,
+    "createdDate": "2024-08-23T22:06:49.685768",
+    "updatedDate": "2024-08-23T22:46:45.153133",
+    "deletedDate": null,
+    "roleName": "ROLE-13",
+    "roleDesc": "ROLE THIRTEEN"
   }
 ]

@@ -19,7 +19,6 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.PlatformRepository;
@@ -28,7 +27,6 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -38,8 +36,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 public class PlatformProfileRoleControllerTest extends BaseTest {
 
   private static final long PLATFORM_ID = ID;
-  private static final long PROFILE_ID = 3;
-  private static final long ROLE_ID = 6;
+  private static final long PROFILE_ID = 5L;
+  private static final long ROLE_ID = 7L;
 
   private static PlatformEntity platformEntity;
   private static ProfileDto profileDtoNoPermission;
@@ -67,10 +65,10 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_Success() {
+  void testAssignPlatformProfileRole_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission(
-            "PLATFORM_PROFILE_ROLE_ASSIGN", profileDtoNoPermission);
+            "AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -91,17 +89,34 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(1, platformProfileRoleResponse.getPlatformProfileRoles().size());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseStatusInfo());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponsePageInfo());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseCrudInfo());
     assertEquals(
-        PLATFORM_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getPlatform().getId());
+        1,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getInsertedRowsCount());
     assertEquals(
-        PROFILE_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getProfile().getId());
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getUpdatedRowsCount());
     assertEquals(
-        ROLE_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getRole().getId());
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getDeletedRowsCount());
+    assertEquals(
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getRestoredRowsCount());
 
     // verify audit service called for assign platform role
     verify(auditService, after(100).times(1))
@@ -117,7 +132,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_SuccessSuperUser() {
+  void testAssignPlatformProfileRole_SuccessSuperUser() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
@@ -139,17 +154,34 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(1, platformProfileRoleResponse.getPlatformProfileRoles().size());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseStatusInfo());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponsePageInfo());
+    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseCrudInfo());
     assertEquals(
-        PLATFORM_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getPlatform().getId());
+        1,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getInsertedRowsCount());
     assertEquals(
-        PROFILE_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getProfile().getId());
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getUpdatedRowsCount());
     assertEquals(
-        ROLE_ID,
-        platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getRole().getId());
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getDeletedRowsCount());
+    assertEquals(
+        0,
+        platformProfileRoleResponse
+            .getResponseMetadata()
+            .getResponseCrudInfo()
+            .getRestoredRowsCount());
 
     // verify audit service called for assign platform role
     verify(auditService, after(100).times(1))
@@ -165,7 +197,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_FailureNoAuth() {
+  void testAssignPlatformProfileRole_FailureNoAuth() {
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(PLATFORM_ID, PROFILE_ID, ROLE_ID);
     webTestClient
@@ -179,7 +211,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_FailureNoPermission() {
+  void testAssignPlatformProfileRole_FailureNoPermission() {
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(PLATFORM_ID, PROFILE_ID, ROLE_ID);
     webTestClient
@@ -194,7 +226,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_FailureBadRequest() {
+  void testAssignPlatformProfileRole_FailureBadRequest() {
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(null, 0L, -1L);
     ResponseMetadata responseMetadata =
@@ -223,13 +255,13 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testCreatePlatformProfileRole_FailureNotFound() {
+  void testAssignPlatformProfileRole_FailureNotFound() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
     PlatformProfileRoleRequest platformProfileRoleRequest =
-        new PlatformProfileRoleRequest(9L, 9L, 9L);
+        new PlatformProfileRoleRequest(ID_NOT_FOUND, ID_NOT_FOUND, ID_NOT_FOUND);
 
     webTestClient
         .post()
@@ -244,188 +276,43 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testReadPlatformProfileRoles_Success() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_PROFILE_ROLE_READ", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
-    PlatformProfileRoleResponse platformProfileRoleResponse =
-        webTestClient
-            .get()
-            .uri("/api/v1/ppr")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
-            .returnResult()
-            .getResponseBody();
-
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(6, platformProfileRoleResponse.getPlatformProfileRoles().size());
-  }
-
-  @Test
-  void testReadAppRolePermissions_SuccessSuperUser() {
+  void testAssignPlatformProfileRole_FailureNotActive() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
-    PlatformProfileRoleResponse platformProfileRoleResponse =
-        webTestClient
-            .get()
-            .uri("/api/v1/ppr")
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
-            .returnResult()
-            .getResponseBody();
+    PlatformProfileRoleRequest platformProfileRoleRequest =
+        new PlatformProfileRoleRequest(ID_DELETED, ID_DELETED, ID_DELETED);
 
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(6, platformProfileRoleResponse.getPlatformProfileRoles().size());
-  }
-
-  @Test
-  void testReadAppRolePermissions_FailureNoAuth() {
-    webTestClient.get().uri("/api/v1/ppr").exchange().expectStatus().isUnauthorized();
-  }
-
-  @Test
-  void testReadAppRolePermissions_FailureNoPermission() {
     webTestClient
-        .get()
+        .post()
         .uri("/api/v1/ppr")
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-        .exchange()
-        .expectStatus()
-        .isForbidden();
-  }
-
-  @Test
-  void testReadPlatformProfileRole_Success() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("PLATFORM_PROFILE_ROLE_READ", profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
-    PlatformProfileRoleResponse platformProfileRoleResponse =
-        webTestClient
-            .get()
-            .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
-            .returnResult()
-            .getResponseBody();
-
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(1, platformProfileRoleResponse.getPlatformProfileRoles().size());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getPlatform().getId());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getProfile().getId());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getRole().getId());
-  }
-
-  @Test
-  void testReadPlatformProfileRole_SuccessSuperUser() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
-    PlatformProfileRoleResponse platformProfileRoleResponse =
-        webTestClient
-            .get()
-            .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
-            .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
-            .returnResult()
-            .getResponseBody();
-
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getPlatformProfileRoles());
-    assertEquals(1, platformProfileRoleResponse.getPlatformProfileRoles().size());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getPlatform().getId());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getProfile().getId());
-    assertEquals(
-        ID, platformProfileRoleResponse.getPlatformProfileRoles().getFirst().getRole().getId());
-  }
-
-  @Test
-  void testReadPlatformProfileRole_FailureNoAuth() {
-    webTestClient
-        .get()
-        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
-        .exchange()
-        .expectStatus()
-        .isUnauthorized();
-  }
-
-  @Test
-  void testReadPlatformProfileRole_FailureNoPermission() {
-    webTestClient
-        .get()
-        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
-        .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
-        .exchange()
-        .expectStatus()
-        .isForbidden();
-  }
-
-  @Test
-  void testReadPlatformProfileRole_FailureNotFound() {
-    profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-
-    webTestClient
-        .get()
-        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", 9L, 9L, 9L))
+        .bodyValue(platformProfileRoleRequest)
         .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
-        .isNotFound();
+        .isForbidden();
+
+    verifyNoInteractions(auditService);
   }
 
   @Test
-  void testDeletePlatformProfileRole_Success() {
+  void testUnassignPlatformProfileRole_Success() {
     // setup
-    ProfileEntity profileEntity = profileRepository.findById(PROFILE_ID).orElse(null);
-    RoleEntity roleEntity = roleRepository.findById(ROLE_ID).orElse(null);
-    PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
-    platformProfileRoleEntity.setId(new PlatformProfileRoleId(PLATFORM_ID, PROFILE_ID, ROLE_ID));
-    platformProfileRoleEntity.setPlatform(platformEntity);
-    platformProfileRoleEntity.setProfile(profileEntity);
-    platformProfileRoleEntity.setRole(roleEntity);
-    platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
-    platformProfileRoleRepository.save(platformProfileRoleEntity);
+    PlatformProfileRoleEntity pprOriginal =
+        platformProfileRoleRepository.findById(new PlatformProfileRoleId(ID, ID, ID)).orElse(null);
+    assertNotNull(pprOriginal);
 
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermission(
-            "PLATFORM_PROFILE_ROLE_UNASSIGN", profileDtoNoPermission);
+            "AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN", profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
     PlatformProfileRoleResponse platformProfileRoleResponse =
         webTestClient
             .delete()
-            .uri(
-                String.format(
-                    "/api/v1/ppr/platform/%s/profile/%s/role/%s", PLATFORM_ID, PROFILE_ID, ROLE_ID))
+            .uri(String.format("/api/v1/ppr//platform/%s/profile/%s/role/%s", ID, ID, ID))
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -452,22 +339,15 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             any(String.class));
 
     // cleanup
-    platformProfileRoleRepository.deleteById(
-        new PlatformProfileRoleId(PLATFORM_ID, PROFILE_ID, ROLE_ID));
+    platformProfileRoleRepository.save(pprOriginal);
   }
 
   @Test
-  void testDeletePlatformProfileRole_SuccessSuperUser() {
+  void testUnassignPlatformProfileRole_SuccessSuperUser() {
     // setup
-    ProfileEntity profileEntity = profileRepository.findById(PROFILE_ID).orElse(null);
-    RoleEntity roleEntity = roleRepository.findById(ROLE_ID).orElse(null);
-    PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
-    platformProfileRoleEntity.setId(new PlatformProfileRoleId(PLATFORM_ID, PROFILE_ID, ROLE_ID));
-    platformProfileRoleEntity.setPlatform(platformEntity);
-    platformProfileRoleEntity.setProfile(profileEntity);
-    platformProfileRoleEntity.setRole(roleEntity);
-    platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
-    platformProfileRoleRepository.save(platformProfileRoleEntity);
+    PlatformProfileRoleEntity pprOriginal =
+        platformProfileRoleRepository.findById(new PlatformProfileRoleId(ID, ID, ID)).orElse(null);
+    assertNotNull(pprOriginal);
 
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -476,9 +356,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
     PlatformProfileRoleResponse platformProfileRoleResponse =
         webTestClient
             .delete()
-            .uri(
-                String.format(
-                    "/api/v1/ppr/platform/%s/profile/%s/role/%s", PLATFORM_ID, PROFILE_ID, ROLE_ID))
+            .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -505,12 +383,11 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             any(String.class));
 
     // cleanup
-    platformProfileRoleRepository.deleteById(
-        new PlatformProfileRoleId(PLATFORM_ID, PROFILE_ID, ROLE_ID));
+    platformProfileRoleRepository.save(pprOriginal);
   }
 
   @Test
-  void testDeletePlatformProfileRole_FailureNoAuth() {
+  void testUnassignPlatformProfileRole_FailureNoAuth() {
     webTestClient
         .delete()
         .uri(
@@ -522,7 +399,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testDeletePlatformProfileRole_FailureNoPermission() {
+  void testUnassignPlatformProfileRole_FailureNoPermission() {
     webTestClient
         .delete()
         .uri(
@@ -535,14 +412,17 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   }
 
   @Test
-  void testDeletePlatformProfileRole_FailureNotFound() {
+  void testUnassignPlatformProfileRole_FailureNotFound() {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
     webTestClient
         .delete()
-        .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", 9L, 9L, 9L))
+        .uri(
+            String.format(
+                "/api/v1/ppr/platform/%s/profile/%s/role/%s",
+                ID_NOT_FOUND, ID_NOT_FOUND, ID_NOT_FOUND))
         .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()

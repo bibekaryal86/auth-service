@@ -18,21 +18,23 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.token.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
@@ -97,52 +99,101 @@ public class CommonUtils {
     return request.getHeader("User-Agent");
   }
 
-  public static String convertResponseMetadataToJson(final ResponseMetadata responseMetadata) {
-    try {
-      return new ObjectMapper().writeValueAsString(responseMetadata);
-    } catch (JsonProcessingException e) {
-      return "{"
-          + "\"errMsg\":\""
-          + escapeJson(responseMetadata.getResponseStatusInfo().getErrMsg())
-          + "\""
-          + "}";
-    }
+  public static ResponseStatusInfo emptyResponseStatusInfo() {
+    return ResponseStatusInfo.builder().errMsg("").build();
   }
 
-  private static String escapeJson(final String value) {
-    if (value == null) {
-      return "";
-    }
-    return value.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+  public static ResponsePageInfo emptyResponsePageInfo() {
+    return ResponsePageInfo.builder().totalItems(0).totalPages(0).pageNumber(0).perPage(0).build();
   }
 
-  public static Gson getGson() {
-    return new GsonBuilder()
-        .setExclusionStrategies(
-            new ExclusionStrategy() {
-              public boolean shouldSkipField(FieldAttributes f) {
-                return (f == null);
-              }
-
-              public boolean shouldSkipClass(Class<?> clazz) {
-                return false;
-              }
-            })
-        .create();
+  public static ResponseCrudInfo emptyResponseCrudInfo() {
+    return ResponseCrudInfo.builder()
+        .insertedRowsCount(0)
+        .updatedRowsCount(0)
+        .deletedRowsCount(0)
+        .restoredRowsCount(0)
+        .build();
   }
 
   public static ResponseMetadata emptyResponseMetadata() {
     return ResponseMetadata.builder()
-        .responseStatusInfo(ResponseStatusInfo.builder().errMsg("").build())
-        .responsePageInfo(
-            ResponsePageInfo.builder().totalItems(0).totalPages(0).pageNumber(0).perPage(0).build())
-        .responseCrudInfo(
-            ResponseCrudInfo.builder()
-                .insertedRowsCount(0)
-                .updatedRowsCount(0)
-                .deletedRowsCount(0)
-                .restoredRowsCount(0)
-                .build())
+        .responseStatusInfo(emptyResponseStatusInfo())
+        .responsePageInfo(emptyResponsePageInfo())
+        .responseCrudInfo(emptyResponseCrudInfo())
         .build();
+  }
+
+  public static ResponsePageInfo defaultResponsePageInfo(final Page<?> page) {
+    return ResponsePageInfo.builder()
+        .totalItems((int) page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .pageNumber(page.getPageable().getPageNumber())
+        .perPage(page.getPageable().getPageSize())
+        .build();
+  }
+
+  public static ResponseCrudInfo defaultResponseCrudInfo(
+      final int inserted, final int updated, final int deleted, final int restored) {
+    return ResponseCrudInfo.builder()
+        .insertedRowsCount(inserted)
+        .updatedRowsCount(updated)
+        .deletedRowsCount(deleted)
+        .restoredRowsCount(restored)
+        .build();
+  }
+
+  public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
+    return RequestMetadata.builder()
+        .isIncludePermissions(false)
+        .isIncludePlatforms(false)
+        .isIncludeProfiles(false)
+        .isIncludeRoles(false)
+        .isIncludeDeleted(false)
+        .isIncludeHistory(false)
+        .pageNumber(0)
+        .perPage(100)
+        .sortColumn(sortColumn)
+        .sortDirection(Sort.Direction.ASC)
+        .build();
+  }
+
+  public static boolean isRequestMetadataIncluded(final RequestMetadata requestMetadata) {
+    return requestMetadata != null
+        && (requestMetadata.isIncludeDeleted()
+            || StringUtils.hasText(requestMetadata.getSortColumn()));
+  }
+
+  public static boolean isHistoryToBeIncluded(final RequestMetadata requestMetadata) {
+    return requestMetadata != null && requestMetadata.isIncludeHistory();
+  }
+
+  public static AuthToken getAuthentication() {
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null
+        || authentication.getPrincipal() == null
+        || !authentication.isAuthenticated()) {
+      throw new CheckPermissionException("Profile not authenticated...");
+    }
+
+    if (authentication.getCredentials() != null
+        && authentication.getCredentials() instanceof AuthToken authToken) {
+      return authToken;
+    }
+
+    throw new CheckPermissionException("Profile not authorized...");
+  }
+
+  public static void validatePlatformProfileRoleNotDeleted(
+      final PlatformProfileRoleEntity platformProfileRoleEntity) {
+    if (platformProfileRoleEntity.getPlatform().getDeletedDate() != null) {
+      throw new ElementNotActiveException(
+          "Platform", String.valueOf(platformProfileRoleEntity.getPlatform().getId()));
+    }
+    if (platformProfileRoleEntity.getProfile().getDeletedDate() != null) {
+      throw new ElementNotActiveException(
+          "Profile", String.valueOf(platformProfileRoleEntity.getProfile().getId()));
+    }
   }
 }

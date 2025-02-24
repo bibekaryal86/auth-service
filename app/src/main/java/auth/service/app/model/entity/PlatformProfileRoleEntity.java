@@ -38,4 +38,7 @@ public class PlatformProfileRoleEntity {
 
   @Column(name = "assigned_date", nullable = false)
   private LocalDateTime assignedDate;
+
+  @Column(name = "unassigned_date")
+  private LocalDateTime unassignedDate;
 }

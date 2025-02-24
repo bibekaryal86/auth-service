@@ -21,6 +21,4 @@ public class ProfileAddressDto {
   private String state;
   private String country;
   private String postalCode;
-
-  private AddressTypeDto type;
 }

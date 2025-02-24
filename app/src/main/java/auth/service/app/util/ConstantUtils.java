@@ -1,11 +1,29 @@
 package auth.service.app.util;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstantUtils {
+
+  public static final Gson GSON =
+      new GsonBuilder()
+          .setExclusionStrategies(
+              new ExclusionStrategy() {
+                public boolean shouldSkipField(FieldAttributes f) {
+                  return (f == null);
+                }
+
+                public boolean shouldSkipClass(Class<?> clazz) {
+                  return false;
+                }
+              })
+          .create();
 
   // provided at runtime
   public static final String ENV_SERVER_PORT = "PORT";
@@ -49,4 +67,8 @@ public class ConstantUtils {
   // messages
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
       "Something went wrong, please try again later!";
+
+  // fields
+  public static final String DELETED_DATE = "deletedDate";
+  public static final String NOT_NULL_VALUE = "NOT_NULL";
 }

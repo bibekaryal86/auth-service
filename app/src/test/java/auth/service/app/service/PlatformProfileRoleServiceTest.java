@@ -3,33 +3,48 @@ package auth.service.app.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
+import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformProfileRoleId;
+import auth.service.app.repository.PlatformProfileRoleRepository;
+import helper.TestData;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PlatformProfileRoleServiceTest extends BaseTest {
 
   @Autowired private PlatformProfileRoleService platformProfileRoleService;
+  @Autowired private PlatformProfileRoleRepository platformProfileRoleRepository;
 
   @Test
-  void testReadPlatformProfileRoles() {
-    assertEquals(6, platformProfileRoleService.readPlatformProfileRolesByProfileId().size());
-  }
-
-  @Test
-  void testReadPlatformProfileRolesByProfileId() {
-    assertEquals(3, platformProfileRoleService.readPlatformProfileRolesByProfileId(4L).size());
+  void testReadPlatformProfileRolesByPlatformIds() {
+    assertEquals(
+        4,
+        platformProfileRoleService.readPlatformProfileRolesByPlatformIds(List.of(ID, 4L)).size());
   }
 
   @Test
   void testReadPlatformProfileRolesByProfileIds() {
     assertEquals(
-        4, platformProfileRoleService.readPlatformProfileRolesByProfileIds(List.of(1L, 4L)).size());
+        3,
+        platformProfileRoleService
+            .readPlatformProfileRolesByProfileIds(List.of(1L, 2L, 3L))
+            .size());
+  }
+
+  @Test
+  void testReadPlatformProfileRolesByRoleIds() {
+    assertEquals(
+        3,
+        platformProfileRoleService.readPlatformProfileRolesByRoleIds(List.of(4L, 5L, 6L)).size());
   }
 
   @Test
@@ -45,42 +60,162 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
-  void testPlatformProfileRoleService_CRUD() {
-    Long platformId = 6L;
-    Long profileId = 6L;
-    Long roleId = 6L;
+  void testPlatformProfileRoleService_AssignUnassign() {
+    Long platformId = 7L;
+    Long profileId = 7L;
+    Long roleId = 7L;
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(platformId, profileId, roleId);
 
-    // create
+    // assign
     PlatformProfileRoleEntity platformProfileRoleEntity =
-        platformProfileRoleService.createPlatformProfileRole(platformProfileRoleRequest);
+        platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
     assertNotNull(platformProfileRoleEntity);
     assertNotNull(platformProfileRoleEntity.getId());
-
-    // update, not available
-
-    // read
-    platformProfileRoleEntity =
-        platformProfileRoleService.readPlatformProfileRole(platformId, profileId, roleId);
-    assertNotNull(platformProfileRoleEntity);
-    assertNotNull(platformProfileRoleEntity.getId());
-    assertEquals(
-        "Personal Expenses Tracking System-1",
-        platformProfileRoleEntity.getPlatform().getPlatformName());
-    assertEquals("firstlast-1@three.com", platformProfileRoleEntity.getProfile().getEmail());
-    assertEquals("GUEST-1", platformProfileRoleEntity.getRole().getRoleName());
     assertNotNull(platformProfileRoleEntity.getAssignedDate());
 
-    // hard delete
-    platformProfileRoleService.deletePlatformProfileRole(platformId, profileId, roleId);
+    // unassign
+    platformProfileRoleEntity =
+        platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
+    assertNotNull(platformProfileRoleEntity);
+    assertNotNull(platformProfileRoleEntity.getId());
+    assertNotNull(platformProfileRoleEntity.getAssignedDate());
+    assertNotNull(platformProfileRoleEntity.getUnassignedDate());
 
-    // throws not found exception after delete
-    ElementNotFoundException exception =
+    // cleanup
+    platformProfileRoleRepository.delete(platformProfileRoleEntity);
+  }
+
+  @Test
+  void testAssignPlatformProfileRole_PlatformErrors() {
+    ElementNotFoundException elementNotFoundException =
         assertThrows(
             ElementNotFoundException.class,
             () ->
-                platformProfileRoleService.readPlatformProfileRole(platformId, profileId, roleId));
-    assertEquals("Platform Profile Role Not Found for [6,6,6]", exception.getMessage());
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID_NOT_FOUND, ID, ID)));
+    assertEquals("Platform Not Found for [99]", elementNotFoundException.getMessage());
+
+    ElementNotActiveException elementNotActiveException =
+        assertThrows(
+            ElementNotActiveException.class,
+            () ->
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID_DELETED, ID, ID)));
+    assertEquals(
+        String.format("Active Platform Not Found for [%s]", ID_DELETED),
+        elementNotActiveException.getMessage());
+  }
+
+  @Test
+  void testAssignPlatformProfileRole_ProfileErrors() {
+    ElementNotFoundException elementNotFoundException =
+        assertThrows(
+            ElementNotFoundException.class,
+            () ->
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID, ID_NOT_FOUND, ID)));
+    assertEquals("Profile Not Found for [99]", elementNotFoundException.getMessage());
+
+    ElementNotActiveException elementNotActiveException =
+        assertThrows(
+            ElementNotActiveException.class,
+            () ->
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID, ID_DELETED, ID)));
+    assertEquals(
+        String.format("Active Profile Not Found for [%s]", ID_DELETED),
+        elementNotActiveException.getMessage());
+  }
+
+  @Test
+  void testAssignPlatformProfileRole_RoleErrors() {
+    ElementNotFoundException elementNotFoundException =
+        assertThrows(
+            ElementNotFoundException.class,
+            () ->
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID, ID, ID_NOT_FOUND)));
+    assertEquals("Role Not Found for [99]", elementNotFoundException.getMessage());
+
+    ElementNotActiveException elementNotActiveException =
+        assertThrows(
+            ElementNotActiveException.class,
+            () ->
+                platformProfileRoleService.assignPlatformProfileRole(
+                    new PlatformProfileRoleRequest(ID, ID, ID_DELETED)));
+    assertEquals(
+        String.format("Active Role Not Found for [%s]", ID_DELETED),
+        elementNotActiveException.getMessage());
+  }
+
+  @Test
+  void testDeletedByPlatformIds() {
+    for (int i = 10; i < 13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(
+          new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleService.hardDeletePlatformProfileRolesByPlatformIds(List.of(11L, 12L, 13L));
+
+    for (int i = 10; i < 13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional =
+          platformProfileRoleRepository.findById(
+              new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      assertTrue(pprOptional.isEmpty());
+    }
+  }
+
+  @Test
+  void testDeletedByProfileIds() {
+    // setup
+    for (int i = 10; i < 13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(
+          new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleService.hardDeletePlatformProfileRolesByProfileIds(List.of(11L, 12L, 13L));
+
+    for (int i = 10; i < 13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional =
+          platformProfileRoleRepository.findById(
+              new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      assertTrue(pprOptional.isEmpty());
+    }
+  }
+
+  @Test
+  void testDeletedByRoleIds() {
+    for (int i = 10; i < 13; i++) {
+      PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
+      platformProfileRoleEntity.setPlatform(TestData.getPlatformEntities().get(i));
+      platformProfileRoleEntity.setProfile(TestData.getProfileEntities().get(i));
+      platformProfileRoleEntity.setRole(TestData.getRoleEntities().get(i));
+      platformProfileRoleEntity.setId(
+          new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+      platformProfileRoleRepository.save(platformProfileRoleEntity);
+    }
+
+    platformProfileRoleService.hardDeletePlatformProfileRolesByRoleIds(List.of(11L, 12L, 13L));
+
+    for (int i = 10; i < 13; i++) {
+      Optional<PlatformProfileRoleEntity> pprOptional =
+          platformProfileRoleRepository.findById(
+              new PlatformProfileRoleId((long) (i + 1), (long) i + 1, (long) i + 1));
+      assertTrue(pprOptional.isEmpty());
+    }
   }
 }

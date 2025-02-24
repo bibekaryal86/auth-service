@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,6 +45,7 @@ public class PermissionCheckTest extends BaseTest {
 
   @BeforeEach
   public void setUpBeforeEach() {
+    reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -53,7 +55,7 @@ public class PermissionCheckTest extends BaseTest {
   void testCheckPermission() {
     CheckPermission checkPermission = mock(CheckPermission.class);
     when(checkPermission.value())
-        .thenReturn(new String[] {"PERMISSION_READ", "SOME_OTHER_PERMISSION"});
+        .thenReturn(new String[] {"PERMISSION-1", "SOME_OTHER_PERMISSION"});
 
     assertDoesNotThrow(() -> permissionCheck.checkPermission(checkPermission));
     verify(securityContext).getAuthentication();
@@ -64,6 +66,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
 
     CheckPermission checkPermission = mock(CheckPermission.class);
@@ -102,10 +105,11 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", 99));
+    assertDoesNotThrow(() -> permissionCheck.checkProfileAccess("some@email.com", ID_NOT_FOUND));
     verify(securityContext).getAuthentication();
   }
 
@@ -114,7 +118,7 @@ public class PermissionCheckTest extends BaseTest {
     CheckPermissionException exception =
         assertThrows(
             CheckPermissionException.class,
-            () -> permissionCheck.checkProfileAccess("some@email.com", 99));
+            () -> permissionCheck.checkProfileAccess("some@email.com", ID_NOT_FOUND));
 
     assertEquals(
         "Permission Denied: Profile does not have required permissions to profile entity...",
@@ -134,6 +138,7 @@ public class PermissionCheckTest extends BaseTest {
     AuthToken authToken = TestData.getAuthToken();
     authToken.setRoles(
         List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setSuperUser(true);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 

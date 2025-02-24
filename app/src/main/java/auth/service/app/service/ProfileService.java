@@ -17,6 +17,7 @@ import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
@@ -26,18 +27,20 @@ import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
+import auth.service.app.util.JpaDataUtils;
 import auth.service.app.util.PasswordUtils;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Slf4j
@@ -60,55 +63,56 @@ public class ProfileService {
       final ProfileRequest profileRequest,
       final String baseUrlForEmail) {
     log.debug("Create App User: [{}], [{}]", profileRequest, baseUrlForEmail);
-    validateCreateProfile(profileRequest);
+    createProfileValidate(profileRequest);
 
+    // profile
     ProfileEntity profileEntity = new ProfileEntity();
-    BeanUtils.copyProperties(profileRequest, profileEntity, "password", "addresses");
+    BeanUtils.copyProperties(profileRequest, profileEntity, "password", "profileAddress");
     profileEntity.setPassword(passwordUtils.hashPassword(profileRequest.getPassword()));
     profileEntity.setIsValidated(false);
 
+    // profile_address
+    ProfileAddressEntity profileAddressEntity =
+        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, true);
+
+    // platform_profile_role
+    final String roleName = profileRequest.isGuestUser() ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
+    final RoleEntity roleEntity = circularDependencyService.readRoleByName(roleName, false);
+
+    // save profile
     profileEntity = profileRepository.save(profileEntity);
-
-    // save addresses
-    if (!CollectionUtils.isEmpty(profileRequest.getAddresses())) {
-      List<ProfileAddressEntity> profileAddressEntities =
-          convertAddressRequestToEntity(profileRequest.getAddresses(), profileEntity, true);
-      profileAddressRepository.saveAll(profileAddressEntities);
+    // save profile address
+    if (profileAddressEntity != null) {
+      profileAddressRepository.save(profileAddressEntity);
     }
-
     // save platform profile role
-    final RoleEntity roleEntity = getRoleEntityToCreate(profileRequest.isGuestUser());
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(
             platformEntity.getId(), profileEntity.getId(), roleEntity.getId());
-    platformProfileRoleService.createPlatformProfileRole(platformProfileRoleRequest);
+    platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
+    // publish event for validation email
     applicationEventPublisher.publishEvent(
         new ProfileEvent(
             this, TypeEnums.EventType.CREATE, profileEntity, platformEntity, baseUrlForEmail));
     return profileEntity;
   }
 
-  private void validateCreateProfile(final ProfileRequest profileRequest) {
-    // password and app are required for create user
-    if (!StringUtils.hasText(profileRequest.getPassword())) {
-      throw new ElementMissingException("Profile", "password");
-    }
-  }
-
-  private RoleEntity getRoleEntityToCreate(final boolean isGuestUser) {
-    final String roleName = isGuestUser ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
-    return circularDependencyService.readRoleByName(roleName);
-  }
-
   // READ
-  public List<ProfileEntity> readProfiles() {
-    log.debug("Read App Users...");
-    return profileRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"));
+  public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
+    log.debug("Read Profiles: [{}]", requestMetadata);
+    final RequestMetadata requestMetadataToUse =
+        CommonUtils.isRequestMetadataIncluded(requestMetadata)
+            ? requestMetadata
+            : CommonUtils.defaultRequestMetadata("lastName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
+    final Specification<ProfileEntity> specification =
+        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+    return profileRepository.findAll(specification, pageable);
   }
 
-  /** Use {@link CircularDependencyService#readProfile(Long)} */
-  public ProfileEntity readProfile(final Long id) {
+  /** Use {@link CircularDependencyService#readProfile(Long, boolean)} */
+  private ProfileEntity readProfile(final Long id) {
     log.debug("Read Profile: [{}]", id);
     return profileRepository
         .findById(id)
@@ -140,14 +144,28 @@ public class ProfileService {
   public ProfileEntity updateProfile(final Long id, final ProfileRequest profileRequest) {
     log.debug("Update Profiler: [{}], [{}]", id, profileRequest);
     ProfileEntity profileEntity = readProfile(id);
-    BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "addresses");
-    profileEntity = updateProfile(profileEntity);
 
-    // save addresses
-    if (!CollectionUtils.isEmpty(profileRequest.getAddresses())) {
-      List<ProfileAddressEntity> profileAddressEntities =
-          convertAddressRequestToEntity(profileRequest.getAddresses(), profileEntity, false);
-      profileAddressRepository.saveAll(profileAddressEntities);
+    if (profileEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Profile", String.valueOf(id));
+    }
+
+    // profile
+    BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "profileAddress");
+    // profile_address
+    ProfileAddressEntity profileAddressEntity =
+        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
+
+    // save profile
+    profileEntity = updateProfile(profileEntity);
+    // save profile_address
+    if (profileAddressEntity != null) {
+      if (profileRequest.getAddressRequest().isDeleteAddress()) {
+        profileAddressRepository.deleteById(profileRequest.getAddressRequest().getId());
+        profileEntity.setProfileAddress(null);
+      } else {
+        profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
+        profileEntity.setProfileAddress(profileAddressEntity);
+      }
     }
 
     return profileEntity;
@@ -165,6 +183,11 @@ public class ProfileService {
         id,
         profileEmailRequest);
     final ProfileEntity profileEntity = readProfile(id);
+
+    if (profileEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Profile", String.valueOf(id));
+    }
+
     profileEntity.setEmail(profileEmailRequest.getNewEmail());
     profileEntity.setIsValidated(false);
     final ProfileEntity profileEntityUpdated = updateProfile(profileEntity);
@@ -194,6 +217,11 @@ public class ProfileService {
         id,
         profilePasswordRequest);
     final ProfileEntity profileEntity = readProfile(id);
+
+    if (profileEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Profile", String.valueOf(id));
+    }
+
     profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
 
     final ProfileEntity profileEntityUpdated = updateProfile(profileEntity);
@@ -208,30 +236,32 @@ public class ProfileService {
     return profileEntityUpdated;
   }
 
-  @Transactional
-  public ProfileEntity deleteProfileAddress(final Long profileId, final Long profileAddressId) {
-    log.info("Delete Profile Address: [{}], [{}]", profileId, profileAddressId);
-    final ProfileEntity profileEntity = readProfile(profileId);
-    final ProfileAddressEntity profileAddressEntity =
-        profileEntity.getAddresses().stream()
-            .filter(address -> Objects.equals(address.getId(), profileAddressId))
-            .findFirst()
-            .orElseThrow(() -> new ElementNotFoundException("Profile Address", "id"));
-    profileEntity.getAddresses().remove(profileAddressEntity);
-    return profileEntity;
-  }
-
   // DELETE
   public ProfileEntity softDeleteProfile(final Long id) {
     log.info("Soft Delete Profile: [{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
+
+    if (profileEntity.getDeletedDate() != null) {
+      throw new ElementNotActiveException("Profile", String.valueOf(id));
+    }
+
     profileEntity.setDeletedDate(LocalDateTime.now());
     return profileRepository.save(profileEntity);
   }
 
+  @Transactional
   public void hardDeleteProfile(final Long id) {
     log.info("Hard Delete Profile: [{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
+
+    // before Profile can be deleted, we need to delete entities in PlatformProfileRole
+    platformProfileRoleService.hardDeletePlatformProfileRolesByProfileIds(List.of(id));
+    // also delete ProfileAddress
+    if (profileEntity.getProfileAddress() != null
+        && profileEntity.getProfileAddress().getId() != null) {
+      profileAddressRepository.deleteById(profileEntity.getProfileAddress().getId());
+    }
+    // now Profile can be deleted
     profileRepository.delete(profileEntity);
   }
 
@@ -244,6 +274,7 @@ public class ProfileService {
   }
 
   // OTHERS
+  @Transactional
   public ProfilePasswordTokenResponse loginProfile(
       final Long platformId,
       final ProfilePasswordRequest profilePasswordRequest,
@@ -255,9 +286,76 @@ public class ProfileService {
             platformId, profilePasswordRequest.getEmail());
     final PlatformEntity platformEntity = platformProfileRoleEntity.getPlatform();
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+    loginProfileValidate(platformEntity, profileEntity);
 
+    final boolean isLoginSuccess =
+        passwordUtils.verifyPassword(
+            profilePasswordRequest.getPassword(), profileEntity.getPassword());
+
+    if (!isLoginSuccess) {
+      throw new ProfileNotAuthorizedException();
+    }
+
+    return tokenService.saveToken(null, null, platformEntity, profileEntity, ipAddress);
+  }
+
+  public ProfileEntity resetProfile(
+      final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, profilePasswordRequest.getEmail());
+    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
+    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+    profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
+    return updateProfile(profileEntity);
+  }
+
+  public ProfileEntity validateAndResetProfile(
+      final Long platformId, final String encodedEmail, final boolean isValidate) {
+    final PlatformProfileRoleEntity platformProfileRoleEntity =
+        platformProfileRoleService.readPlatformProfileRole(
+            platformId, decodeEmailAddress(encodedEmail));
+    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
+    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
+
+    if (isValidate) {
+      profileEntity.setIsValidated(true);
+      return updateProfile(profileEntity);
+    }
+
+    return profileEntity;
+  }
+
+  private ProfileAddressEntity convertAddressRequestToEntity(
+      final ProfileAddressRequest request,
+      final ProfileEntity profileEntity,
+      final boolean isIgnoreId) {
+    if (request == null) {
+      return null;
+    }
+
+    ProfileAddressEntity entity = new ProfileAddressEntity();
+    if (isIgnoreId) {
+      BeanUtils.copyProperties(request, entity, "id", "profileId");
+    } else {
+      BeanUtils.copyProperties(request, entity, "profileId");
+    }
+    entity.setProfile(profileEntity);
+
+    return entity;
+  }
+
+  private void createProfileValidate(final ProfileRequest profileRequest) {
+    // password and app are required for create user
+    if (!StringUtils.hasText(profileRequest.getPassword())) {
+      throw new ElementMissingException("Profile", "password");
+    }
+  }
+
+  private void loginProfileValidate(
+      final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
     if (platformEntity.getDeletedDate() != null) {
-      throw new ElementNotActiveException("Platform", String.valueOf(platformId));
+      throw new ElementNotActiveException("Platform", String.valueOf(platformEntity.getId()));
     }
 
     if (profileEntity.getDeletedDate() != null) {
@@ -276,60 +374,5 @@ public class ProfileService {
         && profileEntity.getLastLogin().isBefore(LocalDateTime.now().minusDays(45))) {
       throw new ProfileNotActiveException();
     }
-
-    final boolean isLoginSuccess =
-        passwordUtils.verifyPassword(
-            profilePasswordRequest.getPassword(), profileEntity.getPassword());
-
-    if (!isLoginSuccess) {
-      throw new ProfileNotAuthorizedException();
-    }
-
-    return tokenService.saveToken(null, null, platformEntity, profileEntity, ipAddress);
-  }
-
-  public ProfileEntity resetProfile(
-      final Long platformId, final ProfilePasswordRequest profilePasswordRequest) {
-    final PlatformProfileRoleEntity platformProfileRoleEntity =
-        platformProfileRoleService.readPlatformProfileRole(
-            platformId, profilePasswordRequest.getEmail());
-    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
-    profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
-    return updateProfile(profileEntity);
-  }
-
-  public ProfileEntity validateAndResetProfile(
-      final Long platformId, final String encodedEmail, final boolean isValidate) {
-    final PlatformProfileRoleEntity platformProfileRoleEntity =
-        platformProfileRoleService.readPlatformProfileRole(
-            platformId, decodeEmailAddress(encodedEmail));
-    final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
-
-    if (isValidate) {
-      profileEntity.setIsValidated(true);
-      return updateProfile(profileEntity);
-    }
-
-    return profileEntity;
-  }
-
-  private List<ProfileAddressEntity> convertAddressRequestToEntity(
-      final List<ProfileAddressRequest> requests,
-      final ProfileEntity profileEntity,
-      final boolean isIgnoreId) {
-    return requests.stream()
-        .map(
-            request -> {
-              ProfileAddressEntity entity = new ProfileAddressEntity();
-              if (isIgnoreId) {
-                BeanUtils.copyProperties(request, entity, "id", "profileId", "typeId");
-              } else {
-                BeanUtils.copyProperties(request, entity, "profileId", "typeId");
-              }
-              entity.setProfile(profileEntity);
-              entity.setType(circularDependencyService.readAddressType(request.getTypeId()));
-              return entity;
-            })
-        .toList();
   }
 }

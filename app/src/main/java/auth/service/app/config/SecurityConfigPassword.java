@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class SecurityConfigPassword {
   // required to avoid circular dependency
-  // SecurityConfig -> AppUserService -> PassWordUtils -> SecurityConfig
+  // SecurityConfig -> ProfileService -> PassWordUtils -> SecurityConfig
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder(12);

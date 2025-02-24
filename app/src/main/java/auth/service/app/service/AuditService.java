@@ -17,10 +17,7 @@ import auth.service.app.repository.AuditPermissionRepository;
 import auth.service.app.repository.AuditPlatformRepository;
 import auth.service.app.repository.AuditProfileRepository;
 import auth.service.app.repository.AuditRoleRepository;
-import auth.service.app.repository.PermissionRepository;
-import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.repository.RoleRepository;
 import auth.service.app.util.ConstantUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -39,9 +36,6 @@ public class AuditService {
   private final AuditRoleRepository auditRoleRepository;
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
-  private final PermissionRepository permissionRepository;
-  private final RoleRepository roleRepository;
-  private final PlatformRepository platformRepository;
   private final ProfileRepository profileRepository;
 
   private ProfileEntity getCreatedByProfileEntity() {

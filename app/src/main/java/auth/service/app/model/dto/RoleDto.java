@@ -20,5 +20,6 @@ public class RoleDto {
   private String roleName;
   private String roleDesc;
 
-  private List<RoleDtoPlatformPermission> platformPermissions;
+  private List<PermissionDto> permissions;
+  private List<RoleDtoPlatformProfile> platformProfiles;
 }

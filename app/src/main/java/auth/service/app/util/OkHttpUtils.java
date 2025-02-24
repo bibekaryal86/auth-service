@@ -36,7 +36,7 @@ public class OkHttpUtils {
       return new HttpResponse(responseCode, responseBody);
     } catch (Exception ex) {
       Map<String, String> errorMap = Map.of("errMsg", ex.getMessage());
-      return new HttpResponse(-1, CommonUtils.getGson().toJson(errorMap));
+      return new HttpResponse(-1, ConstantUtils.GSON.toJson(errorMap));
     }
   }
 

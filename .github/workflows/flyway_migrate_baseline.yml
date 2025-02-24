@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment Name to Repair (options: PROD, SANDBOX)"
+        description: "Environment Name to Migrate (options: PROD, SANDBOX)"
         required: true
         default: "SANDBOX"
 
@@ -31,7 +31,7 @@ jobs:
             pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 5432 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DBNAME }}
           fi
 
-      - name: Run Flyway Repair
+      - name: Run Flyway Migrate with Baseline
         run: |
           if [[ "${{ inputs.environment }}" == "PROD" ]]; then
             docker run --rm \

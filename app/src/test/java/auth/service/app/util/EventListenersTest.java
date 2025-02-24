@@ -21,7 +21,7 @@ public class EventListenersTest extends BaseTest {
   @Autowired private EventListeners eventListeners;
 
   @Test
-  void testHandleProfileEventForValidation_createEvent() {
+  void testHandleProfileEventForValidation_CreateEvent() {
     ProfileEvent profileEvent = createProfileEvent(TypeEnums.EventType.CREATE);
     eventListeners.handleProfileEventForValidation(profileEvent);
     verify(emailService)
@@ -33,7 +33,7 @@ public class EventListenersTest extends BaseTest {
   }
 
   @Test
-  void testHandleProfileEventForValidation_updateEmail() {
+  void testHandleProfileEventForValidation_UpdateEmail() {
     ProfileEvent profileEvent = createProfileEvent(TypeEnums.EventType.UPDATE_EMAIL);
     eventListeners.handleProfileEventForValidation(profileEvent);
     verify(emailService)
@@ -45,7 +45,7 @@ public class EventListenersTest extends BaseTest {
   }
 
   @Test
-  void testHandleProfileEventForValidation_updatePassword() {
+  void testHandleProfileEventForValidation_UpdatePassword() {
     ProfileEvent profileEvent = createProfileEvent(TypeEnums.EventType.UPDATE_PASSWORD);
     eventListeners.handleProfileEventForValidation(profileEvent);
     verify(emailService)

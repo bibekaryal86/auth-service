@@ -1,8 +1,5 @@
 package auth.service.app.filter;
 
-import static auth.service.app.util.CommonUtils.convertResponseMetadataToJson;
-import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
-
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
@@ -10,6 +7,8 @@ import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.service.ProfileService;
 import auth.service.app.util.CommonUtils;
+import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       final String token = authorizationHeader.substring(7);
 
       try {
-        final Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(token);
+        final Map<String, AuthToken> emailAuthToken = JwtUtils.decodeAuthCredentials(token);
 
         if (emailAuthToken.size() != 1) {
           sendUnauthorizedResponse(response, "Malformed Auth Token");
@@ -76,14 +75,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     final ResponseMetadata responseMetadata =
         ResponseMetadata.builder()
             .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
-            .responsePageInfo(CommonUtils.emptyResponseMetadata().getResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseMetadata().getResponseCrudInfo())
+            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
             .build();
 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final String jsonResponse = convertResponseMetadataToJson(responseMetadata);
+    final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
     response.getWriter().write(jsonResponse);
   }
 
