@@ -11,4 +11,5 @@ import lombok.Getter;
 public class RoleResponse {
   private List<RoleDto> roles;
   private ResponseMetadata responseMetadata;
+  private RequestMetadata requestMetadata;
 }

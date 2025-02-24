@@ -28,6 +28,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,15 +59,31 @@ public class ProfileController {
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
-      final RequestMetadata requestMetadata) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "100") final int perPage,
+      @RequestParam(required = false, defaultValue = "") final String sortColumn,
+      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
+      final RequestMetadata requestMetadata =
+              RequestMetadata.builder()
+                      .isIncludeRoles(isIncludeRoles)
+                      .isIncludeDeleted(isIncludeDeleted)
+                      .isIncludeHistory(isIncludeHistory)
+                      .pageNumber(pageNumber)
+                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+                      .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+                      .sortDirection(sortDirection)
+                      .build();
+
       final Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntityPage.toList());
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(profileEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles, responsePageInfo);
+          filteredProfileEntities, isIncludeRoles, responsePageInfo, requestMetadata);
     } catch (Exception ex) {
       log.error("Read Profiles...", ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -77,8 +94,24 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
       @PathVariable final Long platformId,
       @RequestParam(required = false, defaultValue = "true") final boolean isIncludeRoles,
-      final RequestMetadata requestMetadata) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "100") final int perPage,
+      @RequestParam(required = false, defaultValue = "") final String sortColumn,
+      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
+      final RequestMetadata requestMetadata =
+              RequestMetadata.builder()
+                      .isIncludeRoles(isIncludeRoles)
+                      .isIncludeDeleted(isIncludeDeleted)
+                      .isIncludeHistory(isIncludeHistory)
+                      .pageNumber(pageNumber)
+                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+                      .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+                      .sortDirection(sortDirection)
+                      .build();
+
       final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
           platformProfileRoleService.readPlatformProfileRolesByPlatformId(
               platformId, requestMetadata);
@@ -91,7 +124,7 @@ public class ProfileController {
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(platformProfileRoleEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles, responsePageInfo);
+          filteredProfileEntities, isIncludeRoles, responsePageInfo, requestMetadata);
     } catch (Exception ex) {
       log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

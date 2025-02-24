@@ -89,7 +89,7 @@ public class RoleController {
               .isIncludeDeleted(isIncludeDeleted)
               .isIncludeHistory(isIncludeHistory)
               .pageNumber(pageNumber)
-              .perPage(perPage)
+              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
               .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
               .sortDirection(sortDirection)
               .build();
@@ -98,7 +98,7 @@ public class RoleController {
       final List<RoleEntity> roleEntities = roleEntityPage.toList();
       final ResponsePageInfo responsePageInfo = CommonUtils.defaultResponsePageInfo(roleEntityPage);
       return entityDtoConvertUtils.getResponseMultipleRoles(
-          roleEntities, isIncludePermissions, isIncludePlatforms, responsePageInfo);
+          roleEntities, isIncludePermissions, isIncludePlatforms, responsePageInfo, requestMetadata);
     } catch (Exception ex) {
       log.error("Read Roles...", ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);

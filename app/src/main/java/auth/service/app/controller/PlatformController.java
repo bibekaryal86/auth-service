@@ -21,6 +21,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,15 +74,31 @@ public class PlatformController {
   @GetMapping
   public ResponseEntity<PlatformResponse> readPlatforms(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeProfiles,
-      final RequestMetadata requestMetadata) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "100") final int perPage,
+      @RequestParam(required = false, defaultValue = "") final String sortColumn,
+      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
+      final RequestMetadata requestMetadata =
+              RequestMetadata.builder()
+                      .isIncludeProfiles(isIncludeProfiles)
+                      .isIncludeDeleted(isIncludeDeleted)
+                      .isIncludeHistory(isIncludeHistory)
+                      .pageNumber(pageNumber)
+                      .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+                      .sortColumn(sortColumn.isEmpty() ? "platformName" : sortColumn)
+                      .sortDirection(sortDirection)
+                      .build();
+
       final Page<PlatformEntity> platformEntityPage =
           platformService.readPlatforms(requestMetadata);
       final List<PlatformEntity> platformEntities = platformEntityPage.toList();
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(platformEntityPage);
       return entityDtoConvertUtils.getResponseMultiplePlatforms(
-          platformEntities, isIncludeProfiles, responsePageInfo);
+          platformEntities, isIncludeProfiles, responsePageInfo, requestMetadata);
     } catch (Exception ex) {
       log.error("Read Platforms...", ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
