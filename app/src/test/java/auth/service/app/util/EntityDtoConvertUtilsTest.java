@@ -82,13 +82,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSinglePermission_NonNullEntity() {
     PermissionEntity entity = permissionEntities.getFirst();
-    ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseSinglePermission(entity, null);
+    ResponseEntity<PermissionResponse> response = entityDtoConvertUtils.getResponseSinglePermission(entity, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getPermissions());
     assertEquals(1, response.getBody().getPermissions().size());
+    assertNotNull(response.getBody().getPermissions().getFirst().getRole());
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     PermissionDto dto = response.getBody().getPermissions().getFirst();
