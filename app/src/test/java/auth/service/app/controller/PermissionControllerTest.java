@@ -1,12 +1,24 @@
 package auth.service.app.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import auth.service.BaseTest;
-import auth.service.app.model.dto.ProfileDto;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
-import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.service.AuditService;
@@ -20,18 +32,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.StringUtils;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.after;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class PermissionControllerTest extends BaseTest {
 
@@ -83,13 +83,17 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertEquals(1, permissionResponse.getPermissions().size());
-    assertEquals("NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
+    assertEquals(
+        "NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             argThat(
-                permissionEntityParam -> permissionEntityParam.getPermissionName().equals(permissionRequest.getPermissionName())),
+                permissionEntityParam ->
+                    permissionEntityParam
+                        .getPermissionName()
+                        .equals(permissionRequest.getPermissionName())),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_CREATE)),
             any(String.class));
 
@@ -102,7 +106,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest(ID,"NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
+    permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -120,13 +124,17 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertEquals(1, permissionResponse.getPermissions().size());
-    assertEquals("NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
+    assertEquals(
+        "NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             argThat(
-                permissionEntityParam -> permissionEntityParam.getPermissionName().equals(permissionRequest.getPermissionName())),
+                permissionEntityParam ->
+                    permissionEntityParam
+                        .getPermissionName()
+                        .equals(permissionRequest.getPermissionName())),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_CREATE)),
             any(String.class));
 
@@ -166,7 +174,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest(-1L,"", null);
+    permissionRequest = new PermissionRequest(-1L, "", null);
 
     ResponseMetadata responseMetadata =
         webTestClient
@@ -184,9 +192,9 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata);
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
-            &&
-            responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+    assertTrue(
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
                 .getResponseStatusInfo()
                 .getErrMsg()
@@ -200,7 +208,9 @@ public class PermissionControllerTest extends BaseTest {
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     PermissionEntity permissionEntity = TestData.getPermissionEntities().getFirst();
-    permissionRequest = new PermissionRequest(ID, permissionEntity.getPermissionName(), permissionEntity.getPermissionDesc());
+    permissionRequest =
+        new PermissionRequest(
+            ID, permissionEntity.getPermissionName(), permissionEntity.getPermissionDesc());
 
     PermissionResponse permissionResponse =
         webTestClient
@@ -259,14 +269,18 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-        () -> assertTrue(permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
+                    >= 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
         () ->
             assertTrue(
                 permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
+                    > 0));
 
     assertAll(
         "Request Metadata",
@@ -279,9 +293,11 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
         () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, permissionResponse.getRequestMetadata().getPerPage()),
-        () -> assertEquals("permissionName", permissionResponse.getRequestMetadata().getSortColumn()),
         () ->
-            assertEquals(Sort.Direction.ASC, permissionResponse.getRequestMetadata().getSortDirection()));
+            assertEquals("permissionName", permissionResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.ASC, permissionResponse.getRequestMetadata().getSortDirection()));
   }
 
   @Test
@@ -320,14 +336,18 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-        () -> assertTrue(permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
+                    >= 0),
+        () ->
+            assertTrue(
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
         () ->
             assertTrue(
                 permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
+                    > 0));
 
     assertAll(
         "Request Metadata",
@@ -340,7 +360,8 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
         () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, permissionResponse.getRequestMetadata().getPerPage()),
-        () -> assertEquals("permissionDesc", permissionResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals("permissionDesc", permissionResponse.getRequestMetadata().getSortColumn()),
         () ->
             assertEquals(
                 Sort.Direction.DESC, permissionResponse.getRequestMetadata().getSortDirection()));
@@ -504,7 +525,12 @@ public class PermissionControllerTest extends BaseTest {
 
   @Test
   void testReadPermission_FailureNoAuth() {
-    webTestClient.get().uri("/api/v1/permissions/permission/1").exchange().expectStatus().isUnauthorized();
+    webTestClient
+        .get()
+        .uri("/api/v1/permissions/permission/1")
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @Test
@@ -560,13 +586,17 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertEquals(1, permissionResponse.getPermissions().size());
-    assertEquals("NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
+    assertEquals(
+        "NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             argThat(
-                permissionEntityParam -> permissionEntityParam.getPermissionName().equals(permissionRequest.getPermissionName())),
+                permissionEntityParam ->
+                    permissionEntityParam
+                        .getPermissionName()
+                        .equals(permissionRequest.getPermissionName())),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_UPDATE)),
             any(String.class));
 
@@ -600,13 +630,17 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertEquals(1, permissionResponse.getPermissions().size());
-    assertEquals("NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
+    assertEquals(
+        "NEW_PERMISSION_NAME", permissionResponse.getPermissions().getFirst().getPermissionName());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             argThat(
-                permissionEntityParam -> permissionEntityParam.getPermissionName().equals(permissionRequest.getPermissionName())),
+                permissionEntityParam ->
+                    permissionEntityParam
+                        .getPermissionName()
+                        .equals(permissionRequest.getPermissionName())),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_UPDATE)),
             any(String.class));
 
@@ -646,7 +680,7 @@ public class PermissionControllerTest extends BaseTest {
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    permissionRequest = new PermissionRequest(-1L,"", null);
+    permissionRequest = new PermissionRequest(-1L, "", null);
 
     ResponseMetadata responseMetadata =
         webTestClient
@@ -664,13 +698,13 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(responseMetadata);
     assertNotNull(responseMetadata.getResponseStatusInfo());
     assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
-            &&
-            responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
+    assertTrue(
+        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
+            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
             && responseMetadata
-            .getResponseStatusInfo()
-            .getErrMsg()
-            .contains("Description is required"));
+                .getResponseStatusInfo()
+                .getErrMsg()
+                .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -728,13 +762,15 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
     assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertEquals(
+        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             any(PermissionEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
+            argThat(
+                eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
             any(String.class));
 
     // reset
@@ -765,13 +801,15 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
     assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertEquals(
+        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             any(PermissionEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
+            argThat(
+                eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
             any(String.class));
 
     // reset
@@ -820,7 +858,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testHardDeletePermission_Success() {
     // setup
-    PermissionEntity permissionEntity = permissionRepository.save(TestData.getNewPermissionEntity());
+    PermissionEntity permissionEntity =
+        permissionRepository.save(TestData.getNewPermissionEntity());
 
     profileDtoWithPermission = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
@@ -841,13 +880,15 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
     assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertEquals(
+        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
             any(HttpServletRequest.class),
             any(PermissionEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_HARD)),
+            argThat(
+                eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_HARD)),
             any(String.class));
   }
 
@@ -924,7 +965,8 @@ public class PermissionControllerTest extends BaseTest {
                 permissionEntityParam ->
                     permissionEntityParam
                         .getPermissionName()
-                        .equals(permissionResponse.getPermissions().getFirst().getPermissionName())),
+                        .equals(
+                            permissionResponse.getPermissions().getFirst().getPermissionName())),
             argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_RESTORE)),
             any(String.class));
   }

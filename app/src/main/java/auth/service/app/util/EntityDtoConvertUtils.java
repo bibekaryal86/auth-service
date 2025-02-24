@@ -481,7 +481,7 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
       final PlatformEntity platformEntity, final ResponseCrudInfo responseCrudInfo) {
     final List<PlatformDto> platformDtos =
-            (platformEntity == null || platformEntity.getId() == null)
+        (platformEntity == null || platformEntity.getId() == null)
             ? Collections.emptyList()
             : List.of(convertEntityToDtoPlatform(platformEntity, true));
     return new ResponseEntity<>(
