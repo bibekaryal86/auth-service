@@ -2,12 +2,10 @@ package auth.service.app.util;
 
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.token.AuthToken;
-import java.util.Objects;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
 
 public class JpaDataUtils {
 
@@ -38,28 +36,13 @@ public class JpaDataUtils {
    * Creates a Pageable object for pagination and sorting.
    *
    * @param requestMetadata Request Metadata.
-   * @param defaultSortColumn Nullable default sort column
    * @return A Pageable object.
    */
-  public static Pageable getQueryPageable(
-      final RequestMetadata requestMetadata, final String defaultSortColumn) {
-    final int validatedPageNumber = Math.max(requestMetadata.getPageNumber(), 0);
-    final int validatedPerPageSize =
-        (requestMetadata.getPerPage() < 10 || requestMetadata.getPerPage() > 1000)
-            ? 100
-            : requestMetadata.getPerPage();
-
-    if (StringUtils.hasText(defaultSortColumn)) {
-      final Sort.Direction direction =
-          Objects.requireNonNullElse(requestMetadata.getSortDirection(), Sort.Direction.ASC);
-      final String sortColumn =
-          StringUtils.hasText(requestMetadata.getSortColumn())
-              ? requestMetadata.getSortColumn()
-              : defaultSortColumn;
-      return PageRequest.of(
-          validatedPageNumber, validatedPerPageSize, Sort.by(direction, sortColumn));
+  public static Pageable getQueryPageable(final RequestMetadata requestMetadata) {
+    if (requestMetadata == null) {
+      return PageRequest.of(0, 100);
     }
-    return PageRequest.of(validatedPageNumber, validatedPerPageSize);
+    return PageRequest.of(requestMetadata.getPageNumber(), requestMetadata.getPerPage(), Sort.by(requestMetadata.getSortDirection(), requestMetadata.getSortColumn()));
   }
 
   /**

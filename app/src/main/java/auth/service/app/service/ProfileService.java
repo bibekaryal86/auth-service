@@ -105,7 +105,7 @@ public class ProfileService {
         CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("lastName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "lastName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
     final Specification<ProfileEntity> specification =
         JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return profileRepository.findAll(specification, pageable);

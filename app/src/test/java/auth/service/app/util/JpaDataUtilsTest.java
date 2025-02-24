@@ -33,70 +33,29 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetQueryPageable_DefaultSortColumn() {
+  void testGetQueryPageable_NullRequestMetadata() {
+    Pageable result = JpaDataUtils.getQueryPageable(null);
+    assertNotNull(result);
+    assertEquals(0, result.getPageNumber());
+    assertEquals(100, result.getPageSize());
+    assertTrue(result.getSort().isUnsorted());
+  }
+
+  @Test
+  void testGetQueryPageable_WithResponseMetadata() {
     RequestMetadata requestMetadata = new RequestMetadata();
     requestMetadata.setPageNumber(1);
     requestMetadata.setPerPage(10);
-    String defaultSortColumn = "id";
+    requestMetadata.setSortColumn("id");
+    requestMetadata.setSortDirection(Sort.Direction.DESC);
 
-    Pageable result = JpaDataUtils.getQueryPageable(requestMetadata, defaultSortColumn);
+    Pageable result = JpaDataUtils.getQueryPageable(requestMetadata);
 
     assertNotNull(result);
     assertEquals(1, result.getPageNumber());
     assertEquals(10, result.getPageSize());
-    assertEquals(defaultSortColumn, result.getSort().iterator().next().getProperty());
-    assertEquals(Sort.Direction.ASC, result.getSort().iterator().next().getDirection());
-  }
-
-  @Test
-  void testGetQueryPageable_CustomSortColumn() {
-    RequestMetadata requestMetadata = new RequestMetadata();
-    requestMetadata.setPageNumber(2);
-    requestMetadata.setPerPage(20);
-    requestMetadata.setSortColumn("name");
-    requestMetadata.setSortDirection(Sort.Direction.DESC);
-    String defaultSortColumn = "id";
-
-    Pageable result = JpaDataUtils.getQueryPageable(requestMetadata, defaultSortColumn);
-
-    assertNotNull(result);
-    assertEquals(2, result.getPageNumber());
-    assertEquals(20, result.getPageSize());
-    assertEquals(requestMetadata.getSortColumn(), result.getSort().iterator().next().getProperty());
-    assertEquals(
-        requestMetadata.getSortDirection(), result.getSort().iterator().next().getDirection());
-  }
-
-  @Test
-  void testGetQueryPageable_EmptySortColumn() {
-    RequestMetadata requestMetadata = new RequestMetadata();
-    requestMetadata.setPageNumber(1);
-    requestMetadata.setPerPage(100);
-    requestMetadata.setSortColumn("");
-    String defaultSortColumn = "id";
-
-    Pageable result = JpaDataUtils.getQueryPageable(requestMetadata, defaultSortColumn);
-
-    assertNotNull(result);
-    assertEquals(1, result.getPageNumber());
-    assertEquals(100, result.getPageSize());
-    assertEquals(defaultSortColumn, result.getSort().iterator().next().getProperty());
-  }
-
-  @Test
-  void testGetQueryPageable_NullSortColumn() {
-    RequestMetadata requestMetadata = new RequestMetadata();
-    requestMetadata.setPageNumber(1);
-    requestMetadata.setPerPage(100);
-    requestMetadata.setSortColumn(null);
-    String defaultSortColumn = "id";
-
-    Pageable result = JpaDataUtils.getQueryPageable(requestMetadata, defaultSortColumn);
-
-    assertNotNull(result);
-    assertEquals(1, result.getPageNumber());
-    assertEquals(100, result.getPageSize());
-    assertEquals(defaultSortColumn, result.getSort().iterator().next().getProperty());
+    assertEquals("id", result.getSort().iterator().next().getProperty());
+    assertEquals(Sort.Direction.DESC, result.getSort().iterator().next().getDirection());
   }
 
   @Test

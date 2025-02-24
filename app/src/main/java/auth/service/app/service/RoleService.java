@@ -43,7 +43,7 @@ public class RoleService {
         CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("roleName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "roleName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
     final Specification<RoleEntity> specification =
         JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return roleRepository.findAll(specification, pageable);

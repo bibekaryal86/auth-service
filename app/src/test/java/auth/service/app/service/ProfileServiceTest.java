@@ -36,6 +36,7 @@ import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -108,8 +110,10 @@ public class ProfileServiceTest extends BaseTest {
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    Page<ProfileEntity> profileEntityPage =
-        profileService.readProfiles(RequestMetadata.builder().isIncludeDeleted(true).build());
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("lastName");
+    requestMetadata.setSortDirection(Sort.Direction.ASC);
+    requestMetadata.setIncludeDeleted(true);
+    Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
     List<ProfileEntity> profileEntities = profileEntityPage.toList();
     assertEquals(13, profileEntities.size());
     assertEquals(1, profileEntityPage.getTotalPages());

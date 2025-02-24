@@ -21,6 +21,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -74,8 +75,25 @@ public class RoleController {
   public ResponseEntity<RoleResponse> readRoles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludePermissions,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
-      final RequestMetadata requestMetadata) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "100") final int perPage,
+      @RequestParam(required = false, defaultValue = "") final String sortColumn,
+      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
     try {
+      final RequestMetadata requestMetadata =
+          RequestMetadata.builder()
+              .isIncludePermissions(isIncludePermissions)
+              .isIncludePlatforms(isIncludePlatforms)
+              .isIncludeDeleted(isIncludeDeleted)
+              .isIncludeHistory(isIncludeHistory)
+              .pageNumber(pageNumber)
+              .perPage(perPage)
+              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
+              .sortDirection(sortDirection)
+              .build();
+
       final Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);
       final List<RoleEntity> roleEntities = roleEntityPage.toList();
       final ResponsePageInfo responsePageInfo = CommonUtils.defaultResponsePageInfo(roleEntityPage);

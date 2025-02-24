@@ -18,6 +18,7 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
+import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -63,8 +65,10 @@ public class RoleServiceTest extends BaseTest {
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    Page<RoleEntity> roleEntityPage =
-        roleService.readRoles(RequestMetadata.builder().isIncludeDeleted(true).build());
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("roleName");
+    requestMetadata.setSortDirection(Sort.Direction.ASC);
+    requestMetadata.setIncludeDeleted(true);
+    Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);
     List<RoleEntity> roleEntities = roleEntityPage.toList();
     assertEquals(13, roleEntities.size());
     assertEquals(1, roleEntityPage.getTotalPages());

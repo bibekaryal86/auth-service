@@ -39,7 +39,8 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                 Sort.Order.asc("platform.platformName"),
                 Sort.Order.asc("profile.email"),
                 Sort.Order.asc("role.roleName")));
-    Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage = platformProfileRoleRepository.findByPlatformId(4L, pageable);
+    Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
+        platformProfileRoleRepository.findByPlatformId(4L, pageable);
     assertEquals(3, platformProfileRoleEntityPage.toList().size());
   }
 
@@ -61,7 +62,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
   @Test
   void testFindByPlatformIds() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-        platformProfileRoleRepository.findByPlatformIds(List.of(1L, 2L, 3L, 4L));
+        platformProfileRoleRepository.findByPlatformIds(List.of(ID, 2L, ID_DELETED, 4L));
     assertEquals(6, platformProfileRoleEntities.size());
     // test order by platform name, profile email and role name
     assertAll(
@@ -155,7 +156,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
   @Test
   void testFindByProfileIds() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-        platformProfileRoleRepository.findByProfileIds(List.of(1L, 2L, 3L));
+        platformProfileRoleRepository.findByProfileIds(List.of(ID, 2L, ID_DELETED));
     assertEquals(3, platformProfileRoleEntities.size());
     // test order by platform name, profile email and role name
     assertAll(

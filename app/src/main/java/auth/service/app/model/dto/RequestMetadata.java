@@ -11,6 +11,10 @@ import org.springframework.data.domain.Sort;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestMetadata {
+  private boolean isIncludePermissions;
+  private boolean isIncludePlatforms;
+  private boolean isIncludeProfiles;
+  private boolean isIncludeRoles;
   private boolean isIncludeDeleted;
   private boolean isIncludeHistory;
   private int pageNumber;

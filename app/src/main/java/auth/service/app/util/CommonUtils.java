@@ -145,6 +145,10 @@ public class CommonUtils {
 
   public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
     return RequestMetadata.builder()
+        .isIncludePermissions(false)
+        .isIncludePlatforms(false)
+        .isIncludeProfiles(false)
+        .isIncludeRoles(false)
         .isIncludeDeleted(false)
         .isIncludeHistory(false)
         .pageNumber(0)

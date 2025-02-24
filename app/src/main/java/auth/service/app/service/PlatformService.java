@@ -43,7 +43,7 @@ public class PlatformService {
         CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("platformName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "platformName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
     final Specification<PlatformEntity> specification =
         JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return platformRepository.findAll(specification, pageable);

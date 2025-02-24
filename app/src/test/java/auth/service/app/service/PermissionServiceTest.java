@@ -17,6 +17,7 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PermissionRepository;
+import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -60,8 +62,10 @@ public class PermissionServiceTest extends BaseTest {
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    Page<PermissionEntity> permissionEntityPage =
-        permissionService.readPermissions(RequestMetadata.builder().isIncludeDeleted(true).build());
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("permissionName");
+    requestMetadata.setSortDirection(Sort.Direction.ASC);
+    requestMetadata.setIncludeDeleted(true);
+    Page<PermissionEntity> permissionEntityPage = permissionService.readPermissions(requestMetadata);
     List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
     assertEquals(13, permissionEntities.size());
     assertEquals(1, permissionEntityPage.getTotalPages());
@@ -74,10 +78,10 @@ public class PermissionServiceTest extends BaseTest {
   @Test
   void testReadPermissionsByRoleIds() {
     List<PermissionEntity> permissionEntities =
-        permissionService.readPermissionsByRoleIds(List.of(1L, 13L));
+        permissionService.readPermissionsByRoleIds(List.of(ID, 13L));
     List<PermissionEntity> permissionEntities1 =
         permissionEntities.stream()
-            .filter(permissionEntity -> permissionEntity.getRole().getId() == 1L)
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == ID)
             .toList();
     List<PermissionEntity> permissionEntities13 =
         permissionEntities.stream()

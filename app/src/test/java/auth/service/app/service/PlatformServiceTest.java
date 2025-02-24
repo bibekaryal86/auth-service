@@ -16,6 +16,7 @@ import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
+import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -59,8 +61,10 @@ public class PlatformServiceTest extends BaseTest {
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    Page<PlatformEntity> platformEntityPage =
-        platformService.readPlatforms(RequestMetadata.builder().isIncludeDeleted(true).build());
+    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("platformName");
+    requestMetadata.setSortDirection(Sort.Direction.ASC);
+    requestMetadata.setIncludeDeleted(true);
+    Page<PlatformEntity> platformEntityPage = platformService.readPlatforms(requestMetadata);
     List<PlatformEntity> platformEntities = platformEntityPage.toList();
     assertEquals(13, platformEntities.size());
     assertEquals(1, platformEntityPage.getTotalPages());

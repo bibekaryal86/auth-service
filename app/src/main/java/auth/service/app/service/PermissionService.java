@@ -44,7 +44,7 @@ public class PermissionService {
         CommonUtils.isRequestMetadataIncluded(requestMetadata)
             ? requestMetadata
             : CommonUtils.defaultRequestMetadata("permissionName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse, "permissionName");
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
     final Specification<PermissionEntity> specification =
         JpaDataUtils.getQuerySpecification(requestMetadataToUse);
     return permissionRepository.findAll(specification, pageable);

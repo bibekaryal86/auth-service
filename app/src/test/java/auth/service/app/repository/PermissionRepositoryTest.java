@@ -74,12 +74,12 @@ public class PermissionRepositoryTest extends BaseTest {
   @Test
   void testFindByRoleIds() {
     List<PermissionEntity> permissionEntities =
-        permissionRepository.findByRoleIds(List.of(1L, 13L));
+        permissionRepository.findByRoleIds(List.of(ID, 13L));
     assertFalse(CollectionUtils.isEmpty(permissionEntities));
 
     List<PermissionEntity> permissionEntities1 =
         permissionEntities.stream()
-            .filter(permissionEntity -> permissionEntity.getRole().getId() == 1L)
+            .filter(permissionEntity -> permissionEntity.getRole().getId() == ID)
             .toList();
     List<PermissionEntity> permissionEntities13 =
         permissionEntities.stream()
