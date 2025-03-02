@@ -43,7 +43,7 @@ public class JpaDataUtils {
       return PageRequest.of(0, 100);
     }
     return PageRequest.of(
-        requestMetadata.getPageNumber(),
+        requestMetadata.getPageNumber() - 1,
         requestMetadata.getPerPage(),
         Sort.by(requestMetadata.getSortDirection(), requestMetadata.getSortColumn()));
   }
@@ -65,9 +65,9 @@ public class JpaDataUtils {
   }
 
   public static boolean shouldIncludeDeletedRecords(final RequestMetadata requestMetadata) {
-    if (requestMetadata.isIncludeDeleted()) {
+    if (requestMetadata != null && requestMetadata.isIncludeDeleted()) {
       AuthToken authToken = CommonUtils.getAuthentication();
-      return authToken.isSuperUser();
+      return authToken.getIsSuperUser();
     }
     return false;
   }

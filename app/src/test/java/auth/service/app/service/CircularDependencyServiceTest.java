@@ -56,7 +56,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadPermission_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -70,7 +70,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadPermission_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -113,7 +113,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadPlatform_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -127,7 +127,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadPlatform_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -170,7 +170,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadRole_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -184,7 +184,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadRole_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -227,7 +227,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadRoleByName_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -241,7 +241,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadRoleByName_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -282,7 +282,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadProfile_DeleteWithIncludeDeletedAndSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -296,7 +296,7 @@ public class CircularDependencyServiceTest extends BaseTest {
   @Test
   void testReadProfile_DeletedWithIncludeDeletedButNoSuperuser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);

@@ -75,9 +75,10 @@ public class RoleController {
   public ResponseEntity<RoleResponse> readRoles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludePermissions,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeProfiles,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
       @RequestParam(required = false, defaultValue = "100") final int perPage,
       @RequestParam(required = false, defaultValue = "") final String sortColumn,
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
@@ -101,6 +102,7 @@ public class RoleController {
           roleEntities,
           isIncludePermissions,
           isIncludePlatforms,
+          isIncludeProfiles,
           responsePageInfo,
           requestMetadata);
     } catch (Exception ex) {

@@ -132,7 +132,7 @@ public class ProfileControllerTest extends BaseTest {
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, profileResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, profileResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, profileResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("lastName", profileResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -146,7 +146,7 @@ public class ProfileControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/profiles?isIncludeRoles=true&isIncludeDeleted=true&pageNumber=0&perPage=10&sortColumn=firstName&sortDirection=DESC")
+                "/api/v1/profiles?isIncludeRoles=true&isIncludePlatforms=true&isIncludeDeleted=true&pageNumber=1&perPage=10&sortColumn=firstName&sortDirection=DESC")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -188,12 +188,12 @@ public class ProfileControllerTest extends BaseTest {
         "Request Metadata",
         () -> assertNotNull(profileResponse.getRequestMetadata()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludePermissions()),
-        () -> assertFalse(profileResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertTrue(profileResponse.getRequestMetadata().isIncludePlatforms()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeProfiles()),
         () -> assertTrue(profileResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertTrue(profileResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, profileResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, profileResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, profileResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("firstName", profileResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -258,7 +258,7 @@ public class ProfileControllerTest extends BaseTest {
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, profileResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, profileResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, profileResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("lastName", profileResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -272,7 +272,7 @@ public class ProfileControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/profiles/platform/4?isIncludeRoles=true&isIncludeDeleted=true&pageNumber=0&perPage=10&sortColumn=firstName&sortDirection=DESC")
+                "/api/v1/profiles/platform/4?isIncludeRoles=true&isIncludePlatforms=true&isIncludeDeleted=true&pageNumber=1&perPage=10&sortColumn=firstName&sortDirection=DESC")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -314,12 +314,12 @@ public class ProfileControllerTest extends BaseTest {
         "Request Metadata",
         () -> assertNotNull(profileResponse.getRequestMetadata()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludePermissions()),
-        () -> assertFalse(profileResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertTrue(profileResponse.getRequestMetadata().isIncludePlatforms()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeProfiles()),
         () -> assertTrue(profileResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertTrue(profileResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(profileResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, profileResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, profileResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, profileResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("firstName", profileResponse.getRequestMetadata().getSortColumn()),
         () ->

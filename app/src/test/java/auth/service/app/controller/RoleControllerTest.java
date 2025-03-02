@@ -24,6 +24,7 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testCreateRole_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_CREATE", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
@@ -226,7 +227,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testReadRoles_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_READ"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -278,7 +279,7 @@ public class RoleControllerTest extends BaseTest {
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, roleResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, roleResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, roleResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("roleName", roleResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -288,7 +289,13 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testReadRoles_Success_RequestMetadata() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(
+            List.of(
+                "AUTHSVC_ROLE_READ",
+                "AUTHSVC_PERMISSION_READ",
+                "AUTHSVC_PLATFORM_READ",
+                "AUTHSVC_PROFILE_READ"),
+            profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -296,7 +303,7 @@ public class RoleControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/roles?isIncludePermissions=true&isIncludePlatforms=true&pageNumber=0&perPage=10&sortColumn=roleDesc&sortDirection=DESC")
+                "/api/v1/roles?isIncludePermissions=true&isIncludePlatforms=true&isIncludeProfiles=true&pageNumber=1&perPage=10&sortColumn=roleDesc&sortDirection=DESC")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -310,6 +317,7 @@ public class RoleControllerTest extends BaseTest {
     assertEquals(9, roleResponse.getRoles().size());
     assertFalse(roleResponse.getRoles().getFirst().getPermissions().isEmpty());
     assertFalse(roleResponse.getRoles().getFirst().getPlatformProfiles().isEmpty());
+    assertFalse(roleResponse.getRoles().getFirst().getProfilePlatforms().isEmpty());
 
     assertAll(
         "Response Metadata",
@@ -341,7 +349,72 @@ public class RoleControllerTest extends BaseTest {
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(roleResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, roleResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, roleResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(10, roleResponse.getRequestMetadata().getPerPage()),
+        () -> assertEquals("roleDesc", roleResponse.getRequestMetadata().getSortColumn()),
+        () ->
+            assertEquals(
+                Sort.Direction.DESC, roleResponse.getRequestMetadata().getSortDirection()));
+  }
+
+  @Test
+  void testReadRoles_Success_RequestMetadata_NoReadPermissions() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_READ"), profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    RoleResponse roleResponse =
+        webTestClient
+            .get()
+            .uri(
+                "/api/v1/roles?isIncludePermissions=true&isIncludePlatforms=true&isIncludeProfiles=true&pageNumber=1&perPage=10&sortColumn=roleDesc&sortDirection=DESC")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(RoleResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(roleResponse);
+    assertNotNull(roleResponse.getRoles());
+    assertEquals(9, roleResponse.getRoles().size());
+    assertTrue(roleResponse.getRoles().getFirst().getPermissions().isEmpty());
+    assertTrue(roleResponse.getRoles().getFirst().getPlatformProfiles().isEmpty());
+    assertTrue(roleResponse.getRoles().getLast().getProfilePlatforms().isEmpty());
+
+    assertAll(
+        "Response Metadata",
+        () -> assertNotNull(roleResponse.getResponseMetadata()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
+        () ->
+            assertFalse(
+                StringUtils.hasText(
+                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
+        () ->
+            assertTrue(
+                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+
+    assertAll(
+        "Request Metadata",
+        () -> assertNotNull(roleResponse.getRequestMetadata()),
+        () -> assertTrue(roleResponse.getRequestMetadata().isIncludePermissions()),
+        () -> assertTrue(roleResponse.getRequestMetadata().isIncludePlatforms()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeProfiles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeRoles()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeDeleted()),
+        () -> assertFalse(roleResponse.getRequestMetadata().isIncludeHistory()),
+        () -> assertEquals(1, roleResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, roleResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("roleDesc", roleResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -414,7 +487,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testReadRole_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_READ"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -438,7 +511,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testReadRole_Success_IncludeDeletedFalse() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_READ", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_READ"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -539,7 +612,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testUpdateRole_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_UPDATE", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
@@ -708,7 +781,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testSoftDeleteRole_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_DELETE", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_DELETE"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -867,7 +940,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testHardDeleteRole_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_DELETE", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_DELETE"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -945,7 +1018,7 @@ public class RoleControllerTest extends BaseTest {
   @Test
   void testRestoreRole_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_ROLE_RESTORE", profileDtoNoRole);
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_RESTORE"), profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 

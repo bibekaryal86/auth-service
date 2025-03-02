@@ -132,7 +132,8 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
                     new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD),
                     "some-ip-address"));
     assertEquals(
-        String.format("Active Platform Not Found for [%s]", platformId), exception.getMessage());
+        String.format("Active Platform Profile Role Not Found for [%s,%s]", platformId, USER_EMAIL),
+        exception.getMessage());
 
     // reset
     platformEntity.setDeletedDate(null);
@@ -157,7 +158,8 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
                     new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD),
                     "some-ip-address"));
     assertEquals(
-        String.format("Active Profile Not Found for [%s]", USER_EMAIL), exception.getMessage());
+        String.format("Active Platform Profile Role Not Found for [%s,%s]", platformId, USER_EMAIL),
+        exception.getMessage());
 
     // reset
     profileEntity.setDeletedDate(null);

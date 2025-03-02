@@ -17,7 +17,6 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PermissionRepository;
-import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,13 +55,13 @@ public class PermissionServiceTest extends BaseTest {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("permissionName");
+    RequestMetadata requestMetadata = TestData.defaultRequestMetadata("permissionName");
     requestMetadata.setSortDirection(Sort.Direction.ASC);
     requestMetadata.setIncludeDeleted(true);
     Page<PermissionEntity> permissionEntityPage =

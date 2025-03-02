@@ -59,9 +59,10 @@ public class ProfileController {
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
       @RequestParam(required = false, defaultValue = "100") final int perPage,
       @RequestParam(required = false, defaultValue = "") final String sortColumn,
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
@@ -69,6 +70,7 @@ public class ProfileController {
       final RequestMetadata requestMetadata =
           RequestMetadata.builder()
               .isIncludeRoles(isIncludeRoles)
+              .isIncludePlatforms(isIncludePlatforms)
               .isIncludeDeleted(isIncludeDeleted)
               .isIncludeHistory(isIncludeHistory)
               .pageNumber(pageNumber)
@@ -83,7 +85,11 @@ public class ProfileController {
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(profileEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles, responsePageInfo, requestMetadata);
+          filteredProfileEntities,
+          isIncludeRoles,
+          isIncludePlatforms,
+          responsePageInfo,
+          requestMetadata);
     } catch (Exception ex) {
       log.error("Read Profiles...", ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -94,9 +100,10 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
       @PathVariable final Long platformId,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
       @RequestParam(required = false, defaultValue = "100") final int perPage,
       @RequestParam(required = false, defaultValue = "") final String sortColumn,
       @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
@@ -104,6 +111,7 @@ public class ProfileController {
       final RequestMetadata requestMetadata =
           RequestMetadata.builder()
               .isIncludeRoles(isIncludeRoles)
+              .isIncludePlatforms(isIncludePlatforms)
               .isIncludeDeleted(isIncludeDeleted)
               .isIncludeHistory(isIncludeHistory)
               .pageNumber(pageNumber)
@@ -124,7 +132,11 @@ public class ProfileController {
       final ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(platformProfileRoleEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities, isIncludeRoles, responsePageInfo, requestMetadata);
+          filteredProfileEntities,
+          isIncludeRoles,
+          isIncludePlatforms,
+          responsePageInfo,
+          requestMetadata);
     } catch (Exception ex) {
       log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -187,8 +199,6 @@ public class ProfileController {
           platformProfileRoleService.readPlatformProfileRole(
               platformId, profileEmailRequest.getOldEmail());
 
-      CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
-
       final ProfileEntity profileEntity =
           profileService.updateProfileEmail(
               id,
@@ -227,8 +237,6 @@ public class ProfileController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(
               platformId, profilePasswordRequest.getEmail());
-
-      CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
 
       final ProfileEntity profileEntity =
           profileService.updateProfilePassword(

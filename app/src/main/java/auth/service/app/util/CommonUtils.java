@@ -18,23 +18,20 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
@@ -143,31 +140,6 @@ public class CommonUtils {
         .build();
   }
 
-  public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
-    return RequestMetadata.builder()
-        .isIncludePermissions(false)
-        .isIncludePlatforms(false)
-        .isIncludeProfiles(false)
-        .isIncludeRoles(false)
-        .isIncludeDeleted(false)
-        .isIncludeHistory(false)
-        .pageNumber(0)
-        .perPage(100)
-        .sortColumn(sortColumn)
-        .sortDirection(Sort.Direction.ASC)
-        .build();
-  }
-
-  public static boolean isRequestMetadataIncluded(final RequestMetadata requestMetadata) {
-    return requestMetadata != null
-        && (requestMetadata.isIncludeDeleted()
-            || StringUtils.hasText(requestMetadata.getSortColumn()));
-  }
-
-  public static boolean isHistoryToBeIncluded(final RequestMetadata requestMetadata) {
-    return requestMetadata != null && requestMetadata.isIncludeHistory();
-  }
-
   public static AuthToken getAuthentication() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -179,21 +151,35 @@ public class CommonUtils {
 
     if (authentication.getCredentials() != null
         && authentication.getCredentials() instanceof AuthToken authToken) {
+      if (authToken.getIsSuperUser() == null) {
+        authToken.setIsSuperUser(false);
+      }
       return authToken;
     }
 
     throw new CheckPermissionException("Profile not authorized...");
   }
 
-  public static void validatePlatformProfileRoleNotDeleted(
-      final PlatformProfileRoleEntity platformProfileRoleEntity) {
-    if (platformProfileRoleEntity.getPlatform().getDeletedDate() != null) {
-      throw new ElementNotActiveException(
-          "Platform", String.valueOf(platformProfileRoleEntity.getPlatform().getId()));
-    }
-    if (platformProfileRoleEntity.getProfile().getDeletedDate() != null) {
-      throw new ElementNotActiveException(
-          "Profile", String.valueOf(platformProfileRoleEntity.getProfile().getId()));
-    }
+  private static boolean hasPermission(final String permissionName) {
+    final AuthToken authToken = getAuthentication();
+    return authToken.getIsSuperUser()
+        || authToken.getPermissions().stream()
+            .anyMatch(permission -> Objects.equals(permission.getPermissionName(), permissionName));
+  }
+
+  public static boolean canReadPermissions() {
+    return hasPermission("AUTHSVC_PERMISSION_READ");
+  }
+
+  public static boolean canReadRoles() {
+    return hasPermission("AUTHSVC_ROLE_READ");
+  }
+
+  public static boolean canReadPlatforms() {
+    return hasPermission("AUTHSVC_PLATFORM_READ");
+  }
+
+  public static boolean canReadProfiles() {
+    return hasPermission("AUTHSVC_PROFILE_READ");
   }
 }

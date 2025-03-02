@@ -38,7 +38,7 @@ public class PermissionCheck {
       final AuthToken authToken = CommonUtils.getAuthentication();
       final boolean isPermitted = checkUserIdEmail(email, id, authToken);
 
-      if (!authToken.isSuperUser() && !isPermitted) {
+      if (!authToken.getIsSuperUser() && !isPermitted) {
         throw new CheckPermissionException(
             "Profile does not have required permissions to profile entity...");
       }
@@ -54,7 +54,7 @@ public class PermissionCheck {
     try {
       final AuthToken authToken = CommonUtils.getAuthentication();
 
-      if (authToken.isSuperUser()) {
+      if (authToken.getIsSuperUser()) {
         return profileEntities;
       }
 
@@ -68,7 +68,7 @@ public class PermissionCheck {
 
   private boolean checkUserPermission(
       final AuthToken authToken, final List<String> requiredPermissions) {
-    if (authToken.isSuperUser()) {
+    if (authToken.getIsSuperUser()) {
       return true;
     }
 

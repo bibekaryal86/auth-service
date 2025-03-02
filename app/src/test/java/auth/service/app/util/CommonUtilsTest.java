@@ -2,7 +2,6 @@ package auth.service.app.util;
 
 import static auth.service.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,16 +20,13 @@ import auth.service.app.exception.ProfileForbiddenException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +40,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -283,50 +278,6 @@ public class CommonUtilsTest extends BaseTest {
   }
 
   @Test
-  void testDefaultRequestMetadata() {
-    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("someSortColumn");
-    assertFalse(requestMetadata.isIncludeDeleted());
-    assertFalse(requestMetadata.isIncludeHistory());
-    assertEquals(0, requestMetadata.getPageNumber());
-    assertEquals(100, requestMetadata.getPerPage());
-    assertEquals("someSortColumn", requestMetadata.getSortColumn());
-    assertEquals(Sort.Direction.ASC, requestMetadata.getSortDirection());
-  }
-
-  private static Stream<Arguments> provideRequestMetadataDeleted() {
-    return Stream.of(
-        Arguments.of(null, false),
-        Arguments.of(RequestMetadata.builder().build(), false),
-        Arguments.of(RequestMetadata.builder().isIncludeDeleted(true).build(), true),
-        Arguments.of(RequestMetadata.builder().sortColumn("someColumn").build(), true),
-        Arguments.of(
-            RequestMetadata.builder().isIncludeDeleted(true).sortColumn("someColumn").build(),
-            true));
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideRequestMetadataDeleted")
-  void testIsRequestMetadataIncluded(RequestMetadata requestMetadata, boolean expected) {
-    boolean actual = CommonUtils.isRequestMetadataIncluded(requestMetadata);
-    assertEquals(expected, actual);
-  }
-
-  private static Stream<Arguments> provideRequestMetadataHistory() {
-    return Stream.of(
-        Arguments.of(null, false),
-        Arguments.of(RequestMetadata.builder().build(), false),
-        Arguments.of(RequestMetadata.builder().isIncludeHistory(false).build(), false),
-        Arguments.of(RequestMetadata.builder().isIncludeHistory(true).build(), true));
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideRequestMetadataHistory")
-  void testIsHistoryToBeIncluded(RequestMetadata requestMetadata, boolean expected) {
-    boolean actual = CommonUtils.isHistoryToBeIncluded(requestMetadata);
-    assertEquals(expected, actual);
-  }
-
-  @Test
   void testGetAuthentication() {
     AuthToken expected = TestData.getAuthToken();
     Authentication authentication =
@@ -392,33 +343,5 @@ public class CommonUtilsTest extends BaseTest {
         CheckPermissionException.class,
         CommonUtils::getAuthentication,
         "Profile not authorized...");
-  }
-
-  @Test
-  void testValidatePlatformProfileRoleNotDeleted() {
-    PlatformProfileRoleEntity platformProfileRoleEntity =
-        TestData.getPlatformProfileRoleEntities().getFirst();
-    // Should not throw any exception
-    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
-  }
-
-  @Test
-  void testValidatePlatformProfileRoleNotDeleted_PlatformDeleted() {
-    PlatformProfileRoleEntity platformProfileRoleEntity =
-        TestData.getPlatformProfileRoleEntities().getFirst();
-    platformProfileRoleEntity.getPlatform().setDeletedDate(LocalDateTime.now());
-    assertThrows(
-        ElementNotActiveException.class,
-        () -> CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity));
-  }
-
-  @Test
-  void testValidatePlatformProfileRoleNotDeleted_ProfileDeleted() {
-    PlatformProfileRoleEntity platformProfileRoleEntity =
-        TestData.getPlatformProfileRoleEntities().getFirst();
-    platformProfileRoleEntity.getProfile().setDeletedDate(LocalDateTime.now());
-    assertThrows(
-        ElementNotActiveException.class,
-        () -> CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity));
   }
 }

@@ -6,7 +6,6 @@ import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.repository.PlatformRepository;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,14 +37,9 @@ public class PlatformService {
   // READ
   public Page<PlatformEntity> readPlatforms(final RequestMetadata requestMetadata) {
     log.debug("Read Platforms: [{}]", requestMetadata);
-
-    final RequestMetadata requestMetadataToUse =
-        CommonUtils.isRequestMetadataIncluded(requestMetadata)
-            ? requestMetadata
-            : CommonUtils.defaultRequestMetadata("platformName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
     final Specification<PlatformEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+        JpaDataUtils.getQuerySpecification(requestMetadata);
     return platformRepository.findAll(specification, pageable);
   }
 

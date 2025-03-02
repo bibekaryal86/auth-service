@@ -30,6 +30,13 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
   }
 
   @Test
+  void testFindByPlatformIdAndProfileId() {
+    List<PlatformProfileRoleEntity> platformProfileRoleEntities =
+        platformProfileRoleRepository.findByPlatformIdAndProfileId(4L, 4L);
+    assertEquals(3, platformProfileRoleEntities.size());
+  }
+
+  @Test
   void testFindByPlatformId() {
     final Pageable pageable =
         PageRequest.of(

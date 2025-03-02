@@ -48,15 +48,22 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   }
 
   @Test
+  void testReadPlatformProfileRolesByPlatformIdAndProfileId() {
+    assertEquals(
+        3,
+        platformProfileRoleService.readPlatformProfileRolesByPlatformIdAndProfileId(4L, 4L).size());
+  }
+
+  @Test
   void testReadPlatformProfileRole_ByPlatformIdProfileEmail() {
-    assertNotNull(platformProfileRoleService.readPlatformProfileRole(3L, "firstlast@three.com"));
+    assertNotNull(platformProfileRoleService.readPlatformProfileRole(4L, "firstlast@four.com"));
   }
 
   @Test
   void testReadPlatformProfileRole_ByPlatformIdProfileEmail_NotFound() {
     assertThrows(
         ElementNotFoundException.class,
-        () -> platformProfileRoleService.readPlatformProfileRole(3L, "firstlast-1@nine.com"));
+        () -> platformProfileRoleService.readPlatformProfileRole(4L, "firstlast-4@four.com"));
   }
 
   @Test

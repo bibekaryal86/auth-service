@@ -1,5 +1,6 @@
 package auth.service.app.service;
 
+import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.RequestMetadata;
@@ -31,7 +32,7 @@ public class PlatformProfileRoleService {
   // ASSIGN
   public PlatformProfileRoleEntity assignPlatformProfileRole(
       final PlatformProfileRoleRequest platformProfileRoleRequest) {
-    log.debug("Create Platform Profile Role: [{}]", platformProfileRoleRequest);
+    log.debug("Assign Platform Profile Role: [{}]", platformProfileRoleRequest);
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
     final PlatformEntity platformEntity =
         circularDependencyService.readPlatform(platformProfileRoleRequest.getPlatformId(), false);
@@ -53,7 +54,7 @@ public class PlatformProfileRoleService {
   // UNASSIGN
   public PlatformProfileRoleEntity unassignPlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
-    log.info("Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    log.info("Unassign Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         readPlatformProfileRole(platformId, profileId, roleId);
     platformProfileRoleEntity.setUnassignedDate(LocalDateTime.now());
@@ -64,12 +65,30 @@ public class PlatformProfileRoleService {
   public PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final String email) {
     log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
-    return platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email).stream()
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new ElementNotFoundException(
-                    "Platform Profile Role", String.format("%s,%s", platformId, email)));
+
+    List<PlatformProfileRoleEntity> pprList =
+        platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email);
+
+    if (pprList.isEmpty()) {
+      throw new ElementNotFoundException(
+          "Platform Profile Role", String.format("%s,%s", platformId, email));
+    }
+
+    List<PlatformProfileRoleEntity> pprListActive =
+        pprList.stream()
+            .filter(
+                ppr ->
+                    ppr.getPlatform().getDeletedDate() == null
+                        && ppr.getProfile().getDeletedDate() == null
+                        && ppr.getRole().getDeletedDate() == null)
+            .toList();
+
+    if (pprListActive.isEmpty()) {
+      throw new ElementNotActiveException(
+          "Platform Profile Role", String.format("%s,%s", platformId, email));
+    }
+
+    return pprListActive.getFirst();
   }
 
   public Page<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformId(
@@ -79,7 +98,7 @@ public class PlatformProfileRoleService {
 
     final Pageable pageable =
         PageRequest.of(
-            Math.max(requestMetadata.getPageNumber(), 0),
+            Math.max(requestMetadata.getPageNumber() - 1, 0),
             (requestMetadata.getPerPage() < 10 || requestMetadata.getPerPage() > 1000)
                 ? 100
                 : requestMetadata.getPerPage(),
@@ -92,6 +111,15 @@ public class PlatformProfileRoleService {
       return platformProfileRoleRepository.findByPlatformId(platformId, pageable);
     }
     return platformProfileRoleRepository.findByPlatformIdNoDeleted(platformId, pageable);
+  }
+
+  public List<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformIdAndProfileId(
+      final Long platformId, final Long profileId) {
+    log.debug(
+        "Read Platform Profile Roles By Platform Id And Profile Id: [{}] | [{}]",
+        platformId,
+        profileId);
+    return platformProfileRoleRepository.findByPlatformIdAndProfileId(platformId, profileId);
   }
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformIds(
@@ -112,6 +140,19 @@ public class PlatformProfileRoleService {
     return platformProfileRoleRepository.findByRoleIds(roleIds);
   }
 
+  private PlatformProfileRoleEntity readPlatformProfileRole(
+      final Long platformId, final Long profileId, final Long roleId) {
+    log.debug("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    return platformProfileRoleRepository
+        .findById(new PlatformProfileRoleId(platformId, profileId, roleId))
+        .orElseThrow(
+            () ->
+                new ElementNotFoundException(
+                    "Platform Profile Role",
+                    String.format("%s,%s,%s", platformId, profileId, roleId)));
+  }
+
+  // DELETE
   public void hardDeletePlatformProfileRolesByPlatformIds(final List<Long> platformIds) {
     log.info("Hard Delete Platform Profile Roles By Platform Ids: [{}]", platformIds);
     platformProfileRoleRepository.deleteByPlatformIds(platformIds);
@@ -125,17 +166,5 @@ public class PlatformProfileRoleService {
   public void hardDeletePlatformProfileRolesByRoleIds(final List<Long> roleIds) {
     log.info("Hard Delete Platform Profile Roles By Role Ids: [{}]", roleIds);
     platformProfileRoleRepository.deleteByRoleIds(roleIds);
-  }
-
-  private PlatformProfileRoleEntity readPlatformProfileRole(
-      final Long platformId, final Long profileId, final Long roleId) {
-    log.debug("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
-    return platformProfileRoleRepository
-        .findById(new PlatformProfileRoleId(platformId, profileId, roleId))
-        .orElseThrow(
-            () ->
-                new ElementNotFoundException(
-                    "Platform Profile Role",
-                    String.format("%s,%s,%s", platformId, profileId, roleId)));
   }
 }

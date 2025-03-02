@@ -52,7 +52,7 @@ public class JpaDataUtilsTest extends BaseTest {
     Pageable result = JpaDataUtils.getQueryPageable(requestMetadata);
 
     assertNotNull(result);
-    assertEquals(1, result.getPageNumber());
+    assertEquals(0, result.getPageNumber());
     assertEquals(10, result.getPageSize());
     assertEquals("id", result.getSort().iterator().next().getProperty());
     assertEquals(Sort.Direction.DESC, result.getSort().iterator().next().getDirection());
@@ -68,7 +68,7 @@ public class JpaDataUtilsTest extends BaseTest {
   @Test
   void testShouldIncludeDeletedRecords_IsIncludeDeletedTrueButNoSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(false);
+    authToken.setIsSuperUser(false);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -82,7 +82,7 @@ public class JpaDataUtilsTest extends BaseTest {
   @Test
   void testShouldIncludeDeletedRecords_IsIncludeDeletedTrueWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
@@ -96,7 +96,7 @@ public class JpaDataUtilsTest extends BaseTest {
   @Test
   void testShouldIncludeDeletedRecords_IsIncludeDeletedFalseWithSuperUser() {
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);

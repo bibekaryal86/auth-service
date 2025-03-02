@@ -3,8 +3,8 @@ package auth.service.app.controller;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.model.annotation.CheckPermission;
+import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -39,7 +39,7 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
   @PostMapping
-  public ResponseEntity<PlatformProfileRoleResponse> assignPlatformProfileRole(
+  public ResponseEntity<AllPurposeResponse> assignPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
       final HttpServletRequest request) {
     try {
@@ -61,7 +61,7 @@ public class PlatformProfileRoleController {
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
 
       return ResponseEntity.ok(
-          PlatformProfileRoleResponse.builder()
+          AllPurposeResponse.builder()
               .responseMetadata(
                   ResponseMetadata.builder()
                       .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
@@ -71,13 +71,13 @@ public class PlatformProfileRoleController {
               .build());
     } catch (Exception ex) {
       log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
+      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<PlatformProfileRoleResponse> unassignPlatformProfileRole(
+  public ResponseEntity<AllPurposeResponse> unassignPlatformProfileRole(
       @PathVariable final long platformId,
       @PathVariable final long profileId,
       @PathVariable final long roleId,
@@ -100,7 +100,7 @@ public class PlatformProfileRoleController {
 
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return ResponseEntity.ok(
-          PlatformProfileRoleResponse.builder()
+          AllPurposeResponse.builder()
               .responseMetadata(
                   ResponseMetadata.builder()
                       .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
@@ -111,7 +111,7 @@ public class PlatformProfileRoleController {
     } catch (Exception ex) {
       log.error(
           "Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
-      return entityDtoConvertUtils.getResponseErrorPlatformProfileRole(ex);
+      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
 }

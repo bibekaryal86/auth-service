@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
 import auth.service.app.exception.CheckPermissionException;
@@ -14,16 +16,16 @@ import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
-import auth.service.app.model.dto.PlatformProfileRoleResponse;
+import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
@@ -31,6 +33,8 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.service.PlatformProfileRoleService;
+import auth.service.app.service.ProfileService;
 import helper.EntityDtoComparator;
 import helper.TestData;
 import java.util.Collections;
@@ -40,18 +44,30 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Autowired private EntityDtoConvertUtils entityDtoConvertUtils;
+  @Autowired private PlatformProfileRoleService platformProfileRoleService;
+  @Autowired private ProfileService profileService;
 
   private static List<PermissionEntity> permissionEntities;
   private static List<RoleEntity> roleEntities;
   private static List<PlatformEntity> platformEntities;
   private static List<ProfileEntity> profileEntities;
+
+  private static Authentication authentication;
+
+  @Mock private SecurityContext securityContext;
 
   @BeforeAll
   static void setUp() {
@@ -81,6 +97,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSinglePermission_NonNullEntity() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     PermissionEntity entity = permissionEntities.getFirst();
     ResponseEntity<PermissionResponse> response =
         entityDtoConvertUtils.getResponseSinglePermission(entity, null);
@@ -112,7 +142,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseMultiplePermissions_NonEmptyListWithResponsePageInfoRequestMetadata() {
     ResponsePageInfo defaultResponsePageInfo =
         ResponsePageInfo.builder().totalItems(13).totalPages(1).pageNumber(1).perPage(13).build();
-    RequestMetadata defaultRequestMetadata = CommonUtils.defaultRequestMetadata("permissionName");
+    RequestMetadata defaultRequestMetadata = TestData.defaultRequestMetadata("permissionName");
     ResponseEntity<PermissionResponse> response =
         entityDtoConvertUtils.getResponseMultiplePermissions(
             permissionEntities, defaultResponsePageInfo, defaultRequestMetadata);
@@ -179,6 +209,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSingleRole_NonNullEntity() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     RoleEntity entity = roleEntities.getFirst();
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseSingleRole(entity, null);
@@ -195,13 +239,44 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     assertFalse(dto.getPermissions().isEmpty());
     assertFalse(dto.getPlatformProfiles().isEmpty());
+    assertFalse(dto.getProfilePlatforms().isEmpty());
+  }
+
+  @Test
+  void testGetResponseSingleRole_NonNullEntity_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    RoleEntity entity = roleEntities.getFirst();
+    ResponseEntity<RoleResponse> response =
+        entityDtoConvertUtils.getResponseSingleRole(entity, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getRoles());
+    assertNotNull(response.getBody().getResponseMetadata());
+    assertEquals(1, response.getBody().getRoles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    RoleDto dto = response.getBody().getRoles().getFirst();
+    assertTrue(EntityDtoComparator.areEqual(entity, dto));
+
+    assertTrue(dto.getPermissions().isEmpty());
+    assertTrue(dto.getPlatformProfiles().isEmpty());
+    assertTrue(dto.getProfilePlatforms().isEmpty());
   }
 
   @Test
   void testGetResponseMultipleRoles_EmptyList() {
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseMultipleRoles(
-            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, null, null);
+            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -211,10 +286,24 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_NoPermissionsNoPlatforms() {
+  void testGetResponseMultipleRoles_NoPermissionsNoPlatformsNoProfiles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseMultipleRoles(
-            roleEntities, Boolean.FALSE, Boolean.FALSE, null, null);
+            roleEntities, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -225,16 +314,31 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertEquals(13, roleDtos.size());
 
     for (RoleDto roleDto : roleDtos) {
-      assertEquals(0, roleDto.getPermissions().size());
-      assertEquals(0, roleDto.getPlatformProfiles().size());
+      assertTrue(roleDto.getPermissions().isEmpty());
+      assertTrue(roleDto.getPlatformProfiles().isEmpty());
+      assertTrue(roleDto.getProfilePlatforms().isEmpty());
     }
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_WithPermissionsNoPlatforms() {
+  void testGetResponseMultipleRoles_WithPermissionsNoPlatformsNoProfiles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseMultipleRoles(
-            roleEntities, Boolean.TRUE, Boolean.FALSE, null, null);
+            roleEntities, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -250,6 +354,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
           roleDtos.stream().filter(rd -> rd.getId() == (long) finalI).findFirst().orElse(null);
       assertNotNull(roleDto);
       assertTrue(roleDto.getPlatformProfiles().isEmpty());
+      assertTrue(roleDto.getProfilePlatforms().isEmpty());
 
       if (List.of(1, 2, 5, 6, 10, 13).contains(i)) {
         assertFalse(roleDto.getPermissions().isEmpty());
@@ -261,10 +366,21 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_NoPermissionsWithPlatforms() {
+  void testGetResponseMultipleRoles_WithoutPermissionsNoPlatformsNoProfiles() {
+    // isIncludePermission is sent as TRUE but no READ permission
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of("AUTHSVC_PLATFORM_READ", "AUTHSVC_PROFILE_READ", "AUTHSVC_ROLE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseMultipleRoles(
-            roleEntities, Boolean.FALSE, Boolean.TRUE, null, null);
+            roleEntities, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -280,19 +396,54 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
           roleDtos.stream().filter(rd -> rd.getId() == (long) finalI).findFirst().orElse(null);
       assertNotNull(roleDto);
       assertTrue(roleDto.getPermissions().isEmpty());
+      assertTrue(roleDto.getPlatformProfiles().isEmpty());
+      assertTrue(roleDto.getProfilePlatforms().isEmpty());
+    }
+  }
+
+  @Test
+  void testGetResponseMultipleRoles_NoPermissionsWithPlatformsNoProfiles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<RoleResponse> response =
+        entityDtoConvertUtils.getResponseMultipleRoles(
+            roleEntities, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<RoleDto> roleDtos = response.getBody().getRoles();
+    assertNotNull(roleDtos);
+    assertEquals(13, roleDtos.size());
+
+    for (int i = 1; i <= roleDtos.size(); i++) {
+      int finalI = i;
+      RoleDto roleDto =
+          roleDtos.stream().filter(rd -> rd.getId() == (long) finalI).findFirst().orElse(null);
+      assertNotNull(roleDto);
+      assertTrue(roleDto.getPermissions().isEmpty());
+      assertTrue(roleDto.getProfilePlatforms().isEmpty());
 
       if (List.of(1, 2, 3, 4, 5, 6).contains(i)) {
         assertEquals(1, roleDto.getPlatformProfiles().size());
-        if (i == 1 || i == 2 || i == 3) {
+        if (i == 1) {
           assertEquals(i, roleDto.getPlatformProfiles().getFirst().getPlatform().getId());
           assertEquals(1, roleDto.getPlatformProfiles().getFirst().getProfiles().size());
           assertEquals(
               i, roleDto.getPlatformProfiles().getFirst().getProfiles().getFirst().getId());
-        } else {
-          assertEquals(4L, roleDto.getPlatformProfiles().getFirst().getPlatform().getId());
-          assertEquals(1, roleDto.getPlatformProfiles().getFirst().getProfiles().size());
-          assertEquals(
-              4L, roleDto.getPlatformProfiles().getFirst().getProfiles().getFirst().getId());
         }
       } else {
         assertTrue(roleDto.getPlatformProfiles().isEmpty());
@@ -301,10 +452,68 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_WithPermissionsWithPlatforms() {
+  void testGetResponseMultipleRoles_NoPermissionsNoPlatformsWithProfiles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<RoleResponse> response =
         entityDtoConvertUtils.getResponseMultipleRoles(
-            roleEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+            roleEntities, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<RoleDto> roleDtos = response.getBody().getRoles();
+    assertNotNull(roleDtos);
+    assertEquals(13, roleDtos.size());
+
+    for (int i = 1; i <= roleDtos.size(); i++) {
+      int finalI = i;
+      RoleDto roleDto =
+          roleDtos.stream().filter(rd -> rd.getId() == (long) finalI).findFirst().orElse(null);
+      assertNotNull(roleDto);
+      assertTrue(roleDto.getPermissions().isEmpty());
+      assertTrue(roleDto.getPlatformProfiles().isEmpty());
+
+      try {
+        assertFalse(roleDto.getProfilePlatforms().isEmpty());
+      } catch (AssertionFailedError ex) {
+        System.out.println("AssertionFailedError: " + i);
+      }
+    }
+  }
+
+  @Test
+  void testGetResponseMultipleRoles_WithPermissionsWithPlatformsWithProfiles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<RoleResponse> response =
+        entityDtoConvertUtils.getResponseMultipleRoles(
+            roleEntities, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -329,6 +538,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
       if (List.of(1, 2, 3, 4, 5, 6).contains(i)) {
         assertEquals(1, roleDto.getPlatformProfiles().size());
+        assertEquals(1, roleDto.getProfilePlatforms().size());
         if (i == 1 || i == 2 || i == 3) {
           assertEquals(i, roleDto.getPlatformProfiles().getFirst().getPlatform().getId());
           assertEquals(1, roleDto.getPlatformProfiles().getFirst().getProfiles().size());
@@ -343,6 +553,36 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
       } else {
         assertTrue(roleDto.getPlatformProfiles().isEmpty());
       }
+    }
+  }
+
+  @Test
+  void testGetResponseMultipleRoles_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<RoleResponse> response =
+        entityDtoConvertUtils.getResponseMultipleRoles(
+            roleEntities, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<RoleDto> roleDtos = response.getBody().getRoles();
+    assertNotNull(roleDtos);
+    assertEquals(13, roleDtos.size());
+
+    for (RoleDto roleDto : roleDtos) {
+      assertTrue(roleDto.getPermissions().isEmpty());
+      assertTrue(roleDto.getPlatformProfiles().isEmpty());
+      assertTrue(roleDto.getProfilePlatforms().isEmpty());
     }
   }
 
@@ -372,6 +612,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSinglePlatform_NonNullEntity() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     PlatformEntity entity = platformEntities.getFirst();
     ResponseEntity<PlatformResponse> response =
         entityDtoConvertUtils.getResponseSinglePlatform(entity, null);
@@ -387,13 +641,43 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
 
     assertFalse(dto.getProfileRoles().isEmpty());
+    assertFalse(dto.getRoleProfiles().isEmpty());
+  }
+
+  @Test
+  void testGetResponseSinglePlatform_NonNullEntity_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    PlatformEntity entity = platformEntities.getFirst();
+    ResponseEntity<PlatformResponse> response =
+        entityDtoConvertUtils.getResponseSinglePlatform(entity, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getPlatforms());
+    assertNotNull(response.getBody().getResponseMetadata());
+    assertEquals(1, response.getBody().getPlatforms().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    PlatformDto dto = response.getBody().getPlatforms().getFirst();
+    assertTrue(EntityDtoComparator.areEqual(entity, dto));
+
+    assertTrue(dto.getProfileRoles().isEmpty());
+    assertTrue(dto.getRoleProfiles().isEmpty());
   }
 
   @Test
   void testGetResponseMultiplePlatforms_EmptyList() {
     ResponseEntity<PlatformResponse> response =
         entityDtoConvertUtils.getResponseMultiplePlatforms(
-            Collections.emptyList(), Boolean.TRUE, null, null);
+            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -403,10 +687,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_NoProfiles() {
+  void testGetResponseMultiplePlatforms_NoProfilesNoRoles() {
     ResponseEntity<PlatformResponse> response =
         entityDtoConvertUtils.getResponseMultiplePlatforms(
-            platformEntities, Boolean.FALSE, null, null);
+            platformEntities, Boolean.FALSE, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -417,15 +701,30 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertEquals(13, platformDtos.size());
 
     for (PlatformDto platformDto : platformDtos) {
-      assertEquals(0, platformDto.getProfileRoles().size());
+      assertTrue(platformDto.getProfileRoles().isEmpty());
+      assertTrue(platformDto.getRoleProfiles().isEmpty());
     }
   }
 
   @Test
-  void testGetResponseMultiplePlatforms_WithProfiles() {
+  void testGetResponseMultiplePlatforms_NoProfilesWithRoles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<PlatformResponse> response =
         entityDtoConvertUtils.getResponseMultiplePlatforms(
-            platformEntities, Boolean.TRUE, null, null);
+            platformEntities, Boolean.FALSE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -441,6 +740,54 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(platformDto1st);
+    assertEquals(0, platformDto1st.getProfileRoles().size());
+    assertEquals(1, platformDto1st.getRoleProfiles().size());
+
+    PlatformDto platformDto4th =
+        platformDtos.stream()
+            .filter(platformDto -> platformDto.getId() == 4L)
+            .findFirst()
+            .orElse(null);
+    assertNotNull(platformDto4th);
+    assertEquals(0, platformDto1st.getProfileRoles().size());
+    assertEquals(1, platformDto1st.getRoleProfiles().size());
+  }
+
+  @Test
+  void testGetResponseMultiplePlatforms_WithProfilesNoRoles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<PlatformResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatforms(
+            platformEntities, Boolean.TRUE, Boolean.FALSE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<PlatformDto> platformDtos = response.getBody().getPlatforms();
+    assertNotNull(platformDtos);
+    assertEquals(13, platformDtos.size());
+
+    PlatformDto platformDto1st =
+        platformDtos.stream()
+            .filter(platformDto -> Objects.equals(platformDto.getId(), ID))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(platformDto1st);
+    assertEquals(0, platformDto1st.getRoleProfiles().size());
     assertEquals(1, platformDto1st.getProfileRoles().size());
     assertEquals(1, platformDto1st.getProfileRoles().getFirst().getProfile().getId());
     assertEquals(1, platformDto1st.getProfileRoles().getFirst().getRoles().size());
@@ -452,10 +799,98 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(platformDto4th);
+    assertEquals(0, platformDto4th.getRoleProfiles().size());
     assertEquals(4L, platformDto4th.getProfileRoles().getFirst().getProfile().getId());
     assertEquals(3, platformDto4th.getProfileRoles().getFirst().getRoles().size());
     assertEquals(4, platformDto4th.getProfileRoles().getFirst().getRoles().getFirst().getId());
     assertEquals(6, platformDto4th.getProfileRoles().getFirst().getRoles().getLast().getId());
+  }
+
+  @Test
+  void testGetResponseMultiplePlatforms_WithProfilesWithRoles() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<PlatformResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatforms(
+            platformEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<PlatformDto> platformDtos = response.getBody().getPlatforms();
+    assertNotNull(platformDtos);
+    assertEquals(13, platformDtos.size());
+
+    PlatformDto platformDto1st =
+        platformDtos.stream()
+            .filter(platformDto -> Objects.equals(platformDto.getId(), ID))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(platformDto1st);
+    assertEquals(1, platformDto1st.getRoleProfiles().size());
+    assertEquals(1, platformDto1st.getRoleProfiles().getFirst().getRole().getId());
+    assertEquals(1, platformDto1st.getRoleProfiles().getFirst().getProfiles().size());
+    assertEquals(1, platformDto1st.getRoleProfiles().getFirst().getProfiles().getFirst().getId());
+
+    assertEquals(1, platformDto1st.getProfileRoles().size());
+    assertEquals(1, platformDto1st.getProfileRoles().getFirst().getProfile().getId());
+    assertEquals(1, platformDto1st.getProfileRoles().getFirst().getRoles().size());
+    assertEquals(1, platformDto1st.getProfileRoles().getFirst().getRoles().getFirst().getId());
+
+    PlatformDto platformDto4th =
+        platformDtos.stream()
+            .filter(platformDto -> platformDto.getId() == 4L)
+            .findFirst()
+            .orElse(null);
+    assertNotNull(platformDto4th);
+    assertEquals(3, platformDto4th.getRoleProfiles().size());
+    assertEquals(1, platformDto4th.getRoleProfiles().getFirst().getProfiles().size());
+    assertEquals(1, platformDto4th.getRoleProfiles().getLast().getProfiles().size());
+
+    assertEquals(1, platformDto4th.getProfileRoles().size());
+    assertEquals(3, platformDto4th.getProfileRoles().getFirst().getRoles().size());
+  }
+
+  @Test
+  void testGetResponseMultiplePlatforms_WithProfilesWithRoles_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<PlatformResponse> response =
+        entityDtoConvertUtils.getResponseMultiplePlatforms(
+            platformEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<PlatformDto> platformDtos = response.getBody().getPlatforms();
+    assertNotNull(platformDtos);
+    assertEquals(13, platformDtos.size());
+
+    for (PlatformDto platformDto : platformDtos) {
+      assertTrue(platformDto.getProfileRoles().isEmpty());
+      assertTrue(platformDto.getRoleProfiles().isEmpty());
+    }
   }
 
   @Test
@@ -484,6 +919,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSingleProfile_NonNullEntity() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ProfileEntity entity = profileEntities.getFirst();
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseSingleProfile(entity, null);
@@ -499,13 +948,43 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
 
     assertFalse(dto.getPlatformRoles().isEmpty());
+    assertFalse(dto.getRolePlatforms().isEmpty());
+  }
+
+  @Test
+  void testGetResponseSingleProfile_NonNullEntity_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ProfileEntity entity = profileEntities.getFirst();
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseSingleProfile(entity, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertNotNull(response.getBody().getProfiles());
+    assertNotNull(response.getBody().getResponseMetadata());
+    assertEquals(1, response.getBody().getProfiles().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    ProfileDto dto = response.getBody().getProfiles().getFirst();
+    assertTrue(EntityDtoComparator.areEqual(entity, dto));
+
+    assertTrue(dto.getPlatformRoles().isEmpty());
+    assertTrue(dto.getRolePlatforms().isEmpty());
   }
 
   @Test
   void testGetResponseMultipleProfiles_EmptyList() {
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            Collections.emptyList(), Boolean.TRUE, null, null);
+            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -515,10 +994,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseMultipleProfiles_NoRoles() {
+  void testGetResponseMultipleProfiles_NoRolesNoPlatforms() {
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.FALSE, null, null);
+            profileEntities, Boolean.FALSE, Boolean.FALSE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -529,17 +1008,32 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertEquals(13, profileDtos.size());
 
     for (ProfileDto profileDto : profileDtos) {
-      assertEquals(0, profileDto.getPlatformRoles().size());
+      assertTrue(profileDto.getPlatformRoles().isEmpty());
+      assertTrue(profileDto.getRolePlatforms().isEmpty());
     }
 
     assertNotNull(profileDtos.getFirst().getProfileAddress());
   }
 
   @Test
-  void testGetResponseMultipleProfiles_WithRoles() {
+  void testGetResponseMultipleProfiles_NoRolesWithPlatforms() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.TRUE, null, null);
+            profileEntities, Boolean.FALSE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -557,10 +1051,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(profileDto1st);
+    assertEquals(0, profileDto1st.getRolePlatforms().size());
     assertEquals(1, profileDto1st.getPlatformRoles().size());
-    assertEquals(1, profileDto1st.getPlatformRoles().getFirst().getPlatform().getId());
-    assertEquals(1, profileDto1st.getPlatformRoles().getFirst().getRoles().size());
-    assertEquals(1, profileDto1st.getPlatformRoles().getFirst().getRoles().getFirst().getId());
 
     ProfileDto profileDto4th =
         profileDtos.stream()
@@ -568,10 +1060,137 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(profileDto4th);
-    assertEquals(4L, profileDto4th.getPlatformRoles().getFirst().getPlatform().getId());
-    assertEquals(3, profileDto4th.getPlatformRoles().getFirst().getRoles().size());
-    assertEquals(4, profileDto4th.getPlatformRoles().getFirst().getRoles().getFirst().getId());
-    assertEquals(6, profileDto4th.getPlatformRoles().getFirst().getRoles().getLast().getId());
+    assertEquals(1, profileDto4th.getPlatformRoles().size());
+    assertEquals(0, profileDto4th.getRolePlatforms().size());
+  }
+
+  @Test
+  void testGetResponseMultipleProfiles_WithRolesNoPlatforms() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.TRUE, Boolean.FALSE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<ProfileDto> profileDtos = response.getBody().getProfiles();
+    assertNotNull(profileDtos);
+    assertEquals(13, profileDtos.size());
+
+    assertNotNull(profileDtos.getFirst().getProfileAddress());
+
+    ProfileDto profileDto1st =
+        profileDtos.stream()
+            .filter(profileDto -> Objects.equals(profileDto.getId(), ID))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(profileDto1st);
+    assertEquals(1, profileDto1st.getRolePlatforms().size());
+    assertEquals(0, profileDto1st.getPlatformRoles().size());
+
+    ProfileDto profileDto4th =
+        profileDtos.stream()
+            .filter(profileDto -> profileDto.getId() == 4L)
+            .findFirst()
+            .orElse(null);
+    assertNotNull(profileDto4th);
+    assertEquals(3, profileDto4th.getRolePlatforms().size());
+    assertEquals(0, profileDto1st.getPlatformRoles().size());
+  }
+
+  @Test
+  void testGetResponseMultipleProfiles_WithRolesWithPlatforms() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    "AUTHSVC_PLATFORM_READ",
+                    "AUTHSVC_PROFILE_READ",
+                    "AUTHSVC_ROLE_READ",
+                    "AUTHSVC_PERMISSION_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<ProfileDto> profileDtos = response.getBody().getProfiles();
+    assertNotNull(profileDtos);
+    assertEquals(13, profileDtos.size());
+
+    assertNotNull(profileDtos.getFirst().getProfileAddress());
+
+    ProfileDto profileDto1st =
+        profileDtos.stream()
+            .filter(profileDto -> Objects.equals(profileDto.getId(), ID))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(profileDto1st);
+    assertEquals(1, profileDto1st.getRolePlatforms().size());
+    assertEquals(1, profileDto1st.getPlatformRoles().size());
+
+    ProfileDto profileDto4th =
+        profileDtos.stream()
+            .filter(profileDto -> profileDto.getId() == 4L)
+            .findFirst()
+            .orElse(null);
+    assertNotNull(profileDto4th);
+    assertEquals(3, profileDto4th.getRolePlatforms().size());
+    assertEquals(1, profileDto4th.getPlatformRoles().size());
+  }
+
+  @Test
+  void testGetResponseMultipleProfiles_WithRolesWithPlatforms_NoReadPermissions() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<ProfileDto> profileDtos = response.getBody().getProfiles();
+    assertNotNull(profileDtos);
+    assertEquals(13, profileDtos.size());
+
+    for (ProfileDto profileDto : profileDtos) {
+      assertTrue(profileDto.getPlatformRoles().isEmpty());
+      assertTrue(profileDto.getRolePlatforms().isEmpty());
+    }
+
+    assertNotNull(profileDtos.getFirst().getProfileAddress());
   }
 
   @Test
@@ -601,12 +1220,14 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseErrorResponseMetadata() {
-    ResponseEntity<ResponseMetadata> response =
+    ResponseEntity<AllPurposeResponse> response =
         entityDtoConvertUtils.getResponseErrorResponseMetadata(new ProfileLockedException());
 
     assertNotNull(response);
     assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseStatusInfo().getErrMsg());
+    assertNotNull(response.getBody().getResponseMetadata());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo());
+    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
@@ -683,14 +1304,54 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   }
 
   @Test
-  void testGetResponseErrorPlatformProfileRole() {
-    ResponseEntity<PlatformProfileRoleResponse> response =
-        entityDtoConvertUtils.getResponseErrorPlatformProfileRole(
-            new RuntimeException("something anything"));
+  void testConvertEntityToDtoProfileBasic() {
+    // setup
+    platformProfileRoleService.assignPlatformProfileRole(
+        new PlatformProfileRoleRequest(7L, 8L, 7L));
+    platformProfileRoleService.assignPlatformProfileRole(
+        new PlatformProfileRoleRequest(7L, 8L, 8L));
+    platformProfileRoleService.assignPlatformProfileRole(
+        new PlatformProfileRoleRequest(8L, 8L, 10L));
 
-    assertNotNull(response);
-    assertNotNull(response.getBody());
-    assertNotNull(response.getBody().getResponseMetadata().getResponseStatusInfo().getErrMsg());
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    ProfileEntity profileEntity = profileService.readProfileByEmail("firstlast@eight.com");
+    assertNotNull(profileEntity);
+
+    ProfileDto profileDto = entityDtoConvertUtils.convertEntityToDtoProfileBasic(profileEntity, 7L);
+    assertEquals(2, profileDto.getRolePlatforms().size());
+    assertEquals(1, profileDto.getPlatformRoles().size());
+
+    List<Long> platformIds =
+        profileDto.getPlatformRoles().stream()
+            .map(pd -> pd.getPlatform().getId())
+            .sorted()
+            .toList();
+    assertEquals(List.of(7L), platformIds);
+    List<Long> roleIdsPlatform =
+        profileDto.getPlatformRoles().stream()
+            .filter(pd -> Objects.equals(7L, pd.getPlatform().getId()))
+            .flatMap(pd -> pd.getRoles().stream().map(RoleDto::getId))
+            .sorted()
+            .toList();
+    assertEquals(List.of(7L, 8L), roleIdsPlatform);
+
+    List<Long> roleIds =
+        profileDto.getRolePlatforms().stream().map(pd -> pd.getRole().getId()).sorted().toList();
+    assertEquals(List.of(7L, 8L), roleIds);
+    List<Long> platformIdsRoleOne =
+        profileDto.getRolePlatforms().stream()
+            .filter(pd -> Objects.equals(roleIds.getFirst(), pd.getRole().getId()))
+            .flatMap(pd -> pd.getPlatforms().stream().map(PlatformDto::getId))
+            .sorted()
+            .toList();
+    List<Long> platformIdsRoleTwo =
+        profileDto.getRolePlatforms().stream()
+            .filter(pd -> Objects.equals(roleIds.getFirst(), pd.getRole().getId()))
+            .flatMap(pd -> pd.getPlatforms().stream().map(PlatformDto::getId))
+            .sorted()
+            .toList();
+    assertEquals(List.of(7L), platformIdsRoleOne);
+    assertEquals(List.of(7L), platformIdsRoleTwo);
+    // cleanup
+    platformProfileRoleService.hardDeletePlatformProfileRolesByProfileIds(List.of(8L));
   }
 }

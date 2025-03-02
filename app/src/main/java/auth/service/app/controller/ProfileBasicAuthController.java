@@ -8,11 +8,11 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
-import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
@@ -33,6 +33,7 @@ import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -88,8 +89,19 @@ public class ProfileBasicAuthController {
                       "Profile Create [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
 
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
+      return ResponseEntity.ok(
+          ProfileResponse.builder()
+              .profiles(
+                  List.of(
+                      entityDtoConvertUtils.convertEntityToDtoProfileBasic(
+                          profileEntity, platformId)))
+              .responseMetadata(
+                  ResponseMetadata.builder()
+                      .responsePageInfo(CommonUtils.emptyResponsePageInfo())
+                      .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
+                      .responseCrudInfo(CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0))
+                      .build())
+              .build());
     } catch (Exception ex) {
       log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -207,7 +219,7 @@ public class ProfileBasicAuthController {
   }
 
   @PostMapping("/{platformId}/logout")
-  public ResponseEntity<ResponseMetadata> logout(
+  public ResponseEntity<AllPurposeResponse> logout(
       @PathVariable final Long platformId,
       @Valid @RequestBody final TokenRequest tokenRequest,
       final HttpServletRequest request) {
@@ -262,15 +274,13 @@ public class ProfileBasicAuthController {
   }
 
   @GetMapping("/{platformId}/validate_init")
-  public ResponseEntity<ResponseMetadata> validateProfileInit(
+  public ResponseEntity<AllPurposeResponse> validateProfileInit(
       @PathVariable final Long platformId,
       @RequestParam final String email,
       final HttpServletRequest request) {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(platformId, email);
-
-      CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
 
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
@@ -313,15 +323,13 @@ public class ProfileBasicAuthController {
   }
 
   @GetMapping("/{platformId}/reset_init")
-  public ResponseEntity<ResponseMetadata> resetProfileInit(
+  public ResponseEntity<AllPurposeResponse> resetProfileInit(
       @PathVariable final Long platformId,
       @RequestParam final String email,
       final HttpServletRequest request) {
     try {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(platformId, email);
-
-      CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
 
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
@@ -364,7 +372,7 @@ public class ProfileBasicAuthController {
   }
 
   @PostMapping("/{platformId}/reset")
-  public ResponseEntity<ResponseMetadata> resetProfile(
+  public ResponseEntity<AllPurposeResponse> resetProfile(
       @PathVariable final Long platformId,
       @Valid @RequestBody final ProfilePasswordRequest profilePasswordRequest,
       final HttpServletRequest request) {
