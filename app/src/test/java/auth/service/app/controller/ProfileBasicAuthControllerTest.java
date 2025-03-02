@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
 import auth.service.app.connector.EnvServiceConnector;
+import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
@@ -453,7 +454,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     assertNotNull(profilePasswordTokenResponse.getResponseMetadata());
     assertNotNull(profilePasswordTokenResponse.getResponseMetadata().getResponseStatusInfo());
     assertEquals(
-        String.format("Active Platform Not Found for [%s]", platformEntity.getId()),
+        String.format(
+            "Active Platform Profile Role Not Found for [%s,%s]",
+            platformEntity.getId(), profileEntity.getEmail()),
         profilePasswordTokenResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
 
     // verify audit service is called for login failed
@@ -497,7 +500,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     assertNotNull(profilePasswordTokenResponse.getResponseMetadata());
     assertNotNull(profilePasswordTokenResponse.getResponseMetadata().getResponseStatusInfo());
     assertEquals(
-        String.format("Active Profile Not Found for [%s]", NEW_USER_NEW_EMAIL),
+        String.format(
+            "Active Platform Profile Role Not Found for [%s,%s]",
+            platformEntity.getId(), NEW_USER_NEW_EMAIL),
         profilePasswordTokenResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
 
     // verify audit service is called for login failed
@@ -1010,7 +1015,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     TokenRequest tokenRequest =
         new TokenRequest(profileEntity.getId(), "", tokenEntity.getRefreshToken());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -1019,12 +1024,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("is Missing in"));
+    assertNotNull(allPurposeResponse);
+    assertTrue(
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("is Missing in"));
 
     // verify audit service called for logout failure
     verify(auditService, after(100).times(1))
@@ -1041,7 +1051,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         new TokenRequest(
             profileEntity.getId(), "an.invalid.access.token", tokenEntity.getRefreshToken());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -1050,13 +1060,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isUnauthorized()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
+    assertNotNull(allPurposeResponse);
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Invalid Auth Credentials"));
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Invalid Auth Credentials"));
 
     // verify audit service called for logout failure
     verify(auditService, after(100).times(1))
@@ -1076,7 +1090,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     TokenRequest tokenRequest =
         new TokenRequest(profileEntity.getId(), accessTokenExpiry, tokenEntity.getRefreshToken());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -1085,13 +1099,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isUnauthorized()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
+    assertNotNull(allPurposeResponse);
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Expired Auth Credentials"));
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Expired Auth Credentials"));
 
     // verify audit service called for token refresh failure
     verify(auditService, after(100).times(1))
@@ -1108,7 +1126,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         new TokenRequest(
             profileEntity.getId(), tokenEntity.getRefreshToken(), tokenEntity.getAccessToken());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -1117,12 +1135,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isNotFound()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("Token Not Found"));
+    assertNotNull(allPurposeResponse);
+    assertTrue(
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Token Not Found"));
 
     // verify audit service called for logout failure
     verify(auditService, after(100).times(1))
@@ -1143,7 +1166,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         new TokenRequest(
             profileEntity.getId(), tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -1152,12 +1175,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isUnauthorized()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("Deleted Token"));
+    assertNotNull(allPurposeResponse);
+    assertTrue(
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("Deleted Token"));
 
     // verify audit service called for logout failure
     verify(auditService, after(100).times(1))
@@ -1205,7 +1233,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .when(emailService)
         .sendProfileValidationEmail(any(), any(), any());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .get()
             .uri(
@@ -1216,12 +1244,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .is5xxServerError()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("something happened"));
+    assertNotNull(allPurposeResponse);
+    assertTrue(
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("something happened"));
 
     // verify audit service called for validate init failure
     verify(auditService, after(100).times(1))
@@ -1308,7 +1341,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .when(emailService)
         .sendProfileResetEmail(any(), any(), any());
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .get()
             .uri(
@@ -1319,12 +1352,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .is5xxServerError()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertTrue(responseMetadata.getResponseStatusInfo().getErrMsg().contains("something happened"));
+    assertNotNull(allPurposeResponse);
+    assertTrue(
+        allPurposeResponse
+            .getResponseMetadata()
+            .getResponseStatusInfo()
+            .getErrMsg()
+            .contains("something happened"));
 
     // verify audit service called for reset init failure
     verify(auditService, after(100).times(1))
@@ -1416,7 +1454,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     ProfilePasswordRequest profilePasswordRequest =
         new ProfilePasswordRequest("some-old@email.com", "new-user-newer-password");
 
-    ResponseMetadata responseMetadata =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
@@ -1425,13 +1463,14 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isNotFound()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
+    assertNotNull(allPurposeResponse);
     assertTrue(
-        responseMetadata
+        allPurposeResponse
+            .getResponseMetadata()
             .getResponseStatusInfo()
             .getErrMsg()
             .contains("Platform Profile Role Not Found"));

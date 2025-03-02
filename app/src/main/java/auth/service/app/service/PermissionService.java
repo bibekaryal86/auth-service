@@ -6,7 +6,6 @@ import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.repository.PermissionRepository;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,13 +39,9 @@ public class PermissionService {
   // READ
   public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
     log.debug("Read Permissions: [{}]", requestMetadata);
-    final RequestMetadata requestMetadataToUse =
-        CommonUtils.isRequestMetadataIncluded(requestMetadata)
-            ? requestMetadata
-            : CommonUtils.defaultRequestMetadata("permissionName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
     final Specification<PermissionEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+        JpaDataUtils.getQuerySpecification(requestMetadata);
     return permissionRepository.findAll(specification, pageable);
   }
 

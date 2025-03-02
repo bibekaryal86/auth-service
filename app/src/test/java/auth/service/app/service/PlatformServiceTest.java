@@ -16,7 +16,6 @@ import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.token.AuthToken;
-import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
@@ -55,13 +54,13 @@ public class PlatformServiceTest extends BaseTest {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("platformName");
+    RequestMetadata requestMetadata = TestData.defaultRequestMetadata("platformName");
     requestMetadata.setSortDirection(Sort.Direction.ASC);
     requestMetadata.setIncludeDeleted(true);
     Page<PlatformEntity> platformEntityPage = platformService.readPlatforms(requestMetadata);

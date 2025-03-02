@@ -35,7 +35,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Permission", String.valueOf(id)));
 
     if (permissionEntity.getDeletedDate() == null
-        || (isIncludeDeleted && CommonUtils.getAuthentication().isSuperUser())) {
+        || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return permissionEntity;
     } else {
       throw new ElementNotActiveException("Permission", String.valueOf(id));
@@ -50,7 +50,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Platform", String.valueOf(id)));
 
     if (platformEntity.getDeletedDate() == null
-        || (isIncludeDeleted && CommonUtils.getAuthentication().isSuperUser())) {
+        || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return platformEntity;
     } else {
       throw new ElementNotActiveException("Platform", String.valueOf(id));
@@ -65,7 +65,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Role", String.valueOf(id)));
 
     if (roleEntity.getDeletedDate() == null
-        || (isIncludeDeleted && CommonUtils.getAuthentication().isSuperUser())) {
+        || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return roleEntity;
     } else {
       throw new ElementNotActiveException("Role", String.valueOf(id));
@@ -80,7 +80,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Role", roleName));
 
     if (roleEntity.getDeletedDate() == null
-        || (isIncludeDeleted && CommonUtils.getAuthentication().isSuperUser())) {
+        || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return roleEntity;
     } else {
       throw new ElementNotActiveException("Role", roleName);
@@ -108,7 +108,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
 
     if (profileEntity.getDeletedDate() == null
-        || (isIncludeDeleted && CommonUtils.getAuthentication().isSuperUser())) {
+        || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return profileEntity;
     } else {
       throw new ElementNotActiveException("Profile", String.valueOf(id));

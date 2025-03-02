@@ -3,9 +3,7 @@ package auth.service.app.filter;
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
-import auth.service.app.service.ProfileService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
@@ -16,8 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,10 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-
-  private final ProfileService profileService;
 
   @Override
   protected void doFilterInternal(
@@ -52,11 +45,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
         final String email = firstEntry.getKey();
         final AuthToken authToken = firstEntry.getValue();
-
-        if (!validateUserEntity(email, authToken)) {
-          sendUnauthorizedResponse(response, "Incorrect Auth Token");
-          return;
-        }
 
         final UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(email, authToken, Collections.emptyList());
@@ -84,10 +72,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
     response.getWriter().write(jsonResponse);
-  }
-
-  private boolean validateUserEntity(final String email, final AuthToken authToken) {
-    final ProfileEntity profileEntity = profileService.readProfileByEmail(email);
-    return Objects.equals(profileEntity.getEmail(), authToken.getProfile().getEmail());
   }
 }

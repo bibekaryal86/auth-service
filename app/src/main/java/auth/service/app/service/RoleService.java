@@ -6,7 +6,6 @@ import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.RoleRepository;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -38,14 +38,9 @@ public class RoleService {
   // READ
   public Page<RoleEntity> readRoles(final RequestMetadata requestMetadata) {
     log.debug("Read Roles: [{}]", requestMetadata);
-
-    final RequestMetadata requestMetadataToUse =
-        CommonUtils.isRequestMetadataIncluded(requestMetadata)
-            ? requestMetadata
-            : CommonUtils.defaultRequestMetadata("roleName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
     final Specification<RoleEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+        JpaDataUtils.getQuerySpecification(requestMetadata);
     return roleRepository.findAll(specification, pageable);
   }
 
@@ -83,6 +78,7 @@ public class RoleService {
     return roleRepository.save(roleEntity);
   }
 
+  @Transactional
   public void hardDeleteRole(final Long id) {
     log.info("Hard Delete Role: [{}]", id);
     final RoleEntity roleEntity = readRole(id);

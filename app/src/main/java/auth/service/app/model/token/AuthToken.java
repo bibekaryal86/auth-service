@@ -15,5 +15,5 @@ public class AuthToken {
   private AuthTokenProfile profile;
   private List<AuthTokenRole> roles;
   private List<AuthTokenPermission> permissions;
-  private boolean isSuperUser;
+  private Boolean isSuperUser;
 }

@@ -22,4 +22,5 @@ public class RoleDto {
 
   private List<PermissionDto> permissions;
   private List<RoleDtoPlatformProfile> platformProfiles;
+  private List<RoleDtoProfilePlatform> profilePlatforms;
 }

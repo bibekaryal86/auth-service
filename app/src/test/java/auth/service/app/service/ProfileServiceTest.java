@@ -36,7 +36,6 @@ import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 import java.util.Collections;
@@ -95,8 +94,8 @@ public class ProfileServiceTest extends BaseTest {
     assertEquals(1, profileEntityPage.getTotalPages());
     assertEquals(100, profileEntityPage.getSize());
     // check sorted by last name
-    assertEquals("Last Eight", profileEntities.getFirst().getLastName());
-    assertEquals("Last Two", profileEntities.getLast().getLastName());
+    assertEquals("Last One", profileEntities.getFirst().getLastName());
+    assertEquals("Last Thirteen", profileEntities.getLast().getLastName());
   }
 
   @Test
@@ -104,13 +103,13 @@ public class ProfileServiceTest extends BaseTest {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("lastName");
+    RequestMetadata requestMetadata = TestData.defaultRequestMetadata("lastName");
     requestMetadata.setSortDirection(Sort.Direction.ASC);
     requestMetadata.setIncludeDeleted(true);
     Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);

@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import auth.service.BaseTest;
+import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.dto.PlatformProfileRoleResponse;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformEntity;
@@ -27,6 +27,7 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -67,15 +68,15 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   @Test
   void testAssignPlatformProfileRole_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission(
-            "AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(PLATFORM_ID, PROFILE_ID, ROLE_ID);
 
-    PlatformProfileRoleResponse platformProfileRoleResponse =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri("/api/v1/ppr")
@@ -84,39 +85,23 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponsePageInfo());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseCrudInfo());
+    assertNotNull(allPurposeResponse);
+    assertNotNull(allPurposeResponse.getResponseMetadata());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponseStatusInfo());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponsePageInfo());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponseCrudInfo());
     assertEquals(
-        1,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getInsertedRowsCount());
+        1, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getInsertedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getUpdatedRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getUpdatedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getDeletedRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getRestoredRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getRestoredRowsCount());
 
     // verify audit service called for assign platform role
     verify(auditService, after(100).times(1))
@@ -140,7 +125,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(PLATFORM_ID, PROFILE_ID, ROLE_ID);
 
-    PlatformProfileRoleResponse platformProfileRoleResponse =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .post()
             .uri("/api/v1/ppr")
@@ -149,39 +134,23 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponsePageInfo());
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata().getResponseCrudInfo());
+    assertNotNull(allPurposeResponse);
+    assertNotNull(allPurposeResponse.getResponseMetadata());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponseStatusInfo());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponsePageInfo());
+    assertNotNull(allPurposeResponse.getResponseMetadata().getResponseCrudInfo());
     assertEquals(
-        1,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getInsertedRowsCount());
+        1, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getInsertedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getUpdatedRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getUpdatedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getDeletedRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
     assertEquals(
-        0,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getRestoredRowsCount());
+        0, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getRestoredRowsCount());
 
     // verify audit service called for assign platform role
     verify(auditService, after(100).times(1))
@@ -304,12 +273,12 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
     assertNotNull(pprOriginal);
 
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission(
-            "AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
-    PlatformProfileRoleResponse platformProfileRoleResponse =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/ppr//platform/%s/profile/%s/role/%s", ID, ID, ID))
@@ -317,18 +286,14 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
+    assertNotNull(allPurposeResponse);
+    assertNotNull(allPurposeResponse.getResponseMetadata());
     assertEquals(
-        1,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getDeletedRowsCount());
+        1, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
 
     // verify audit service called for unassign platform role success
     verify(auditService, after(100).times(1))
@@ -353,7 +318,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
-    PlatformProfileRoleResponse platformProfileRoleResponse =
+    AllPurposeResponse allPurposeResponse =
         webTestClient
             .delete()
             .uri(String.format("/api/v1/ppr/platform/%s/profile/%s/role/%s", ID, ID, ID))
@@ -361,18 +326,14 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isOk()
-            .expectBody(PlatformProfileRoleResponse.class)
+            .expectBody(AllPurposeResponse.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(platformProfileRoleResponse);
-    assertNotNull(platformProfileRoleResponse.getResponseMetadata());
+    assertNotNull(allPurposeResponse);
+    assertNotNull(allPurposeResponse.getResponseMetadata());
     assertEquals(
-        1,
-        platformProfileRoleResponse
-            .getResponseMetadata()
-            .getResponseCrudInfo()
-            .getDeletedRowsCount());
+        1, allPurposeResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
 
     // verify audit service called for unassign platform role success
     verify(auditService, after(100).times(1))

@@ -21,4 +21,5 @@ public class PlatformDto {
   private String platformDesc;
 
   private List<PlatformDtoProfileRole> profileRoles;
+  private List<PlatformDtoRoleProfile> roleProfiles;
 }

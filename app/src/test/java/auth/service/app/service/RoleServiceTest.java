@@ -18,7 +18,6 @@ import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.token.AuthToken;
-import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,13 +58,13 @@ public class RoleServiceTest extends BaseTest {
     reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     AuthToken authToken = TestData.getAuthToken();
-    authToken.setSuperUser(true);
+    authToken.setIsSuperUser(true);
     Authentication authentication =
         new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     authentication.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    RequestMetadata requestMetadata = CommonUtils.defaultRequestMetadata("roleName");
+    RequestMetadata requestMetadata = TestData.defaultRequestMetadata("roleName");
     requestMetadata.setSortDirection(Sort.Direction.ASC);
     requestMetadata.setIncludeDeleted(true);
     Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);

@@ -32,6 +32,13 @@ public interface PlatformProfileRoleRepository
 
   @Query(
       "SELECT ppre FROM PlatformProfileRoleEntity ppre "
+          + "WHERE ppre.id.platformId = :platformId "
+          + "AND ppre.id.profileId = :profileId ")
+  List<PlatformProfileRoleEntity> findByPlatformIdAndProfileId(
+      @Param("platformId") final Long platformId, @Param("profileId") final Long profileId);
+
+  @Query(
+      "SELECT ppre FROM PlatformProfileRoleEntity ppre "
           + "WHERE ppre.id.platformId in (:platformIds) "
           + "ORDER BY ppre.platform.platformName, ppre.profile.lastName, ppre.role.roleName")
   List<PlatformProfileRoleEntity> findByPlatformIds(

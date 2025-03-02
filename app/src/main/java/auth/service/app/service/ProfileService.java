@@ -27,7 +27,6 @@ import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.JpaDataUtils;
 import auth.service.app.util.PasswordUtils;
 import java.time.LocalDateTime;
@@ -101,13 +100,9 @@ public class ProfileService {
   // READ
   public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
     log.debug("Read Profiles: [{}]", requestMetadata);
-    final RequestMetadata requestMetadataToUse =
-        CommonUtils.isRequestMetadataIncluded(requestMetadata)
-            ? requestMetadata
-            : CommonUtils.defaultRequestMetadata("lastName");
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadataToUse);
+    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
     final Specification<ProfileEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadataToUse);
+        JpaDataUtils.getQuerySpecification(requestMetadata);
     return profileRepository.findAll(specification, pageable);
   }
 
@@ -274,7 +269,6 @@ public class ProfileService {
   }
 
   // OTHERS
-  @Transactional
   public ProfilePasswordTokenResponse loginProfile(
       final Long platformId,
       final ProfilePasswordRequest profilePasswordRequest,
@@ -304,7 +298,6 @@ public class ProfileService {
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         platformProfileRoleService.readPlatformProfileRole(
             platformId, profilePasswordRequest.getEmail());
-    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
     profileEntity.setPassword(passwordUtils.hashPassword(profilePasswordRequest.getPassword()));
     return updateProfile(profileEntity);
@@ -315,7 +308,6 @@ public class ProfileService {
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         platformProfileRoleService.readPlatformProfileRole(
             platformId, decodeEmailAddress(encodedEmail));
-    CommonUtils.validatePlatformProfileRoleNotDeleted(platformProfileRoleEntity);
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
 
     if (isValidate) {
@@ -346,7 +338,7 @@ public class ProfileService {
   }
 
   private void createProfileValidate(final ProfileRequest profileRequest) {
-    // password and app are required for create user
+    // password required for create profile
     if (!StringUtils.hasText(profileRequest.getPassword())) {
       throw new ElementMissingException("Profile", "password");
     }

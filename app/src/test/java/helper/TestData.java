@@ -11,6 +11,7 @@ import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileDtoPlatformRole;
 import auth.service.app.model.dto.ProfileRequest;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -35,7 +36,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Sort;
 
 public class TestData {
 
@@ -245,25 +248,28 @@ public class TestData {
     return profileDtoOutput;
   }
 
-  public static ProfileDto getProfileDtoWithPermission(
-      final String permissionName, final ProfileDto profileDtoInput) {
+  public static ProfileDto getProfileDtoWithPermissions(
+      final List<String> permissionNames, final ProfileDto profileDtoInput) {
     ProfileDto profileDtoOutput = new ProfileDto();
     BeanUtils.copyProperties(profileDtoInput, profileDtoOutput, "platformRoles");
 
     PlatformDto platformDto = profileDtoInput.getPlatformRoles().getFirst().getPlatform();
-
-    PermissionDto permissionDto =
-        PermissionDto.builder()
-            .id(-1L)
-            .permissionName(permissionName)
-            .permissionDesc(permissionName)
-            .build();
+    List<PermissionDto> permissionDtos =
+        permissionNames.stream()
+            .map(
+                permissionName ->
+                    PermissionDto.builder()
+                        .id(-1L)
+                        .permissionName(permissionName)
+                        .permissionDesc(permissionName)
+                        .build())
+            .toList();
 
     List<RoleDto> roleDtos =
         profileDtoInput.getPlatformRoles().stream()
             .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
             .toList();
-    roleDtos.forEach(roleDto -> roleDto.setPermissions(List.of(permissionDto)));
+    roleDtos.forEach(roleDto -> roleDto.setPermissions(permissionDtos));
     profileDtoOutput.setPlatformRoles(
         List.of(ProfileDtoPlatformRole.builder().platform(platformDto).roles(roleDtos).build()));
     return profileDtoOutput;
@@ -327,6 +333,23 @@ public class TestData {
         .build();
   }
 
+  public static AuthToken getAuthTokenWithPermissions(List<String> permissionNames) {
+    return AuthToken.builder()
+        .platform(AuthTokenPlatform.builder().id(1L).platformName("PLATFORM-1").build())
+        .profile(AuthTokenProfile.builder().id(1L).email("firstlast@one.com").build())
+        .roles(List.of(AuthTokenRole.builder().id(1L).roleName("ROLE-1").build()))
+        .permissions(
+            IntStream.range(0, permissionNames.size())
+                .mapToObj(
+                    i ->
+                        AuthTokenPermission.builder()
+                            .id((long) i)
+                            .permissionName(permissionNames.get(i))
+                            .build())
+                .toList())
+        .build();
+  }
+
   public static String getBearerAuthCredentialsForTest(
       final PlatformEntity platformEntity, final ProfileDto profileDto) {
     return JwtUtils.encodeAuthCredentials(platformEntity, profileDto, 1000 * 60 * 15);
@@ -341,5 +364,20 @@ public class TestData {
     tokenEntity.setPlatform(platformEntity);
     tokenEntity.setProfile(profileEntity);
     return tokenEntity;
+  }
+
+  public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
+    return RequestMetadata.builder()
+        .isIncludePermissions(false)
+        .isIncludePlatforms(false)
+        .isIncludeProfiles(false)
+        .isIncludeRoles(false)
+        .isIncludeDeleted(false)
+        .isIncludeHistory(false)
+        .pageNumber(1)
+        .perPage(100)
+        .sortColumn(sortColumn)
+        .sortDirection(Sort.Direction.ASC)
+        .build();
   }
 }

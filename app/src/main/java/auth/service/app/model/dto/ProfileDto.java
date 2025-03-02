@@ -39,6 +39,7 @@ public class ProfileDto {
 
   private ProfileAddressDto profileAddress;
   private List<ProfileDtoPlatformRole> platformRoles;
+  private List<ProfileDtoRolePlatform> rolePlatforms;
 
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
     final AuthTokenPlatform authTokenPlatform =

@@ -24,6 +24,7 @@ import auth.service.app.repository.PermissionRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testCreatePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_CREATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_CREATE"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
@@ -237,7 +239,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermissions_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -291,7 +294,7 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, permissionResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, permissionResponse.getRequestMetadata().getPerPage()),
         () ->
             assertEquals("permissionName", permissionResponse.getRequestMetadata().getSortColumn()),
@@ -303,7 +306,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermissions_Success_RequestMetadata() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -311,7 +315,7 @@ public class PermissionControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/permissions?pageNumber=0&perPage=10&sortColumn=permissionDesc&sortDirection=DESC")
+                "/api/v1/permissions?pageNumber=1&perPage=10&sortColumn=permissionDesc&sortDirection=DESC")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -358,7 +362,7 @@ public class PermissionControllerTest extends BaseTest {
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(permissionResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, permissionResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, permissionResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, permissionResponse.getRequestMetadata().getPerPage()),
         () ->
             assertEquals("permissionDesc", permissionResponse.getRequestMetadata().getSortColumn()),
@@ -432,7 +436,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -461,7 +466,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testReadPermission_Success_IncludeDeletedFalse() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_READ", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -567,7 +573,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testUpdatePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_UPDATE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_UPDATE"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
@@ -745,7 +752,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testSoftDeletePermission_Success() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_DELETE"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -911,7 +919,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testHardDeletePermission_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_DELETE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_DELETE"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -990,7 +999,8 @@ public class PermissionControllerTest extends BaseTest {
   @Test
   void testRestorePermission_FailureNoPermission() {
     profileDtoWithPermission =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PERMISSION_RESTORE", profileDtoNoPermission);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_RESTORE"), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 

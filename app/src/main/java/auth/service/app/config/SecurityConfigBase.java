@@ -5,7 +5,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import auth.service.app.exception.handler.CustomAccessDeniedHandler;
 import auth.service.app.exception.handler.CustomAuthenticationEntrypoint;
 import auth.service.app.filter.JwtAuthFilter;
-import auth.service.app.service.ProfileService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -18,12 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public abstract class SecurityConfigBase {
-
-  protected final ProfileService profileService;
-
-  protected SecurityConfigBase(ProfileService profileService) {
-    this.profileService = profileService;
-  }
 
   @Bean
   @Order(1)
@@ -82,8 +75,7 @@ public abstract class SecurityConfigBase {
               return true;
             })
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-        .addFilterBefore(
-            new JwtAuthFilter(profileService), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(

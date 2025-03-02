@@ -23,6 +23,7 @@ import auth.service.app.repository.PlatformRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -101,7 +102,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testCreatePlatform_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_CREATE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_CREATE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
@@ -261,7 +263,7 @@ public class PlatformControllerTest extends BaseTest {
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, platformResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, platformResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(100, platformResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("platformName", platformResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -279,7 +281,7 @@ public class PlatformControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/platforms?isIncludeProfiles=true&pageNumber=0&perPage=10&sortColumn=platformDesc&sortDirection=DESC")
+                "/api/v1/platforms?isIncludeProfiles=true&pageNumber=1&perPage=10&sortColumn=platformDesc&sortDirection=DESC")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
@@ -324,7 +326,7 @@ public class PlatformControllerTest extends BaseTest {
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeRoles()),
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeDeleted()),
         () -> assertFalse(platformResponse.getRequestMetadata().isIncludeHistory()),
-        () -> assertEquals(0, platformResponse.getRequestMetadata().getPageNumber()),
+        () -> assertEquals(1, platformResponse.getRequestMetadata().getPageNumber()),
         () -> assertEquals(10, platformResponse.getRequestMetadata().getPerPage()),
         () -> assertEquals("platformDesc", platformResponse.getRequestMetadata().getSortColumn()),
         () ->
@@ -335,7 +337,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testReadPlatforms_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_READ", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_READ"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
@@ -436,7 +439,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testReadPlatform_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_READ", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_READ"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
@@ -531,7 +535,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testUpdatePlatform_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_UPDATE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_UPDATE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
@@ -677,7 +682,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testSoftDeletePlatform_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_DELETE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_DELETE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
@@ -779,7 +785,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testHardDeletePlatform_FailureNoPlatform() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_DELETE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_DELETE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
@@ -846,7 +853,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testRestorePlatform_FailureNoSuperUser() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_RESTORE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_RESTORE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
@@ -874,7 +882,8 @@ public class PlatformControllerTest extends BaseTest {
   @Test
   void testRestorePlatform_FailureNoPlatform() {
     profileDtoWithPlatform =
-        TestData.getProfileDtoWithPermission("AUTHSVC_PLATFORM_RESTORE", profileDtoNoPlatform);
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PLATFORM_RESTORE"), profileDtoNoPlatform);
     String bearerAuthCredentialsWithPlatform =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
 
