@@ -80,7 +80,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSinglePermission_NullEntity() {
     ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseSinglePermission(null, null);
+        entityDtoConvertUtils.getResponseSinglePermission(null, null, null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getPermissions());
@@ -113,7 +113,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PermissionEntity entity = permissionEntities.getFirst();
     ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseSinglePermission(entity, null);
+        entityDtoConvertUtils.getResponseSinglePermission(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -199,7 +199,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSingleRole_NullEntity() {
-    ResponseEntity<RoleResponse> response = entityDtoConvertUtils.getResponseSingleRole(null, null);
+    ResponseEntity<RoleResponse> response = entityDtoConvertUtils.getResponseSingleRole(null, null, null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getRoles());
@@ -225,7 +225,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     RoleEntity entity = roleEntities.getFirst();
     ResponseEntity<RoleResponse> response =
-        entityDtoConvertUtils.getResponseSingleRole(entity, null);
+        entityDtoConvertUtils.getResponseSingleRole(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -255,7 +255,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     RoleEntity entity = roleEntities.getFirst();
     ResponseEntity<RoleResponse> response =
-        entityDtoConvertUtils.getResponseSingleRole(entity, null);
+        entityDtoConvertUtils.getResponseSingleRole(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -602,7 +602,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSinglePlatform_NullEntity() {
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseSinglePlatform(null, null);
+        entityDtoConvertUtils.getResponseSinglePlatform(null, null, null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getPlatforms());
@@ -628,7 +628,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PlatformEntity entity = platformEntities.getFirst();
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseSinglePlatform(entity, null);
+        entityDtoConvertUtils.getResponseSinglePlatform(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -657,7 +657,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PlatformEntity entity = platformEntities.getFirst();
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseSinglePlatform(entity, null);
+        entityDtoConvertUtils.getResponseSinglePlatform(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -909,7 +909,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   @Test
   void testGetResponseSingleProfile_NullEntity() {
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseSingleProfile(null, null);
+        entityDtoConvertUtils.getResponseSingleProfile(null, null, null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getProfiles());
@@ -935,7 +935,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ProfileEntity entity = profileEntities.getFirst();
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseSingleProfile(entity, null);
+        entityDtoConvertUtils.getResponseSingleProfile(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -964,7 +964,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ProfileEntity entity = profileEntities.getFirst();
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseSingleProfile(entity, null);
+        entityDtoConvertUtils.getResponseSingleProfile(entity, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());

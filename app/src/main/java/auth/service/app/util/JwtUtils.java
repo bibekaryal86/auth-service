@@ -31,6 +31,8 @@ import lombok.NoArgsConstructor;
 public class JwtUtils {
 
   private static final String SECRET_KEY = getSystemEnvProperty(ENV_SECRET_KEY);
+  private static final ObjectMapper OBJECT_MAPPER =
+      new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
   private static SecretKey getSigningKey() {
     return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
@@ -104,10 +106,7 @@ public class JwtUtils {
           Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
 
       final AuthToken authToken =
-          new ObjectMapper()
-              .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-              .convertValue(claims.get(TOKEN_CLAIM_AUTH), AuthToken.class);
-
+          OBJECT_MAPPER.convertValue(claims.get(TOKEN_CLAIM_AUTH), AuthToken.class);
       return Map.of(subject, authToken);
     } catch (ExpiredJwtException e) {
       throw new JwtInvalidException("Expired Auth Credentials");

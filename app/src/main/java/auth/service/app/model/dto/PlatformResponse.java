@@ -12,4 +12,5 @@ public class PlatformResponse {
   private List<PlatformDto> platforms;
   private ResponseMetadata responseMetadata;
   private RequestMetadata requestMetadata;
+  private AuditResponse auditResponse;
 }

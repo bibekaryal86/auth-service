@@ -5,6 +5,7 @@ import static auth.service.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
 import auth.service.app.model.dto.AllPurposeResponse;
+import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
@@ -78,7 +79,10 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PermissionResponse> getResponseSinglePermission(
-      final PermissionEntity permissionEntity, final ResponseCrudInfo responseCrudInfo) {
+      final PermissionEntity permissionEntity,
+      final ResponseCrudInfo responseCrudInfo,
+      final RequestMetadata requestMetadata,
+      final AuditResponse auditResponse) {
     final List<PermissionDto> permissionDtos =
         (permissionEntity == null || permissionEntity.getId() == null)
             ? Collections.emptyList()
@@ -95,6 +99,8 @@ public class EntityDtoConvertUtils {
                             ? CommonUtils.emptyResponseCrudInfo()
                             : responseCrudInfo)
                     .build())
+            .requestMetadata(requestMetadata)
+            .auditResponse(auditResponse)
             .build(),
         getHttpStatusForSingleResponse(permissionEntity));
   }
@@ -407,7 +413,10 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<RoleResponse> getResponseSingleRole(
-      final RoleEntity roleEntity, final ResponseCrudInfo responseCrudInfo) {
+      final RoleEntity roleEntity,
+      final ResponseCrudInfo responseCrudInfo,
+      final RequestMetadata requestMetadata,
+      final AuditResponse auditResponse) {
     final List<PermissionEntity> permissionEntitiesRole =
         (roleEntity == null || roleEntity.getId() == null)
             ? Collections.emptyList()
@@ -428,6 +437,8 @@ public class EntityDtoConvertUtils {
                             ? CommonUtils.emptyResponseCrudInfo()
                             : responseCrudInfo)
                     .build())
+            .requestMetadata(requestMetadata)
+            .auditResponse(auditResponse)
             .build(),
         getHttpStatusForSingleResponse(roleEntity));
   }
@@ -709,7 +720,10 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
-      final PlatformEntity platformEntity, final ResponseCrudInfo responseCrudInfo) {
+      final PlatformEntity platformEntity,
+      final ResponseCrudInfo responseCrudInfo,
+      final RequestMetadata requestMetadata,
+      final AuditResponse auditResponse) {
     final List<PlatformDto> platformDtos =
         (platformEntity == null || platformEntity.getId() == null)
             ? Collections.emptyList()
@@ -726,6 +740,8 @@ public class EntityDtoConvertUtils {
                             ? CommonUtils.emptyResponseCrudInfo()
                             : responseCrudInfo)
                     .build())
+            .requestMetadata(requestMetadata)
+            .auditResponse(auditResponse)
             .build(),
         getHttpStatusForSingleResponse(platformEntity));
   }
@@ -1048,7 +1064,10 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseSingleProfile(
-      final ProfileEntity profileEntity, final ResponseCrudInfo responseCrudInfo) {
+      final ProfileEntity profileEntity,
+      final ResponseCrudInfo responseCrudInfo,
+      final RequestMetadata requestMetadata,
+      final AuditResponse auditResponse) {
     final List<ProfileDto> profileDtos =
         (profileEntity == null || profileEntity.getId() == null)
             ? Collections.emptyList()
@@ -1065,6 +1084,8 @@ public class EntityDtoConvertUtils {
                             ? CommonUtils.emptyResponseCrudInfo()
                             : responseCrudInfo)
                     .build())
+            .requestMetadata(requestMetadata)
+            .auditResponse(auditResponse)
             .build(),
         getHttpStatusForSingleResponse(profileEntity));
   }
