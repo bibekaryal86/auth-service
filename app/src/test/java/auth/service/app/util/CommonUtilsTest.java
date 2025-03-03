@@ -200,11 +200,11 @@ public class CommonUtilsTest extends BaseTest {
             ResponsePageInfo.builder()
                 .totalItems(5000)
                 .totalPages(50)
-                .pageNumber(9)
+                .pageNumber(10)
                 .perPage(100)
                 .build()),
         Arguments.of(
-            new PageImpl<>(Collections.nCopies(5, new Object()), PageRequest.of(1, 10), 50),
+            new PageImpl<>(Collections.nCopies(5, new Object()), PageRequest.of(0, 10), 50),
             ResponsePageInfo.builder()
                 .totalItems(50)
                 .totalPages(5)

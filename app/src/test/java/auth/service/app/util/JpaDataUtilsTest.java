@@ -59,6 +59,30 @@ public class JpaDataUtilsTest extends BaseTest {
   }
 
   @Test
+  void testGetQueryPageableAudit_NullRequestMetadata() {
+    Pageable result = JpaDataUtils.getQueryPageableAudit(null);
+    assertNotNull(result);
+    assertEquals(0, result.getPageNumber());
+    assertEquals(100, result.getPageSize());
+    assertTrue(result.getSort().isUnsorted());
+  }
+
+  @Test
+  void testGetQueryPageableAudit_WithResponseMetadata() {
+    RequestMetadata requestMetadata = new RequestMetadata();
+    requestMetadata.setHistoryPage(1);
+    requestMetadata.setHistorySize(10);
+
+    Pageable result = JpaDataUtils.getQueryPageableAudit(requestMetadata);
+
+    assertNotNull(result);
+    assertEquals(0, result.getPageNumber());
+    assertEquals(10, result.getPageSize());
+    assertEquals("createdAt", result.getSort().iterator().next().getProperty());
+    assertEquals(Sort.Direction.DESC, result.getSort().iterator().next().getDirection());
+  }
+
+  @Test
   void testShouldIncludeDeletedRecords_IsIncludeDeletedFalse() {
     RequestMetadata requestMetadata = RequestMetadata.builder().isIncludeDeleted(false).build();
     boolean actual = JpaDataUtils.shouldIncludeDeletedRecords(requestMetadata);
