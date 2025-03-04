@@ -139,10 +139,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PermissionDto dto = response.getBody().getPermissions().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(arInput, dto.getAuditResponse());
     assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
     assertEquals(rmInput, response.getBody().getRequestMetadata());
-    assertEquals(arInput, response.getBody().getAuditResponse());
-    ;
   }
 
   @Test
@@ -269,9 +268,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     RoleDto dto = response.getBody().getRoles().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(arInput, dto.getAuditResponse());
     assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
     assertEquals(rmInput, response.getBody().getRequestMetadata());
-    assertEquals(arInput, response.getBody().getAuditResponse());
     ;
 
     assertFalse(dto.getPermissions().isEmpty());
@@ -689,10 +688,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PlatformDto dto = response.getBody().getPlatforms().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(arInput, dto.getAuditResponse());
     assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
     assertEquals(rmInput, response.getBody().getRequestMetadata());
-    assertEquals(arInput, response.getBody().getAuditResponse());
-    ;
 
     assertFalse(dto.getProfileRoles().isEmpty());
     assertFalse(dto.getRoleProfiles().isEmpty());
@@ -1013,10 +1011,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ProfileDto dto = response.getBody().getProfiles().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(arInput, dto.getAuditResponse());
     assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
     assertEquals(rmInput, response.getBody().getRequestMetadata());
-    assertEquals(arInput, response.getBody().getAuditResponse());
-    ;
 
     assertFalse(dto.getPlatformRoles().isEmpty());
     assertFalse(dto.getRolePlatforms().isEmpty());

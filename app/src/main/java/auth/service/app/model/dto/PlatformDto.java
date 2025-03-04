@@ -22,4 +22,6 @@ public class PlatformDto {
 
   private List<PlatformDtoProfileRole> profileRoles;
   private List<PlatformDtoRoleProfile> roleProfiles;
+
+  private AuditResponse auditResponse;
 }

@@ -12,5 +12,4 @@ public class RoleResponse {
   private List<RoleDto> roles;
   private ResponseMetadata responseMetadata;
   private RequestMetadata requestMetadata;
-  private AuditResponse auditResponse;
 }

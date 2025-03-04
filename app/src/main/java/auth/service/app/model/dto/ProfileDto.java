@@ -41,6 +41,8 @@ public class ProfileDto {
   private List<ProfileDtoPlatformRole> platformRoles;
   private List<ProfileDtoRolePlatform> rolePlatforms;
 
+  private AuditResponse auditResponse;
+
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
     final AuthTokenPlatform authTokenPlatform =
         AuthTokenPlatform.builder()
