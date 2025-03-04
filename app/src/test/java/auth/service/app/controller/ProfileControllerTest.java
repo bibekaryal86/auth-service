@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -22,6 +23,7 @@ import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
@@ -211,7 +213,7 @@ public class ProfileControllerTest extends BaseTest {
     ProfileResponse profileResponse =
         webTestClient
             .get()
-            .uri("/api/v1/profiles/platform/4")
+            .uri(String.format("/api/v1/profiles/platform/%s", 4L))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -272,7 +274,9 @@ public class ProfileControllerTest extends BaseTest {
         webTestClient
             .get()
             .uri(
-                "/api/v1/profiles/platform/4?isIncludeRoles=true&isIncludePlatforms=true&isIncludeDeleted=true&pageNumber=1&perPage=10&sortColumn=firstName&sortDirection=DESC")
+                String.format(
+                    "/api/v1/profiles/platform/%s?isIncludeRoles=true&isIncludePlatforms=true&isIncludeDeleted=true&pageNumber=1&perPage=10&sortColumn=firstName&sortDirection=DESC",
+                    4L))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -331,7 +335,7 @@ public class ProfileControllerTest extends BaseTest {
   void testReadProfilesByPlatformId_FailureNoAuth() {
     webTestClient
         .get()
-        .uri("/api/v1/profiles/platform/4")
+        .uri(String.format("/api/v1/profiles/platform/%s", 4L))
         .exchange()
         .expectStatus()
         .isUnauthorized();
@@ -355,6 +359,30 @@ public class ProfileControllerTest extends BaseTest {
     assertNotNull(profileResponse.getProfiles());
     assertEquals(1, profileResponse.getProfiles().size());
     assertEquals(ID, profileResponse.getProfiles().getFirst().getId());
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testReadProfile_Success_WithAudit() {
+    ProfileResponse profileResponse =
+        webTestClient
+            .get()
+            .uri(String.format("/api/v1/profiles/profile/%s?isIncludeHistory=true", ID))
+            .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(ProfileResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(profileResponse);
+    assertNotNull(profileResponse.getProfiles());
+    assertEquals(1, profileResponse.getProfiles().size());
+    assertEquals(ID, profileResponse.getProfiles().getFirst().getId());
+
+    verify(auditService).auditProfiles(any(RequestMetadata.class), eq(ID));
   }
 
   @Test
@@ -510,7 +538,7 @@ public class ProfileControllerTest extends BaseTest {
     ProfileResponse profileResponse =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/profiles/profile/%s", 4))
+            .uri(String.format("/api/v1/profiles/profile/%s", 4L))
             .bodyValue(profileRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -572,7 +600,7 @@ public class ProfileControllerTest extends BaseTest {
             null);
     webTestClient
         .put()
-        .uri(String.format("/api/v1/profiles/profile/%s", 4))
+        .uri(String.format("/api/v1/profiles/profile/%s", 4L))
         .bodyValue(profileRequest)
         .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
@@ -658,7 +686,7 @@ public class ProfileControllerTest extends BaseTest {
     ProfileResponse profileResponse =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/email", 4, 4))
+            .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/email", 4L, 4L))
             .bodyValue(profileEmailRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -713,7 +741,7 @@ public class ProfileControllerTest extends BaseTest {
 
     webTestClient
         .put()
-        .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/email", 2, 2))
+        .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/email", 2L, 2L))
         .bodyValue(profileEmailRequest)
         .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
@@ -793,7 +821,7 @@ public class ProfileControllerTest extends BaseTest {
     ProfileResponse profileResponse =
         webTestClient
             .put()
-            .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 4, 4))
+            .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 4L, 4L))
             .bodyValue(profilePasswordRequest)
             .header("Authorization", "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -842,7 +870,7 @@ public class ProfileControllerTest extends BaseTest {
         new ProfilePasswordRequest("firstlast-1@one.com", "password-one-fail");
     webTestClient
         .put()
-        .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 4, 4))
+        .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 4L, 4L))
         .header("Authorization", "Bearer " + bearerAuthCredentialsNoPermission)
         .bodyValue(profilePasswordRequest)
         .exchange()
@@ -881,7 +909,7 @@ public class ProfileControllerTest extends BaseTest {
   void testDeleteProfileAddress_FailureWithNoBearerAuth() {
     webTestClient
         .delete()
-        .uri(String.format("/api/v1/profiles/profile/%s/address/%s", 3, 5))
+        .uri(String.format("/api/v1/profiles/profile/%s/address/%s", 3L, 5L))
         .exchange()
         .expectStatus()
         .isUnauthorized();

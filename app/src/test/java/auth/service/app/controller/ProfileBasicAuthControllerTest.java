@@ -68,7 +68,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   private static final String NEW_USER_NEW_EMAIL = "new-user@new-email.com";
   private static final String NEW_USER_NEW_PASSWORD = "new-user-new-password";
-  private static final Long GUEST_ROLE_ID = 3L;
   private static PlatformEntity platformEntity;
   private static ProfileEntity profileEntity;
   private static RoleEntity roleEntity;
