@@ -17,6 +17,7 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.AllPurposeResponse;
+import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
@@ -26,6 +27,7 @@ import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
@@ -112,8 +114,21 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     PermissionEntity entity = permissionEntities.getFirst();
+    ResponseCrudInfo rciInput = ResponseCrudInfo.builder().insertedRowsCount(1).build();
+    RequestMetadata rmInput =
+        RequestMetadata.builder().isIncludeHistory(true).historyPage(1).historySize(10).build();
+    AuditResponse arInput =
+        AuditResponse.builder()
+            .auditPageInfo(
+                ResponsePageInfo.builder()
+                    .pageNumber(1)
+                    .perPage(10)
+                    .totalItems(3)
+                    .totalPages(1)
+                    .build())
+            .build();
     ResponseEntity<PermissionResponse> response =
-        entityDtoConvertUtils.getResponseSinglePermission(entity, null, null, null);
+        entityDtoConvertUtils.getResponseSinglePermission(entity, rciInput, rmInput, arInput);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -124,6 +139,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PermissionDto dto = response.getBody().getPermissions().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertEquals(rmInput, response.getBody().getRequestMetadata());
+    assertEquals(arInput, response.getBody().getAuditResponse());
+    ;
   }
 
   @Test
@@ -199,7 +218,8 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseSingleRole_NullEntity() {
-    ResponseEntity<RoleResponse> response = entityDtoConvertUtils.getResponseSingleRole(null, null, null, null);
+    ResponseEntity<RoleResponse> response =
+        entityDtoConvertUtils.getResponseSingleRole(null, null, null, null);
     assertNotNull(response);
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getRoles());
@@ -224,8 +244,21 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     RoleEntity entity = roleEntities.getFirst();
+    ResponseCrudInfo rciInput = ResponseCrudInfo.builder().insertedRowsCount(1).build();
+    RequestMetadata rmInput =
+        RequestMetadata.builder().isIncludeHistory(true).historyPage(1).historySize(10).build();
+    AuditResponse arInput =
+        AuditResponse.builder()
+            .auditPageInfo(
+                ResponsePageInfo.builder()
+                    .pageNumber(1)
+                    .perPage(10)
+                    .totalItems(3)
+                    .totalPages(1)
+                    .build())
+            .build();
     ResponseEntity<RoleResponse> response =
-        entityDtoConvertUtils.getResponseSingleRole(entity, null, null, null);
+        entityDtoConvertUtils.getResponseSingleRole(entity, rciInput, rmInput, arInput);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -236,6 +269,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     RoleDto dto = response.getBody().getRoles().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertEquals(rmInput, response.getBody().getRequestMetadata());
+    assertEquals(arInput, response.getBody().getAuditResponse());
+    ;
 
     assertFalse(dto.getPermissions().isEmpty());
     assertFalse(dto.getPlatformProfiles().isEmpty());
@@ -627,8 +664,21 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     PlatformEntity entity = platformEntities.getFirst();
+    ResponseCrudInfo rciInput = ResponseCrudInfo.builder().insertedRowsCount(1).build();
+    RequestMetadata rmInput =
+        RequestMetadata.builder().isIncludeHistory(true).historyPage(1).historySize(10).build();
+    AuditResponse arInput =
+        AuditResponse.builder()
+            .auditPageInfo(
+                ResponsePageInfo.builder()
+                    .pageNumber(1)
+                    .perPage(10)
+                    .totalItems(3)
+                    .totalPages(1)
+                    .build())
+            .build();
     ResponseEntity<PlatformResponse> response =
-        entityDtoConvertUtils.getResponseSinglePlatform(entity, null, null, null);
+        entityDtoConvertUtils.getResponseSinglePlatform(entity, rciInput, rmInput, arInput);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -639,6 +689,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     PlatformDto dto = response.getBody().getPlatforms().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertEquals(rmInput, response.getBody().getRequestMetadata());
+    assertEquals(arInput, response.getBody().getAuditResponse());
+    ;
 
     assertFalse(dto.getProfileRoles().isEmpty());
     assertFalse(dto.getRoleProfiles().isEmpty());
@@ -934,8 +988,21 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
     ProfileEntity entity = profileEntities.getFirst();
+    ResponseCrudInfo rciInput = ResponseCrudInfo.builder().insertedRowsCount(1).build();
+    RequestMetadata rmInput =
+        RequestMetadata.builder().isIncludeHistory(true).historyPage(1).historySize(10).build();
+    AuditResponse arInput =
+        AuditResponse.builder()
+            .auditPageInfo(
+                ResponsePageInfo.builder()
+                    .pageNumber(1)
+                    .perPage(10)
+                    .totalItems(3)
+                    .totalPages(1)
+                    .build())
+            .build();
     ResponseEntity<ProfileResponse> response =
-        entityDtoConvertUtils.getResponseSingleProfile(entity, null, null, null);
+        entityDtoConvertUtils.getResponseSingleProfile(entity, rciInput, rmInput, arInput);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -946,6 +1013,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ProfileDto dto = response.getBody().getProfiles().getFirst();
     assertTrue(EntityDtoComparator.areEqual(entity, dto));
+    assertEquals(rciInput, response.getBody().getResponseMetadata().getResponseCrudInfo());
+    assertEquals(rmInput, response.getBody().getRequestMetadata());
+    assertEquals(arInput, response.getBody().getAuditResponse());
+    ;
 
     assertFalse(dto.getPlatformRoles().isEmpty());
     assertFalse(dto.getRolePlatforms().isEmpty());
