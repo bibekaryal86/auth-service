@@ -19,6 +19,8 @@ public class RequestMetadata {
   private boolean isIncludeHistory;
   private int pageNumber;
   private int perPage;
+  private int historyPage;
+  private int historySize;
   private String sortColumn;
   private Sort.Direction sortDirection;
 }

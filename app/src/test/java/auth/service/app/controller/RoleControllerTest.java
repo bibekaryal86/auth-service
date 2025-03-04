@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import auth.service.BaseTest;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.RoleResponse;
@@ -494,7 +496,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .get()
-            .uri("/api/v1/roles/role/1")
+            .uri(String.format("/api/v1/roles/role/%s", ID))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -506,6 +508,34 @@ public class RoleControllerTest extends BaseTest {
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getRoles());
     assertEquals(1, roleResponse.getRoles().size());
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testReadRole_Success_WithAudit() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(List.of("AUTHSVC_ROLE_READ"), profileDtoNoRole);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    RoleResponse roleResponse =
+        webTestClient
+            .get()
+            .uri(String.format("/api/v1/roles/role/%s?isIncludeHistory=true", ID))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(RoleResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(roleResponse);
+    assertNotNull(roleResponse.getRoles());
+    assertEquals(1, roleResponse.getRoles().size());
+
+    verify(auditService).auditRoles(any(RequestMetadata.class), eq(ID));
   }
 
   @Test
@@ -518,7 +548,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .get()
-            .uri("/api/v1/roles/role/3?isIncludeDeleted=true")
+            .uri(String.format("/api/v1/roles/role/%s?isIncludeDeleted=true", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -541,7 +571,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .get()
-            .uri("/api/v1/roles/role/3?isIncludeDeleted=true")
+            .uri(String.format("/api/v1/roles/role/%s?isIncludeDeleted=true", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -564,7 +594,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .get()
-            .uri("/api/v1/roles/role/1")
+            .uri(String.format("/api/v1/roles/role/%s", ID))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -580,14 +610,19 @@ public class RoleControllerTest extends BaseTest {
 
   @Test
   void testReadRole_FailureNoAuth() {
-    webTestClient.get().uri("/api/v1/roles/role/1").exchange().expectStatus().isUnauthorized();
+    webTestClient
+        .get()
+        .uri(String.format("/api/v1/roles/role/%s", ID))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @Test
   void testReadRole_FailureNoPermission() {
     webTestClient
         .get()
-        .uri("/api/v1/roles/role/1")
+        .uri(String.format("/api/v1/roles/role/%s", ID))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
@@ -602,7 +637,7 @@ public class RoleControllerTest extends BaseTest {
 
     webTestClient
         .get()
-        .uri("/api/v1/roles/role/9999")
+        .uri(String.format("/api/v1/roles/role/%s", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
@@ -623,7 +658,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .put()
-            .uri("/api/v1/roles/role/1")
+            .uri(String.format("/api/v1/roles/role/%s", ID))
             .bodyValue(roleRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -663,7 +698,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .put()
-            .uri("/api/v1/roles/role/1")
+            .uri(String.format("/api/v1/roles/role/%s", ID))
             .bodyValue(roleRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -695,7 +730,7 @@ public class RoleControllerTest extends BaseTest {
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/roles/role/1")
+        .uri(String.format("/api/v1/roles/role/%s", ID))
         .bodyValue(roleRequest)
         .exchange()
         .expectStatus()
@@ -708,7 +743,7 @@ public class RoleControllerTest extends BaseTest {
     roleRequest = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/roles/role/1")
+        .uri(String.format("/api/v1/roles/role/%s", ID))
         .bodyValue(roleRequest)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
@@ -727,7 +762,7 @@ public class RoleControllerTest extends BaseTest {
     ResponseMetadata responseMetadata =
         webTestClient
             .put()
-            .uri("/api/v1/roles/role/1")
+            .uri(String.format("/api/v1/roles/role/%s", ID))
             .bodyValue(roleRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -759,7 +794,7 @@ public class RoleControllerTest extends BaseTest {
     RoleResponse roleResponse =
         webTestClient
             .put()
-            .uri("/api/v1/roles/role/9999")
+            .uri(String.format("/api/v1/roles/role/%s", ID_NOT_FOUND))
             .bodyValue(roleRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -884,7 +919,7 @@ public class RoleControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/roles/role/9999")
+        .uri(String.format("/api/v1/roles/role/%s", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
@@ -962,7 +997,7 @@ public class RoleControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/roles/role/9999/hard")
+        .uri(String.format("/api/v1/roles/role/%s/hard", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
@@ -1040,7 +1075,7 @@ public class RoleControllerTest extends BaseTest {
 
     webTestClient
         .patch()
-        .uri("/api/v1/roles/role/9999/restore")
+        .uri(String.format("/api/v1/roles/role/%s/restore", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()

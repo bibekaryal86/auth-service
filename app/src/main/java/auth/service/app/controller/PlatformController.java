@@ -3,6 +3,7 @@ package auth.service.app.controller;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.model.annotation.CheckPermission;
+import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.RequestMetadata;
@@ -63,7 +64,8 @@ public class PlatformController {
                       "Platform Create [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Create Platform: [{}]", platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -111,11 +113,33 @@ public class PlatformController {
   @GetMapping("/platform/{id}")
   public ResponseEntity<PlatformResponse> readPlatform(
       @PathVariable final long id,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "1") final int historyPage,
+      @RequestParam(required = false, defaultValue = "100") final int historySize) {
     try {
       final PlatformEntity platformEntity =
           circularDependencyService.readPlatform(id, isIncludeDeleted);
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, null);
+
+      RequestMetadata requestMetadata = null;
+      AuditResponse auditResponse = null;
+      if (isIncludeHistory) {
+        requestMetadata =
+            RequestMetadata.builder()
+                .sortColumn("permissionName")
+                .sortDirection(Sort.Direction.ASC)
+                .isIncludeDeleted(isIncludeDeleted)
+                .isIncludeHistory(Boolean.TRUE)
+                .pageNumber(1)
+                .perPage(100)
+                .historyPage(historyPage)
+                .historySize(historySize)
+                .build();
+        auditResponse = auditService.auditPlatforms(requestMetadata, id);
+      }
+
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          platformEntity, null, requestMetadata, auditResponse);
     } catch (Exception ex) {
       log.error("Read Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -140,7 +164,8 @@ public class PlatformController {
                       "Platform Update [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Update Platform: [{}] | [{}]", id, platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -165,7 +190,7 @@ public class PlatformController {
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          new PlatformEntity(), responseCrudInfo);
+          new PlatformEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Soft Delete Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -190,7 +215,7 @@ public class PlatformController {
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          new PlatformEntity(), responseCrudInfo);
+          new PlatformEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Hard Delete Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
@@ -213,7 +238,8 @@ public class PlatformController {
                       "Platform Restore [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-      return entityDtoConvertUtils.getResponseSinglePlatform(platformEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSinglePlatform(
+          platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Restore Platform: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);

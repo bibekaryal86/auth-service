@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import auth.service.BaseTest;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
@@ -444,7 +446,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .get()
-            .uri("/api/v1/permissions/permission/1")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -461,6 +463,43 @@ public class PermissionControllerTest extends BaseTest {
     assertTrue(permissionResponse.getPermissions().getFirst().getRole().getPermissions().isEmpty());
     assertTrue(
         permissionResponse.getPermissions().getFirst().getRole().getPlatformProfiles().isEmpty());
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testReadPermission_Success_WithAudit() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(
+            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+
+    PermissionResponse permissionResponse =
+        webTestClient
+            .get()
+            .uri(String.format("/api/v1/permissions/permission/%s?isIncludeHistory=true", ID))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PermissionResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(permissionResponse);
+    assertNotNull(permissionResponse.getPermissions());
+    assertEquals(1, permissionResponse.getPermissions().size());
+    assertNotNull(permissionResponse.getPermissions().getFirst().getRole());
+    assertEquals(1L, permissionResponse.getPermissions().getFirst().getRole().getId());
+    assertTrue(permissionResponse.getPermissions().getFirst().getRole().getPermissions().isEmpty());
+    assertTrue(
+        permissionResponse.getPermissions().getFirst().getRole().getPlatformProfiles().isEmpty());
+    assertNotNull(permissionResponse.getRequestMetadata());
+    assertEquals(1, permissionResponse.getRequestMetadata().getHistoryPage());
+    assertEquals(100, permissionResponse.getRequestMetadata().getHistorySize());
+
+    verify(auditService).auditPermissions(any(RequestMetadata.class), eq(ID));
   }
 
   @Test
@@ -474,7 +513,9 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .get()
-            .uri("/api/v1/permissions/permission/3?isIncludeDeleted=true")
+            .uri(
+                String.format(
+                    "/api/v1/permissions/permission/%s?isIncludeDeleted=true", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -497,7 +538,9 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .get()
-            .uri("/api/v1/permissions/permission/3?isIncludeDeleted=true")
+            .uri(
+                String.format(
+                    "/api/v1/permissions/permission/%s?isIncludeDeleted=true", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -520,7 +563,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .get()
-            .uri("/api/v1/permissions/permission/1")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
             .expectStatus()
@@ -538,7 +581,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermission_FailureNoAuth() {
     webTestClient
         .get()
-        .uri("/api/v1/permissions/permission/1")
+        .uri(String.format("/api/v1/permissions/permission/%s", ID))
         .exchange()
         .expectStatus()
         .isUnauthorized();
@@ -548,7 +591,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermission_FailureNoPermission() {
     webTestClient
         .get()
-        .uri("/api/v1/permissions/permission/1")
+        .uri(String.format("/api/v1/permissions/permission/%s", ID))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
         .expectStatus()
@@ -585,7 +628,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .put()
-            .uri("/api/v1/permissions/permission/1")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID))
             .bodyValue(permissionRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -629,7 +672,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .put()
-            .uri("/api/v1/permissions/permission/1")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID))
             .bodyValue(permissionRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -665,7 +708,7 @@ public class PermissionControllerTest extends BaseTest {
     permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/permissions/permission/1")
+        .uri(String.format("/api/v1/permissions/permission/%s", ID))
         .bodyValue(permissionRequest)
         .exchange()
         .expectStatus()
@@ -678,7 +721,7 @@ public class PermissionControllerTest extends BaseTest {
     permissionRequest = new PermissionRequest(ID, "NEW_PERMISSION_NAME", "NEW_PERMISSION_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/permissions/permission/1")
+        .uri(String.format("/api/v1/permissions/permission/%s", ID))
         .bodyValue(permissionRequest)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPermission)
         .exchange()
@@ -697,7 +740,7 @@ public class PermissionControllerTest extends BaseTest {
     ResponseMetadata responseMetadata =
         webTestClient
             .put()
-            .uri("/api/v1/permissions/permission/1")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID))
             .bodyValue(permissionRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -730,7 +773,7 @@ public class PermissionControllerTest extends BaseTest {
     PermissionResponse permissionResponse =
         webTestClient
             .put()
-            .uri("/api/v1/permissions/permission/9999")
+            .uri(String.format("/api/v1/permissions/permission/%s", ID_NOT_FOUND))
             .bodyValue(permissionRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
             .exchange()
@@ -860,7 +903,7 @@ public class PermissionControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/permissions/permission/9999")
+        .uri(String.format("/api/v1/permissions/permission/%s", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
@@ -942,7 +985,7 @@ public class PermissionControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/permissions/permission/9999/hard")
+        .uri(String.format("/api/v1/permissions/permission/%s/hard", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()
@@ -1022,7 +1065,7 @@ public class PermissionControllerTest extends BaseTest {
 
     webTestClient
         .patch()
-        .uri("/api/v1/permissions/permission/9999/restore")
+        .uri(String.format("/api/v1/permissions/permission/%s/restore", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
         .exchange()
         .expectStatus()

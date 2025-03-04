@@ -3,6 +3,9 @@ package auth.service.app.service;
 import static auth.service.app.util.CommonUtils.getIpAddress;
 import static auth.service.app.util.CommonUtils.getUserAgent;
 
+import auth.service.app.model.dto.AuditResponse;
+import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -18,11 +21,15 @@ import auth.service.app.repository.AuditPlatformRepository;
 import auth.service.app.repository.AuditProfileRepository;
 import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.JpaDataUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -76,6 +83,16 @@ public class AuditService {
     }
   }
 
+  public AuditResponse auditPermissions(
+      final RequestMetadata requestMetadata, final Long permissionId) {
+    final Page<AuditPermissionEntity> auditEntityPage =
+        auditPermissionRepository.findByPermissionId(
+            permissionId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
+    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final List<AuditPermissionEntity> auditEntities = auditEntityPage.getContent();
+    return new AuditResponse(auditPageInfo, auditEntities, null, null, null);
+  }
+
   public void auditRole(
       final HttpServletRequest request,
       final RoleEntity roleEntity,
@@ -98,6 +115,15 @@ public class AuditService {
       log.error(
           "AuditRoleException: [{}], [{}], [{}]", roleEntity.getId(), eventType, eventDesc, ex);
     }
+  }
+
+  public AuditResponse auditRoles(final RequestMetadata requestMetadata, final Long roleId) {
+    final Page<AuditRoleEntity> auditEntityPage =
+        auditRoleRepository.findByRoleId(
+            roleId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
+    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final List<AuditRoleEntity> auditEntities = auditEntityPage.getContent();
+    return new AuditResponse(auditPageInfo, null, auditEntities, null, null);
   }
 
   public void auditPlatform(
@@ -128,6 +154,16 @@ public class AuditService {
     }
   }
 
+  public AuditResponse auditPlatforms(
+      final RequestMetadata requestMetadata, final Long platformId) {
+    final Page<AuditPlatformEntity> auditEntityPage =
+        auditPlatformRepository.findByPlatformId(
+            platformId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
+    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final List<AuditPlatformEntity> auditEntities = auditEntityPage.getContent();
+    return new AuditResponse(auditPageInfo, null, null, auditEntities, null);
+  }
+
   public void auditProfile(
       final HttpServletRequest request,
       final ProfileEntity profileEntity,
@@ -155,5 +191,14 @@ public class AuditService {
           eventDesc,
           ex);
     }
+  }
+
+  public AuditResponse auditProfiles(final RequestMetadata requestMetadata, final Long profileId) {
+    final Page<AuditProfileEntity> auditEntityPage =
+        auditProfileRepository.findByProfileId(
+            profileId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
+    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final List<AuditProfileEntity> auditEntities = auditEntityPage.getContent();
+    return new AuditResponse(auditPageInfo, null, null, null, auditEntities);
   }
 }

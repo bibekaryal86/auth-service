@@ -5,6 +5,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.annotation.CheckPermission;
+import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
@@ -146,12 +147,34 @@ public class ProfileController {
   @GetMapping("/profile/{id}")
   public ResponseEntity<ProfileResponse> readProfile(
       @PathVariable final long id,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "1") final int historyPage,
+      @RequestParam(required = false, defaultValue = "100") final int historySize) {
     try {
       permissionCheck.checkProfileAccess("", id);
       final ProfileEntity profileEntity =
           circularDependencyService.readProfile(id, isIncludeDeleted);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, null);
+
+      RequestMetadata requestMetadata = null;
+      AuditResponse auditResponse = null;
+      if (isIncludeHistory) {
+        requestMetadata =
+            RequestMetadata.builder()
+                .sortColumn("permissionName")
+                .sortDirection(Sort.Direction.ASC)
+                .isIncludeDeleted(isIncludeDeleted)
+                .isIncludeHistory(Boolean.TRUE)
+                .pageNumber(1)
+                .perPage(100)
+                .historyPage(historyPage)
+                .historySize(historySize)
+                .build();
+        auditResponse = auditService.auditProfiles(requestMetadata, id);
+      }
+
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          profileEntity, null, requestMetadata, auditResponse);
     } catch (Exception ex) {
       log.error("Read Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -176,7 +199,8 @@ public class ProfileController {
                       "Profile Update [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          profileEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Update Profile: [{}] | [{}]", id, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -218,7 +242,8 @@ public class ProfileController {
                       profileEmailRequest.getOldEmail(),
                       profileEmailRequest.getNewEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          profileEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error(
           "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
@@ -251,7 +276,8 @@ public class ProfileController {
                       "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
                       platformId, profileEntity.getId(), profileEntity.getEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          profileEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error(
           "Update Profile Password: [{}] | [{}] | [{}]",
@@ -280,7 +306,8 @@ public class ProfileController {
                       "Profile Delete Soft [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(new ProfileEntity(), responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          new ProfileEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Soft Delete Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -304,7 +331,8 @@ public class ProfileController {
                       "Profile Delete Hard [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(new ProfileEntity(), responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          new ProfileEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Hard Delete Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
@@ -327,7 +355,8 @@ public class ProfileController {
                       "Profile Restore [Id: %s] - [Email: %s]",
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleProfile(
+          profileEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Restore Profile: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

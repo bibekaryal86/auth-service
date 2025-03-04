@@ -268,3 +268,40 @@ INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
 VALUES (4, 4, 5);
 INSERT INTO platform_profile_role (platform_id, profile_id, role_id)
 VALUES (4, 4, 6);
+
+
+INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PeET-1', 'PeED-1', null, 1, 'IP-1', 'UA-1');
+INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PeET-2', 'PeED-2', null, 1, 'IP-1', 'UA-1');
+INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PeET-2', 'PeED-2', null, 1, 'IP-2', 'UA-2');
+INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (13, 'PeET-13', 'PeED-13', null, 13, 'IP-13', 'UA-13');
+
+INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'RET-1', 'RED-1', null, 1, 'IP-1', 'UA-1');
+INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'RET-2', 'RED-2', null, 1, 'IP-1', 'UA-1');
+INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'RET-2', 'RED-2', null, 1, 'IP-2', 'UA-2');
+INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (13, 'RET-13', 'RED-13', null, 13, 'IP-13', 'UA-13');
+
+INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PlET-1', 'PlED-1', null, 1, 'IP-1', 'User-Agent-1');
+INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PlET-2', 'PlED-2', null, 1, 'IP-1', 'User-Agent-1');
+INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PlET-2', 'PlED-2', null, 1, 'IP-2', 'User-Agent-2');
+INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (13, 'PlET-13', 'PlED-13', null, 13, 'IP-13', 'User-Agent-13');
+
+INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PrET-1', 'PrED-1', null, 1, 'IP-1', 'User-Agent-1');
+INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PrET-2', 'PrED-2', null, 1, 'IP-1', 'User-Agent-1');
+INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (1, 'PrET-2', 'PrED-2', null, 1, 'IP-2', 'User-Agent-2');
+INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
+VALUES (13, 'PrET-13', 'PrED-13', null, 13, 'IP-13', 'User-Agent-13');

@@ -49,6 +49,22 @@ public class JpaDataUtils {
   }
 
   /**
+   * Creates a Pageable object for pagination and sorting.
+   *
+   * @param requestMetadata Request Metadata.
+   * @return A Pageable object.
+   */
+  public static Pageable getQueryPageableAudit(final RequestMetadata requestMetadata) {
+    if (requestMetadata == null) {
+      return PageRequest.of(0, 100);
+    }
+    return PageRequest.of(
+        requestMetadata.getHistoryPage() - 1,
+        requestMetadata.getHistorySize(),
+        Sort.by(Sort.Direction.DESC, "createdAt"));
+  }
+
+  /**
    * Creates a Specification object for querying with filters.
    *
    * @param requestMetadata Request Metadata.

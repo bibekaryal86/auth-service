@@ -20,4 +20,5 @@ public class PermissionDto {
   private String permissionDesc;
 
   private RoleDto role;
+  private AuditResponse auditResponse;
 }

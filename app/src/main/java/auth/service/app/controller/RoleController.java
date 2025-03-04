@@ -3,6 +3,7 @@ package auth.service.app.controller;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.model.annotation.CheckPermission;
+import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseCrudInfo;
 import auth.service.app.model.dto.ResponsePageInfo;
@@ -63,7 +64,7 @@ public class RoleController {
                       "Role Create [Id: %s] - [Name: %s]",
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Create Role: [{}]", roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
@@ -115,10 +116,32 @@ public class RoleController {
   @GetMapping("/role/{id}")
   public ResponseEntity<RoleResponse> readRole(
       @PathVariable final long id,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
+      @RequestParam(required = false, defaultValue = "1") final int historyPage,
+      @RequestParam(required = false, defaultValue = "100") final int historySize) {
     try {
       final RoleEntity roleEntity = circularDependencyService.readRole(id, isIncludeDeleted);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, null);
+
+      RequestMetadata requestMetadata = null;
+      AuditResponse auditResponse = null;
+      if (isIncludeHistory) {
+        requestMetadata =
+            RequestMetadata.builder()
+                .sortColumn("permissionName")
+                .sortDirection(Sort.Direction.ASC)
+                .isIncludeDeleted(isIncludeDeleted)
+                .isIncludeHistory(Boolean.TRUE)
+                .pageNumber(1)
+                .perPage(100)
+                .historyPage(historyPage)
+                .historySize(historySize)
+                .build();
+        auditResponse = auditService.auditRoles(requestMetadata, id);
+      }
+
+      return entityDtoConvertUtils.getResponseSingleRole(
+          roleEntity, null, requestMetadata, auditResponse);
     } catch (Exception ex) {
       log.error("Read Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
@@ -143,7 +166,7 @@ public class RoleController {
                       "Role Update [Id: %s] - [Name: %s]",
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Update Role: [{}] | [{}]", id, roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
@@ -167,7 +190,7 @@ public class RoleController {
                       "Role Delete Soft [Id: %s] - [Name: %s]",
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Soft Delete Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
@@ -191,7 +214,7 @@ public class RoleController {
                       "Role Delete Hard [Id: %s] - [Name: %s]",
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Hard Delete Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
@@ -214,7 +237,7 @@ public class RoleController {
                       "Role Restore [Id: %s] - [Name: %s]",
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
       log.error("Restore Role: [{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);

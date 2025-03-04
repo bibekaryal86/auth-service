@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import auth.service.BaseTest;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
@@ -376,7 +378,7 @@ public class PlatformControllerTest extends BaseTest {
     PlatformResponse platformResponse =
         webTestClient
             .get()
-            .uri("/api/v1/platforms/platform/1")
+            .uri(String.format("/api/v1/platforms/platform/%s", ID))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
@@ -388,6 +390,33 @@ public class PlatformControllerTest extends BaseTest {
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getPlatforms());
     assertEquals(1, platformResponse.getPlatforms().size());
+
+    verifyNoInteractions(auditService);
+  }
+
+  @Test
+  void testReadPlatform_SuccessSuperUser_WithAudit() {
+    profileDtoWithPlatform = TestData.getProfileDtoWithSuperUserRole(profileDtoNoPlatform);
+    String bearerAuthCredentialsWithPlatform =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPlatform);
+
+    PlatformResponse platformResponse =
+        webTestClient
+            .get()
+            .uri(String.format("/api/v1/platforms/platform/%s?isIncludeHistory=true", ID))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(PlatformResponse.class)
+            .returnResult()
+            .getResponseBody();
+
+    assertNotNull(platformResponse);
+    assertNotNull(platformResponse.getPlatforms());
+    assertEquals(1, platformResponse.getPlatforms().size());
+
+    verify(auditService).auditPlatforms(any(RequestMetadata.class), eq(ID));
   }
 
   @Test
@@ -399,7 +428,7 @@ public class PlatformControllerTest extends BaseTest {
     PlatformResponse platformResponse =
         webTestClient
             .get()
-            .uri("/api/v1/platforms/platform/3?isIncludeDeleted=false")
+            .uri(String.format("/api/v1/platforms/platform/%s?isIncludeDeleted=false", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
@@ -422,7 +451,7 @@ public class PlatformControllerTest extends BaseTest {
     PlatformResponse platformResponse =
         webTestClient
             .get()
-            .uri("/api/v1/platforms/platform/3?isIncludeDeleted=true")
+            .uri(String.format("/api/v1/platforms/platform/%s?isIncludeDeleted=true", ID_DELETED))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
             .expectStatus()
@@ -446,7 +475,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .get()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
@@ -457,7 +486,7 @@ public class PlatformControllerTest extends BaseTest {
   void testReadPlatform_FailureNoAuth() {
     webTestClient
         .get()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .exchange()
         .expectStatus()
         .isUnauthorized();
@@ -467,7 +496,7 @@ public class PlatformControllerTest extends BaseTest {
   void testReadPlatform_FailureNoPlatform() {
     webTestClient
         .get()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
         .expectStatus()
@@ -482,7 +511,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .get()
-        .uri("/api/v1/platforms/platform/9999")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
@@ -502,7 +531,7 @@ public class PlatformControllerTest extends BaseTest {
     PlatformResponse platformResponse =
         webTestClient
             .put()
-            .uri("/api/v1/platforms/platform/1")
+            .uri(String.format("/api/v1/platforms/platform/%s", ID))
             .bodyValue(platformRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
@@ -543,7 +572,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .put()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .bodyValue(platformRequest)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
@@ -558,7 +587,7 @@ public class PlatformControllerTest extends BaseTest {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .bodyValue(platformRequest)
         .exchange()
         .expectStatus()
@@ -571,7 +600,7 @@ public class PlatformControllerTest extends BaseTest {
     platformRequest = new PlatformRequest("NEW_PLATFORM_NAME", "NEW_PLATFORM_DESC");
     webTestClient
         .put()
-        .uri("/api/v1/platforms/platform/1")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID))
         .bodyValue(platformRequest)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsNoPlatform)
         .exchange()
@@ -590,7 +619,7 @@ public class PlatformControllerTest extends BaseTest {
     ResponseMetadata responseMetadata =
         webTestClient
             .put()
-            .uri("/api/v1/platforms/platform/1")
+            .uri(String.format("/api/v1/platforms/platform/%s", ID))
             .bodyValue(platformRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
@@ -622,7 +651,7 @@ public class PlatformControllerTest extends BaseTest {
     PlatformResponse platformResponse =
         webTestClient
             .put()
-            .uri("/api/v1/platforms/platform/9999")
+            .uri(String.format("/api/v1/platforms/platform/%s", ID_NOT_FOUND))
             .bodyValue(platformRequest)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
             .exchange()
@@ -728,7 +757,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/platforms/platform/9999")
+        .uri(String.format("/api/v1/platforms/platform/%s", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
@@ -808,7 +837,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .delete()
-        .uri("/api/v1/platforms/platform/9999/hard")
+        .uri(String.format("/api/v1/platforms/platform/%s/hard", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
@@ -905,7 +934,7 @@ public class PlatformControllerTest extends BaseTest {
 
     webTestClient
         .patch()
-        .uri("/api/v1/platforms/platform/9999/restore")
+        .uri(String.format("/api/v1/platforms/platform/%s/restore", ID_NOT_FOUND))
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPlatform)
         .exchange()
         .expectStatus()
