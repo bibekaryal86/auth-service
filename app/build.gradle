@@ -1,8 +1,8 @@
 buildscript {
     dependencies {
-        classpath 'org.postgresql:postgresql:42.7.4'
-        classpath 'org.flywaydb:flyway-database-postgresql:11.0.0'
-        classpath 'org.yaml:snakeyaml:2.3'
+        classpath 'org.postgresql:postgresql:42.7.5'
+        classpath 'org.flywaydb:flyway-database-postgresql:11.4.0'
+        classpath 'org.yaml:snakeyaml:2.4'
     }
 }
 
@@ -10,15 +10,15 @@ plugins {
     id 'application'
     id 'java'
     id 'jacoco'
-    id 'io.freefair.lombok' version '8.11'
-    id 'org.springframework.boot' version '3.4.0'
-    id 'com.diffplug.spotless' version '6.25.0'
-    id 'org.flywaydb.flyway' version '11.0.0'
+    id 'io.freefair.lombok' version '8.13'
+    id 'org.springframework.boot' version '3.4.3'
+    id 'com.diffplug.spotless' version '7.0.2'
+    id 'org.flywaydb.flyway' version '11.3.3'
 }
 
 dependencies {
-    def springVersion = "3.4.0"
-    def junitVersion = "5.11.3"
+    def springVersion = "3.4.3"
+    def junitVersion = "5.12.1"
     def jjwtVersion = "0.12.6"
 
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springVersion"
@@ -26,18 +26,18 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-validation:$springVersion"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-    implementation 'io.swagger.parser.v3:swagger-parser:2.1.24'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+    implementation 'io.swagger.parser.v3:swagger-parser:2.1.25'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'ch.qos.logback:logback-classic:1.5.12'
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.mailjet:mailjet-client:5.2.5'
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.code.gson:gson:2.12.1'
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
-    runtimeOnly 'org.postgresql:postgresql:42.7.4'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.0.0'
+    runtimeOnly 'org.postgresql:postgresql:42.7.5'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.4.0'
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -45,12 +45,11 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-webflux:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
-    testImplementation 'org.mockito:mockito-core:5.14.2'
-    testImplementation 'org.flywaydb:flyway-core:11.0.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
+    testImplementation 'org.mockito:mockito-core:5.16.1'
+    testImplementation 'org.flywaydb:flyway-core:11.4.0'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
-    testImplementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3'
     testImplementation 'com.h2database:h2:2.3.232'
 }
 
