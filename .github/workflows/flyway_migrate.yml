@@ -29,7 +29,7 @@ jobs:
         run: |
           docker run --rm \
           -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
-          flyway/flyway:11.8.1 \
+          flyway/flyway:11.8.2 \
           -url=jdbc:postgresql://${{ secrets.DB_HOST_PROD }}:5432/${{ secrets.DB_DBNAME }} \
           -user=${{ secrets.DB_USERNAME }} \
           -password=${{ secrets.DB_PASSWORD }} \
@@ -40,7 +40,7 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
-            flyway/flyway:11.8.1 \
+            flyway/flyway:11.8.2 \
             -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME }} \
             -user=${{ secrets.DB_USERNAME }} \
             -password=${{ secrets.DB_PASSWORD }} \
