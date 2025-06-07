@@ -19,8 +19,6 @@ A small utility for authentication and authorization with platforms, profiles, r
     * This means that migration command needs to be given manually
   * Flyway migration is controlled via github actions to main DB branch
   * There are 2 database instances created to support local development and production data
-    This app uses free tier of `tembo.io` for database services utilizing postgres
-    So, for this service, there are two Postgres instances in `cl7529129` organization
       * `auth-service`
           * This instance is used for production instance
         * When a pull request is merged to main branch, flyway migration is run in this branch
