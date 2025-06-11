@@ -21,13 +21,11 @@ import static org.mockito.Mockito.when;
 
 import auth.service.BaseTest;
 import auth.service.app.connector.EnvServiceConnector;
-import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;

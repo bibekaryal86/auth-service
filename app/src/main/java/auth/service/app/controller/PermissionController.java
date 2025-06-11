@@ -7,8 +7,6 @@ import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseCrudInfo;
-import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
@@ -16,6 +14,7 @@ import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -65,7 +64,8 @@ public class PermissionController {
                   String.format(
                       "Permission Create [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -97,7 +97,7 @@ public class PermissionController {
       final Page<PermissionEntity> permissionEntityPage =
           permissionService.readPermissions(requestMetadata);
       final List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
-      final ResponsePageInfo responsePageInfo =
+      final ResponseMetadata.ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(permissionEntityPage);
       return entityDtoConvertUtils.getResponseMultiplePermissions(
           permissionEntities, responsePageInfo, requestMetadata);
@@ -162,7 +162,8 @@ public class PermissionController {
                   String.format(
                       "Permission Update [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -187,7 +188,8 @@ public class PermissionController {
                   String.format(
                       "Permission Delete Soft [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
           new PermissionEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -212,7 +214,8 @@ public class PermissionController {
                   String.format(
                       "Permission Delete Hard [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
           new PermissionEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -236,7 +239,8 @@ public class PermissionController {
                   String.format(
                       "Permission Restore [Id: %s] - [Name: %s]",
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {

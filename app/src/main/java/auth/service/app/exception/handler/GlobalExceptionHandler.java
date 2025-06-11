@@ -1,9 +1,8 @@
 package auth.service.app.exception.handler;
 
 import auth.service.app.exception.CheckPermissionException;
-import auth.service.app.model.dto.ResponseMetadata;
-import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.util.CommonUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -16,30 +15,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(CheckPermissionException.class)
-  public ResponseEntity<ResponseMetadata> handleCheckPermissionException(
+  public ResponseEntity<ResponseWithMetadata> handleCheckPermissionException(
       CheckPermissionException ex) {
     return new ResponseEntity<>(
-        ResponseMetadata.builder()
-            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(ex.getMessage()).build())
-            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-            .build(),
+        new ResponseWithMetadata(
+            new ResponseMetadata(
+                new ResponseMetadata.ResponseStatusInfo(ex.getMessage()),
+                ResponseMetadata.emptyResponseCrudInfo(),
+                ResponseMetadata.emptyResponsePageInfo())),
         HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ResponseMetadata> handleValidationExceptions(
+  public ResponseEntity<ResponseWithMetadata> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
     final String errMsg =
         ex.getBindingResult().getAllErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining(", "));
     return new ResponseEntity<>(
-        ResponseMetadata.builder()
-            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
-            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-            .build(),
+        new ResponseWithMetadata(
+            new ResponseMetadata(
+                new ResponseMetadata.ResponseStatusInfo(errMsg),
+                ResponseMetadata.emptyResponseCrudInfo(),
+                ResponseMetadata.emptyResponsePageInfo())),
         HttpStatus.BAD_REQUEST);
   }
 }

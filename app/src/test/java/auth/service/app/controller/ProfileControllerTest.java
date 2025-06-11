@@ -24,7 +24,6 @@ import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.enums.AuditEnums;

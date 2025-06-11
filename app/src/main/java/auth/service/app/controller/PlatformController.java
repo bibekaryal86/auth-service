@@ -7,8 +7,6 @@ import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseCrudInfo;
-import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
@@ -16,6 +14,7 @@ import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PlatformService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -63,7 +62,8 @@ public class PlatformController {
                   String.format(
                       "Platform Create [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -99,7 +99,7 @@ public class PlatformController {
       final Page<PlatformEntity> platformEntityPage =
           platformService.readPlatforms(requestMetadata);
       final List<PlatformEntity> platformEntities = platformEntityPage.toList();
-      final ResponsePageInfo responsePageInfo =
+      final ResponseMetadata.ResponsePageInfo responsePageInfo =
           CommonUtils.defaultResponsePageInfo(platformEntityPage);
       return entityDtoConvertUtils.getResponseMultiplePlatforms(
           platformEntities, isIncludeProfiles, isIncludeRoles, responsePageInfo, requestMetadata);
@@ -163,7 +163,8 @@ public class PlatformController {
                   String.format(
                       "Platform Update [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -188,7 +189,8 @@ public class PlatformController {
                   String.format(
                       "Platform Delete Soft [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           new PlatformEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -213,7 +215,8 @@ public class PlatformController {
                   String.format(
                       "Platform Delete Hard [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           new PlatformEntity(), responseCrudInfo, null, null);
     } catch (Exception ex) {
@@ -237,7 +240,8 @@ public class PlatformController {
                   String.format(
                       "Platform Restore [Id: %s] - [Name: %s]",
                       platformEntity.getId(), platformEntity.getPlatformName())));
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null, null);
     } catch (Exception ex) {

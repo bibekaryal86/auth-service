@@ -5,7 +5,6 @@ import static auth.service.app.util.CommonUtils.getUserAgent;
 
 import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponsePageInfo;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -24,6 +23,7 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JpaDataUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -88,7 +88,8 @@ public class AuditService {
     final Page<AuditPermissionEntity> auditEntityPage =
         auditPermissionRepository.findByPermissionId(
             permissionId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final ResponseMetadata.ResponsePageInfo auditPageInfo =
+        CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditPermissionEntity> auditEntities = auditEntityPage.getContent();
     return new AuditResponse(auditPageInfo, auditEntities, null, null, null);
   }
@@ -121,7 +122,8 @@ public class AuditService {
     final Page<AuditRoleEntity> auditEntityPage =
         auditRoleRepository.findByRoleId(
             roleId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final ResponseMetadata.ResponsePageInfo auditPageInfo =
+        CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditRoleEntity> auditEntities = auditEntityPage.getContent();
     return new AuditResponse(auditPageInfo, null, auditEntities, null, null);
   }
@@ -159,7 +161,8 @@ public class AuditService {
     final Page<AuditPlatformEntity> auditEntityPage =
         auditPlatformRepository.findByPlatformId(
             platformId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final ResponseMetadata.ResponsePageInfo auditPageInfo =
+        CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditPlatformEntity> auditEntities = auditEntityPage.getContent();
     return new AuditResponse(auditPageInfo, null, null, auditEntities, null);
   }
@@ -197,7 +200,8 @@ public class AuditService {
     final Page<AuditProfileEntity> auditEntityPage =
         auditProfileRepository.findByProfileId(
             profileId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponsePageInfo auditPageInfo = CommonUtils.defaultResponsePageInfo(auditEntityPage);
+    final ResponseMetadata.ResponsePageInfo auditPageInfo =
+        CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditProfileEntity> auditEntities = auditEntityPage.getContent();
     return new AuditResponse(auditPageInfo, null, null, null, auditEntities);
   }

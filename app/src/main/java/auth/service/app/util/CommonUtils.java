@@ -18,11 +18,8 @@ import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
-import auth.service.app.model.dto.ResponseCrudInfo;
-import auth.service.app.model.dto.ResponseMetadata;
-import auth.service.app.model.dto.ResponsePageInfo;
-import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.token.AuthToken;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -78,9 +75,10 @@ public class CommonUtils {
     return ObjectUtils.isEmpty(object) ? INTERNAL_SERVER_ERROR : OK;
   }
 
-  public static <T> ResponseStatusInfo getResponseStatusInfoForSingleResponse(final T object) {
+  public static <T> ResponseMetadata.ResponseStatusInfo getResponseStatusInfoForSingleResponse(
+      final T object) {
     return ObjectUtils.isEmpty(object)
-        ? ResponseStatusInfo.builder().errMsg(INTERNAL_SERVER_ERROR_MESSAGE).build()
+        ? new ResponseMetadata.ResponseStatusInfo(INTERNAL_SERVER_ERROR_MESSAGE)
         : null;
   }
 
@@ -96,48 +94,17 @@ public class CommonUtils {
     return request.getHeader("User-Agent");
   }
 
-  public static ResponseStatusInfo emptyResponseStatusInfo() {
-    return ResponseStatusInfo.builder().errMsg("").build();
+  public static ResponseMetadata.ResponsePageInfo defaultResponsePageInfo(final Page<?> page) {
+    return new ResponseMetadata.ResponsePageInfo(
+        (int) page.getTotalElements(),
+        page.getTotalPages(),
+        page.getPageable().getPageNumber() + 1,
+        page.getPageable().getPageSize());
   }
 
-  public static ResponsePageInfo emptyResponsePageInfo() {
-    return ResponsePageInfo.builder().totalItems(0).totalPages(0).pageNumber(0).perPage(0).build();
-  }
-
-  public static ResponseCrudInfo emptyResponseCrudInfo() {
-    return ResponseCrudInfo.builder()
-        .insertedRowsCount(0)
-        .updatedRowsCount(0)
-        .deletedRowsCount(0)
-        .restoredRowsCount(0)
-        .build();
-  }
-
-  public static ResponseMetadata emptyResponseMetadata() {
-    return ResponseMetadata.builder()
-        .responseStatusInfo(emptyResponseStatusInfo())
-        .responsePageInfo(emptyResponsePageInfo())
-        .responseCrudInfo(emptyResponseCrudInfo())
-        .build();
-  }
-
-  public static ResponsePageInfo defaultResponsePageInfo(final Page<?> page) {
-    return ResponsePageInfo.builder()
-        .totalItems((int) page.getTotalElements())
-        .totalPages(page.getTotalPages())
-        .pageNumber(page.getPageable().getPageNumber() + 1)
-        .perPage(page.getPageable().getPageSize())
-        .build();
-  }
-
-  public static ResponseCrudInfo defaultResponseCrudInfo(
+  public static ResponseMetadata.ResponseCrudInfo defaultResponseCrudInfo(
       final int inserted, final int updated, final int deleted, final int restored) {
-    return ResponseCrudInfo.builder()
-        .insertedRowsCount(inserted)
-        .updatedRowsCount(updated)
-        .deletedRowsCount(deleted)
-        .restoredRowsCount(restored)
-        .build();
+    return new ResponseMetadata.ResponseCrudInfo(inserted, updated, deleted, restored);
   }
 
   public static AuthToken getAuthentication() {

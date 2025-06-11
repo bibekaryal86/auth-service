@@ -18,7 +18,6 @@ import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformRepository;

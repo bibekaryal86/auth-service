@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import auth.service.BaseTest;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.RoleResponse;
 import auth.service.app.model.entity.PlatformEntity;
