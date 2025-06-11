@@ -194,8 +194,7 @@ public class CommonUtilsTest extends BaseTest {
     return Stream.of(
         Arguments.of(
             new PageImpl<>(Collections.nCopies(50, new Object()), PageRequest.of(9, 100), 5000),
-            new ResponseMetadata.ResponsePageInfo(5000, 50, 10, 100)
-            ),
+            new ResponseMetadata.ResponsePageInfo(5000, 50, 10, 100)),
         Arguments.of(
             new PageImpl<>(Collections.nCopies(5, new Object()), PageRequest.of(0, 10), 50),
             new ResponseMetadata.ResponsePageInfo(50, 5, 1, 10)));
@@ -210,42 +209,20 @@ public class CommonUtilsTest extends BaseTest {
 
   private static Stream<Arguments> provideCrudInfo() {
     return Stream.of(
-        Arguments.of(
-            1,
-            0,
-            0,
-            0,
-            new ResponseMetadata.ResponseCrudInfo(1, 0, 0, 0)
-            ),
-        Arguments.of(
-            0,
-            1,
-            0,
-            0,
-                new ResponseMetadata.ResponseCrudInfo(1, 1, 0, 0)
-
-                ),
-        Arguments.of(
-            0,
-            0,
-            1,
-            0,
-                new ResponseMetadata.ResponseCrudInfo(0, 0, 1, 0)
-        ),
-        Arguments.of(
-            0,
-            0,
-            0,
-            1,
-                new ResponseMetadata.ResponseCrudInfo(0, 0, 0, 1)
-
-                ));
+        Arguments.of(1, 0, 0, 0, new ResponseMetadata.ResponseCrudInfo(1, 0, 0, 0)),
+        Arguments.of(0, 1, 0, 0, new ResponseMetadata.ResponseCrudInfo(1, 1, 0, 0)),
+        Arguments.of(0, 0, 1, 0, new ResponseMetadata.ResponseCrudInfo(0, 0, 1, 0)),
+        Arguments.of(0, 0, 0, 1, new ResponseMetadata.ResponseCrudInfo(0, 0, 0, 1)));
   }
 
   @ParameterizedTest
   @MethodSource("provideCrudInfo")
   void testDefaultResponseCrudInfo(
-      int inserted, int updated, int deleted, int restored, ResponseMetadata.ResponseCrudInfo expected) {
+      int inserted,
+      int updated,
+      int deleted,
+      int restored,
+      ResponseMetadata.ResponseCrudInfo expected) {
     ResponseMetadata.ResponseCrudInfo actual =
         CommonUtils.defaultResponseCrudInfo(inserted, updated, deleted, restored);
     assertEquals(expected, actual);

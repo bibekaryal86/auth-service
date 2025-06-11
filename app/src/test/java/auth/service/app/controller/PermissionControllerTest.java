@@ -24,6 +24,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -193,15 +194,12 @@ public class PermissionControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("RoleID is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -231,8 +229,8 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertNotNull(permissionResponse.getResponseMetadata());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(permissionResponse.getPermissions().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -264,27 +262,23 @@ public class PermissionControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(permissionResponse.getResponseMetadata()),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
+                    permissionResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responsePageInfo()),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
-                    >= 0),
+                permissionResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(permissionResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+                permissionResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
-                    > 0));
+                permissionResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -332,27 +326,23 @@ public class PermissionControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(permissionResponse.getResponseMetadata()),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(permissionResponse.getResponseMetadata().getResponsePageInfo()),
+                    permissionResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(permissionResponse.getResponseMetadata().responsePageInfo()),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPageNumber()
-                    >= 0),
+                permissionResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(permissionResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+                permissionResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
             assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                permissionResponse.getResponseMetadata().getResponsePageInfo().getTotalPages()
-                    > 0));
+                permissionResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -750,15 +740,12 @@ public class PermissionControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("RoleID is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("RoleID is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -785,8 +772,8 @@ public class PermissionControllerTest extends BaseTest {
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getPermissions());
     assertNotNull(permissionResponse.getResponseMetadata());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(permissionResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(permissionResponse.getPermissions().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -816,9 +803,8 @@ public class PermissionControllerTest extends BaseTest {
 
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(
-        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(permissionResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, permissionResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
@@ -855,9 +841,8 @@ public class PermissionControllerTest extends BaseTest {
 
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(
-        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(permissionResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, permissionResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(
@@ -934,9 +919,8 @@ public class PermissionControllerTest extends BaseTest {
 
     assertNotNull(permissionResponse);
     assertNotNull(permissionResponse.getResponseMetadata());
-    assertNotNull(permissionResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(
-        1, permissionResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(permissionResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, permissionResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPermission(

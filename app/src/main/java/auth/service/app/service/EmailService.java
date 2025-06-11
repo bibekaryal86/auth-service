@@ -26,6 +26,13 @@ public class EmailService {
     this.email = new Email();
   }
 
+  // to be used in tests
+  @Deprecated
+  public EmailService(final FileReaderUtils fileReaderUtils, final Email email) {
+    this.fileReaderUtils = fileReaderUtils;
+    this.email = email;
+  }
+
   public void sendProfileValidationEmail(
       final PlatformEntity platformEntity,
       final ProfileEntity profileEntity,

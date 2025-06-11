@@ -23,6 +23,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -168,14 +169,11 @@ public class PlatformControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -204,8 +202,8 @@ public class PlatformControllerTest extends BaseTest {
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getPlatforms());
     assertNotNull(platformResponse.getResponseMetadata());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(platformResponse.getPlatforms().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -235,25 +233,20 @@ public class PlatformControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(platformResponse.getResponseMetadata()),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponsePageInfo()),
+                    platformResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(platformResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -298,25 +291,20 @@ public class PlatformControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(platformResponse.getResponseMetadata()),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(platformResponse.getResponseMetadata().getResponsePageInfo()),
+                    platformResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(platformResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(platformResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                platformResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(platformResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -629,14 +617,11 @@ public class PlatformControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -663,8 +648,8 @@ public class PlatformControllerTest extends BaseTest {
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getPlatforms());
     assertNotNull(platformResponse.getResponseMetadata());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(platformResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(platformResponse.getPlatforms().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -692,9 +677,8 @@ public class PlatformControllerTest extends BaseTest {
 
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getResponseMetadata());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(
-        1, platformResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(platformResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, platformResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPlatform(
@@ -787,9 +771,8 @@ public class PlatformControllerTest extends BaseTest {
 
     assertNotNull(platformResponse);
     assertNotNull(platformResponse.getResponseMetadata());
-    assertNotNull(platformResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(
-        1, platformResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(platformResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, platformResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditPlatform(

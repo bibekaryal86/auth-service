@@ -32,6 +32,7 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -104,25 +105,19 @@ public class ProfileControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(profileResponse.getResponseMetadata()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponsePageInfo()),
+                    profileResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -165,25 +160,19 @@ public class ProfileControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(profileResponse.getResponseMetadata()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponsePageInfo()),
+                    profileResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -230,25 +219,19 @@ public class ProfileControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(profileResponse.getResponseMetadata()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponsePageInfo()),
+                    profileResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -293,25 +276,19 @@ public class ProfileControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(profileResponse.getResponseMetadata()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(profileResponse.getResponseMetadata().getResponsePageInfo()),
+                    profileResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(profileResponse.getResponseMetadata().responsePageInfo()),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
         () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                profileResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+            assertTrue(profileResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -404,8 +381,8 @@ public class ProfileControllerTest extends BaseTest {
     assertTrue(
         profileResponse
             .getResponseMetadata()
-            .getResponseStatusInfo()
-            .getErrMsg()
+            .responseStatusInfo()
+            .errMsg()
             .contains("Profile does not have required permissions to profile entity"));
   }
 
@@ -476,7 +453,7 @@ public class ProfileControllerTest extends BaseTest {
     assertNotNull(profileResponse.getResponseMetadata());
     assertEquals(
         "Profile Not Found for [99]",
-        profileResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+        profileResponse.getResponseMetadata().responseStatusInfo().errMsg());
   }
 
   @Test
@@ -626,12 +603,9 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(responseMetadata);
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("First Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Last Name is required")
-            && responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("First Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Last Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Email is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -767,11 +741,8 @@ public class ProfileControllerTest extends BaseTest {
             .getResponseBody();
     assertNotNull(responseMetadata);
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Old Email is Required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("New Email is Required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Old Email is Required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("New Email is Required"));
     verifyNoInteractions(auditService);
   }
 
@@ -896,11 +867,8 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(responseMetadata);
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Email is Required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Password is Required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Email is Required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Password is Required"));
     verifyNoInteractions(auditService);
   }
 
@@ -935,8 +903,7 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getResponseMetadata());
-    assertEquals(
-        1, profileResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertEquals(1, profileResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     // verify audit service called for profile soft delete success
     verify(auditService, after(100).times(1))
@@ -993,8 +960,7 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getResponseMetadata());
-    assertEquals(
-        1, profileResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertEquals(1, profileResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     // verify audit service called for profile soft delete success
     verify(auditService, after(100).times(1))
@@ -1047,8 +1013,7 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertEquals(1, profileResponse.getProfiles().size());
-    assertEquals(
-        1, profileResponse.getResponseMetadata().getResponseCrudInfo().getRestoredRowsCount());
+    assertEquals(1, profileResponse.getResponseMetadata().responseCrudInfo().restoredRowsCount());
 
     // verify audit service called for profile soft delete success
     verify(auditService, after(100).times(1))

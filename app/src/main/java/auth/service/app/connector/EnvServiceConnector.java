@@ -5,19 +5,17 @@ import io.github.bibekaryal86.shdsvc.dtos.EnvDetailsResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class EnvServiceConnector {
 
   private final Environment environment;
-
-  public EnvServiceConnector(final Environment environment) {
-    this.environment = environment;
-  }
 
   private List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
     return AppEnvProperty.getEnvDetailsList("authsvc", true);

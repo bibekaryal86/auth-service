@@ -24,6 +24,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -184,14 +185,11 @@ public class RoleControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -219,8 +217,8 @@ public class RoleControllerTest extends BaseTest {
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getRoles());
     assertNotNull(roleResponse.getResponseMetadata());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(roleResponse.getRoles().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -253,23 +251,17 @@ public class RoleControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(roleResponse.getResponseMetadata()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-        () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+                    roleResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responsePageInfo()),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -323,23 +315,17 @@ public class RoleControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(roleResponse.getResponseMetadata()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-        () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+                    roleResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responsePageInfo()),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -388,23 +374,17 @@ public class RoleControllerTest extends BaseTest {
     assertAll(
         "Response Metadata",
         () -> assertNotNull(roleResponse.getResponseMetadata()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo()),
         () ->
             assertFalse(
                 StringUtils.hasText(
-                    roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg())),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo()),
-        () -> assertNotNull(roleResponse.getResponseMetadata().getResponsePageInfo()),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getPageNumber() >= 0),
-        () -> assertTrue(roleResponse.getResponseMetadata().getResponsePageInfo().getPerPage() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalItems() > 0),
-        () ->
-            assertTrue(
-                roleResponse.getResponseMetadata().getResponsePageInfo().getTotalPages() > 0));
+                    roleResponse.getResponseMetadata().responseStatusInfo().errMsg())),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo()),
+        () -> assertNotNull(roleResponse.getResponseMetadata().responsePageInfo()),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().pageNumber() >= 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().perPage() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalItems() > 0),
+        () -> assertTrue(roleResponse.getResponseMetadata().responsePageInfo().totalPages() > 0));
 
     assertAll(
         "Request Metadata",
@@ -772,14 +752,11 @@ public class RoleControllerTest extends BaseTest {
             .getResponseBody();
 
     assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.getResponseStatusInfo());
-    assertNotNull(responseMetadata.getResponseStatusInfo().getErrMsg());
+    assertNotNull(responseMetadata.responseStatusInfo());
+    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.getResponseStatusInfo().getErrMsg().contains("Name is required")
-            && responseMetadata
-                .getResponseStatusInfo()
-                .getErrMsg()
-                .contains("Description is required"));
+        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
+            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -806,8 +783,8 @@ public class RoleControllerTest extends BaseTest {
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getRoles());
     assertNotNull(roleResponse.getResponseMetadata());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseStatusInfo().getErrMsg());
+    assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo());
+    assertNotNull(roleResponse.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(roleResponse.getRoles().isEmpty());
     verifyNoInteractions(auditService);
   }
@@ -836,8 +813,8 @@ public class RoleControllerTest extends BaseTest {
 
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getResponseMetadata());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, roleResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, roleResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditRole(
@@ -873,8 +850,8 @@ public class RoleControllerTest extends BaseTest {
 
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getResponseMetadata());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, roleResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, roleResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditRole(
@@ -949,8 +926,8 @@ public class RoleControllerTest extends BaseTest {
 
     assertNotNull(roleResponse);
     assertNotNull(roleResponse.getResponseMetadata());
-    assertNotNull(roleResponse.getResponseMetadata().getResponseCrudInfo());
-    assertEquals(1, roleResponse.getResponseMetadata().getResponseCrudInfo().getDeletedRowsCount());
+    assertNotNull(roleResponse.getResponseMetadata().responseCrudInfo());
+    assertEquals(1, roleResponse.getResponseMetadata().responseCrudInfo().deletedRowsCount());
 
     verify(auditService, after(100).times(1))
         .auditRole(
