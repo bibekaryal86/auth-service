@@ -1,84 +1,29 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS;
 import static auth.service.app.util.JwtUtils.encodeEmailAddress;
-import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.FileReaderUtils;
-
-import lombok.RequiredArgsConstructor;
+import io.github.bibekaryal86.shdsvc.Email;
+import io.github.bibekaryal86.shdsvc.dtos.EmailRequest;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
+import java.util.Collections;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
   private final FileReaderUtils fileReaderUtils;
+  private final Email email;
 
-  public void sendEmail(
-      final String platformName,
-      final String emailTo,
-      final String emailToFullName,
-      final String subject,
-      final String text,
-      final String html,
-      final String attachmentFileName,
-      final String attachment) {
-    log.debug(
-        "Sending Email: [{}], [{}], [{}], [{}]", platformName, emailTo, emailToFullName, subject);
-
-    try {
-      final String emailFrom = getSystemEnvProperty(ENV_MAILJET_EMAIL_ADDRESS, null);
-
-      final JSONObject message =
-          new JSONObject()
-              .put(Emailv31.Message.CUSTOMID, UUID.randomUUID().toString())
-              .put(
-                  Emailv31.Message.FROM,
-                  new JSONObject().put("Email", emailFrom).put("Name", platformName))
-              .put(
-                  Emailv31.Message.TO,
-                  new JSONArray()
-                      .put(new JSONObject().put("Email", emailTo).put("Name", emailToFullName)))
-              .put(Emailv31.Message.SUBJECT, subject);
-
-      if (StringUtils.hasText(text)) {
-        message.put(Emailv31.Message.TEXTPART, text);
-      }
-
-      if (StringUtils.hasText(html)) {
-        message.put(Emailv31.Message.HTMLPART, html);
-      }
-
-      if (StringUtils.hasText(attachmentFileName) && StringUtils.hasText(attachment)) {
-        message.put(
-            Emailv31.Message.ATTACHMENTS,
-            new JSONArray()
-                .put(
-                    new JSONObject()
-                        .put("ContentType", "text/plain")
-                        .put("Filename", attachmentFileName)
-                        .put("Base64Content", attachment)));
-      }
-
-      final MailjetRequest request =
-          new MailjetRequest(Emailv31.resource)
-              .property(Emailv31.MESSAGES, new JSONArray().put(message));
-
-      final MailjetResponse response = mailjetClient.post(request);
-
-      if (response.getStatus() == 200) {
-        log.info("Send Email Response Success...");
-      } else {
-        log.info("Send Email Response Failure:  [ {} ]", response.getData());
-      }
-    } catch (Exception ex) {
-      log.error("Send Email Error...", ex);
-    }
+  public EmailService(final FileReaderUtils fileReaderUtils) {
+    this.fileReaderUtils = fileReaderUtils;
+    this.email = new Email();
   }
 
   public void sendProfileValidationEmail(
@@ -99,15 +44,9 @@ public class EmailService {
     final String fullName =
         String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
     final String subject = String.format("[%s] Profile Validation", platformName);
-    sendEmail(
-        platformName,
-        profileEntity.getEmail(),
-        fullName,
-        subject,
-        null,
-        emailHtmlContent,
-        null,
-        null);
+    final EmailRequest emailRequest =
+        emailRequest(platformName, profileEntity.getEmail(), fullName, subject, emailHtmlContent);
+    email.sendEmail(emailRequest);
   }
 
   public void sendProfileResetEmail(
@@ -128,15 +67,9 @@ public class EmailService {
     final String fullName =
         String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
     final String subject = String.format("[%s] Profile Reset", platformName);
-    sendEmail(
-        platformName,
-        profileEntity.getEmail(),
-        fullName,
-        subject,
-        null,
-        emailHtmlContent,
-        null,
-        null);
+    final EmailRequest emailRequest =
+        emailRequest(platformName, profileEntity.getEmail(), fullName, subject, emailHtmlContent);
+    email.sendEmail(emailRequest);
   }
 
   public void sendProfilePasswordEmail(
@@ -149,15 +82,9 @@ public class EmailService {
     final String fullName =
         String.format("%s %s", profileEntity.getFirstName(), profileEntity.getLastName());
     final String subject = String.format("[%s] Password Change Notification", platformName);
-    sendEmail(
-        platformName,
-        profileEntity.getEmail(),
-        fullName,
-        subject,
-        null,
-        emailHtmlContent,
-        null,
-        null);
+    final EmailRequest emailRequest =
+        emailRequest(platformName, profileEntity.getEmail(), fullName, subject, emailHtmlContent);
+    email.sendEmail(emailRequest);
   }
 
   private String convertAppNameToTitleCase(final String platformName) {
@@ -166,5 +93,21 @@ public class EmailService {
       words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase();
     }
     return String.join(" ", words);
+  }
+
+  private EmailRequest emailRequest(
+      final String platformName,
+      final String emailTo,
+      final String fullName,
+      final String subject,
+      final String emailHtmlContent) {
+    final String emailFrom =
+        CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS);
+    return new EmailRequest(
+        new EmailRequest.EmailContact(emailFrom, platformName),
+        List.of(new EmailRequest.EmailContact(emailTo, fullName)),
+        Collections.emptyList(),
+        new EmailRequest.EmailContent(subject, null, emailHtmlContent),
+        Collections.emptyList());
   }
 }
