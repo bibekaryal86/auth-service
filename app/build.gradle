@@ -31,8 +31,6 @@ dependencies {
     implementation 'io.swagger.parser.v3:swagger-parser:2.1.27'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'ch.qos.logback:logback-classic:1.5.18'
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.mailjet:mailjet-client:5.2.6'
     implementation 'com.google.code.gson:gson:2.13.1'
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
@@ -49,7 +47,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
     testImplementation 'org.mockito:mockito-core:5.18.0'
     testImplementation 'org.flywaydb:flyway-core:11.8.2'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
     testImplementation 'com.h2database:h2:2.3.232'
 }

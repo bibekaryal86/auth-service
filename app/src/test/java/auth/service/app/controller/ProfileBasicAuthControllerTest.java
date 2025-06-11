@@ -43,7 +43,6 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
-import auth.service.app.service.EmailService;
 import auth.service.app.service.ProfileService;
 import auth.service.app.service.RoleService;
 import auth.service.app.util.JwtUtils;

@@ -7,17 +7,10 @@ import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.util.FileReaderUtils;
-import com.mailjet.client.MailjetClient;
-import com.mailjet.client.MailjetRequest;
-import com.mailjet.client.MailjetResponse;
-import com.mailjet.client.resource.Emailv31;
-import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -25,7 +18,6 @@ import org.springframework.util.StringUtils;
 public class EmailService {
 
   private final FileReaderUtils fileReaderUtils;
-  private final MailjetClient mailjetClient;
 
   public void sendEmail(
       final String platformName,

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
 
-import auth.service.app.util.SystemEnvPropertyUtils;
 import helper.TestData;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
