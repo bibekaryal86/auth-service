@@ -22,6 +22,7 @@ import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -100,17 +101,17 @@ public class CommonUtilsTest extends BaseTest {
   @Test
   void testGetHttpStatusAndResponseStatusInfoForSingleResponse_ObjectIsNull() {
     HttpStatus status = CommonUtils.getHttpStatusForSingleResponse(null);
-    ResponseStatusInfo responseStatusInfo =
+    ResponseMetadata.ResponseStatusInfo responseStatusInfo =
         CommonUtils.getResponseStatusInfoForSingleResponse(null);
     assertEquals(INTERNAL_SERVER_ERROR, status);
     assertNotNull(responseStatusInfo);
-    assertEquals(INTERNAL_SERVER_ERROR_MESSAGE, responseStatusInfo.getErrMsg());
+    assertEquals(INTERNAL_SERVER_ERROR_MESSAGE, responseStatusInfo.errMsg());
   }
 
   @Test
   void testGetHttpStatusAndResponseStatusInfoForSingleResponse_ObjectIsNotNull() {
     HttpStatus status = CommonUtils.getHttpStatusForSingleResponse(new Object());
-    ResponseStatusInfo responseStatusInfo =
+    ResponseMetadata.ResponseStatusInfo responseStatusInfo =
         CommonUtils.getResponseStatusInfoForSingleResponse(new Object());
     assertEquals(OK, status);
     assertNull(responseStatusInfo);
@@ -150,69 +151,60 @@ public class CommonUtilsTest extends BaseTest {
 
   @Test
   void testEmptyResponseStatusInfo() {
-    ResponseStatusInfo result = CommonUtils.emptyResponseStatusInfo();
-    assertEquals("", result.getErrMsg());
+    ResponseMetadata.ResponseStatusInfo result = ResponseMetadata.emptyResponseStatusInfo();
+    assertEquals("", result.errMsg());
   }
 
   @Test
   void testEmptyResponsePageInfo() {
-    ResponsePageInfo result = CommonUtils.emptyResponsePageInfo();
-    assertEquals(0, result.getTotalItems());
-    assertEquals(0, result.getTotalPages());
-    assertEquals(0, result.getPageNumber());
-    assertEquals(0, result.getPerPage());
+    ResponseMetadata.ResponsePageInfo result = ResponseMetadata.emptyResponsePageInfo();
+    assertEquals(0, result.totalItems());
+    assertEquals(0, result.totalPages());
+    assertEquals(0, result.pageNumber());
+    assertEquals(0, result.perPage());
   }
 
   @Test
   void testEmptyResponseCrudInfo() {
-    ResponseCrudInfo result = CommonUtils.emptyResponseCrudInfo();
-    assertEquals(0, result.getInsertedRowsCount());
-    assertEquals(0, result.getUpdatedRowsCount());
-    assertEquals(0, result.getDeletedRowsCount());
-    assertEquals(0, result.getRestoredRowsCount());
+    ResponseMetadata.ResponseCrudInfo result = ResponseMetadata.emptyResponseCrudInfo();
+    assertEquals(0, result.insertedRowsCount());
+    assertEquals(0, result.updatedRowsCount());
+    assertEquals(0, result.deletedRowsCount());
+    assertEquals(0, result.restoredRowsCount());
   }
 
   @Test
   void testEmptyResponseMetadata() {
-    ResponseMetadata result = CommonUtils.emptyResponseMetadata();
-    assertNotNull(result.getResponseStatusInfo());
-    assertNotNull(result.getResponsePageInfo());
-    assertNotNull(result.getResponseCrudInfo());
-    assertEquals("", result.getResponseStatusInfo().getErrMsg());
-    assertEquals(0, result.getResponsePageInfo().getTotalItems());
-    assertEquals(0, result.getResponsePageInfo().getTotalPages());
-    assertEquals(0, result.getResponsePageInfo().getPageNumber());
-    assertEquals(0, result.getResponsePageInfo().getPerPage());
-    assertEquals(0, result.getResponseCrudInfo().getInsertedRowsCount());
-    assertEquals(0, result.getResponseCrudInfo().getUpdatedRowsCount());
-    assertEquals(0, result.getResponseCrudInfo().getDeletedRowsCount());
-    assertEquals(0, result.getResponseCrudInfo().getRestoredRowsCount());
+    ResponseMetadata result = ResponseMetadata.emptyResponseMetadata();
+    assertNotNull(result.responseStatusInfo());
+    assertNotNull(result.responsePageInfo());
+    assertNotNull(result.responseCrudInfo());
+    assertEquals("", result.responseStatusInfo().errMsg());
+    assertEquals(0, result.responsePageInfo().totalItems());
+    assertEquals(0, result.responsePageInfo().totalPages());
+    assertEquals(0, result.responsePageInfo().pageNumber());
+    assertEquals(0, result.responsePageInfo().perPage());
+    assertEquals(0, result.responseCrudInfo().insertedRowsCount());
+    assertEquals(0, result.responseCrudInfo().updatedRowsCount());
+    assertEquals(0, result.responseCrudInfo().deletedRowsCount());
+    assertEquals(0, result.responseCrudInfo().restoredRowsCount());
   }
 
   private static Stream<Arguments> providePages() {
     return Stream.of(
         Arguments.of(
             new PageImpl<>(Collections.nCopies(50, new Object()), PageRequest.of(9, 100), 5000),
-            ResponsePageInfo.builder()
-                .totalItems(5000)
-                .totalPages(50)
-                .pageNumber(10)
-                .perPage(100)
-                .build()),
+            new ResponseMetadata.ResponsePageInfo(5000, 50, 10, 100)
+            ),
         Arguments.of(
             new PageImpl<>(Collections.nCopies(5, new Object()), PageRequest.of(0, 10), 50),
-            ResponsePageInfo.builder()
-                .totalItems(50)
-                .totalPages(5)
-                .pageNumber(1)
-                .perPage(10)
-                .build()));
+            new ResponseMetadata.ResponsePageInfo(50, 5, 1, 10)));
   }
 
   @ParameterizedTest
   @MethodSource("providePages")
-  void testDefaultResponsePageInfo(Page page, ResponsePageInfo expected) {
-    ResponsePageInfo actual = CommonUtils.defaultResponsePageInfo(page);
+  void testDefaultResponsePageInfo(Page page, ResponseMetadata.ResponsePageInfo expected) {
+    ResponseMetadata.ResponsePageInfo actual = CommonUtils.defaultResponsePageInfo(page);
     assertEquals(expected, actual);
   }
 
@@ -223,52 +215,38 @@ public class CommonUtilsTest extends BaseTest {
             0,
             0,
             0,
-            ResponseCrudInfo.builder()
-                .insertedRowsCount(1)
-                .updatedRowsCount(0)
-                .deletedRowsCount(0)
-                .restoredRowsCount(0)
-                .build()),
+            new ResponseMetadata.ResponseCrudInfo(1, 0, 0, 0)
+            ),
         Arguments.of(
             0,
             1,
             0,
             0,
-            ResponseCrudInfo.builder()
-                .insertedRowsCount(0)
-                .updatedRowsCount(1)
-                .deletedRowsCount(0)
-                .restoredRowsCount(0)
-                .build()),
+                new ResponseMetadata.ResponseCrudInfo(1, 1, 0, 0)
+
+                ),
         Arguments.of(
             0,
             0,
             1,
             0,
-            ResponseCrudInfo.builder()
-                .insertedRowsCount(0)
-                .updatedRowsCount(0)
-                .deletedRowsCount(1)
-                .restoredRowsCount(0)
-                .build()),
+                new ResponseMetadata.ResponseCrudInfo(0, 0, 1, 0)
+        ),
         Arguments.of(
             0,
             0,
             0,
             1,
-            ResponseCrudInfo.builder()
-                .insertedRowsCount(0)
-                .updatedRowsCount(0)
-                .deletedRowsCount(0)
-                .restoredRowsCount(1)
-                .build()));
+                new ResponseMetadata.ResponseCrudInfo(0, 0, 0, 1)
+
+                ));
   }
 
   @ParameterizedTest
   @MethodSource("provideCrudInfo")
   void testDefaultResponseCrudInfo(
-      int inserted, int updated, int deleted, int restored, ResponseCrudInfo expected) {
-    ResponseCrudInfo actual =
+      int inserted, int updated, int deleted, int restored, ResponseMetadata.ResponseCrudInfo expected) {
+    ResponseMetadata.ResponseCrudInfo actual =
         CommonUtils.defaultResponseCrudInfo(inserted, updated, deleted, restored);
     assertEquals(expected, actual);
   }
