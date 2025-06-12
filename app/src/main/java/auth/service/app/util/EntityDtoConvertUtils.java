@@ -4,7 +4,6 @@ import static auth.service.app.util.CommonUtils.getHttpStatusForErrorResponse;
 import static auth.service.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
-import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
@@ -19,10 +18,6 @@ import auth.service.app.model.dto.ProfileDtoRolePlatform;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RequestMetadata;
-import auth.service.app.model.dto.ResponseCrudInfo;
-import auth.service.app.model.dto.ResponseMetadata;
-import auth.service.app.model.dto.ResponsePageInfo;
-import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleDtoPlatformProfile;
 import auth.service.app.model.dto.RoleDtoProfilePlatform;
@@ -35,6 +30,8 @@ import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.service.PermissionService;
 import auth.service.app.service.PlatformProfileRoleService;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -85,7 +82,7 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<PermissionResponse> getResponseSinglePermission(
       final PermissionEntity permissionEntity,
-      final ResponseCrudInfo responseCrudInfo,
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo,
       final RequestMetadata requestMetadata,
       final AuditResponse auditResponse) {
     final List<PermissionDto> permissionDtos =
@@ -96,14 +93,12 @@ public class EntityDtoConvertUtils {
         PermissionResponse.builder()
             .permissions(permissionDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(permissionEntity))
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(
-                        responseCrudInfo == null
-                            ? CommonUtils.emptyResponseCrudInfo()
-                            : responseCrudInfo)
-                    .build())
+                new ResponseMetadata(
+                    getResponseStatusInfoForSingleResponse(permissionEntity),
+                    responseCrudInfo == null
+                        ? ResponseMetadata.emptyResponseCrudInfo()
+                        : responseCrudInfo,
+                    ResponseMetadata.emptyResponsePageInfo()))
             .requestMetadata(requestMetadata)
             .build(),
         getHttpStatusForSingleResponse(permissionEntity));
@@ -111,18 +106,17 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<PermissionResponse> getResponseMultiplePermissions(
       final List<PermissionEntity> permissionEntities,
-      final ResponsePageInfo responsePageInfo,
+      final ResponseMetadata.ResponsePageInfo responsePageInfo,
       final RequestMetadata requestMetadata) {
     final List<PermissionDto> permissionDtos = convertEntitiesToDtosPermissions(permissionEntities);
     return ResponseEntity.ok(
         PermissionResponse.builder()
             .permissions(permissionDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responsePageInfo(responsePageInfo)
-                    .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    ResponseMetadata.emptyResponseStatusInfo(),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    responsePageInfo))
             .requestMetadata(requestMetadata)
             .build());
   }
@@ -132,12 +126,10 @@ public class EntityDtoConvertUtils {
         PermissionResponse.builder()
             .permissions(Collections.emptyList())
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
   }
@@ -424,7 +416,7 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<RoleResponse> getResponseSingleRole(
       final RoleEntity roleEntity,
-      final ResponseCrudInfo responseCrudInfo,
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo,
       final RequestMetadata requestMetadata,
       final AuditResponse auditResponse) {
     final List<PermissionEntity> permissionEntitiesRole =
@@ -441,14 +433,12 @@ public class EntityDtoConvertUtils {
         RoleResponse.builder()
             .roles(roleDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(roleEntity))
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(
-                        responseCrudInfo == null
-                            ? CommonUtils.emptyResponseCrudInfo()
-                            : responseCrudInfo)
-                    .build())
+                new ResponseMetadata(
+                    getResponseStatusInfoForSingleResponse(roleEntity),
+                    responseCrudInfo == null
+                        ? ResponseMetadata.emptyResponseCrudInfo()
+                        : responseCrudInfo,
+                    ResponseMetadata.emptyResponsePageInfo()))
             .requestMetadata(requestMetadata)
             .build(),
         getHttpStatusForSingleResponse(roleEntity));
@@ -459,7 +449,7 @@ public class EntityDtoConvertUtils {
       final boolean isIncludePermissions,
       final boolean isIncludePlatforms,
       final boolean isIncludeProfiles,
-      final ResponsePageInfo responsePageInfo,
+      final ResponseMetadata.ResponsePageInfo responsePageInfo,
       final RequestMetadata requestMetadata) {
     final List<RoleDto> roleDtos =
         convertEntitiesToDtosRoles(
@@ -468,11 +458,10 @@ public class EntityDtoConvertUtils {
         RoleResponse.builder()
             .roles(roleDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responsePageInfo(responsePageInfo)
-                    .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    ResponseMetadata.emptyResponseStatusInfo(),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    responsePageInfo))
             .requestMetadata(requestMetadata)
             .build());
   }
@@ -482,12 +471,10 @@ public class EntityDtoConvertUtils {
         RoleResponse.builder()
             .roles(Collections.emptyList())
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
   }
@@ -736,7 +723,7 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<PlatformResponse> getResponseSinglePlatform(
       final PlatformEntity platformEntity,
-      final ResponseCrudInfo responseCrudInfo,
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo,
       final RequestMetadata requestMetadata,
       final AuditResponse auditResponse) {
     final List<PlatformDto> platformDtos =
@@ -747,14 +734,12 @@ public class EntityDtoConvertUtils {
         PlatformResponse.builder()
             .platforms(platformDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(platformEntity))
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(
-                        responseCrudInfo == null
-                            ? CommonUtils.emptyResponseCrudInfo()
-                            : responseCrudInfo)
-                    .build())
+                new ResponseMetadata(
+                    getResponseStatusInfoForSingleResponse(platformEntity),
+                    responseCrudInfo == null
+                        ? ResponseMetadata.emptyResponseCrudInfo()
+                        : responseCrudInfo,
+                    ResponseMetadata.emptyResponsePageInfo()))
             .requestMetadata(requestMetadata)
             .build(),
         getHttpStatusForSingleResponse(platformEntity));
@@ -764,18 +749,17 @@ public class EntityDtoConvertUtils {
       final List<PlatformEntity> platformEntities,
       final boolean isIncludeProfiles,
       final boolean isIncludeRoles,
-      final ResponsePageInfo responsePageInfo,
+      final ResponseMetadata.ResponsePageInfo responsePageInfo,
       final RequestMetadata requestMetadata) {
     return ResponseEntity.ok(
         PlatformResponse.builder()
             .platforms(
                 convertEntitiesToDtosPlatforms(platformEntities, isIncludeProfiles, isIncludeRoles))
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responsePageInfo(responsePageInfo)
-                    .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    ResponseMetadata.emptyResponseStatusInfo(),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    responsePageInfo))
             .requestMetadata(requestMetadata)
             .build());
   }
@@ -785,12 +769,10 @@ public class EntityDtoConvertUtils {
         PlatformResponse.builder()
             .platforms(Collections.emptyList())
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
   }
@@ -1083,7 +1065,7 @@ public class EntityDtoConvertUtils {
 
   public ResponseEntity<ProfileResponse> getResponseSingleProfile(
       final ProfileEntity profileEntity,
-      final ResponseCrudInfo responseCrudInfo,
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo,
       final RequestMetadata requestMetadata,
       final AuditResponse auditResponse) {
     final List<ProfileDto> profileDtos =
@@ -1094,14 +1076,12 @@ public class EntityDtoConvertUtils {
         ProfileResponse.builder()
             .profiles(profileDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(getResponseStatusInfoForSingleResponse(profileEntity))
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(
-                        responseCrudInfo == null
-                            ? CommonUtils.emptyResponseCrudInfo()
-                            : responseCrudInfo)
-                    .build())
+                new ResponseMetadata(
+                    getResponseStatusInfoForSingleResponse(profileEntity),
+                    responseCrudInfo == null
+                        ? ResponseMetadata.emptyResponseCrudInfo()
+                        : responseCrudInfo,
+                    ResponseMetadata.emptyResponsePageInfo()))
             .requestMetadata(requestMetadata)
             .build(),
         getHttpStatusForSingleResponse(profileEntity));
@@ -1111,7 +1091,7 @@ public class EntityDtoConvertUtils {
       final List<ProfileEntity> profileEntities,
       final boolean isIncludeRoles,
       final boolean isIncludePlatforms,
-      final ResponsePageInfo responsePageInfo,
+      final ResponseMetadata.ResponsePageInfo responsePageInfo,
       final RequestMetadata requestMetadata) {
     final List<ProfileDto> profileDtos =
         convertEntitiesToDtosProfiles(profileEntities, isIncludeRoles, isIncludePlatforms);
@@ -1119,11 +1099,10 @@ public class EntityDtoConvertUtils {
         ProfileResponse.builder()
             .profiles(profileDtos)
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .responsePageInfo(responsePageInfo)
-                    .build())
+                new ResponseMetadata(
+                    ResponseMetadata.emptyResponseStatusInfo(),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    responsePageInfo))
             .requestMetadata(requestMetadata)
             .build());
   }
@@ -1133,12 +1112,10 @@ public class EntityDtoConvertUtils {
         ProfileResponse.builder()
             .profiles(Collections.emptyList())
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
   }
@@ -1149,12 +1126,10 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(
         ProfilePasswordTokenResponse.builder()
             .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
   }
@@ -1184,19 +1159,15 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
-  public ResponseEntity<AllPurposeResponse> getResponseErrorResponseMetadata(
+  public ResponseEntity<ResponseWithMetadata> getResponseErrorResponseMetadata(
       final Exception exception) {
     final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
     return new ResponseEntity<>(
-        AllPurposeResponse.builder()
-            .responseMetadata(
-                ResponseMetadata.builder()
-                    .responseStatusInfo(
-                        ResponseStatusInfo.builder().errMsg(exception.getMessage()).build())
-                    .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                    .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-                    .build())
-            .build(),
+        new ResponseWithMetadata(
+            new ResponseMetadata(
+                new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                ResponseMetadata.emptyResponseCrudInfo(),
+                ResponseMetadata.emptyResponsePageInfo())),
         httpStatus);
   }
 

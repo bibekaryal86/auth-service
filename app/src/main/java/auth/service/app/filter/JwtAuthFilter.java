@@ -1,12 +1,11 @@
 package auth.service.app.filter;
 
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.model.dto.ResponseMetadata;
-import auth.service.app.model.dto.ResponseStatusInfo;
 import auth.service.app.model.token.AuthToken;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,9 +23,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      @NotNull final HttpServletRequest request,
-      @NotNull final HttpServletResponse response,
-      @NotNull final FilterChain filterChain)
+      final HttpServletRequest request,
+      final HttpServletResponse response,
+      final FilterChain filterChain)
       throws ServletException, IOException {
     final String authorizationHeader = request.getHeader("Authorization");
 
@@ -60,17 +58,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   private void sendUnauthorizedResponse(final HttpServletResponse response, final String errMsg)
       throws IOException {
-    final ResponseMetadata responseMetadata =
-        ResponseMetadata.builder()
-            .responseStatusInfo(ResponseStatusInfo.builder().errMsg(errMsg).build())
-            .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-            .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-            .build();
+    final ResponseWithMetadata responseWithMetadata =
+        new ResponseWithMetadata(
+            new ResponseMetadata(
+                new ResponseMetadata.ResponseStatusInfo(errMsg),
+                ResponseMetadata.emptyResponseCrudInfo(),
+                ResponseMetadata.emptyResponsePageInfo()));
 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
+    final String jsonResponse = ConstantUtils.GSON.toJson(responseWithMetadata);
     response.getWriter().write(jsonResponse);
   }
 }

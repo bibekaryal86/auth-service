@@ -4,7 +4,6 @@ import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 
-import auth.service.app.model.client.EnvDetailsResponse;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PlatformDto;
 import auth.service.app.model.dto.ProfileAddressRequest;
@@ -30,6 +29,7 @@ import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.bibekaryal86.shdsvc.dtos.EnvDetailsResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +55,10 @@ public class TestData {
           }
         });
     System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
+
+    // to overcome EmailService instantiation errors
+    System.setProperty("MG_KEY", "MG_KEY");
+    System.setProperty("MG_DOMAIN", "MG_DOMAIN");
   }
 
   public static EnvDetailsResponse getEnvDetailsResponse() {

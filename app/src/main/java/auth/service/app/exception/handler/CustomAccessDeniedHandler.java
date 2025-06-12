@@ -1,9 +1,8 @@
 package auth.service.app.exception.handler;
 
-import auth.service.app.model.dto.ResponseMetadata;
-import auth.service.app.model.dto.ResponseStatusInfo;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,27 +30,22 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     if (authentication == null) {
       responseMetadata =
-          ResponseMetadata.builder()
-              .responseStatusInfo(
-                  ResponseStatusInfo.builder()
-                      .errMsg("Profile is not authenticated to access this resource...")
-                      .build())
-              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-              .build();
+          new ResponseMetadata(
+              new ResponseMetadata.ResponseStatusInfo(
+                  "Profile is not authenticated to access this resource..."),
+              ResponseMetadata.emptyResponseCrudInfo(),
+              ResponseMetadata.emptyResponsePageInfo());
     } else {
       responseMetadata =
-          ResponseMetadata.builder()
-              .responseStatusInfo(
-                  ResponseStatusInfo.builder()
-                      .errMsg("Profile is not authorized to access this resource...")
-                      .build())
-              .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-              .responseCrudInfo(CommonUtils.emptyResponseCrudInfo())
-              .build();
+          new ResponseMetadata(
+              new ResponseMetadata.ResponseStatusInfo(
+                  "Profile is not authorized to access this resource..."),
+              ResponseMetadata.emptyResponseCrudInfo(),
+              ResponseMetadata.emptyResponsePageInfo());
     }
 
-    final String jsonResponse = ConstantUtils.GSON.toJson(responseMetadata);
+    final String jsonResponse =
+        ConstantUtils.GSON.toJson(new ResponseWithMetadata(responseMetadata));
     response.getWriter().write(jsonResponse);
   }
 }

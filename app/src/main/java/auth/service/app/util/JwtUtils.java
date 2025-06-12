@@ -4,7 +4,6 @@ import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_AUTH;
 import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_EMAIL;
 import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_ISSUER;
-import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
 
 import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.model.dto.ProfileDto;
@@ -12,6 +11,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
-  private static final String SECRET_KEY = getSystemEnvProperty(ENV_SECRET_KEY);
+  private static final String SECRET_KEY = CommonUtilities.getSystemEnvProperty(ENV_SECRET_KEY);
   private static final ObjectMapper OBJECT_MAPPER =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 

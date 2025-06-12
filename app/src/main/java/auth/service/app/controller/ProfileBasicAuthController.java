@@ -8,12 +8,10 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.JwtInvalidException;
-import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -30,6 +28,8 @@ import auth.service.app.service.TokenService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
@@ -96,11 +96,10 @@ public class ProfileBasicAuthController {
                       entityDtoConvertUtils.convertEntityToDtoProfileBasic(
                           profileEntity, platformId)))
               .responseMetadata(
-                  ResponseMetadata.builder()
-                      .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                      .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                      .responseCrudInfo(CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0))
-                      .build())
+                  new ResponseMetadata(
+                      ResponseMetadata.emptyResponseStatusInfo(),
+                      CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0),
+                      ResponseMetadata.emptyResponsePageInfo()))
               .build());
     } catch (Exception ex) {
       log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
@@ -219,7 +218,7 @@ public class ProfileBasicAuthController {
   }
 
   @PostMapping("/{platformId}/logout")
-  public ResponseEntity<AllPurposeResponse> logout(
+  public ResponseEntity<ResponseWithMetadata> logout(
       @PathVariable final Long platformId,
       @Valid @RequestBody final TokenRequest tokenRequest,
       final HttpServletRequest request) {
@@ -274,7 +273,7 @@ public class ProfileBasicAuthController {
   }
 
   @GetMapping("/{platformId}/validate_init")
-  public ResponseEntity<AllPurposeResponse> validateProfileInit(
+  public ResponseEntity<ResponseWithMetadata> validateProfileInit(
       @PathVariable final Long platformId,
       @RequestParam final String email,
       final HttpServletRequest request) {
@@ -323,7 +322,7 @@ public class ProfileBasicAuthController {
   }
 
   @GetMapping("/{platformId}/reset_init")
-  public ResponseEntity<AllPurposeResponse> resetProfileInit(
+  public ResponseEntity<ResponseWithMetadata> resetProfileInit(
       @PathVariable final Long platformId,
       @RequestParam final String email,
       final HttpServletRequest request) {
@@ -372,7 +371,7 @@ public class ProfileBasicAuthController {
   }
 
   @PostMapping("/{platformId}/reset")
-  public ResponseEntity<AllPurposeResponse> resetProfile(
+  public ResponseEntity<ResponseWithMetadata> resetProfile(
       @PathVariable final Long platformId,
       @Valid @RequestBody final ProfilePasswordRequest profilePasswordRequest,
       final HttpServletRequest request) {

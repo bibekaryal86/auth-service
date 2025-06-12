@@ -3,16 +3,15 @@ package auth.service.app.controller;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.AllPurposeResponse;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.dto.ResponseCrudInfo;
-import auth.service.app.model.dto.ResponseMetadata;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,7 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
   @PostMapping
-  public ResponseEntity<AllPurposeResponse> assignPlatformProfileRole(
+  public ResponseEntity<ResponseWithMetadata> assignPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
       final HttpServletRequest request) {
     try {
@@ -58,17 +57,15 @@ public class PlatformProfileRoleController {
                       platformProfileRoleEntity.getProfile().getId(),
                       platformProfileRoleEntity.getRole().getId())));
 
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
 
       return ResponseEntity.ok(
-          AllPurposeResponse.builder()
-              .responseMetadata(
-                  ResponseMetadata.builder()
-                      .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                      .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                      .responseCrudInfo(responseCrudInfo)
-                      .build())
-              .build());
+          new ResponseWithMetadata(
+              new ResponseMetadata(
+                  ResponseMetadata.emptyResponseStatusInfo(),
+                  responseCrudInfo,
+                  ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
@@ -77,7 +74,7 @@ public class PlatformProfileRoleController {
 
   @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<AllPurposeResponse> unassignPlatformProfileRole(
+  public ResponseEntity<ResponseWithMetadata> unassignPlatformProfileRole(
       @PathVariable final long platformId,
       @PathVariable final long profileId,
       @PathVariable final long roleId,
@@ -98,16 +95,14 @@ public class PlatformProfileRoleController {
                       platformProfileRoleEntity.getProfile().getId(),
                       platformProfileRoleEntity.getRole().getId())));
 
-      final ResponseCrudInfo responseCrudInfo = CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return ResponseEntity.ok(
-          AllPurposeResponse.builder()
-              .responseMetadata(
-                  ResponseMetadata.builder()
-                      .responseStatusInfo(CommonUtils.emptyResponseStatusInfo())
-                      .responsePageInfo(CommonUtils.emptyResponsePageInfo())
-                      .responseCrudInfo(responseCrudInfo)
-                      .build())
-              .build());
+          new ResponseWithMetadata(
+              new ResponseMetadata(
+                  ResponseMetadata.emptyResponseStatusInfo(),
+                  responseCrudInfo,
+                  ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
           "Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);

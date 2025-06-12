@@ -1,52 +1,24 @@
 package auth.service.app.connector;
 
-import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_PASSWORD;
-import static auth.service.app.util.ConstantUtils.ENV_ENVSVC_USERNAME;
-import static auth.service.app.util.SystemEnvPropertyUtils.getSystemEnvProperty;
-
-import auth.service.app.model.client.EnvDetailsResponse;
-import auth.service.app.util.ConstantUtils;
-import auth.service.app.util.OkHttpUtils;
-import java.util.Base64;
+import io.github.bibekaryal86.shdsvc.AppEnvProperty;
+import io.github.bibekaryal86.shdsvc.dtos.EnvDetailsResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
+@RequiredArgsConstructor
 public class EnvServiceConnector {
 
-  private final String getPropertiesUrl;
   private final Environment environment;
 
-  public EnvServiceConnector(
-      @Value("${endpoint.env_service.get_properties}") final String getPropertiesUrl,
-      final Environment environment) {
-    this.getPropertiesUrl = getPropertiesUrl;
-    this.environment = environment;
-  }
-
   private List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
-    final String url = UriComponentsBuilder.fromUriString(getPropertiesUrl).toUriString();
-    final String credentials =
-        getSystemEnvProperty(ENV_ENVSVC_USERNAME) + ":" + getSystemEnvProperty(ENV_ENVSVC_PASSWORD);
-    final String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-
-    final OkHttpUtils.HttpResponse httpResponse =
-        OkHttpUtils.sendRequest(url, "GET", "", Collections.emptyMap(), base64Credentials);
-
-    if (httpResponse.statusCode() == 200) {
-      EnvDetailsResponse envDetailsResponse =
-          ConstantUtils.GSON.fromJson(httpResponse.responseBody(), EnvDetailsResponse.class);
-      return envDetailsResponse.getEnvDetails();
-    }
-
-    return Collections.emptyList();
+    return AppEnvProperty.getEnvDetailsList("authsvc", true);
   }
 
   @Cacheable("redirectUrls")
