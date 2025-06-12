@@ -210,7 +210,7 @@ public class CommonUtilsTest extends BaseTest {
   private static Stream<Arguments> provideCrudInfo() {
     return Stream.of(
         Arguments.of(1, 0, 0, 0, new ResponseMetadata.ResponseCrudInfo(1, 0, 0, 0)),
-        Arguments.of(0, 1, 0, 0, new ResponseMetadata.ResponseCrudInfo(1, 1, 0, 0)),
+        Arguments.of(0, 1, 0, 0, new ResponseMetadata.ResponseCrudInfo(0, 1, 0, 0)),
         Arguments.of(0, 0, 1, 0, new ResponseMetadata.ResponseCrudInfo(0, 0, 1, 0)),
         Arguments.of(0, 0, 0, 1, new ResponseMetadata.ResponseCrudInfo(0, 0, 0, 1)));
   }

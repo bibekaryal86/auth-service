@@ -24,7 +24,6 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -198,7 +197,7 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
   void testAssignPlatformProfileRole_FailureBadRequest() {
     PlatformProfileRoleRequest platformProfileRoleRequest =
         new PlatformProfileRoleRequest(null, 0L, -1L);
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri("/api/v1/ppr")
@@ -207,16 +206,28 @@ public class PlatformProfileRoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("PlatformID is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("ProfileID is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("RoleID is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("PlatformID is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("ProfileID is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("RoleID is required"));
     verifyNoInteractions(auditService);
   }
 

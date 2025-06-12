@@ -55,6 +55,10 @@ public class TestData {
           }
         });
     System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
+
+    // to overcome EmailService instantiation errors
+    System.setProperty("MG_KEY", "MG_KEY");
+    System.setProperty("MG_DOMAIN", "MG_DOMAIN");
   }
 
   public static EnvDetailsResponse getEnvDetailsResponse() {

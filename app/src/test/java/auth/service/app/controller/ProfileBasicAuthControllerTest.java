@@ -49,7 +49,6 @@ import auth.service.app.service.RoleService;
 import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -238,7 +237,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testCreateProfile_FailureBadRequest() {
     ProfileRequest profileRequest =
         new ProfileRequest("", null, "", "some-phone", "some-password", true, null);
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/create", ID))
@@ -247,17 +246,29 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("First Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Last Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Email is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("First Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Last Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Email is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -704,7 +715,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testRefreshToken_FailureBadRequest() {
     TokenRequest tokenRequest =
         new TokenRequest(null, tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri(
@@ -715,14 +726,19 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
-    assertTrue(responseMetadata.responseStatusInfo().errMsg().contains("REQUIRED"));
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
+    assertTrue(
+        responseWithMetadata
+            .getResponseMetadata()
+            .responseStatusInfo()
+            .errMsg()
+            .contains("REQUIRED"));
     verifyNoInteractions(auditService);
   }
 
@@ -986,7 +1002,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   void testLogout_FailureBadRequest() {
     TokenRequest tokenRequest =
         new TokenRequest(null, tokenEntity.getAccessToken(), tokenEntity.getRefreshToken());
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri(String.format("/api/v1/ba_profiles/platform/%s/logout", platformEntity.getId()))
@@ -995,14 +1011,19 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
-    assertTrue(responseMetadata.responseStatusInfo().errMsg().contains("REQUIRED"));
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
+    assertTrue(
+        responseWithMetadata
+            .getResponseMetadata()
+            .responseStatusInfo()
+            .errMsg()
+            .contains("REQUIRED"));
     verifyNoInteractions(auditService);
   }
 

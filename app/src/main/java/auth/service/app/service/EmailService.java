@@ -12,6 +12,7 @@ import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -21,6 +22,7 @@ public class EmailService {
   private final FileReaderUtils fileReaderUtils;
   private final Email email;
 
+  @Autowired
   public EmailService(final FileReaderUtils fileReaderUtils) {
     this.fileReaderUtils = fileReaderUtils;
     this.email = new Email();

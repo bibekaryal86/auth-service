@@ -24,7 +24,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -171,7 +171,7 @@ public class RoleControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     roleRequest = new RoleRequest("", null);
 
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri("/api/v1/roles/role")
@@ -180,16 +180,24 @@ public class RoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -738,7 +746,7 @@ public class RoleControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     roleRequest = new RoleRequest("", null);
 
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .put()
             .uri(String.format("/api/v1/roles/role/%s", ID))
@@ -747,16 +755,24 @@ public class RoleControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 

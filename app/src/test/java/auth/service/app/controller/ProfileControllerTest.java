@@ -32,7 +32,7 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -588,7 +588,7 @@ public class ProfileControllerTest extends BaseTest {
   @Test
   void testUpdateProfile_FailureBadRequest() {
     ProfileRequest profileRequest = new ProfileRequest("", null, "", null, null, false, null);
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .put()
             .uri(String.format("/api/v1/profiles/profile/%s", ID))
@@ -597,15 +597,27 @@ public class ProfileControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
+    assertNotNull(responseWithMetadata);
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("First Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Last Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Email is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("First Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Last Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Email is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -727,7 +739,7 @@ public class ProfileControllerTest extends BaseTest {
   @Test
   void testUpdateProfileEmail_FailureBadRequest() {
     ProfileEmailRequest profileEmailRequest = new ProfileEmailRequest("", null);
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .put()
             .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/email", ID, ID))
@@ -736,13 +748,21 @@ public class ProfileControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
-    assertNotNull(responseMetadata);
+    assertNotNull(responseWithMetadata);
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("Old Email is Required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("New Email is Required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Old Email is Required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("New Email is Required"));
     verifyNoInteractions(auditService);
   }
 
@@ -852,7 +872,7 @@ public class ProfileControllerTest extends BaseTest {
   @Test
   void testUpdateProfilePassword_FailureBadRequest() {
     ProfilePasswordRequest profilePasswordRequest = new ProfilePasswordRequest("", null);
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .put()
             .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID, ID))
@@ -861,14 +881,22 @@ public class ProfileControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
+    assertNotNull(responseWithMetadata);
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("Email is Required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Password is Required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Email is Required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Password is Required"));
     verifyNoInteractions(auditService);
   }
 

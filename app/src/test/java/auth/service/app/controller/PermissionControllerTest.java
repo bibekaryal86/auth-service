@@ -24,7 +24,7 @@ import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.service.AuditService;
 import helper.TestData;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -180,7 +180,7 @@ public class PermissionControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     permissionRequest = new PermissionRequest(-1L, "", null);
 
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .post()
             .uri("/api/v1/permissions/permission")
@@ -189,17 +189,30 @@ public class PermissionControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("RoleID is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("RoleID is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 
@@ -726,7 +739,7 @@ public class PermissionControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     permissionRequest = new PermissionRequest(-1L, "", null);
 
-    ResponseMetadata responseMetadata =
+    ResponseWithMetadata responseWithMetadata =
         webTestClient
             .put()
             .uri(String.format("/api/v1/permissions/permission/%s", ID))
@@ -735,17 +748,30 @@ public class PermissionControllerTest extends BaseTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(ResponseMetadata.class)
+            .expectBody(ResponseWithMetadata.class)
             .returnResult()
             .getResponseBody();
 
-    assertNotNull(responseMetadata);
-    assertNotNull(responseMetadata.responseStatusInfo());
-    assertNotNull(responseMetadata.responseStatusInfo().errMsg());
+    assertNotNull(responseWithMetadata);
+    assertNotNull(responseWithMetadata.getResponseMetadata());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo());
+    assertNotNull(responseWithMetadata.getResponseMetadata().responseStatusInfo().errMsg());
     assertTrue(
-        responseMetadata.responseStatusInfo().errMsg().contains("RoleID is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Name is required")
-            && responseMetadata.responseStatusInfo().errMsg().contains("Description is required"));
+        responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("RoleID is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Name is required")
+            && responseWithMetadata
+                .getResponseMetadata()
+                .responseStatusInfo()
+                .errMsg()
+                .contains("Description is required"));
     verifyNoInteractions(auditService);
   }
 

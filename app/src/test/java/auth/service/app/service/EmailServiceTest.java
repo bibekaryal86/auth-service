@@ -18,6 +18,7 @@ import io.github.bibekaryal86.shdsvc.dtos.EmailRequest;
 import io.github.bibekaryal86.shdsvc.dtos.EmailResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -26,16 +27,21 @@ public class EmailServiceTest extends BaseTest {
   @Mock private FileReaderUtils fileReaderUtils;
   @Mock private Email email;
 
-  private final EmailService emailService = new EmailService(fileReaderUtils, email);
+  private EmailService emailService;
 
   private static ProfileEntity profileEntity;
   private static PlatformEntity platformEntity;
   private static final String BASE_URL_FOR_EMAIL = "https://some-url.com/";
 
   @BeforeAll
-  static void setUp() {
+  static void setUpBeforeAll() {
     profileEntity = TestData.getProfileEntities().getFirst();
     platformEntity = TestData.getPlatformEntities().getFirst();
+  }
+
+  @BeforeEach
+  void setUpBeforeEach() {
+    emailService = new EmailService(fileReaderUtils, email); // now mocks are initialized
   }
 
   @AfterEach
@@ -75,7 +81,7 @@ public class EmailServiceTest extends BaseTest {
         .thenReturn(new EmailResponse("request-id", 200, 1, 1, "{\"status\": \"OK\"}"));
     when(fileReaderUtils.readFileContents(anyString())).thenReturn("{platform_name}");
 
-    emailService.sendProfileResetEmail(platformEntity, profileEntity, BASE_URL_FOR_EMAIL);
+    emailService.sendProfilePasswordEmail(platformEntity, profileEntity);
     verify(email, times(1)).sendEmail(any(EmailRequest.class));
     verify(fileReaderUtils, times(1))
         .readFileContents(eq("email/templates/password_change_email.html"));
