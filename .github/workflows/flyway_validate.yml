@@ -23,59 +23,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup and Enable Zrok
-        run: |
-          # Create a temporary directory
-          cd $(mktemp -d)
-
-          # Get latest Zrok version
-          ZROK_VERSION=$(
-          curl -sSf https://api.github.com/repos/openziti/zrok/releases/latest | jq -r '.tag_name'
-          )
-
-          # Determine architecture
-          case $(uname -m) in
-          x86_64)         GOXARCH=amd64 ;;
-          aarch64|arm64)  GOXARCH=arm64 ;;
-          arm*)           GOXARCH=armv7 ;;
-          *)              echo "ERROR: unknown arch '$(uname -m)'" >&2; exit 1 ;;
-          esac
-
-          # Download and extract Zrok
-          curl -sSfL \
-          "https://github.com/openziti/zrok/releases/download/${ZROK_VERSION}/zrok_${ZROK_VERSION#v}_linux_${GOXARCH}.tar.gz" \
-          | tar -xz -f -
-
-          # Install Zrok
-          sudo install -o root -g root ./zrok /usr/local/bin/
-          echo "Zrok installed successfully."
-          sleep 3
-
-          # Enable Zrok
-          zrok enable ${{ secrets.ZROK_TOKEN }}
-          echo "Zrok enabled."
-          sleep 3
-
-          # Connect to PostgreSQL via Zrok
-          zrok access private ${{ secrets.ZROK_SHARE }} --bind "127.0.0.1:5432" --headless &
-          echo "Zrok access started."
-          sleep 3
-
-          # Debug Zrok Connection
-          zrok status
-          echo "Zrok status checked."
-          sleep 3
-
-          # Wait for Tunnel to Establish
-          echo "Waiting for tunnel to be ready..."
-          sleep 3
-
-          # Show All Running Processes
-          # ps aux | grep zrok
-
-          # Check Active Ports
-          # sudo netstat -tulnp | grep zrok
-
       - name: Test Database Connection
         run: |
           if [[ "${{ inputs.environment }}" == "PROD" ]]; then
@@ -87,7 +34,7 @@ jobs:
       - name: Run Flyway Validation
         run: |
           if [[ "${{ inputs.environment }}" == "PROD" ]]; then
-            docker run --rm --network="host" \
+            docker run --rm \
               -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
               flyway/flyway:11.9.1 \
               -url=jdbc:postgresql://${{ secrets.DB_HOST }}:5432/${{ secrets.DB_DBNAME }} \
@@ -95,7 +42,7 @@ jobs:
               -password=${{ secrets.DB_PASSWORD }} \
               validate
           else
-            docker run --rm --network="host" \
+            docker run --rm \
               -v ${{ github.workspace }}/app/src/main/resources/db/migration:/flyway/sql \
               flyway/flyway:11.9.1 \
               -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME_SANDBOX }} \
@@ -103,11 +50,3 @@ jobs:
               -password=${{ secrets.DB_PASSWORD_SANDBOX }} \
               validate
           fi
-
-      - name: Disable and Remove Zrok
-        run: |
-          # Disable Zrok
-          zrok disable
-          
-          # Remove Zrok
-          rm -rf ~/.zrok
