@@ -139,12 +139,12 @@ flyway {
 
     // for local development, use SANDBOX DB
     def db_host = yamlProperties.getProperty('DB_HOST_SANDBOX')
-    def db_name = yamlProperties.getProperty('DB_DBNAME')
+    def db_name = yamlProperties.getProperty('DB_NAME_SANDBOX')
 
     if (db_host && db_name) {
         url = "jdbc:postgresql://${db_host}:5432/${db_name}"
-        user = yamlProperties.getProperty('DB_USERNAME')
-        password = yamlProperties.getProperty('DB_PASSWORD')
+        user = yamlProperties.getProperty('DB_USERNAME_SANDBOX')
+        password = yamlProperties.getProperty('DB_PASSWORD_SANDBOX')
     } else if (!isGithubActions) {
         throw new GradleException("Flyway DB Host and Name Configuration Error...")
     } else {

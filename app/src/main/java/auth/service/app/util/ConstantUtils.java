@@ -27,27 +27,43 @@ public class ConstantUtils {
 
   // provided at runtime
   public static final String ENV_SERVER_PORT = "PORT";
+  public static final String SPRING_PROFILES_ACTIVE = "SPRING_PROFILES_ACTIVE";
   public static final String ENV_SELF_USERNAME = "SELF_USERNAME";
   public static final String ENV_SELF_PASSWORD = "SELF_PASSWORD";
-  public static final String ENV_DB_USERNAME = "DB_USERNAME";
-  public static final String ENV_DB_PASSWORD = "DB_PASSWORD";
+  public static final String ENV_DB_HOST_PROD = "DB_HOST_PROD";
+  public static final String ENV_DB_NAME_PROD = "DB_NAME_PROD";
+  public static final String ENV_DB_USERNAME_PROD = "DB_USERNAME_PROD";
+  public static final String ENV_DB_PASSWORD_PROD = "DB_PASSWORD_PROD";
+  public static final String ENV_DB_HOST_SANDBOX = "DB_HOST_SANDBOX";
+  public static final String ENV_DB_NAME_SANDBOX = "DB_NAME_SANDBOX";
+  public static final String ENV_DB_USERNAME_SANDBOX = "DB_USERNAME_SANDBOX";
+  public static final String ENV_DB_PASSWORD_SANDBOX = "DB_PASSWORD_SANDBOX";
   public static final String ENV_SECRET_KEY = "SECRET_KEY";
   public static final String ENV_MAILJET_PUBLIC_KEY = "MJ_PUBLIC";
   public static final String ENV_MAILJET_PRIVATE_KEY = "MJ_PRIVATE";
   public static final String ENV_MAILJET_EMAIL_ADDRESS = "MJ_EMAIL";
-  public static final String ENV_ENVSVC_USERNAME = "ENVSVC_USERNAME";
-  public static final String ENV_ENVSVC_PASSWORD = "ENVSVC_PASSWORD";
+  public static final String ENV_ENVSVC_BASE_URL = "ENVSVC_BASE_URL";
+  public static final String ENV_ENVSVC_USERNAME = "ENVSVC_USR";
+  public static final String ENV_ENVSVC_PASSWORD = "ENVSVC_PWD";
   public static final List<String> ENV_KEY_NAMES =
       List.of(
           ENV_SERVER_PORT,
+          SPRING_PROFILES_ACTIVE,
           ENV_SELF_USERNAME,
           ENV_SELF_PASSWORD,
-          ENV_DB_USERNAME,
-          ENV_DB_PASSWORD,
+          ENV_DB_HOST_PROD,
+          ENV_DB_NAME_PROD,
+          ENV_DB_USERNAME_PROD,
+          ENV_DB_PASSWORD_PROD,
+          ENV_DB_HOST_SANDBOX,
+          ENV_DB_NAME_SANDBOX,
+          ENV_DB_USERNAME_SANDBOX,
+          ENV_DB_PASSWORD_SANDBOX,
           ENV_SECRET_KEY,
           ENV_MAILJET_PUBLIC_KEY,
           ENV_MAILJET_PRIVATE_KEY,
           ENV_MAILJET_EMAIL_ADDRESS,
+          ENV_ENVSVC_BASE_URL,
           ENV_ENVSVC_USERNAME,
           ENV_ENVSVC_PASSWORD);
 

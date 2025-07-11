@@ -3,22 +3,24 @@ spring:
     activate:
       on-profile: development
   datasource:
-    url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_DBNAME}
+    url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_NAME_SANDBOX}
+    username: ${DB_USERNAME_SANDBOX}
+    password: ${DB_PASSWORD_SANDBOX}
 ---
 spring:
   config:
     activate:
       on-profile: production
   datasource:
-    url: jdbc:postgresql://${DB_HOST_PROD}:5432/${DB_DBNAME}
+    url: jdbc:postgresql://${DB_HOST_PROD}:5432/${DB_NAME_PROD}
+    username: ${DB_USERNAME_PROD}
+    password: ${DB_PASSWORD_PROD}
 ---
 spring:
   application:
     name: auth-service
   datasource:
     # url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_DBNAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 10000
@@ -66,4 +68,4 @@ springdoc:
 # endpoints of env service
 endpoint:
   env_service:
-    get_properties: https://envsvc.appspot.com/envsvc/api/v1/authservice
+    get_properties: ${ENVSVC_BASE_URL}/api/v1/authservice
