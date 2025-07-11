@@ -1,12 +1,11 @@
 package auth.service;
 
-import static auth.service.app.util.ConstantUtils.ENV_DB_PASSWORD;
-import static auth.service.app.util.ConstantUtils.ENV_DB_USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
+import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.Map;
@@ -19,8 +18,10 @@ public class AppTest extends BaseTest {
   void shouldFailToStartApplicationOnMissingEnvProperty() {
     try (MockedStatic<CommonUtilities> mockedStatic = mockStatic(CommonUtilities.class)) {
       Map<String, String> requiredEnvProperties = TestData.getSystemEnvPropertyTestData();
-      requiredEnvProperties.remove(ENV_DB_USERNAME);
-      requiredEnvProperties.remove(ENV_DB_PASSWORD);
+      requiredEnvProperties.remove(ConstantUtils.ENV_DB_USERNAME_SANDBOX);
+      requiredEnvProperties.remove(ConstantUtils.ENV_DB_USERNAME_PROD);
+      requiredEnvProperties.remove(ConstantUtils.ENV_DB_PASSWORD_SANDBOX);
+      requiredEnvProperties.remove(ConstantUtils.ENV_DB_PASSWORD_PROD);
 
       mockedStatic
           .when(() -> CommonUtilities.getSystemEnvProperties(any()))
