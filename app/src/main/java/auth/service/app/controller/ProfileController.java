@@ -88,6 +88,7 @@ public class ProfileController {
           filteredProfileEntities,
           isIncludeRoles,
           isIncludePlatforms,
+          Boolean.TRUE,
           responsePageInfo,
           requestMetadata);
     } catch (Exception ex) {
@@ -135,6 +136,7 @@ public class ProfileController {
           filteredProfileEntities,
           isIncludeRoles,
           isIncludePlatforms,
+          Boolean.TRUE,
           responsePageInfo,
           requestMetadata);
     } catch (Exception ex) {
