@@ -992,6 +992,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     assertFalse(dto.getPlatformRoles().isEmpty());
     assertFalse(dto.getRolePlatforms().isEmpty());
+    assertNotNull(dto.getProfileAddress());
   }
 
   @Test
@@ -1027,7 +1028,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseMultipleProfiles_EmptyList() {
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, null, null);
+            Collections.emptyList(), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1040,7 +1041,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseMultipleProfiles_NoRolesNoPlatforms() {
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.FALSE, Boolean.FALSE, null, null);
+            profileEntities, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1076,7 +1077,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.FALSE, Boolean.TRUE, null, null);
+            profileEntities, Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1125,7 +1126,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.TRUE, Boolean.FALSE, null, null);
+            profileEntities, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1174,7 +1175,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+            profileEntities, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1218,7 +1219,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseMultipleProfiles(
-            profileEntities, Boolean.TRUE, Boolean.TRUE, null, null);
+            profileEntities, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, null, null);
 
     assertNotNull(response);
     assertNotNull(response.getBody());
@@ -1234,6 +1235,36 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     }
 
     assertNotNull(profileDtos.getFirst().getProfileAddress());
+  }
+
+  @Test
+  void testGetResponseMultipleProfiles_NoProfileAddress() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    ResponseEntity<ProfileResponse> response =
+        entityDtoConvertUtils.getResponseMultipleProfiles(
+            profileEntities, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE, null, null);
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    List<ProfileDto> profileDtos = response.getBody().getProfiles();
+    assertNotNull(profileDtos);
+    assertEquals(13, profileDtos.size());
+
+    for (ProfileDto profileDto : profileDtos) {
+      assertTrue(profileDto.getPlatformRoles().isEmpty());
+      assertTrue(profileDto.getRolePlatforms().isEmpty());
+      assertNull(profileDto.getProfileAddress());
+    }
   }
 
   @Test
