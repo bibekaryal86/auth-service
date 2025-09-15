@@ -67,6 +67,15 @@ public class ConstantUtils {
           ENV_ENVSVC_USERNAME,
           ENV_ENVSVC_PASSWORD);
 
+  public static final List<String> ENV_KEY_NAMES_PROD =
+      List.of(ENV_DB_HOST_PROD, ENV_DB_NAME_PROD, ENV_DB_USERNAME_PROD, ENV_DB_PASSWORD_PROD);
+  public static final List<String> ENV_KEY_NAMES_SANDBOX =
+      List.of(
+          ENV_DB_HOST_SANDBOX,
+          ENV_DB_NAME_SANDBOX,
+          ENV_DB_USERNAME_SANDBOX,
+          ENV_DB_PASSWORD_SANDBOX);
+
   // ROLE NAMES
   public static final String ROLE_NAME_GUEST = "GUEST";
   public static final String ROLE_NAME_STANDARD = "STANDARD";

@@ -3,11 +3,12 @@
  */
 package auth.service;
 
-import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 import static java.util.Collections.singletonMap;
 
+import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,20 @@ public class App {
   }
 
   private static void validateInitArgs() {
-    final Map<String, String> properties = CommonUtilities.getSystemEnvProperties(ENV_KEY_NAMES);
+    final boolean isProduction =
+        "production"
+            .equals(CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE));
+    final List<String> envKeyNames = new ArrayList<>(ConstantUtils.ENV_KEY_NAMES);
+
+    if (isProduction) {
+      envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_PROD);
+    } else {
+      envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_SANDBOX);
+    }
+
+    final Map<String, String> properties = CommonUtilities.getSystemEnvProperties(envKeyNames);
     final List<String> requiredEnvProperties =
-        ENV_KEY_NAMES.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
+        envKeyNames.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
     final List<String> errors =
         requiredEnvProperties.stream().filter(key -> properties.get(key) == null).toList();
     if (!errors.isEmpty()) {
