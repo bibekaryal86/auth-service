@@ -16,6 +16,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,13 +29,17 @@ import org.springframework.util.StringUtils;
 
 public class SsoApiControllerTest extends BaseTest {
 
-  private static String bearerAuthCredentials;
   @Mock private SecurityContext securityContext;
+
+  private static String bearerAuthCredentials;
+  private static PlatformEntity platformEntity;
+  private static ProfileDto profileDtoNoPermission;
+  private static ProfileDto profileDtoWithPermission;
 
   @BeforeAll
   static void setUpBeforeAll() {
-    PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
-    ProfileDto profileDtoNoPermission = TestData.getProfileDto();
+    platformEntity = TestData.getPlatformEntities().getFirst();
+    profileDtoNoPermission = TestData.getProfileDto();
     bearerAuthCredentials =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoNoPermission);
   }
@@ -92,6 +97,70 @@ public class SsoApiControllerTest extends BaseTest {
     webTestClient
         .get()
         .uri("/api/v1/sso/9999/validate/token")
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+  }
+
+  @Test
+  void testCheckPermissions_Success() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(List.of("PERMISSION-1"), profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    List<String> permissionsToCheck = List.of("PERMISSION-1");
+
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/sso/%s/check/permissions", ID))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .bodyValue(permissionsToCheck)
+        .exchange()
+        .expectStatus()
+        .isNoContent();
+  }
+
+  @Test
+  void testCheckPermissions_Failure() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(List.of("PERMISSION-1"), profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    List<String> permissionsToCheck = List.of("PERMISSION-2");
+
+    webTestClient
+        .post()
+        .uri(String.format("/api/v1/sso/%s/check/permissions", ID))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .bodyValue(permissionsToCheck)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  void testCheckPermissions_FailureDifferentPlatform() {
+    profileDtoWithPermission =
+        TestData.getProfileDtoWithPermissions(List.of("PERMISSION-1"), profileDtoNoPermission);
+    String bearerAuthCredentialsWithPermission =
+        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
+    List<String> permissionsToCheck = List.of("PERMISSION-1");
+
+    webTestClient
+        .post()
+        .uri("/api/v1/sso/9999/check/permissions")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+        .bodyValue(permissionsToCheck)
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  void testCheckPermissions_FailureNoToken() {
+    webTestClient
+        .post()
+        .uri("/api/v1/sso/9999/check/permissions")
         .exchange()
         .expectStatus()
         .isUnauthorized();
