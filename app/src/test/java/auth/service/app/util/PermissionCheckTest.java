@@ -17,6 +17,7 @@ import auth.service.app.model.token.AuthTokenRole;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,10 +46,14 @@ public class PermissionCheckTest extends BaseTest {
 
   @BeforeEach
   public void setUpBeforeEach() {
-    reset(securityContext);
     SecurityContextHolder.setContext(securityContext);
     authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
+  }
+
+  @AfterEach
+  public void tearDown() {
+    reset(securityContext);
   }
 
   @Test

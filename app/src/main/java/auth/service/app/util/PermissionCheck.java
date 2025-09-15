@@ -33,6 +33,18 @@ public class PermissionCheck {
     }
   }
 
+  public boolean checkPermissionDuplicate(final List<String> requiredPermissions) {
+    try {
+      final AuthToken authToken = CommonUtils.getAuthentication();
+      return checkUserPermission(authToken, requiredPermissions);
+    } catch (Exception ex) {
+      if (ex instanceof CheckPermissionException) {
+        throw ex;
+      }
+      throw new CheckPermissionException(ex.getMessage());
+    }
+  }
+
   public void checkProfileAccess(final String email, final long id) {
     try {
       final AuthToken authToken = CommonUtils.getAuthentication();
