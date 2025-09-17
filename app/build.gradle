@@ -155,7 +155,7 @@ flyway {
 bootRun {
     // do not run flyway migrate when running the app
     systemProperty 'spring.flyway.enabled', 'false'
-    def activeProfile = yamlProperties['SPRING_PROFILES_ACTIVE'] ?: 'development'
+    def activeProfile = yamlProperties['SPRING_PROFILES_ACTIVE'] ?: 'sandbox'
     systemProperty 'spring.profiles.active', activeProfile
     doFirst {
         yamlProperties.each { key, value ->

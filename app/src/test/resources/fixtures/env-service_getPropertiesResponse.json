@@ -1,7 +1,7 @@
 {
   "envDetails": [
     {
-      "name": "redirectUrls_development",
+      "name": "redirectUrls_sandbox",
       "stringValue": null,
       "listValue": null,
       "mapValue": {
@@ -21,7 +21,7 @@
       "stringValue": null,
       "listValue": null,
       "mapValue": {
-        "development": "http://localhost:8000/authsvc",
+        "sandbox": "http://localhost:8000/authsvc",
         "production": "https://gateway-service.com/authsvc"
       }
     }

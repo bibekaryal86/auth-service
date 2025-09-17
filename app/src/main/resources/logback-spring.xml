@@ -10,7 +10,7 @@
     <property name="LOG_PATTERN"
               value="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ, America/Denver}] [auth-service] [${PID:-},%thread] [%level] [%c{1}] --- %msg%n"/>
 
-    <springProfile name="development">
+    <springProfile name="sandbox">
         <property name="LOG_FILE" value="${user.home}/zzz_dev/projects/logs/auth-service/auth-service"/>
 
         <appender name="FILELOG" class="RollingFileAppender">

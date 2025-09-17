@@ -45,7 +45,7 @@ public class EnvServiceConnectorTest extends BaseTest {
 
   @Test
   void testGetRedirectUrls_Development() {
-    when(environment.matchesProfiles("development")).thenReturn(true);
+    when(environment.matchesProfiles("sandbox")).thenReturn(true);
 
     try (MockedStatic<AppEnvProperty> mockedStatic = mockStatic(AppEnvProperty.class)) {
       mockedStatic
@@ -62,7 +62,7 @@ public class EnvServiceConnectorTest extends BaseTest {
 
   @Test
   void testGetRedirectUrls_Production() {
-    when(environment.matchesProfiles("development")).thenReturn(false);
+    when(environment.matchesProfiles("sandbox")).thenReturn(false);
 
     try (MockedStatic<AppEnvProperty> mockedStatic = mockStatic(AppEnvProperty.class)) {
       mockedStatic
@@ -79,7 +79,7 @@ public class EnvServiceConnectorTest extends BaseTest {
 
   @Test
   void testGetBaseUrlForLinkInEmail_Development() {
-    when(environment.matchesProfiles("development")).thenReturn(true);
+    when(environment.matchesProfiles("sandbox")).thenReturn(true);
 
     try (MockedStatic<AppEnvProperty> mockedStatic = mockStatic(AppEnvProperty.class)) {
       mockedStatic
@@ -90,18 +90,14 @@ public class EnvServiceConnectorTest extends BaseTest {
 
       assertNotNull(result);
       assertEquals(
-          TestData.getEnvDetailsResponse()
-              .getEnvDetails()
-              .getLast()
-              .getMapValue()
-              .get("development"),
+          TestData.getEnvDetailsResponse().getEnvDetails().getLast().getMapValue().get("sandbox"),
           result);
     }
   }
 
   @Test
   void testGetBaseUrlForLinkInEmail_Production() {
-    when(environment.matchesProfiles("development")).thenReturn(false);
+    when(environment.matchesProfiles("sandbox")).thenReturn(false);
 
     try (MockedStatic<AppEnvProperty> mockedStatic = mockStatic(AppEnvProperty.class)) {
       mockedStatic

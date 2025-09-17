@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: development
+      on-profile: sandbox
   datasource:
     url: jdbc:postgresql://${DB_HOST_SANDBOX}:5432/${DB_NAME_SANDBOX}
     username: ${DB_USERNAME_SANDBOX}

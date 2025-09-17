@@ -23,9 +23,9 @@ public class EnvServiceConnector {
 
   @Cacheable("redirectUrls")
   public Map<String, String> getRedirectUrls() {
-    final boolean isDevelopment = environment.matchesProfiles("development");
+    final boolean isDevelopment = environment.matchesProfiles("sandbox");
     final String envDetailsName =
-        String.format("redirectUrls_%s", isDevelopment ? "development" : "production");
+        String.format("redirectUrls_%s", isDevelopment ? "sandbox" : "production");
     final List<EnvDetailsResponse.EnvDetails> envDetails = getAuthServiceEnvProperties();
     EnvDetailsResponse.EnvDetails withRedirectUrls =
         envDetails.stream()
@@ -46,7 +46,7 @@ public class EnvServiceConnector {
 
   @Cacheable("baseUrlForLinkInEmail")
   public String getBaseUrlForLinkInEmail() {
-    final boolean isDevelopment = environment.matchesProfiles("development");
+    final boolean isDevelopment = environment.matchesProfiles("sandbox");
     final String envDetailsName = "baseUrlForLinkInEmail";
     final List<EnvDetailsResponse.EnvDetails> envDetails = getAuthServiceEnvProperties();
     EnvDetailsResponse.EnvDetails withRedirectUrls =
@@ -57,6 +57,6 @@ public class EnvServiceConnector {
     if (withRedirectUrls == null) {
       return null;
     }
-    return withRedirectUrls.getMapValue().get(isDevelopment ? "development" : "production");
+    return withRedirectUrls.getMapValue().get(isDevelopment ? "sandbox" : "production");
   }
 }
