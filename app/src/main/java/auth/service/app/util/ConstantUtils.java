@@ -39,12 +39,12 @@ public class ConstantUtils {
   public static final String ENV_DB_USERNAME_SANDBOX = "DB_USERNAME_SANDBOX";
   public static final String ENV_DB_PASSWORD_SANDBOX = "DB_PASSWORD_SANDBOX";
   public static final String ENV_SECRET_KEY = "SECRET_KEY";
-  public static final String ENV_MAILJET_PUBLIC_KEY = "MJ_PUBLIC";
-  public static final String ENV_MAILJET_PRIVATE_KEY = "MJ_PRIVATE";
-  public static final String ENV_MAILJET_EMAIL_ADDRESS = "MJ_EMAIL";
   public static final String ENV_ENVSVC_BASE_URL = "ENVSVC_BASE_URL";
   public static final String ENV_ENVSVC_USERNAME = "ENVSVC_USR";
   public static final String ENV_ENVSVC_PASSWORD = "ENVSVC_PWD";
+  public static final String ENV_EMAIL_API_URL = "EMAIL_API_URL";
+  public static final String ENV_EMAIL_API_USERNAME = "EMAIL_API_USR";
+  public static final String ENV_EMAIL_API_PASSWORD = "EMAIL_API_PWD";
   public static final List<String> ENV_KEY_NAMES =
       List.of(
           ENV_SERVER_PORT,
@@ -52,9 +52,9 @@ public class ConstantUtils {
           ENV_SELF_USERNAME,
           ENV_SELF_PASSWORD,
           ENV_SECRET_KEY,
-          ENV_MAILJET_PUBLIC_KEY,
-          ENV_MAILJET_PRIVATE_KEY,
-          ENV_MAILJET_EMAIL_ADDRESS,
+          ENV_EMAIL_API_URL,
+          ENV_EMAIL_API_USERNAME,
+          ENV_EMAIL_API_PASSWORD,
           ENV_ENVSVC_BASE_URL,
           ENV_ENVSVC_USERNAME,
           ENV_ENVSVC_PASSWORD);

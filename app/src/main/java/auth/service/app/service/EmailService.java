@@ -4,11 +4,9 @@ import static auth.service.app.util.JwtUtils.encodeEmailAddress;
 
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.FileReaderUtils;
 import io.github.bibekaryal86.shdsvc.Email;
 import io.github.bibekaryal86.shdsvc.dtos.EmailRequest;
-import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -110,13 +108,12 @@ public class EmailService {
       final String fullName,
       final String subject,
       final String emailHtmlContent) {
-    final String emailFrom =
-        CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_MAILJET_EMAIL_ADDRESS);
+    final String platformNameSubject = "[" + platformName + "] " + subject;
     return new EmailRequest(
-        new EmailRequest.EmailContact(emailFrom, platformName),
+        new EmailRequest.EmailContact("not@required@email@api", platformName),
         List.of(new EmailRequest.EmailContact(emailTo, fullName)),
         Collections.emptyList(),
-        new EmailRequest.EmailContent(subject, null, emailHtmlContent),
+        new EmailRequest.EmailContent(platformNameSubject, null, emailHtmlContent),
         Collections.emptyList());
   }
 }
