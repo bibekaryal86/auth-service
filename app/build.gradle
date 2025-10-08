@@ -1,8 +1,8 @@
 buildscript {
     dependencies {
         classpath 'org.postgresql:postgresql:42.7.7'
-        classpath 'org.flywaydb:flyway-database-postgresql:11.8.2'
-        classpath 'org.yaml:snakeyaml:2.4'
+        classpath 'org.flywaydb:flyway-database-postgresql:11.13.3'
+        classpath 'org.yaml:snakeyaml:2.5'
     }
 }
 
@@ -13,12 +13,12 @@ plugins {
     id 'io.freefair.lombok' version '9.0.0'
     id 'org.springframework.boot' version '3.5.3'
     id 'com.diffplug.spotless' version '8.0.0'
-    id 'org.flywaydb.flyway' version '11.13.2'
+    id 'org.flywaydb.flyway' version '11.13.3'
 }
 
 dependencies {
-    def springVersion = "3.5.3"
-    def junitVersion = "5.12.2"
+    def springVersion = "3.5.6"
+    def junitVersion = "6.0.0"
     def jjwtVersion = "0.12.6"
 
     implementation 'io.github.bibekaryal86:shdsvc:1.0.4'
@@ -36,7 +36,7 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
     runtimeOnly 'org.postgresql:postgresql:42.7.7'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.13.3'
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -46,7 +46,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
     testImplementation 'org.mockito:mockito-core:5.18.0'
-    testImplementation 'org.flywaydb:flyway-core:11.8.2'
+    testImplementation 'org.flywaydb:flyway-core:11.13.3'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
     testImplementation 'com.h2database:h2:2.3.232'
 }
