@@ -1,0 +1,1 @@
+ALTER TABLE platform_profile_role ADD CONSTRAINT unique_platform_profile UNIQUE (platform_id, profile_id);
