@@ -19,9 +19,9 @@ plugins {
 dependencies {
     def springVersion = "3.5.6"
     def junitVersion = "6.0.0"
-    def jjwtVersion = "0.12.6"
+    def jjwtVersion = "0.13.0"
 
-    implementation 'io.github.bibekaryal86:shdsvc:1.0.8'
+    implementation 'io.github.bibekaryal86:shdsvc:1.0.9'
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springVersion"
@@ -45,7 +45,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
-    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
     testImplementation 'org.flywaydb:flyway-core:11.13.3'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
     testImplementation 'com.h2database:h2:2.4.240'
