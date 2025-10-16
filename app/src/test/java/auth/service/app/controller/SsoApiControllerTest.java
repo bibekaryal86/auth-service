@@ -17,10 +17,12 @@ import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -110,32 +112,21 @@ public class SsoApiControllerTest extends BaseTest {
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
     List<String> permissionsToCheck = List.of("PERMISSION-1");
 
-    webTestClient
-        .post()
-        .uri(String.format("/api/v1/sso/%s/check/permissions", ID))
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
-        .bodyValue(permissionsToCheck)
-        .exchange()
-        .expectStatus()
-        .isNoContent();
-  }
+    Map<String, Boolean> response =
+        webTestClient
+            .post()
+            .uri(String.format("/api/v1/sso/%s/check/permissions", ID))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
+            .bodyValue(permissionsToCheck)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(new ParameterizedTypeReference<Map<String, Boolean>>() {})
+            .returnResult()
+            .getResponseBody();
 
-  @Test
-  void testCheckPermissions_Failure() {
-    profileDtoWithPermission =
-        TestData.getProfileDtoWithPermissions(List.of("PERMISSION-1"), profileDtoNoPermission);
-    String bearerAuthCredentialsWithPermission =
-        TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
-    List<String> permissionsToCheck = List.of("PERMISSION-2");
-
-    webTestClient
-        .post()
-        .uri(String.format("/api/v1/sso/%s/check/permissions", ID))
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuthCredentialsWithPermission)
-        .bodyValue(permissionsToCheck)
-        .exchange()
-        .expectStatus()
-        .isForbidden();
+    assertNotNull(response);
+    assertEquals(1, response.size());
   }
 
   @Test

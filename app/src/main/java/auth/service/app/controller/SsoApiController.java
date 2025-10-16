@@ -11,6 +11,7 @@ import auth.service.app.util.EntityDtoConvertUtils;
 import auth.service.app.util.PermissionCheck;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,15 +56,14 @@ public class SsoApiController {
   }
 
   @PostMapping(value = "/check/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> checkPermissions(
+  public ResponseEntity<Map<String, Boolean>> checkPermissions(
       @PathVariable final Long platformId, @RequestBody List<String> permissionsToCheck) {
     try {
       final AuthToken authToken = CommonUtils.getAuthentication();
       if (authToken != null
           && authToken.getPlatform() != null
-          && Objects.equals(platformId, authToken.getPlatform().getId())
-          && permissionCheck.checkPermissionDuplicate(permissionsToCheck)) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+          && Objects.equals(platformId, authToken.getPlatform().getId())) {
+        return ResponseEntity.ok(permissionCheck.checkPermissionDuplicate(permissionsToCheck));
       }
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception ex) {
