@@ -4,8 +4,12 @@ import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.token.AuthToken;
+import auth.service.app.model.token.AuthTokenPermission;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -33,10 +37,10 @@ public class PermissionCheck {
     }
   }
 
-  public boolean checkPermissionDuplicate(final List<String> requiredPermissions) {
+  public Map<String, Boolean> checkPermissionDuplicate(final List<String> requiredPermissions) {
     try {
       final AuthToken authToken = CommonUtils.getAuthentication();
-      return checkUserPermission(authToken, requiredPermissions);
+      return checkUserPermissionDuplicate(authToken, requiredPermissions);
     } catch (Exception ex) {
       if (ex instanceof CheckPermissionException) {
         throw ex;
@@ -88,6 +92,24 @@ public class PermissionCheck {
         .anyMatch(
             authTokenPermission ->
                 requiredPermissions.contains(authTokenPermission.getPermissionName()));
+  }
+
+  private Map<String, Boolean> checkUserPermissionDuplicate(
+      final AuthToken authToken, final List<String> requiredPermissions) {
+    final Set<String> userPermissions =
+        authToken.getPermissions().stream()
+            .map(AuthTokenPermission::getPermissionName)
+            .collect(Collectors.toSet());
+
+    final Map<String, Boolean> checkedPermissions =
+        requiredPermissions.stream()
+            .collect(Collectors.toMap(permission -> permission, userPermissions::contains));
+
+    if (authToken.getIsSuperUser()) {
+      checkedPermissions.put(ConstantUtils.ROLE_NAME_SUPERUSER, Boolean.TRUE);
+    }
+
+    return checkedPermissions;
   }
 
   private boolean checkUserIdEmail(final String email, final long id, final AuthToken authToken) {

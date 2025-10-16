@@ -2,7 +2,10 @@ package auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -17,6 +20,7 @@ import auth.service.app.model.token.AuthTokenRole;
 import helper.TestData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,6 +97,42 @@ public class PermissionCheckTest extends BaseTest {
 
     assertEquals(
         "Permission Denied: Profile does not have required permissions...", exception.getMessage());
+  }
+
+  @Test
+  void testCheckPermissionDuplicate() {
+    AuthToken authToken = TestData.getAuthToken();
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    List<String> requiredPermissions = List.of("PERMISSION-1", "SOME_OTHER_PERMISSION");
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    Map<String, Boolean> checkedPermissions =
+        permissionCheck.checkPermissionDuplicate(requiredPermissions);
+    assertDoesNotThrow(() -> permissionCheck.checkPermissionDuplicate(requiredPermissions));
+    assertEquals(2, checkedPermissions.size());
+    assertTrue(checkedPermissions.get("PERMISSION-1"));
+    assertFalse(checkedPermissions.get("SOME_OTHER_PERMISSION"));
+    assertNull(checkedPermissions.get("SUPERUSER"));
+  }
+
+  @Test
+  void testCheckPermissionDuplicate_Superuser() {
+    AuthToken authToken = TestData.getAuthToken();
+    authToken.setRoles(
+        List.of(AuthTokenRole.builder().roleName(ConstantUtils.ROLE_NAME_SUPERUSER).build()));
+    authToken.setIsSuperUser(true);
+    authentication = new TestingAuthenticationToken(EMAIL, authToken, Collections.emptyList());
+    List<String> requiredPermissions = List.of("PERMISSION-1", "SOME_OTHER_PERMISSION");
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
+    Map<String, Boolean> checkedPermissions =
+        permissionCheck.checkPermissionDuplicate(requiredPermissions);
+
+    assertDoesNotThrow(() -> permissionCheck.checkPermissionDuplicate(requiredPermissions));
+    assertEquals(3, checkedPermissions.size());
+    assertTrue(checkedPermissions.get("PERMISSION-1"));
+    assertFalse(checkedPermissions.get("SOME_OTHER_PERMISSION"));
+    assertTrue(checkedPermissions.get("SUPERUSER"));
   }
 
   @Test
