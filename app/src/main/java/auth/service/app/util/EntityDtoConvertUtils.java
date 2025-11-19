@@ -4,7 +4,11 @@ import static auth.service.app.util.CommonUtils.getHttpStatusForErrorResponse;
 import static auth.service.app.util.CommonUtils.getHttpStatusForSingleResponse;
 import static auth.service.app.util.CommonUtils.getResponseStatusInfoForSingleResponse;
 
+import auth.service.app.model.dto.AuditPermissionDto;
+import auth.service.app.model.dto.AuditPlatformDto;
+import auth.service.app.model.dto.AuditProfileDto;
 import auth.service.app.model.dto.AuditResponse;
+import auth.service.app.model.dto.AuditRoleDto;
 import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.dto.PlatformDto;
@@ -22,6 +26,10 @@ import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleDtoPlatformProfile;
 import auth.service.app.model.dto.RoleDtoProfilePlatform;
 import auth.service.app.model.dto.RoleResponse;
+import auth.service.app.model.entity.AuditPermissionEntity;
+import auth.service.app.model.entity.AuditPlatformEntity;
+import auth.service.app.model.entity.AuditProfileEntity;
+import auth.service.app.model.entity.AuditRoleEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -32,6 +40,7 @@ import auth.service.app.service.PermissionService;
 import auth.service.app.service.PlatformProfileRoleService;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -1351,5 +1360,147 @@ public class EntityDtoConvertUtils {
         convertEntityToDtoRoleBasic(permissionEntity.getRole(), Collections.emptyList()));
 
     return permissionDto;
+  }
+
+  // Audit
+  private AuditPermissionDto convertEntityToDtoPermissionAudit(
+      final AuditPermissionEntity auditPermissionEntity) {
+    if (auditPermissionEntity == null) {
+      return null;
+    }
+    final ProfileDto createdBy =
+        convertEntityToDtoProfile(
+            auditPermissionEntity.getCreatedBy(),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            Boolean.FALSE,
+            null);
+    final PermissionDto eventData =
+        convertEntityToDtoPermission(auditPermissionEntity.getEventData(), null);
+    final PermissionDto permission =
+        convertEntityToDtoPermission(auditPermissionEntity.getPermission(), null);
+    return new AuditPermissionDto(
+        auditPermissionEntity.getId(),
+        auditPermissionEntity.getEventType(),
+        auditPermissionEntity.getEventDesc(),
+        auditPermissionEntity.getCreatedAt(),
+        createdBy,
+        auditPermissionEntity.getIpAddress(),
+        auditPermissionEntity.getUserAgent(),
+        eventData,
+        permission);
+  }
+
+  public List<AuditPermissionDto> convertEntityToDtoPermissionsAudit(
+      final List<AuditPermissionEntity> auditPermissionEntities) {
+    if (CommonUtilities.isEmpty(auditPermissionEntities)) {
+      return Collections.emptyList();
+    }
+    return auditPermissionEntities.stream().map(this::convertEntityToDtoPermissionAudit).toList();
+  }
+
+  private AuditRoleDto convertEntityToDtoRoleAudit(final AuditRoleEntity auditRoleEntity) {
+    if (auditRoleEntity == null) {
+      return null;
+    }
+    final ProfileDto createdBy =
+        convertEntityToDtoProfile(
+            auditRoleEntity.getCreatedBy(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+    final RoleDto eventData =
+        convertEntityToDtoRole(
+            auditRoleEntity.getEventData(),
+            Collections.emptyList(),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            null);
+    final RoleDto role =
+        convertEntityToDtoRole(
+            auditRoleEntity.getRole(), Collections.emptyList(), Boolean.FALSE, Boolean.FALSE, null);
+    return new AuditRoleDto(
+        auditRoleEntity.getId(),
+        auditRoleEntity.getEventType(),
+        auditRoleEntity.getEventDesc(),
+        auditRoleEntity.getCreatedAt(),
+        createdBy,
+        auditRoleEntity.getIpAddress(),
+        auditRoleEntity.getUserAgent(),
+        eventData,
+        role);
+  }
+
+  public List<AuditRoleDto> convertEntityToDtoRolesAudit(
+      final List<AuditRoleEntity> auditRoleEntities) {
+    if (CommonUtilities.isEmpty(auditRoleEntities)) {
+      return Collections.emptyList();
+    }
+    return auditRoleEntities.stream().map(this::convertEntityToDtoRoleAudit).toList();
+  }
+
+  private AuditPlatformDto convertEntityToDtoPlatformAudit(
+      final AuditPlatformEntity auditPlatformEntity) {
+    if (auditPlatformEntity == null) {
+      return null;
+    }
+    final ProfileDto createdBy =
+        convertEntityToDtoProfile(
+            auditPlatformEntity.getCreatedBy(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+    final PlatformDto eventData =
+        convertEntityToDtoPlatform(
+            auditPlatformEntity.getEventData(), Boolean.FALSE, Boolean.FALSE, null);
+    final PlatformDto platform =
+        convertEntityToDtoPlatform(
+            auditPlatformEntity.getPlatform(), Boolean.FALSE, Boolean.FALSE, null);
+    return new AuditPlatformDto(
+        auditPlatformEntity.getId(),
+        auditPlatformEntity.getEventType(),
+        auditPlatformEntity.getEventDesc(),
+        auditPlatformEntity.getCreatedAt(),
+        createdBy,
+        auditPlatformEntity.getIpAddress(),
+        auditPlatformEntity.getUserAgent(),
+        eventData,
+        platform);
+  }
+
+  public List<AuditPlatformDto> convertEntityToDtoPlatformsAudit(
+      final List<AuditPlatformEntity> auditPlatformEntities) {
+    if (CommonUtilities.isEmpty(auditPlatformEntities)) {
+      return Collections.emptyList();
+    }
+    return auditPlatformEntities.stream().map(this::convertEntityToDtoPlatformAudit).toList();
+  }
+
+  private AuditProfileDto convertEntityToDtoProfileAudit(
+      final AuditProfileEntity auditProfileEntity) {
+    if (auditProfileEntity == null) {
+      return null;
+    }
+    final ProfileDto createdBy =
+        convertEntityToDtoProfile(
+            auditProfileEntity.getCreatedBy(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+    final ProfileDto eventData =
+        convertEntityToDtoProfile(
+            auditProfileEntity.getEventData(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+    final ProfileDto profile =
+        convertEntityToDtoProfile(
+            auditProfileEntity.getProfile(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+    return new AuditProfileDto(
+        auditProfileEntity.getId(),
+        auditProfileEntity.getEventType(),
+        auditProfileEntity.getEventDesc(),
+        auditProfileEntity.getCreatedAt(),
+        createdBy,
+        auditProfileEntity.getIpAddress(),
+        auditProfileEntity.getUserAgent(),
+        eventData,
+        profile);
+  }
+
+  public List<AuditProfileDto> convertEntityToDtoProfilesAudit(
+      final List<AuditProfileEntity> auditProfileEntities) {
+    if (CommonUtilities.isEmpty(auditProfileEntities)) {
+      return Collections.emptyList();
+    }
+    return auditProfileEntities.stream().map(this::convertEntityToDtoProfileAudit).toList();
   }
 }
