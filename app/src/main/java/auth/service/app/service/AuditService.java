@@ -3,7 +3,11 @@ package auth.service.app.service;
 import static auth.service.app.util.CommonUtils.getIpAddress;
 import static auth.service.app.util.CommonUtils.getUserAgent;
 
+import auth.service.app.model.dto.AuditPermissionDto;
+import auth.service.app.model.dto.AuditPlatformDto;
+import auth.service.app.model.dto.AuditProfileDto;
 import auth.service.app.model.dto.AuditResponse;
+import auth.service.app.model.dto.AuditRoleDto;
 import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
@@ -22,6 +26,7 @@ import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.EntityDtoConvertUtils;
 import auth.service.app.util.JpaDataUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +49,7 @@ public class AuditService {
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
   private final ProfileRepository profileRepository;
+  private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -91,7 +97,9 @@ public class AuditService {
     final ResponseMetadata.ResponsePageInfo auditPageInfo =
         CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditPermissionEntity> auditEntities = auditEntityPage.getContent();
-    return new AuditResponse(auditPageInfo, auditEntities, null, null, null);
+    final List<AuditPermissionDto> auditDtos =
+        entityDtoConvertUtils.convertEntityToDtoPermissionsAudit(auditEntities);
+    return new AuditResponse(auditPageInfo, auditDtos, null, null, null);
   }
 
   public void auditRole(
@@ -125,7 +133,9 @@ public class AuditService {
     final ResponseMetadata.ResponsePageInfo auditPageInfo =
         CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditRoleEntity> auditEntities = auditEntityPage.getContent();
-    return new AuditResponse(auditPageInfo, null, auditEntities, null, null);
+    final List<AuditRoleDto> auditDtos =
+        entityDtoConvertUtils.convertEntityToDtoRolesAudit(auditEntities);
+    return new AuditResponse(auditPageInfo, null, auditDtos, null, null);
   }
 
   public void auditPlatform(
@@ -164,7 +174,9 @@ public class AuditService {
     final ResponseMetadata.ResponsePageInfo auditPageInfo =
         CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditPlatformEntity> auditEntities = auditEntityPage.getContent();
-    return new AuditResponse(auditPageInfo, null, null, auditEntities, null);
+    final List<AuditPlatformDto> auditDtos =
+        entityDtoConvertUtils.convertEntityToDtoPlatformsAudit(auditEntities);
+    return new AuditResponse(auditPageInfo, null, null, auditDtos, null);
   }
 
   public void auditProfile(
@@ -203,6 +215,8 @@ public class AuditService {
     final ResponseMetadata.ResponsePageInfo auditPageInfo =
         CommonUtils.defaultResponsePageInfo(auditEntityPage);
     final List<AuditProfileEntity> auditEntities = auditEntityPage.getContent();
-    return new AuditResponse(auditPageInfo, null, null, null, auditEntities);
+    final List<AuditProfileDto> auditDtos =
+        entityDtoConvertUtils.convertEntityToDtoProfilesAudit(auditEntities);
+    return new AuditResponse(auditPageInfo, null, null, null, auditDtos);
   }
 }
