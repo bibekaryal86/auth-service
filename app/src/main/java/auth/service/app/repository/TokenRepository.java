@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
   Optional<TokenEntity> findByRefreshToken(final String refreshToken);
 
-  Optional<TokenEntity> findByCsrfToken(final String csrfToken);
-
   @Modifying
   @Transactional
   @Query(
