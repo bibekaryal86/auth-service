@@ -173,7 +173,7 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @PostMapping("/{platformId}/{profileId}/token/refresh")
+  @GetMapping("/{platformId}/{profileId}/token/refresh")
   public ResponseEntity<ProfilePasswordTokenResponse> refreshToken(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,
@@ -252,7 +252,7 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @PostMapping("/{platformId}/{profileId}/logout")
+  @GetMapping("/{platformId}/{profileId}/logout")
   public ResponseEntity<ResponseWithMetadata> logout(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,

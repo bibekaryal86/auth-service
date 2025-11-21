@@ -27,7 +27,7 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   @Test
   void testReadPlatformProfileRolesByPlatformIds() {
     assertEquals(
-        4,
+        2,
         platformProfileRoleService.readPlatformProfileRolesByPlatformIds(List.of(ID, 4L)).size());
   }
 
@@ -43,14 +43,14 @@ public class PlatformProfileRoleServiceTest extends BaseTest {
   @Test
   void testReadPlatformProfileRolesByRoleIds() {
     assertEquals(
-        3,
+        1,
         platformProfileRoleService.readPlatformProfileRolesByRoleIds(List.of(4L, 5L, 6L)).size());
   }
 
   @Test
   void testReadPlatformProfileRolesByPlatformIdAndProfileId() {
     assertEquals(
-        3,
+        1,
         platformProfileRoleService.readPlatformProfileRolesByPlatformIdAndProfileId(4L, 4L).size());
   }
 

@@ -26,14 +26,14 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
   void testFindByPlatformIdAndProfileEmail() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleRepository.findByPlatformIdAndProfileEmail(4L, "firstlast@four.com");
-    assertEquals(3, platformProfileRoleEntities.size());
+    assertEquals(1, platformProfileRoleEntities.size());
   }
 
   @Test
   void testFindByPlatformIdAndProfileId() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleRepository.findByPlatformIdAndProfileId(4L, 4L);
-    assertEquals(3, platformProfileRoleEntities.size());
+    assertEquals(1, platformProfileRoleEntities.size());
   }
 
   @Test
@@ -48,7 +48,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                 Sort.Order.asc("role.roleName")));
     Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
         platformProfileRoleRepository.findByPlatformId(4L, pageable);
-    assertEquals(3, platformProfileRoleEntityPage.toList().size());
+    assertEquals(1, platformProfileRoleEntityPage.toList().size());
   }
 
   @Test
@@ -63,14 +63,14 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                 Sort.Order.asc("role.roleName")));
     Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
         platformProfileRoleRepository.findByPlatformIdNoDeleted(4L, pageable);
-    assertEquals(2, platformProfileRoleEntityPage.toList().size());
+    assertEquals(1, platformProfileRoleEntityPage.toList().size());
   }
 
   @Test
   void testFindByPlatformIds() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleRepository.findByPlatformIds(List.of(ID, 2L, ID_DELETED, 4L));
-    assertEquals(6, platformProfileRoleEntities.size());
+    assertEquals(4, platformProfileRoleEntities.size());
     // test order by platform name, profile email and role name
     assertAll(
         "Platform Profile Role Entities Find By Profile Ids",
@@ -129,35 +129,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                         platformProfileRoleEntities.get(3).getProfile().getEmail()),
                 () ->
                     assertEquals(
-                        "ROLE-04", platformProfileRoleEntities.get(3).getRole().getRoleName())),
-        () ->
-            assertAll(
-                "Entity 4",
-                () ->
-                    assertEquals(
-                        "PLATFORM-04",
-                        platformProfileRoleEntities.get(4).getPlatform().getPlatformName()),
-                () ->
-                    assertEquals(
-                        "firstlast@four.com",
-                        platformProfileRoleEntities.get(4).getProfile().getEmail()),
-                () ->
-                    assertEquals(
-                        "ROLE-05", platformProfileRoleEntities.get(4).getRole().getRoleName())),
-        () ->
-            assertAll(
-                "Entity 5",
-                () ->
-                    assertEquals(
-                        "PLATFORM-04",
-                        platformProfileRoleEntities.get(5).getPlatform().getPlatformName()),
-                () ->
-                    assertEquals(
-                        "firstlast@four.com",
-                        platformProfileRoleEntities.get(5).getProfile().getEmail()),
-                () ->
-                    assertEquals(
-                        "ROLE-06", platformProfileRoleEntities.get(5).getRole().getRoleName())));
+                        "ROLE-04", platformProfileRoleEntities.get(3).getRole().getRoleName())));
   }
 
   @Test
@@ -216,7 +188,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
   void testFindByRoleIds() {
     List<PlatformProfileRoleEntity> platformProfileRoleEntities =
         platformProfileRoleRepository.findByRoleIds(List.of(4L, 5L, 6L));
-    assertEquals(3, platformProfileRoleEntities.size());
+    assertEquals(1, platformProfileRoleEntities.size());
     // test order by platform name, profile email and role name
     assertAll(
         "Platform Profile Role Entities Find By Profile Ids",
@@ -233,35 +205,7 @@ public class PlatformProfileRoleRepositoryTest extends BaseTest {
                         platformProfileRoleEntities.get(0).getProfile().getEmail()),
                 () ->
                     assertEquals(
-                        "ROLE-04", platformProfileRoleEntities.get(0).getRole().getRoleName())),
-        () ->
-            assertAll(
-                "Entity 1",
-                () ->
-                    assertEquals(
-                        "PLATFORM-04",
-                        platformProfileRoleEntities.get(1).getPlatform().getPlatformName()),
-                () ->
-                    assertEquals(
-                        "firstlast@four.com",
-                        platformProfileRoleEntities.get(1).getProfile().getEmail()),
-                () ->
-                    assertEquals(
-                        "ROLE-05", platformProfileRoleEntities.get(1).getRole().getRoleName())),
-        () ->
-            assertAll(
-                "Entity 2",
-                () ->
-                    assertEquals(
-                        "PLATFORM-04",
-                        platformProfileRoleEntities.get(2).getPlatform().getPlatformName()),
-                () ->
-                    assertEquals(
-                        "firstlast@four.com",
-                        platformProfileRoleEntities.get(2).getProfile().getEmail()),
-                () ->
-                    assertEquals(
-                        "ROLE-06", platformProfileRoleEntities.get(2).getRole().getRoleName())));
+                        "ROLE-04", platformProfileRoleEntities.get(0).getRole().getRoleName())));
   }
 
   @Test

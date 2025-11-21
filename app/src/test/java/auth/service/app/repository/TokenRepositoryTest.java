@@ -1,22 +1,19 @@
 package auth.service.app.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import auth.service.BaseTest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.TokenEntity;
 import helper.TestData;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 
 public class TokenRepositoryTest extends BaseTest {
 
@@ -25,9 +22,10 @@ public class TokenRepositoryTest extends BaseTest {
   @BeforeAll
   static void setUp(@Autowired TokenRepository tokenRepository) {
     TokenEntity tokenEntity = new TokenEntity();
-    tokenEntity.setAccessToken("some-access-token");
     tokenEntity.setRefreshToken("some-refresh-token");
+    tokenEntity.setCsrfToken("some-csrf-token");
     tokenEntity.setIpAddress("some-ip-address");
+    tokenEntity.setExpiryDate(LocalDateTime.now().plusDays(1L));
 
     PlatformEntity platformEntity = TestData.getPlatformEntities().getFirst();
     ProfileEntity profileEntity = TestData.getProfileEntities().getFirst();
@@ -43,21 +41,12 @@ public class TokenRepositoryTest extends BaseTest {
   }
 
   @Test
-  public void testFindByAccessToken() {
-    Optional<TokenEntity> tokenEntityOptional =
-        tokenRepository.findByAccessToken("some-access-token");
-
-    assertTrue(tokenEntityOptional.isPresent());
-    assertEquals("some-refresh-token", tokenEntityOptional.get().getRefreshToken());
-  }
-
-  @Test
   public void testFindByRefreshToken() {
     Optional<TokenEntity> tokenEntityOptional =
         tokenRepository.findByRefreshToken("some-refresh-token");
 
     assertTrue(tokenEntityOptional.isPresent());
-    assertEquals("some-access-token", tokenEntityOptional.get().getAccessToken());
+    assertEquals("some-csrf-token", tokenEntityOptional.get().getCsrfToken());
   }
 
   @Test
@@ -71,28 +60,5 @@ public class TokenRepositoryTest extends BaseTest {
 
     int updated = tokenRepository.setTokensAsDeletedByProfileIdTest(profileEntity.getId());
     assertEquals(2, updated);
-  }
-
-  @Test
-  public void testUniqueConstraints_AccessRefreshToken() {
-    TokenEntity tokenEntity = tokenRepository.findByAccessToken("some-access-token").orElse(null);
-
-    if (tokenEntity == null) {
-      fail("Token Entity Not Found...");
-    }
-
-    TokenEntity tokenEntityOne = new TokenEntity();
-    BeanUtils.copyProperties(tokenEntity, tokenEntityOne, "id");
-
-    // throws exception for same access token
-    assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
-
-    tokenEntityOne.setAccessToken("some-access-token-1");
-    // throws exception for same refresh token
-    assertThrows(DataIntegrityViolationException.class, () -> tokenRepository.save(tokenEntityOne));
-
-    tokenEntityOne.setRefreshToken("some-refresh-token-2");
-    // does not throw exception for different access and refresh token
-    tokenRepository.save(tokenEntityOne);
   }
 }

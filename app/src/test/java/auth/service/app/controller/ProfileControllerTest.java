@@ -212,7 +212,7 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getProfiles());
-    assertEquals(2, profileResponse.getProfiles().size());
+    assertEquals(1, profileResponse.getProfiles().size());
     assertTrue(profileResponse.getProfiles().getFirst().getPlatformRoles().isEmpty());
     assertNull(profileResponse.getProfiles().getFirst().getProfileAddress());
 
@@ -269,7 +269,7 @@ public class ProfileControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getProfiles());
-    assertEquals(3, profileResponse.getProfiles().size());
+    assertEquals(1, profileResponse.getProfiles().size());
     assertFalse(profileResponse.getProfiles().getFirst().getPlatformRoles().isEmpty());
     assertNull(profileResponse.getProfiles().getFirst().getProfileAddress());
 

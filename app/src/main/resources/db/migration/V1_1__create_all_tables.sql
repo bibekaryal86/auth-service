@@ -152,7 +152,7 @@ CREATE TABLE audit_platform
 
 -- unique indexes
 CREATE UNIQUE INDEX idx_profile_phone ON profile (phone) WHERE phone IS NOT NULL;
-CREATE UNIQUE INDEX idx_platform_profile_role ON platform_profile_role (platform_id, profile_id);
+CREATE UNIQUE INDEX idx_platform_profile_role ON platform_profile_role (platform_id, profile_id) WHERE unassigned_date IS NULL;
 CREATE UNIQUE INDEX idx_permission_role ON permission (role_id, permission_name);
 -- indexes
 CREATE INDEX idx_platform_id ON platform (id);

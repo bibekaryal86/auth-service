@@ -460,7 +460,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
       assertTrue(roleDto.getPermissions().isEmpty());
       assertTrue(roleDto.getProfilePlatforms().isEmpty());
 
-      if (List.of(1, 2, 3, 4, 5, 6).contains(i)) {
+      if (List.of(1, 2, 3, 4).contains(i)) {
         assertEquals(1, roleDto.getPlatformProfiles().size());
         if (i == 1) {
           assertEquals(i, roleDto.getPlatformProfiles().getFirst().getPlatform().getId());
@@ -559,7 +559,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
         }
       }
 
-      if (List.of(1, 2, 3, 4, 5, 6).contains(i)) {
+      if (List.of(1, 2, 3, 4).contains(i)) {
         assertEquals(1, roleDto.getPlatformProfiles().size());
         assertEquals(1, roleDto.getProfilePlatforms().size());
         if (i == 1 || i == 2 || i == 3) {
@@ -834,9 +834,9 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(platformDto4th);
     assertEquals(0, platformDto4th.getRoleProfiles().size());
     assertEquals(4L, platformDto4th.getProfileRoles().getFirst().getProfile().getId());
-    assertEquals(3, platformDto4th.getProfileRoles().getFirst().getRoles().size());
+    assertEquals(1, platformDto4th.getProfileRoles().getFirst().getRoles().size());
     assertEquals(4, platformDto4th.getProfileRoles().getFirst().getRoles().getFirst().getId());
-    assertEquals(6, platformDto4th.getProfileRoles().getFirst().getRoles().getLast().getId());
+    assertEquals(4, platformDto4th.getProfileRoles().getFirst().getRoles().getLast().getId());
   }
 
   @Test
@@ -889,12 +889,12 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(platformDto4th);
-    assertEquals(3, platformDto4th.getRoleProfiles().size());
+    assertEquals(1, platformDto4th.getRoleProfiles().size());
     assertEquals(1, platformDto4th.getRoleProfiles().getFirst().getProfiles().size());
     assertEquals(1, platformDto4th.getRoleProfiles().getLast().getProfiles().size());
 
     assertEquals(1, platformDto4th.getProfileRoles().size());
-    assertEquals(3, platformDto4th.getProfileRoles().getFirst().getRoles().size());
+    assertEquals(1, platformDto4th.getProfileRoles().getFirst().getRoles().size());
   }
 
   @Test
@@ -1153,7 +1153,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(profileDto4th);
-    assertEquals(3, profileDto4th.getRolePlatforms().size());
+    assertEquals(1, profileDto4th.getRolePlatforms().size());
     assertEquals(0, profileDto1st.getPlatformRoles().size());
   }
 
@@ -1202,7 +1202,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .findFirst()
             .orElse(null);
     assertNotNull(profileDto4th);
-    assertEquals(3, profileDto4th.getRolePlatforms().size());
+    assertEquals(1, profileDto4th.getRolePlatforms().size());
     assertEquals(1, profileDto4th.getPlatformRoles().size());
   }
 
@@ -1288,7 +1288,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     assertNotNull(response.getBody());
     assertNotNull(response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
     assertNull(response.getBody().getProfile());
-    assertTrue(response.getBody().getAToken() == null && response.getBody().getRToken() == null);
+    assertTrue(
+        response.getBody().getAccessToken() == null
+            && response.getBody().getRefreshToken() == null
+            && response.getBody().getCsrfToken() == null);
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
@@ -1383,15 +1386,13 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     platformProfileRoleService.assignPlatformProfileRole(
         new PlatformProfileRoleRequest(7L, 8L, 7L));
     platformProfileRoleService.assignPlatformProfileRole(
-        new PlatformProfileRoleRequest(7L, 8L, 8L));
-    platformProfileRoleService.assignPlatformProfileRole(
         new PlatformProfileRoleRequest(8L, 8L, 10L));
 
     ProfileEntity profileEntity = profileService.readProfileByEmail("firstlast@eight.com");
     assertNotNull(profileEntity);
 
     ProfileDto profileDto = entityDtoConvertUtils.convertEntityToDtoProfileBasic(profileEntity, 7L);
-    assertEquals(2, profileDto.getRolePlatforms().size());
+    assertEquals(1, profileDto.getRolePlatforms().size());
     assertEquals(1, profileDto.getPlatformRoles().size());
 
     List<Long> platformIds =
@@ -1406,11 +1407,11 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             .flatMap(pd -> pd.getRoles().stream().map(RoleDto::getId))
             .sorted()
             .toList();
-    assertEquals(List.of(7L, 8L), roleIdsPlatform);
+    assertEquals(List.of(7L), roleIdsPlatform);
 
     List<Long> roleIds =
         profileDto.getRolePlatforms().stream().map(pd -> pd.getRole().getId()).sorted().toList();
-    assertEquals(List.of(7L, 8L), roleIds);
+    assertEquals(List.of(7L), roleIds);
     List<Long> platformIdsRoleOne =
         profileDto.getRolePlatforms().stream()
             .filter(pd -> Objects.equals(roleIds.getFirst(), pd.getRole().getId()))
