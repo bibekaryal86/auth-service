@@ -46,20 +46,6 @@ public class TokenService {
     }
   }
 
-  public TokenEntity readTokenByCsrfToken(final String csrfToken) {
-    return tokenRepository
-        .findByCsrfToken(csrfToken)
-        .orElseThrow(() -> new ElementNotFoundException("Token", "CSRF"));
-  }
-
-  public TokenEntity readTokenByCsrfTokenNoException(final String csrfToken) {
-    try {
-      return readTokenByCsrfToken(csrfToken);
-    } catch (Exception ignored) {
-      return null;
-    }
-  }
-
   // UPDATE
   // handled by save
 
