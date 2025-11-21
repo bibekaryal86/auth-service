@@ -1,1 +1,0 @@
-ALTER TABLE token ALTER COLUMN ip_address TYPE VARCHAR(250);

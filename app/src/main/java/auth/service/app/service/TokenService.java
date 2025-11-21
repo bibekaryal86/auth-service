@@ -1,7 +1,5 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.JwtUtils.encodeAuthCredentials;
-
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
@@ -9,8 +7,12 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.repository.TokenRepository;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import auth.service.app.util.JwtUtils;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -25,15 +27,10 @@ public class TokenService {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final Environment environment;
 
+  private final SecureRandom secureRandom = new SecureRandom();
+
   // CREATE
   // handled by save
-
-  // READ
-  public TokenEntity readTokenByAccessToken(final String accessToken) {
-    return tokenRepository
-        .findByAccessToken(accessToken)
-        .orElseThrow(() -> new ElementNotFoundException("Token", "access"));
-  }
 
   public TokenEntity readTokenByRefreshToken(final String refreshToken) {
     return tokenRepository
@@ -41,17 +38,23 @@ public class TokenService {
         .orElseThrow(() -> new ElementNotFoundException("Token", "refresh"));
   }
 
-  public TokenEntity readTokenByAccessTokenNoException(final String accessToken) {
+  public TokenEntity readTokenByRefreshTokenNoException(final String refreshToken) {
     try {
-      return readTokenByAccessToken(accessToken);
+      return readTokenByRefreshToken(refreshToken);
     } catch (Exception ignored) {
       return null;
     }
   }
 
-  public TokenEntity readTokenByRefreshTokenNoException(final String refreshToken) {
+  public TokenEntity readTokenByCsrfToken(final String csrfToken) {
+    return tokenRepository
+        .findByCsrfToken(csrfToken)
+        .orElseThrow(() -> new ElementNotFoundException("Token", "CSRF"));
+  }
+
+  public TokenEntity readTokenByCsrfTokenNoException(final String csrfToken) {
     try {
-      return readTokenByRefreshToken(refreshToken);
+      return readTokenByCsrfToken(csrfToken);
     } catch (Exception ignored) {
       return null;
     }
@@ -102,35 +105,38 @@ public class TokenService {
     final ProfileDto profileDto =
         entityDtoConvertUtils.convertEntityToDtoProfileBasic(profileEntity, platformEntity.getId());
 
+    final String accessToken =
+        JwtUtils.encodeAuthCredentials(
+            platformEntity, profileDto, ConstantUtils.ACCESS_TOKEN_VALIDITY_MILLISECONDS);
+    final String refreshToken = generateSecureToken();
+    final String csrfToken = generateSecureToken();
+
     TokenEntity tokenEntity = new TokenEntity();
     tokenEntity.setPlatform(platformEntity);
     tokenEntity.setProfile(profileEntity);
-    tokenEntity.setAccessToken(getNewAccessToken(platformEntity, profileDto));
-    tokenEntity.setRefreshToken(getNewRefreshToken(platformEntity, profileDto));
     tokenEntity.setIpAddress(ipAddress);
+    tokenEntity.setRefreshToken(refreshToken);
+    tokenEntity.setCsrfToken(csrfToken);
+    tokenEntity.setExpiryDate(
+        LocalDateTime.now().plusSeconds(ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS));
 
     if (id != null) {
       tokenEntity.setId(id);
     }
 
-    tokenEntity = tokenRepository.save(tokenEntity);
+    tokenRepository.save(tokenEntity);
 
     return ProfilePasswordTokenResponse.builder()
-        .aToken(tokenEntity.getAccessToken())
-        .rToken(tokenEntity.getRefreshToken())
+        .accessToken(accessToken)
+        .refreshToken(refreshToken)
+        .csrfToken(csrfToken)
         .profile(profileDto)
         .build();
   }
 
-  // 15 minutes
-  private String getNewAccessToken(
-      final PlatformEntity platformEntity, final ProfileDto profileDto) {
-    return encodeAuthCredentials(platformEntity, profileDto, 1000 * 60 * 15);
-  }
-
-  // 24 hours
-  private String getNewRefreshToken(
-      final PlatformEntity platformEntity, final ProfileDto profileDto) {
-    return encodeAuthCredentials(platformEntity, profileDto, 1000 * 60 * 60 * 24);
+  private String generateSecureToken() {
+    byte[] bytes = new byte[ConstantUtils.TOKEN_LENGTH];
+    secureRandom.nextBytes(bytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
   }
 }

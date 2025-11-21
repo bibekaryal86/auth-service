@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
-  Optional<TokenEntity> findByAccessToken(final String accessToken);
-
   Optional<TokenEntity> findByRefreshToken(final String refreshToken);
+
+  Optional<TokenEntity> findByCsrfToken(final String csrfToken);
 
   @Modifying
   @Transactional

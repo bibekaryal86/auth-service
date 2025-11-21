@@ -1,24 +1,18 @@
 package auth.service.app.controller;
 
-import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
-import static auth.service.app.util.CommonUtils.getIpAddress;
-import static auth.service.app.util.JwtUtils.decodeAuthCredentials;
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.connector.EnvServiceConnector;
-import auth.service.app.exception.ElementMissingException;
+import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
-import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
-import auth.service.app.model.token.AuthToken;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.EmailService;
@@ -27,19 +21,23 @@ import auth.service.app.service.ProfileService;
 import auth.service.app.service.TokenService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.CookieService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +60,7 @@ public class ProfileBasicAuthController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final EmailService emailService;
   private final TokenService tokenService;
+  private final CookieService cookieService;
   private final AuditService auditService;
   private final EnvServiceConnector envServiceConnector;
 
@@ -73,13 +72,13 @@ public class ProfileBasicAuthController {
     try {
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
-        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+        baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
       final PlatformEntity platformEntity =
           circularDependencyService.readPlatform(platformId, false);
       final ProfileEntity profileEntity =
           profileService.createProfile(platformEntity, profileRequest, baseUrlForLinkInEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -116,8 +115,9 @@ public class ProfileBasicAuthController {
       final ProfileEntity profileEntity =
           profileService.readProfileByEmail(profilePasswordRequest.getEmail());
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
-          profileService.loginProfile(platformId, profilePasswordRequest, getIpAddress(request));
-      runAsync(
+          profileService.loginProfile(
+              platformId, profilePasswordRequest, CommonUtils.getIpAddress(request));
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -132,7 +132,19 @@ public class ProfileBasicAuthController {
       profileEntity.setLastLogin(LocalDateTime.now());
       profileService.updateProfile(profileEntity);
 
-      return ResponseEntity.ok(profilePasswordTokenResponse);
+      final ResponseCookie refreshTokenCookie =
+          cookieService.buildRefreshCookie(
+              profilePasswordTokenResponse.getRefreshToken(),
+              ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS);
+      final ResponseCookie csrfTokenCookie =
+          cookieService.buildCsrfCookie(
+              profilePasswordTokenResponse.getCsrfToken(),
+              ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS);
+
+      return ResponseEntity.ok()
+          .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+          .header(HttpHeaders.SET_COOKIE, csrfTokenCookie.toString())
+          .body(profilePasswordTokenResponse);
     } catch (Exception ex) {
       log.error("Login Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
       final ProfileEntity profileEntity =
@@ -146,7 +158,7 @@ public class ProfileBasicAuthController {
         profileService.updateProfile(profileEntity);
       }
 
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -162,21 +174,32 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @PostMapping("/{platformId}/token/refresh")
+  @PostMapping("/{platformId}/{profileId}/token/refresh")
   public ResponseEntity<ProfilePasswordTokenResponse> refreshToken(
       @PathVariable final Long platformId,
-      @Valid @RequestBody final TokenRequest tokenRequest,
+      @PathVariable final Long profileId,
       final HttpServletRequest request) {
     try {
-      if (!StringUtils.hasText(tokenRequest.getRefreshToken())) {
-        throw new ElementMissingException("Token", "Refresh");
+      final String refreshTokenRequest =
+          cookieService.getCookieValue(request, ConstantUtils.COOKIE_REFRESH_TOKEN);
+      final String csrfTokenCookieRequest =
+          cookieService.getCookieValue(request, ConstantUtils.COOKIE_CSRF_TOKEN);
+      final String csrfTokenHeaderRequest = request.getHeader(ConstantUtils.HEADER_CSRF_TOKEN);
+
+      if (CommonUtilities.isEmpty(csrfTokenCookieRequest)
+          || CommonUtilities.isEmpty(csrfTokenHeaderRequest)
+          || !csrfTokenCookieRequest.equals(csrfTokenHeaderRequest)) {
+        throw new CheckPermissionException("Token Invalid/Mismatch...");
       }
 
-      Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(tokenRequest.getRefreshToken());
-      final TokenEntity tokenEntity =
-          tokenService.readTokenByRefreshToken(tokenRequest.getRefreshToken());
+      if (CommonUtilities.isEmpty(refreshTokenRequest)) {
+        throw new ProfileNotAuthorizedException("Token Mismatch/Invalid...");
+      }
 
-      checkValidToken(platformId, emailAuthToken, tokenEntity);
+      final TokenEntity tokenEntity = tokenService.readTokenByRefreshToken(refreshTokenRequest);
+
+      // method will throw exception if invalid
+      validateToken(platformId, profileId, tokenEntity);
 
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
           tokenService.saveToken(
@@ -184,8 +207,9 @@ public class ProfileBasicAuthController {
               null,
               tokenEntity.getPlatform(),
               tokenEntity.getProfile(),
-              getIpAddress(request));
-      runAsync(
+              CommonUtils.getIpAddress(request));
+
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -196,13 +220,25 @@ public class ProfileBasicAuthController {
                       tokenEntity.getProfile().getId(),
                       tokenEntity.getProfile().getEmail(),
                       tokenEntity.getPlatform().getId())));
-      return ResponseEntity.ok(profilePasswordTokenResponse);
+
+      final ResponseCookie refreshTokenCookieResponse =
+          cookieService.buildRefreshCookie(
+              profilePasswordTokenResponse.getRefreshToken(),
+              ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS);
+      final ResponseCookie csrfTokenCookieResponse =
+          cookieService.buildCsrfCookie(
+              profilePasswordTokenResponse.getCsrfToken(),
+              ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS);
+
+      return ResponseEntity.ok()
+          .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
+          .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
+          .body(profilePasswordTokenResponse);
     } catch (Exception ex) {
-      log.error("Refresh Token: [{}] | [{}]", platformId, tokenRequest, ex);
-      final TokenEntity tokenEntity =
-          tokenService.readTokenByRefreshTokenNoException(tokenRequest.getRefreshToken());
-      final ProfileEntity profileEntity = tokenEntity == null ? null : tokenEntity.getProfile();
-      runAsync(
+      log.error("Refresh Token: [{}] | [{}]", platformId, profileId, ex);
+      final ProfileEntity profileEntity =
+          circularDependencyService.readProfile(profileId, Boolean.TRUE);
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -210,54 +246,64 @@ public class ProfileBasicAuthController {
                   AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR,
                   String.format(
                       "Profile Token Refresh Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      tokenRequest.getProfileId(),
+                      profileId,
                       profileEntity == null ? "N/A" : profileEntity.getEmail(),
                       platformId)));
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
 
-  @PostMapping("/{platformId}/logout")
+  @PostMapping("/{platformId}/{profileId}/logout")
   public ResponseEntity<ResponseWithMetadata> logout(
       @PathVariable final Long platformId,
-      @Valid @RequestBody final TokenRequest tokenRequest,
+      @PathVariable final Long profileId,
       final HttpServletRequest request) {
     try {
-      if (!StringUtils.hasText(tokenRequest.getAccessToken())) {
-        throw new ElementMissingException("Token", "Access");
+      final String refreshTokenRequest =
+          cookieService.getCookieValue(request, ConstantUtils.COOKIE_REFRESH_TOKEN);
+      ProfileEntity profileEntity = null;
+      if (CommonUtilities.isEmpty(refreshTokenRequest)) {
+        tokenService.setTokenDeletedDateByProfileId(profileId);
+      } else {
+        final TokenEntity tokenEntity = tokenService.readTokenByRefreshToken(refreshTokenRequest);
+        profileEntity = tokenEntity.getProfile();
+        tokenService.saveToken(
+            tokenEntity.getId(),
+            LocalDateTime.now(),
+            tokenEntity.getPlatform(),
+            tokenEntity.getProfile(),
+            CommonUtils.getIpAddress(request));
       }
 
-      Map<String, AuthToken> emailAuthToken = decodeAuthCredentials(tokenRequest.getAccessToken());
-      final TokenEntity tokenEntity =
-          tokenService.readTokenByAccessToken(tokenRequest.getAccessToken());
+      if (profileEntity == null) {
+        profileEntity = circularDependencyService.readProfile(profileId, Boolean.TRUE);
+      }
 
-      checkValidToken(platformId, emailAuthToken, tokenEntity);
-
-      tokenService.saveToken(
-          tokenEntity.getId(),
-          LocalDateTime.now(),
-          tokenEntity.getPlatform(),
-          tokenEntity.getProfile(),
-          getIpAddress(request));
-
-      runAsync(
+      ProfileEntity finalProfileEntity = profileEntity;
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
-                  tokenEntity.getProfile(),
+                  finalProfileEntity,
                   AuditEnums.AuditProfile.PROFILE_LOGOUT,
                   String.format(
                       "Profile Logout [Id: %s] - [Email: %s] - [Platform: %s]",
-                      tokenEntity.getProfile().getId(),
-                      tokenEntity.getProfile().getEmail(),
-                      tokenEntity.getPlatform().getId())));
-      return ResponseEntity.noContent().build();
+                      profileId,
+                      finalProfileEntity == null ? "N/A" : finalProfileEntity.getEmail(),
+                      platformId)));
+
+      final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
+      final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
+
+      return ResponseEntity.noContent()
+          .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
+          .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
+          .build();
     } catch (Exception ex) {
-      log.error("Logout: [{}] | [{}]", platformId, tokenRequest, ex);
-      final TokenEntity tokenEntity =
-          tokenService.readTokenByAccessTokenNoException(tokenRequest.getAccessToken());
-      final ProfileEntity profileEntity = tokenEntity == null ? null : tokenEntity.getProfile();
-      runAsync(
+      log.error("Logout: [{}] | [{}]", platformId, profileId, ex);
+      final ProfileEntity profileEntity =
+          circularDependencyService.readProfile(profileId, Boolean.TRUE);
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -265,7 +311,7 @@ public class ProfileBasicAuthController {
                   AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR,
                   String.format(
                       "Profile Logout Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      tokenRequest.getProfileId(),
+                      profileId,
                       profileEntity == null ? "N/A" : profileEntity.getEmail(),
                       platformId)));
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
@@ -283,13 +329,13 @@ public class ProfileBasicAuthController {
 
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
-        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+        baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
       emailService.sendProfileValidationEmail(
           platformProfileRoleEntity.getPlatform(),
           platformProfileRoleEntity.getProfile(),
           baseUrlForLinkInEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -304,7 +350,7 @@ public class ProfileBasicAuthController {
     } catch (Exception ex) {
       log.error("Validate Profile Init: [{}], [{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -332,13 +378,13 @@ public class ProfileBasicAuthController {
 
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
-        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+        baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
       emailService.sendProfileResetEmail(
           platformProfileRoleEntity.getPlatform(),
           platformProfileRoleEntity.getProfile(),
           baseUrlForLinkInEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -353,7 +399,7 @@ public class ProfileBasicAuthController {
     } catch (Exception ex) {
       log.error("Reset Profile Init: [{}], [{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -378,7 +424,7 @@ public class ProfileBasicAuthController {
     try {
       final ProfileEntity profileEntity =
           profileService.resetProfile(platformId, profilePasswordRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -392,7 +438,7 @@ public class ProfileBasicAuthController {
       log.error("Reset Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -411,25 +457,27 @@ public class ProfileBasicAuthController {
     }
   }
 
-  private void checkValidToken(
-      final Long platformId, Map<String, AuthToken> emailAuthToken, final TokenEntity tokenEntity) {
-    Map.Entry<String, AuthToken> firstEntry = emailAuthToken.entrySet().iterator().next();
-    String email = firstEntry.getKey();
-    AuthToken authToken = firstEntry.getValue();
-
-    if (!Objects.equals(email, tokenEntity.getProfile().getEmail())) {
-      throw new JwtInvalidException("Profile Mismatch");
+  private void validateToken(
+      final Long platformId, final Long profileId, final TokenEntity tokenEntity) {
+    if (!Objects.equals(platformId, tokenEntity.getPlatform().getId())) {
+      throw new ProfileNotAuthorizedException("Platform Mismatch...");
     }
 
-    if (!Objects.equals(platformId, authToken.getPlatform().getId())) {
-      throw new JwtInvalidException("Platform Mismatch");
+    if (!Objects.equals(profileId, tokenEntity.getProfile().getId())) {
+      throw new ProfileNotAuthorizedException("Profile Mismatch...");
     }
 
     if (tokenEntity.getDeletedDate() != null) {
-      throw new JwtInvalidException("Deleted Token");
+      throw new JwtInvalidException("Deleted Token...");
+    }
+
+    if (tokenEntity.getExpiryDate().isBefore(LocalDateTime.now().minusSeconds(60L))) {
+      throw new JwtInvalidException("Expired Token...");
     }
 
     // if platform is deleted, it will throw exception
-    circularDependencyService.readPlatform(platformId, false);
+    circularDependencyService.readPlatform(platformId, Boolean.FALSE);
+    // if profile is deleted, it will throw exception
+    circularDependencyService.readProfile(profileId, Boolean.FALSE);
   }
 }
