@@ -27,7 +27,6 @@ import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RoleRequest;
-import auth.service.app.model.dto.TokenRequest;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;

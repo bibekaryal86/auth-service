@@ -73,10 +73,16 @@ public class ConstantUtils {
   public static final String ROLE_NAME_STANDARD = "STANDARD";
   public static final String ROLE_NAME_SUPERUSER = "SUPERUSER";
 
-  // JWT TOKEN
+  // TOKEN
   public static final String TOKEN_CLAIM_EMAIL = "emailToken";
   public static final String TOKEN_CLAIM_ISSUER = "authsvc";
   public static final String TOKEN_CLAIM_AUTH = "authToken";
+  public static final String COOKIE_REFRESH_TOKEN = "refresh_token";
+  public static final String COOKIE_CSRF_TOKEN = "csrf_token";
+  public static final String HEADER_CSRF_TOKEN = "x-csrf-token";
+  public static final long ACCESS_TOKEN_VALIDITY_MILLISECONDS = 15 * 60 * 1000;
+  public static final long REFRESH_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60;
+  public static final int TOKEN_LENGTH = 32;
 
   // ID for elements not found
   public static final Long ELEMENT_ID_NOT_FOUND = -1L;

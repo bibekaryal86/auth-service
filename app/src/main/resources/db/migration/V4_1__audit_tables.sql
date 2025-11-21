@@ -1,4 +1,0 @@
-ALTER TABLE audit_platform ALTER COLUMN ip_address TYPE VARCHAR(250);
-ALTER TABLE audit_profile ALTER COLUMN ip_address TYPE VARCHAR(250);
-ALTER TABLE audit_role ALTER COLUMN ip_address TYPE VARCHAR(250);
-ALTER TABLE audit_permission ALTER COLUMN ip_address TYPE VARCHAR(250);

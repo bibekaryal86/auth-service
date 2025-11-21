@@ -1,5 +1,6 @@
 package auth.service.app.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import lombok.AllArgsConstructor;
@@ -12,12 +13,11 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ProfilePasswordTokenResponse {
   @ToString.Exclude
-  @JsonProperty("aToken")
-  private String aToken;
+  @JsonProperty("accessToken")
+  private String accessToken;
 
-  @ToString.Exclude
-  @JsonProperty("rToken")
-  private String rToken;
+  @ToString.Exclude @JsonIgnore private String refreshToken;
+  @ToString.Exclude @JsonIgnore private String csrfToken;
 
   private ProfileDto profile;
   private ResponseMetadata responseMetadata;

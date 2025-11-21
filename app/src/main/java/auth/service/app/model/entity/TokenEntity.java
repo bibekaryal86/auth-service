@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,9 +27,12 @@ public class TokenEntity extends BaseEntity {
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
 
-  @Column(name = "access_token", unique = true)
-  private String accessToken;
-
-  @Column(name = "refresh_token", unique = true)
+  @Column(name = "refresh_token")
   private String refreshToken;
+
+  @Column(name = "csrf_token")
+  private String csrfToken;
+
+  @Column(name = "expiry_date")
+  private LocalDateTime expiryDate;
 }
