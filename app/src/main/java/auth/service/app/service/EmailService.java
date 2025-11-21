@@ -1,10 +1,9 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.JwtUtils.encodeEmailAddress;
-
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.util.FileReaderUtils;
+import auth.service.app.util.JwtUtils;
 import io.github.bibekaryal86.shdsvc.Email;
 import io.github.bibekaryal86.shdsvc.dtos.EmailRequest;
 import java.util.Collections;
@@ -38,7 +37,7 @@ public class EmailService {
       final ProfileEntity profileEntity,
       final String baseUrl) {
     final String platformName = convertAppNameToTitleCase(platformEntity.getPlatformName());
-    final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
+    final String encodedEmail = JwtUtils.encodeEmailAddress(profileEntity.getEmail());
     final String activationLink =
         String.format(
             "%s/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s",
@@ -61,7 +60,7 @@ public class EmailService {
       final ProfileEntity profileEntity,
       final String baseUrl) {
     final String platformName = convertAppNameToTitleCase(platformEntity.getPlatformName());
-    final String encodedEmail = encodeEmailAddress(profileEntity.getEmail());
+    final String encodedEmail = JwtUtils.encodeEmailAddress(profileEntity.getEmail());
     final String resetLink =
         String.format(
             "%s/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s",

@@ -1,8 +1,5 @@
 package auth.service.app.controller;
 
-import static auth.service.app.util.JwtUtils.decodeEmailAddressNoException;
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
@@ -12,8 +9,10 @@ import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.ProfileService;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
+import auth.service.app.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +48,7 @@ public class ProfileNoAuthController {
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
           profileService.validateAndResetProfile(platformId, toValidate, true);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -60,11 +59,11 @@ public class ProfileNoAuthController {
                       profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, true);
     } catch (Exception ex) {
-      final String decodedEmail = decodeEmailAddressNoException(toValidate);
+      final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toValidate);
       log.error("Validate Profile Exit: [{}], [{}]", platformId, decodedEmail, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -94,7 +93,7 @@ public class ProfileNoAuthController {
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
           profileService.validateAndResetProfile(platformId, toReset, false);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -106,11 +105,11 @@ public class ProfileNoAuthController {
       return entityDtoConvertUtils.getResponseResetProfile(
           redirectUrl, true, profileEntity.getEmail());
     } catch (Exception ex) {
-      final String decodedEmail = decodeEmailAddressNoException(toReset);
+      final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toReset);
       log.error("Reset Profile Exit: [{}], [{}]", platformId, decodedEmail, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
