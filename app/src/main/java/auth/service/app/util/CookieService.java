@@ -29,8 +29,8 @@ public class CookieService {
         .secure(true)
         .sameSite("Strict")
         .maxAge(maxAge)
-        .path("/api/v1/ba_profiles/platform")
-        //.path("/")
+        .path("/api/v1/ba_profiles/platform/")
+        // .path("/")
         .build();
   }
 
