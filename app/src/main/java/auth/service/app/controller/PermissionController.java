@@ -1,7 +1,5 @@
 package auth.service.app.controller;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionRequest;
@@ -18,6 +16,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -55,7 +54,7 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.createPermission(permissionRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
                   request,
@@ -153,7 +152,7 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.updatePermission(id, permissionRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
                   request,
@@ -179,7 +178,7 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity = circularDependencyService.readPermission(id, false);
       permissionService.softDeletePermission(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
                   request,
@@ -205,7 +204,7 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity = circularDependencyService.readPermission(id, true);
       permissionService.hardDeletePermission(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
                   request,
@@ -230,7 +229,7 @@ public class PermissionController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PermissionEntity permissionEntity = permissionService.restoreSoftDeletedPermission(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
                   request,
