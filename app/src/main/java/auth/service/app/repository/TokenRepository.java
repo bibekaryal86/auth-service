@@ -21,6 +21,7 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
       nativeQuery = true)
   int setTokensAsDeletedByProfileId(@Param("profileId") Long profileId);
 
+  @Deprecated
   @Modifying
   @Transactional
   @Query(

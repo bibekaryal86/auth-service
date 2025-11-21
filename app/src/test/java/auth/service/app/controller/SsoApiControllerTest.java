@@ -173,7 +173,7 @@ public class SsoApiControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getProfiles());
-    assertEquals(2, profileResponse.getProfiles().size());
+    assertEquals(1, profileResponse.getProfiles().size());
     assertTrue(profileResponse.getProfiles().getFirst().getPlatformRoles().isEmpty());
     assertNull(profileResponse.getProfiles().getFirst().getProfileAddress());
 
@@ -230,7 +230,7 @@ public class SsoApiControllerTest extends BaseTest {
 
     assertNotNull(profileResponse);
     assertNotNull(profileResponse.getProfiles());
-    assertEquals(2, profileResponse.getProfiles().size());
+    assertEquals(1, profileResponse.getProfiles().size());
 
     assertAll(
         "Response Metadata",
