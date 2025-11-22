@@ -1,6 +1,6 @@
 package auth.service.app.filter;
 
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.token.AuthToken;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
@@ -47,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(email, authToken, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-      } catch (JwtInvalidException ex) {
+      } catch (TokenInvalidException ex) {
         sendUnauthorizedResponse(response, ex.getMessage());
         return;
       }

@@ -2,7 +2,7 @@ package auth.service.app.controller;
 
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.exception.CheckPermissionException;
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
@@ -173,7 +173,7 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @GetMapping("/{platformId}/{profileId}/token/refresh")
+  @GetMapping("/{platformId}/profile/{profileId}/token/refresh")
   public ResponseEntity<ProfilePasswordTokenResponse> refreshToken(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,
@@ -185,14 +185,14 @@ public class ProfileBasicAuthController {
           cookieService.getCookieValue(request, ConstantUtils.COOKIE_CSRF_TOKEN);
       final String csrfTokenHeaderRequest = request.getHeader(ConstantUtils.HEADER_CSRF_TOKEN);
 
+        if (CommonUtilities.isEmpty(refreshTokenRequest)) {
+            throw new ProfileNotAuthorizedException("Token Mismatch/Invalid...");
+        }
+
       if (CommonUtilities.isEmpty(csrfTokenCookieRequest)
           || CommonUtilities.isEmpty(csrfTokenHeaderRequest)
           || !csrfTokenCookieRequest.equals(csrfTokenHeaderRequest)) {
         throw new CheckPermissionException("Token Invalid/Mismatch...");
-      }
-
-      if (CommonUtilities.isEmpty(refreshTokenRequest)) {
-        throw new ProfileNotAuthorizedException("Token Mismatch/Invalid...");
       }
 
       final TokenEntity tokenEntity = tokenService.readTokenByRefreshToken(refreshTokenRequest);
@@ -252,7 +252,7 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @GetMapping("/{platformId}/{profileId}/logout")
+  @GetMapping("/{platformId}/profile/{profileId}/logout")
   public ResponseEntity<ResponseWithMetadata> logout(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,
@@ -467,11 +467,11 @@ public class ProfileBasicAuthController {
     }
 
     if (tokenEntity.getDeletedDate() != null) {
-      throw new JwtInvalidException("Deleted Token...");
+      throw new TokenInvalidException("Deleted Token...");
     }
 
     if (tokenEntity.getExpiryDate().isBefore(LocalDateTime.now().minusSeconds(60L))) {
-      throw new JwtInvalidException("Expired Token...");
+      throw new TokenInvalidException("Expired Token...");
     }
 
     // if platform is deleted, it will throw exception

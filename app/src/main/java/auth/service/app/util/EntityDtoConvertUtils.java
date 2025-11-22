@@ -51,6 +51,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -61,6 +62,7 @@ import org.springframework.util.StringUtils;
 public class EntityDtoConvertUtils {
   private final PlatformProfileRoleService platformProfileRoleService;
   private final PermissionService permissionService;
+  private final CookieService cookieService;
 
   // permission
   private PermissionDto convertEntityToDtoPermission(
@@ -1171,15 +1173,21 @@ public class EntityDtoConvertUtils {
   // others
   public ResponseEntity<ProfilePasswordTokenResponse> getResponseErrorProfilePassword(
       final Exception exception) {
-    return new ResponseEntity<>(
-        ProfilePasswordTokenResponse.builder()
-            .responseMetadata(
-                new ResponseMetadata(
-                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
-                    ResponseMetadata.emptyResponseCrudInfo(),
-                    ResponseMetadata.emptyResponsePageInfo()))
-            .build(),
-        getHttpStatusForErrorResponse(exception));
+      final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
+      final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
+      final ProfilePasswordTokenResponse profilePasswordTokenResponse = ProfilePasswordTokenResponse.builder()
+              .responseMetadata(
+                      new ResponseMetadata(
+                              new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                              ResponseMetadata.emptyResponseCrudInfo(),
+                              ResponseMetadata.emptyResponsePageInfo()))
+              .build();
+      final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+      return ResponseEntity
+              .status(httpStatus)
+              .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
+              .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
+              .body(profilePasswordTokenResponse);
   }
 
   public ResponseEntity<Void> getResponseValidateProfile(
