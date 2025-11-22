@@ -2,8 +2,8 @@ package auth.service.app.controller;
 
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.exception.CheckPermissionException;
-import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
@@ -185,9 +185,9 @@ public class ProfileBasicAuthController {
           cookieService.getCookieValue(request, ConstantUtils.COOKIE_CSRF_TOKEN);
       final String csrfTokenHeaderRequest = request.getHeader(ConstantUtils.HEADER_CSRF_TOKEN);
 
-        if (CommonUtilities.isEmpty(refreshTokenRequest)) {
-            throw new ProfileNotAuthorizedException("Token Mismatch/Invalid...");
-        }
+      if (CommonUtilities.isEmpty(refreshTokenRequest)) {
+        throw new ProfileNotAuthorizedException("Token Mismatch/Invalid...");
+      }
 
       if (CommonUtilities.isEmpty(csrfTokenCookieRequest)
           || CommonUtilities.isEmpty(csrfTokenHeaderRequest)
@@ -253,7 +253,7 @@ public class ProfileBasicAuthController {
   }
 
   @GetMapping("/{platformId}/profile/{profileId}/logout")
-  public ResponseEntity<ResponseWithMetadata> logout(
+  public ResponseEntity<ProfilePasswordTokenResponse> logout(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,
       final HttpServletRequest request) {
@@ -313,7 +313,7 @@ public class ProfileBasicAuthController {
                       profileId,
                       profileEntity == null ? "N/A" : profileEntity.getEmail(),
                       platformId)));
-      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
+      return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
 

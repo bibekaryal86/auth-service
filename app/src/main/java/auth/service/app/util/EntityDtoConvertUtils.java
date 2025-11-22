@@ -1173,21 +1173,21 @@ public class EntityDtoConvertUtils {
   // others
   public ResponseEntity<ProfilePasswordTokenResponse> getResponseErrorProfilePassword(
       final Exception exception) {
-      final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
-      final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
-      final ProfilePasswordTokenResponse profilePasswordTokenResponse = ProfilePasswordTokenResponse.builder()
-              .responseMetadata(
-                      new ResponseMetadata(
-                              new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
-                              ResponseMetadata.emptyResponseCrudInfo(),
-                              ResponseMetadata.emptyResponsePageInfo()))
-              .build();
-      final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
-      return ResponseEntity
-              .status(httpStatus)
-              .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
-              .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
-              .body(profilePasswordTokenResponse);
+    final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
+    final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
+    final ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        ProfilePasswordTokenResponse.builder()
+            .responseMetadata(
+                new ResponseMetadata(
+                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
+            .build();
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    return ResponseEntity.status(httpStatus)
+        .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
+        .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
+        .body(profilePasswordTokenResponse);
   }
 
   public ResponseEntity<Void> getResponseValidateProfile(
