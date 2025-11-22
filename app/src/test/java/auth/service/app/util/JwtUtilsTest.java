@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import auth.service.BaseTest;
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
@@ -47,9 +47,9 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   public void testDecodeEmailAddress_InvalidToken() {
-    JwtInvalidException exception =
+    TokenInvalidException exception =
         assertThrows(
-            JwtInvalidException.class,
+            TokenInvalidException.class,
             () -> {
               JwtUtils.decodeEmailAddress(INVALID_TOKEN);
             });
@@ -79,9 +79,9 @@ public class JwtUtilsTest extends BaseTest {
 
   @Test
   public void testDecodeAuthCredentials_InvalidToken() {
-    JwtInvalidException exception =
+    TokenInvalidException exception =
         assertThrows(
-            JwtInvalidException.class,
+            TokenInvalidException.class,
             () -> {
               JwtUtils.decodeAuthCredentials(INVALID_TOKEN);
             });
@@ -92,9 +92,9 @@ public class JwtUtilsTest extends BaseTest {
   void testDecodeAuthCredentials_ExpiredToken() throws InterruptedException {
     String token = JwtUtils.encodeAuthCredentials(platformEntity, profileDto, 1000);
     Thread.sleep(1000);
-    JwtInvalidException exception =
+    TokenInvalidException exception =
         assertThrows(
-            JwtInvalidException.class,
+            TokenInvalidException.class,
             () -> {
               JwtUtils.decodeAuthCredentials(token);
             });

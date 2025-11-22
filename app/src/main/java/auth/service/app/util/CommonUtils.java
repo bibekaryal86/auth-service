@@ -12,7 +12,7 @@ import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.exception.ProfileForbiddenException;
 import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
@@ -64,7 +64,7 @@ public class CommonUtils {
         || exception instanceof CheckPermissionException) {
       return FORBIDDEN;
     } else if (exception instanceof ProfileNotAuthorizedException
-        || exception instanceof JwtInvalidException) {
+        || exception instanceof TokenInvalidException) {
       return UNAUTHORIZED;
     } else {
       return INTERNAL_SERVER_ERROR;

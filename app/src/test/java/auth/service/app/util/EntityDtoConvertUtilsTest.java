@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import auth.service.BaseTest;
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementNotActiveException;
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.exception.ProfileLockedException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotValidatedException;
@@ -947,7 +947,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
   void testGetResponseErrorPlatform() {
     ResponseEntity<ProfileResponse> response =
         entityDtoConvertUtils.getResponseErrorProfile(
-            new JwtInvalidException("something anything"));
+            new TokenInvalidException("something anything"));
 
     assertNotNull(response);
     assertNotNull(response.getBody());

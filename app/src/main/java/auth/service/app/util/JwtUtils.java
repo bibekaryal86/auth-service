@@ -5,7 +5,7 @@ import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_AUTH;
 import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_EMAIL;
 import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_ISSUER;
 
-import auth.service.app.exception.JwtInvalidException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.token.AuthToken;
@@ -64,9 +64,9 @@ public class JwtUtils {
 
       return emailToken;
     } catch (ExpiredJwtException e) {
-      throw new JwtInvalidException("Expired Email Credentials");
+      throw new TokenInvalidException("Expired Email Credentials");
     } catch (JwtException e) {
-      throw new JwtInvalidException("Invalid Email Credentials");
+      throw new TokenInvalidException("Invalid Email Credentials");
     }
   }
 
@@ -109,9 +109,9 @@ public class JwtUtils {
           OBJECT_MAPPER.convertValue(claims.get(TOKEN_CLAIM_AUTH), AuthToken.class);
       return Map.of(subject, authToken);
     } catch (ExpiredJwtException e) {
-      throw new JwtInvalidException("Expired Auth Credentials");
+      throw new TokenInvalidException("Expired Auth Credentials");
     } catch (JwtException e) {
-      throw new JwtInvalidException("Invalid Auth Credentials");
+      throw new TokenInvalidException("Invalid Auth Credentials");
     }
   }
 }
