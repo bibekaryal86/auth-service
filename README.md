@@ -13,6 +13,11 @@ A small utility for authentication and authorization with platforms, profiles, r
 ## Flyway
   * Run flyway command as `./gradlew flywayMigrate`
     * For first run, append `-Dflyway.baselineOnMigrate=true` to set baseline migration
+    * PRE-REQUISITES for flyway
+      * Build needs to be run first
+        * `./gradlew clean build -x test`
+      * Flyway plugin does not work with gradle's configuration cache
+        * `./gradlew -Dorg.gradle.configuration-cache=false flywayMigrate`
   * Clear database (DELETES EVERYTHING)
     * `./gradlew flywayClean -Dflyway.cleanDisabled=false`
   * Flyway migration is configured to not trigger automatically, it only validates
