@@ -23,6 +23,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PermissionRepository;
 import auth.service.app.service.AuditService;
+import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
@@ -252,7 +253,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermissions_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
-            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+            List.of(ConstantUtils.PERMISSION_READ_PERMISSION), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -315,7 +316,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermissions_Success_RequestMetadata() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
-            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+            List.of(ConstantUtils.PERMISSION_READ_PERMISSION), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -441,7 +442,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermission_Success() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
-            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+            List.of(ConstantUtils.PERMISSION_READ_PERMISSION), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -473,7 +474,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermission_Success_WithAudit() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
-            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+            List.of(ConstantUtils.PERMISSION_READ_PERMISSION), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 
@@ -508,7 +509,7 @@ public class PermissionControllerTest extends BaseTest {
   void testReadPermission_Success_IncludeDeletedFalse() {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
-            List.of("AUTHSVC_PERMISSION_READ"), profileDtoNoPermission);
+            List.of(ConstantUtils.PERMISSION_READ_PERMISSION), profileDtoNoPermission);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);
 

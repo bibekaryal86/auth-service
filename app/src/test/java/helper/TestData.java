@@ -376,6 +376,8 @@ public class TestData {
         .isIncludeHistory(false)
         .pageNumber(1)
         .perPage(100)
+        .historyPage(1)
+        .historySize(100)
         .sortColumn(sortColumn)
         .sortDirection(Sort.Direction.ASC)
         .build();

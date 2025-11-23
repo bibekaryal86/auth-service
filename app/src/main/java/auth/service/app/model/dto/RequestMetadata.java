@@ -36,12 +36,12 @@ public class RequestMetadata implements Serializable {
       @JsonProperty("historySize") Integer historySize,
       @JsonProperty("sortColumn") String sortColumn,
       @JsonProperty("sortDirection") Sort.Direction sortDirection) {
-    this.isIncludePermissions = isIncludePermissions != null;
-    this.isIncludePlatforms = isIncludePlatforms != null;
-    this.isIncludeProfiles = isIncludeProfiles != null;
-    this.isIncludeRoles = isIncludeRoles != null;
-    this.isIncludeDeleted = isIncludeDeleted != null;
-    this.isIncludeHistory = isIncludeHistory != null;
+    this.isIncludePermissions = Boolean.TRUE.equals(isIncludePermissions);
+    this.isIncludePlatforms = Boolean.TRUE.equals(isIncludePlatforms);
+    this.isIncludeProfiles = Boolean.TRUE.equals(isIncludeProfiles);
+    this.isIncludeRoles = Boolean.TRUE.equals(isIncludeRoles);
+    this.isIncludeDeleted = Boolean.TRUE.equals(isIncludeDeleted);
+    this.isIncludeHistory = Boolean.TRUE.equals(isIncludeHistory);
     this.pageNumber = pageNumber == null ? 0 : pageNumber;
     this.perPage = perPage == null ? 0 : perPage;
     this.historyPage = historyPage == null ? 0 : historyPage;
@@ -63,7 +63,7 @@ public class RequestMetadata implements Serializable {
     private boolean isIncludeHistory = false;
     private int pageNumber = 1;
     private int perPage = 100;
-    private int historyPage = 0;
+    private int historyPage = 1;
     private int historySize = 100;
     private String sortColumn;
     private Sort.Direction sortDirection = Sort.Direction.ASC;
