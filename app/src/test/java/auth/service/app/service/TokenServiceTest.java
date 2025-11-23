@@ -38,17 +38,19 @@ public class TokenServiceTest extends BaseTest {
     TokenEntity tokenEntity = new TokenEntity();
     tokenEntity.setPlatform(platformEntity);
     tokenEntity.setProfile(profileEntity);
-    tokenEntity.setAccessToken("some-access-token");
     tokenEntity.setRefreshToken("some-refresh-token");
+    tokenEntity.setCsrfToken("some-csrf-token");
     tokenEntity.setIpAddress("some-ip-address");
+    tokenEntity.setExpiryDate(LocalDateTime.now().plusDays(1L));
     tokenRepository.save(tokenEntity);
 
     tokenEntity = new TokenEntity();
     tokenEntity.setPlatform(platformEntity);
     tokenEntity.setProfile(profileEntity);
-    tokenEntity.setAccessToken("some-access-token-1");
     tokenEntity.setRefreshToken("some-refresh-token-1");
+    tokenEntity.setCsrfToken("some-csrf-token-1");
     tokenEntity.setIpAddress("some-ip-address-1");
+    tokenEntity.setExpiryDate(LocalDateTime.now().plusDays(1L));
     tokenEntity = tokenRepository.save(tokenEntity);
     tokenId = tokenEntity.getId();
   }
@@ -59,30 +61,10 @@ public class TokenServiceTest extends BaseTest {
   }
 
   @Test
-  void testReadTokenByAccessToken() {
-    TokenEntity tokenEntity = tokenService.readTokenByAccessToken("some-access-token");
-    assertNotNull(tokenEntity);
-    assertEquals("some-refresh-token", tokenEntity.getRefreshToken());
-  }
-
-  @Test
-  void testReadTokenByAccessToken_NotFound() {
-    assertThrows(
-        ElementNotFoundException.class,
-        () -> tokenService.readTokenByAccessToken("some-non-existent-token"));
-  }
-
-  @Test
-  void testReadTokenByAccessTokenNoException() {
-    assertDoesNotThrow(
-        () -> tokenService.readTokenByAccessTokenNoException("some-non-existent-token"));
-  }
-
-  @Test
   void testReadTokenByRefreshToken() {
     TokenEntity tokenEntity = tokenService.readTokenByRefreshToken("some-refresh-token");
     assertNotNull(tokenEntity);
-    assertEquals("some-access-token", tokenEntity.getAccessToken());
+    assertEquals("some-csrf-token", tokenEntity.getCsrfToken());
   }
 
   @Test
@@ -95,7 +77,7 @@ public class TokenServiceTest extends BaseTest {
   @Test
   void testReadTokenByRefreshTokenNoException() {
     assertDoesNotThrow(
-        () -> tokenService.readTokenByAccessTokenNoException("some-non-existent-token"));
+        () -> tokenService.readTokenByRefreshTokenNoException("some-non-existent-token"));
   }
 
   @Test
@@ -104,14 +86,17 @@ public class TokenServiceTest extends BaseTest {
         tokenService.saveToken(null, null, platformEntity, profileEntity, "some-ip-address");
 
     assertNotNull(profilePasswordTokenResponse);
-    assertNotNull(profilePasswordTokenResponse.getAToken());
-    assertNotNull(profilePasswordTokenResponse.getRToken());
+    assertNotNull(profilePasswordTokenResponse.getAccessToken());
+    assertNotNull(profilePasswordTokenResponse.getRefreshToken());
+    assertNotNull(profilePasswordTokenResponse.getCsrfToken());
     assertNotNull(profilePasswordTokenResponse.getProfile());
     assertEquals(profileEntity.getId(), profilePasswordTokenResponse.getProfile().getId());
 
     // cleanup
     TokenEntity tokenEntity =
-        tokenRepository.findByAccessToken(profilePasswordTokenResponse.getAToken()).orElse(null);
+        tokenRepository
+            .findByRefreshToken(profilePasswordTokenResponse.getRefreshToken())
+            .orElse(null);
     assertNotNull(tokenEntity);
     tokenRepository.deleteById(tokenEntity.getId());
   }
@@ -121,11 +106,11 @@ public class TokenServiceTest extends BaseTest {
     ProfilePasswordTokenResponse profilePasswordTokenResponse =
         tokenService.saveToken(tokenId, null, platformEntity, profileEntity, "some-ip-address");
     assertNotNull(profilePasswordTokenResponse);
-    assertNotNull(profilePasswordTokenResponse.getAToken());
-    assertNotNull(profilePasswordTokenResponse.getRToken());
+    assertNotNull(profilePasswordTokenResponse.getRefreshToken());
+    assertNotNull(profilePasswordTokenResponse.getCsrfToken());
     assertNotNull(profilePasswordTokenResponse.getProfile());
-    assertNotEquals("some-access-token", profilePasswordTokenResponse.getAToken());
-    assertNotEquals("some-refresh-token", profilePasswordTokenResponse.getRToken());
+    assertNotEquals("some-refresh-token", profilePasswordTokenResponse.getRefreshToken());
+    assertNotEquals("some-csrf-token", profilePasswordTokenResponse.getCsrfToken());
   }
 
   @Test
@@ -134,8 +119,7 @@ public class TokenServiceTest extends BaseTest {
         tokenService.saveToken(
             tokenId, LocalDateTime.now(), platformEntity, profileEntity, "some-ip-address");
     assertNotNull(profilePasswordTokenResponse);
-    assertNull(profilePasswordTokenResponse.getAToken());
-    assertNull(profilePasswordTokenResponse.getRToken());
+    assertNull(profilePasswordTokenResponse.getRefreshToken());
     assertNull(profilePasswordTokenResponse.getProfile());
 
     // validate deleted

@@ -1,8 +1,5 @@
 package auth.service.app.controller;
 
-import static auth.service.app.util.CommonUtils.getBaseUrlForLinkInEmail;
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.AuditResponse;
@@ -25,6 +22,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -190,7 +188,7 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess("", id);
       ProfileEntity profileEntity = profileService.updateProfile(id, profileRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -219,7 +217,7 @@ public class ProfileController {
       permissionCheck.checkProfileAccess("", id);
       String baseUrlForLinkInEmail = envServiceConnector.getBaseUrlForLinkInEmail();
       if (baseUrlForLinkInEmail == null) {
-        baseUrlForLinkInEmail = getBaseUrlForLinkInEmail(request);
+        baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(
@@ -231,7 +229,7 @@ public class ProfileController {
               profileEmailRequest,
               platformProfileRoleEntity.getPlatform(),
               baseUrlForLinkInEmail);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -269,7 +267,7 @@ public class ProfileController {
       final ProfileEntity profileEntity =
           profileService.updateProfilePassword(
               id, profilePasswordRequest, platformProfileRoleEntity.getPlatform());
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -300,7 +298,7 @@ public class ProfileController {
     try {
       final ProfileEntity profileEntity = circularDependencyService.readProfile(id, false);
       profileService.softDeleteProfile(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -326,7 +324,7 @@ public class ProfileController {
     try {
       final ProfileEntity profileEntity = circularDependencyService.readProfile(id, true);
       profileService.hardDeleteProfile(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -351,7 +349,7 @@ public class ProfileController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final ProfileEntity profileEntity = profileService.restoreSoftDeletedProfile(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,

@@ -3,12 +3,10 @@
  */
 package auth.service;
 
-import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
-import static java.util.Collections.singletonMap;
-
 import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,9 @@ public class App {
     validateInitArgs();
     SpringApplication app = new SpringApplication(App.class);
     app.setDefaultProperties(
-        singletonMap("server.port", CommonUtilities.getSystemEnvProperty(ENV_SERVER_PORT, "8001")));
+        Collections.singletonMap(
+            "server.port",
+            CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_SERVER_PORT, "8001")));
     app.run(args);
     log.info("End application initialization...");
   }
@@ -47,7 +47,7 @@ public class App {
 
     final Map<String, String> properties = CommonUtilities.getSystemEnvProperties(envKeyNames);
     final List<String> requiredEnvProperties =
-        envKeyNames.stream().filter(key -> !ENV_SERVER_PORT.equals(key)).toList();
+        envKeyNames.stream().filter(key -> !ConstantUtils.ENV_SERVER_PORT.equals(key)).toList();
     final List<String> errors =
         requiredEnvProperties.stream().filter(key -> properties.get(key) == null).toList();
     if (!errors.isEmpty()) {

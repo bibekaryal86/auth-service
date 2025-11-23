@@ -1,7 +1,5 @@
 package auth.service.app.controller;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PlatformRequest;
@@ -18,6 +16,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -53,7 +52,7 @@ public class PlatformController {
       @Valid @RequestBody final PlatformRequest platformRequest, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.createPlatform(platformRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
                   request,
@@ -154,7 +153,7 @@ public class PlatformController {
       final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.updatePlatform(id, platformRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
                   request,
@@ -180,7 +179,7 @@ public class PlatformController {
     try {
       final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, false);
       platformService.softDeletePlatform(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
                   request,
@@ -206,7 +205,7 @@ public class PlatformController {
     try {
       final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, true);
       platformService.hardDeletePlatform(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
                   request,
@@ -231,7 +230,7 @@ public class PlatformController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.restoreSoftDeletedPlatform(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
                   request,

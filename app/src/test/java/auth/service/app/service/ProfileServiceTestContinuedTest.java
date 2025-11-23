@@ -97,8 +97,9 @@ public class ProfileServiceTestContinuedTest extends BaseTest {
         profileService.loginProfile(
             platformId, new ProfilePasswordRequest(USER_EMAIL, OLD_PASSWORD), "some-ip-address");
     assertNotNull(profilePasswordTokenResponse);
-    assertNotNull(profilePasswordTokenResponse.getAToken());
-    assertNotNull(profilePasswordTokenResponse.getRToken());
+    assertNotNull(profilePasswordTokenResponse.getAccessToken());
+    assertNotNull(profilePasswordTokenResponse.getRefreshToken());
+    assertNotNull(profilePasswordTokenResponse.getCsrfToken());
   }
 
   @Test

@@ -15,11 +15,11 @@ import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.exception.JwtInvalidException;
 import auth.service.app.exception.ProfileForbiddenException;
 import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
+import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.token.AuthToken;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
@@ -87,7 +87,7 @@ public class CommonUtilsTest extends BaseTest {
         Arguments.of(new ElementNotActiveException("something", "anything"), HttpStatus.FORBIDDEN),
         Arguments.of(new ProfileNotActiveException(), HttpStatus.FORBIDDEN),
         Arguments.of(new ProfileNotAuthorizedException(), HttpStatus.UNAUTHORIZED),
-        Arguments.of(new JwtInvalidException("something"), HttpStatus.UNAUTHORIZED),
+        Arguments.of(new TokenInvalidException("something"), HttpStatus.UNAUTHORIZED),
         Arguments.of(new RuntimeException(), INTERNAL_SERVER_ERROR));
   }
 

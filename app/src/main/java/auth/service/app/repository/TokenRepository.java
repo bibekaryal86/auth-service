@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
-  Optional<TokenEntity> findByAccessToken(final String accessToken);
-
   Optional<TokenEntity> findByRefreshToken(final String refreshToken);
 
   @Modifying
@@ -23,6 +21,7 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
       nativeQuery = true)
   int setTokensAsDeletedByProfileId(@Param("profileId") Long profileId);
 
+  @Deprecated
   @Modifying
   @Transactional
   @Query(

@@ -1,7 +1,5 @@
 package auth.service.app.controller;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -14,6 +12,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +44,7 @@ public class PlatformProfileRoleController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
 
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
@@ -83,7 +82,7 @@ public class PlatformProfileRoleController {
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
 
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,

@@ -1,7 +1,5 @@
 package auth.service.app.controller;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.RequestMetadata;
@@ -18,6 +16,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -53,7 +52,7 @@ public class RoleController {
       @Valid @RequestBody final RoleRequest roleRequest, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.createRole(roleRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
                   request,
@@ -157,7 +156,7 @@ public class RoleController {
       final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.updateRole(id, roleRequest);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
                   request,
@@ -182,7 +181,7 @@ public class RoleController {
     try {
       final RoleEntity roleEntity = circularDependencyService.readRole(id, false);
       roleService.softDeleteRole(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
                   request,
@@ -207,7 +206,7 @@ public class RoleController {
     try {
       final RoleEntity roleEntity = circularDependencyService.readRole(id, true);
       roleService.hardDeleteRole(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
                   request,
@@ -231,7 +230,7 @@ public class RoleController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.restoreSoftDeletedRole(id);
-      runAsync(
+      CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
                   request,
