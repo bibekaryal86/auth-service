@@ -41,6 +41,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+
+    // flyway autoconfigure only used in tests
+    testImplementation "org.springframework.boot:spring-boot-starter-flyway:$springVersion"
     testImplementation "org.springframework.boot:spring-boot-starter-webflux:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
-import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jpa.autoconfigure.JpaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -42,12 +42,13 @@ public class TestDatasourceConfig {
   }
 
   // no longer required as clean/migrate handled in flyway bean itself
-  //  @Bean
-  //  public org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer
+  //    @Bean
+  //    public org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer
   // flywayMigrationInitializer(final Flyway flyway) {
-  //    // This bean ensures Flyway runs automatically on startup
-  //    return new org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer(flyway);
-  //  }
+  //      // This bean ensures Flyway runs automatically on startup
+  //      return new
+  // org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer(flyway);
+  //    }
 
   @Bean
   public Map<String, Object> jpaProperties(final JpaProperties jpaProperties) {
