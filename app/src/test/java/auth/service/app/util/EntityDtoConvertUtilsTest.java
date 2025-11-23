@@ -45,7 +45,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +53,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class EntityDtoConvertUtilsTest extends BaseTest {
 
@@ -68,7 +68,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   private static Authentication authentication;
 
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private SecurityContext securityContext;
 
   @BeforeAll
   static void setUp() {

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -21,6 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ActiveProfiles("springboottest")
 @ExtendWith(BaseTestExtension.class)
 @Import({TestDatasourceConfig.class, TestSecurityConfig.class, TestConfigs.class})
+@AutoConfigureWebTestClient
 public abstract class BaseTest {
 
   @LocalServerPort protected int localServerPort;

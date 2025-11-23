@@ -44,10 +44,10 @@ dependencies {
 
     // flyway autoconfigure only used in tests
     testImplementation "org.springframework.boot:spring-boot-starter-flyway:$springVersion"
-    testImplementation "org.springframework.boot:spring-boot-starter-webflux:$springVersion"
+    testImplementation "org.springframework.boot:spring-boot-webflux-test:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.0.1'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
     testImplementation 'org.mockito:mockito-core:5.20.0'
     testImplementation 'org.flywaydb:flyway-core:11.17.0'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1'

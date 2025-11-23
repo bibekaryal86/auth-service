@@ -20,7 +20,6 @@ import helper.TestData;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -28,10 +27,11 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class PlatformServiceTest extends BaseTest {
 
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private SecurityContext securityContext;
 
   @Autowired private PlatformService platformService;
   @Autowired private PlatformProfileRoleService platformProfileRoleService;

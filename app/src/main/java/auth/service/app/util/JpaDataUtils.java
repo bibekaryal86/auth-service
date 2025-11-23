@@ -71,7 +71,7 @@ public class JpaDataUtils {
    * @return A Specification object.
    */
   public static <T> Specification<T> getQuerySpecification(final RequestMetadata requestMetadata) {
-    Specification<T> specification = Specification.not(null);
+    Specification<T> specification = Specification.unrestricted();
 
     if (!shouldIncludeDeletedRecords(requestMetadata)) {
       specification = specification.and(isFieldNull("deletedDate"));

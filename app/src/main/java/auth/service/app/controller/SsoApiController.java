@@ -83,12 +83,16 @@ public class SsoApiController {
     try {
       final RequestMetadata requestMetadata =
           RequestMetadata.builder()
-              .isIncludeRoles(Boolean.FALSE)
+              .isIncludePermissions(Boolean.FALSE)
               .isIncludePlatforms(Boolean.FALSE)
+              .isIncludeProfiles(Boolean.FALSE)
+              .isIncludeRoles(Boolean.FALSE)
               .isIncludeDeleted(Boolean.FALSE)
               .isIncludeHistory(Boolean.FALSE)
               .pageNumber(pageNumber)
               .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
+              .historyPage(0)
+              .historySize(0)
               .sortColumn(sortColumn.isEmpty() ? "lastName" : sortColumn)
               .sortDirection(sortDirection)
               .build();

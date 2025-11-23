@@ -43,7 +43,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -64,7 +63,7 @@ public class ProfileServiceTest extends BaseTest {
   private static final String USER_EMAIL_ENCODED = "very-encoded-email-address";
   private static PlatformEntity platformEntity;
 
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private SecurityContext securityContext;
   @MockitoBean private ApplicationEventPublisher applicationEventPublisher;
 
   @Autowired private ProfileRepository profileRepository;
