@@ -47,6 +47,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -1310,6 +1311,17 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             && response.getBody().getRefreshToken() == null
             && response.getBody().getCsrfToken() == null);
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+    List<String> cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+    assertNotNull(cookies);
+    assertEquals(2, cookies.size());
+    assertEquals(
+        "refresh_token=; Path=/api/v1/ba_profiles/platform/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict",
+        cookies.getFirst().trim());
+
+    assertEquals(
+        "csrf_token=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict",
+        cookies.getLast());
   }
 
   @Test
