@@ -45,7 +45,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +53,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class EntityDtoConvertUtilsTest extends BaseTest {
 
@@ -68,7 +68,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   private static Authentication authentication;
 
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private SecurityContext securityContext;
 
   @BeforeAll
   static void setUp() {
@@ -105,10 +105,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -151,6 +151,20 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
 
   @Test
   void testGetResponseMultiplePermissions_NonEmptyListWithResponsePageInfoRequestMetadata() {
+    reset(securityContext);
+    SecurityContextHolder.setContext(securityContext);
+    authentication =
+        new TestingAuthenticationToken(
+            EMAIL,
+            TestData.getAuthTokenWithPermissions(
+                List.of(
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
+            Collections.emptyList());
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
     ResponseMetadata.ResponsePageInfo defaultResponsePageInfo =
         new ResponseMetadata.ResponsePageInfo(13, 1, 1, 13);
     RequestMetadata defaultRequestMetadata = TestData.defaultRequestMetadata("permissionName");
@@ -228,10 +242,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -272,7 +286,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_ROLE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -317,10 +331,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -352,10 +366,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -397,7 +411,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
         new TestingAuthenticationToken(
             EMAIL,
             TestData.getAuthTokenWithPermissions(
-                List.of("AUTHSVC_PLATFORM_READ", "AUTHSVC_PROFILE_READ", "AUTHSVC_ROLE_READ")),
+                List.of(
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -433,10 +450,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -483,10 +500,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -527,10 +544,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -586,7 +603,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_ROLE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -642,10 +659,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -684,7 +701,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_PLATFORM)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -748,10 +765,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -795,10 +812,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -848,10 +865,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -904,7 +921,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_PLATFORM)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -959,10 +976,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1002,7 +1019,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_PROFILE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1068,10 +1085,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1117,10 +1134,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1166,10 +1183,10 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
             EMAIL,
             TestData.getAuthTokenWithPermissions(
                 List.of(
-                    "AUTHSVC_PLATFORM_READ",
-                    "AUTHSVC_PROFILE_READ",
-                    "AUTHSVC_ROLE_READ",
-                    "AUTHSVC_PERMISSION_READ")),
+                    ConstantUtils.PERMISSION_READ_PLATFORM,
+                    ConstantUtils.PERMISSION_READ_PROFILE,
+                    ConstantUtils.PERMISSION_READ_ROLE,
+                    ConstantUtils.PERMISSION_READ_PERMISSION)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1213,7 +1230,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_PROFILE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
@@ -1244,7 +1261,7 @@ public class EntityDtoConvertUtilsTest extends BaseTest {
     authentication =
         new TestingAuthenticationToken(
             EMAIL,
-            TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_READ")),
+            TestData.getAuthTokenWithPermissions(List.of(ConstantUtils.PERMISSION_READ_PROFILE)),
             Collections.emptyList());
     when(securityContext.getAuthentication()).thenReturn(authentication);
 

@@ -135,18 +135,18 @@ public class CommonUtils {
   }
 
   public static boolean canReadPermissions() {
-    return hasPermission("AUTHSVC_PERMISSION_READ");
+    return hasPermission(ConstantUtils.PERMISSION_READ_PERMISSION);
   }
 
   public static boolean canReadRoles() {
-    return hasPermission("AUTHSVC_ROLE_READ");
+    return hasPermission(ConstantUtils.PERMISSION_READ_ROLE);
   }
 
   public static boolean canReadPlatforms() {
-    return hasPermission("AUTHSVC_PLATFORM_READ");
+    return hasPermission(ConstantUtils.PERMISSION_READ_PLATFORM);
   }
 
   public static boolean canReadProfiles() {
-    return hasPermission("AUTHSVC_PROFILE_READ");
+    return hasPermission(ConstantUtils.PERMISSION_READ_PROFILE);
   }
 }

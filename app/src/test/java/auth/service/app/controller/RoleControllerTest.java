@@ -23,6 +23,7 @@ import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
+import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
@@ -292,10 +293,10 @@ public class RoleControllerTest extends BaseTest {
     profileDtoWithPermission =
         TestData.getProfileDtoWithPermissions(
             List.of(
-                "AUTHSVC_ROLE_READ",
-                "AUTHSVC_PERMISSION_READ",
-                "AUTHSVC_PLATFORM_READ",
-                "AUTHSVC_PROFILE_READ"),
+                ConstantUtils.PERMISSION_READ_PERMISSION,
+                ConstantUtils.PERMISSION_READ_ROLE,
+                ConstantUtils.PERMISSION_READ_PLATFORM,
+                ConstantUtils.PERMISSION_READ_PROFILE),
             profileDtoNoRole);
     String bearerAuthCredentialsWithPermission =
         TestData.getBearerAuthCredentialsForTest(platformEntity, profileDtoWithPermission);

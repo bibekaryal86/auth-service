@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -45,8 +44,8 @@ public class AuditServiceTest extends BaseTest {
   private static PlatformEntity platformEntity;
   private static ProfileEntity profileEntity;
 
-  @Mock private HttpServletRequest request;
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private HttpServletRequest request;
+  @MockitoBean private SecurityContext securityContext;
   @MockitoBean private AuditPermissionRepository auditPermissionRepository;
   @MockitoBean private AuditRoleRepository auditRoleRepository;
   @MockitoBean private AuditPlatformRepository auditPlatformRepository;

@@ -73,6 +73,12 @@ public class ConstantUtils {
   public static final String ROLE_NAME_STANDARD = "STANDARD";
   public static final String ROLE_NAME_SUPERUSER = "SUPERUSER";
 
+  // PERMISSION NAMES
+  public static final String PERMISSION_READ_PERMISSION = "AUTHSVC_PERMISSION_READ";
+  public static final String PERMISSION_READ_ROLE = "AUTHSVC_ROLE_READ";
+  public static final String PERMISSION_READ_PLATFORM = "AUTHSVC_PLATFORM_READ";
+  public static final String PERMISSION_READ_PROFILE = "AUTHSVC_PROFILE_READ";
+
   // JWT TOKEN
   public static final String TOKEN_CLAIM_EMAIL = "emailToken";
   public static final String TOKEN_CLAIM_ISSUER = "authsvc";

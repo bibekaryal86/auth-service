@@ -21,17 +21,17 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.StringUtils;
 
 public class SsoApiControllerTest extends BaseTest {
 
-  @Mock private SecurityContext securityContext;
+  @MockitoBean private SecurityContext securityContext;
 
   private static String bearerAuthCredentials;
   private static PlatformEntity platformEntity;

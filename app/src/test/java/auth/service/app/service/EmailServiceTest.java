@@ -20,12 +20,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class EmailServiceTest extends BaseTest {
 
-  @Mock private FileReaderUtils fileReaderUtils;
-  @Mock private Email email;
+  @MockitoBean private FileReaderUtils fileReaderUtils;
+  @MockitoBean private Email email;
 
   private EmailService emailService;
 
