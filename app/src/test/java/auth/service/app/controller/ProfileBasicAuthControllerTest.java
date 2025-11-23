@@ -670,7 +670,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)
@@ -721,7 +721,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
         .get()
         .uri(
             String.format(
-                "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                 platformEntity.getId(), profileEntity.getId()))
         .exchange()
         .expectStatus()
@@ -736,7 +736,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)
@@ -786,7 +786,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, REFRESH_TOKEN)
@@ -836,7 +836,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)
@@ -886,7 +886,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, "WRONG_CSRF")
@@ -942,7 +942,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)
@@ -998,7 +998,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)
@@ -1055,7 +1055,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
             .get()
             .uri(
                 String.format(
-                    "/api/v1/ba_profiles/platform/%s/profile/%s/token/refresh",
+                    "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
                     platformEntity.getId(), profileEntity.getId()))
             .header("Authorization", "Basic " + basicAuthCredentialsForTest)
             .header(ConstantUtils.HEADER_CSRF_TOKEN, CSRF_TOKEN)

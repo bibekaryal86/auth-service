@@ -173,7 +173,7 @@ public class ProfileBasicAuthController {
     }
   }
 
-  @GetMapping("/{platformId}/profile/{profileId}/token/refresh")
+  @GetMapping("/{platformId}/profile/{profileId}/refresh")
   public ResponseEntity<ProfilePasswordTokenResponse> refreshToken(
       @PathVariable final Long platformId,
       @PathVariable final Long profileId,
