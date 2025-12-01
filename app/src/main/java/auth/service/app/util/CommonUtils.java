@@ -76,9 +76,13 @@ public class CommonUtils {
 
   private static boolean hasPermission(final String permissionName) {
     final AuthToken authToken = getAuthentication();
-    return authToken.getIsSuperUser()
+    return isSuperUser(authToken)
         || authToken.getPermissions().stream()
             .anyMatch(permission -> Objects.equals(permission.getPermissionName(), permissionName));
+  }
+
+  public static boolean isSuperUser(final AuthToken authToken) {
+    return authToken.getIsSuperUser() != null && authToken.getIsSuperUser() == true;
   }
 
   public static boolean canReadPermissions() {
