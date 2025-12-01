@@ -1,11 +1,11 @@
 package auth.service.app.controller;
 
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.dto.PlatformRolePermissionRequest;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
-import auth.service.app.service.PlatformProfileRoleService;
+import auth.service.app.service.PlatformRolePermissionService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
@@ -27,33 +27,33 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/ppr")
+@RequestMapping("/api/v1/prp")
 @Validated
-public class PlatformProfileRoleController {
-  private final PlatformProfileRoleService platformProfileRoleService;
+public class PlatformRolePermissionController {
+  private final PlatformRolePermissionService platformRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
+  @CheckPermission("AUTHSVC_PLATFORM_ROLE_PERMISSION_ASSIGN")
   @PostMapping
-  public ResponseEntity<ResponseWithMetadata> assignPlatformProfileRole(
-      @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
+  public ResponseEntity<ResponseWithMetadata> assignPlatformRolePermission(
+      @Valid @RequestBody final PlatformRolePermissionRequest platformRolePermissionRequest,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleService.assignPlatformProfileRole(platformProfileRoleRequest);
+      final PlatformRolePermissionEntity platformRolePermissionEntity =
+          platformRolePermissionService.assignPlatformRolePermission(platformRolePermissionRequest);
 
       CompletableFuture.runAsync(
           () ->
-              auditService.auditProfile(
+              auditService.auditRole(
                   request,
-                  platformProfileRoleEntity.getProfile(),
-                  AuditEnums.AuditProfile.ASSIGN_PLATFORM_ROLE,
+                  platformRolePermissionEntity.getRole(),
+                  AuditEnums.AuditRole.ASSIGN_PLATFORM_PERMISSION,
                   String.format(
-                      "Platform Profile Role Assign [Platform: %s] - [Profile: %s] - [Role: %s]",
-                      platformProfileRoleEntity.getPlatform().getId(),
-                      platformProfileRoleEntity.getProfile().getId(),
-                      platformProfileRoleEntity.getRole().getId())));
+                      "Platform Role Permission Assign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                      platformRolePermissionEntity.getPlatform().getId(),
+                      platformRolePermissionEntity.getRole().getId(),
+                      platformRolePermissionEntity.getPermission().getId())));
 
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
@@ -65,33 +65,34 @@ public class PlatformProfileRoleController {
                   responseCrudInfo,
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
-      log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
+      log.error("Create Platform Role Permission: [{}}", platformRolePermissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
-  @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
-  public ResponseEntity<ResponseWithMetadata> unassignPlatformProfileRole(
+  @CheckPermission("AUTHSVC_PLATFORM_ROLE_PERMISSION_UNASSIGN")
+  @DeleteMapping("/platform/{platformId}/role/{roleId}/permission/{permissionId}")
+  public ResponseEntity<ResponseWithMetadata> unassignPlatformRolePermission(
       @PathVariable final long platformId,
-      @PathVariable final long profileId,
       @PathVariable final long roleId,
+      @PathVariable final long permissionId,
       final HttpServletRequest request) {
     try {
-      final PlatformProfileRoleEntity platformProfileRoleEntity =
-          platformProfileRoleService.unassignPlatformProfileRole(platformId, profileId, roleId);
+      final PlatformRolePermissionEntity platformRolePermissionEntity =
+          platformRolePermissionService.unassignPlatformRolePermission(
+              platformId, roleId, permissionId);
 
       CompletableFuture.runAsync(
           () ->
-              auditService.auditProfile(
+              auditService.auditRole(
                   request,
-                  platformProfileRoleEntity.getProfile(),
-                  AuditEnums.AuditProfile.UNASSIGN_PLATFORM_ROLE,
+                  platformRolePermissionEntity.getRole(),
+                  AuditEnums.AuditRole.UNASSIGN_PLATFORM_PERMISSION,
                   String.format(
-                      "Platform Profile Role UnAssign [Platform: %s] - [Profile: %s] - [Role: %s]",
-                      platformProfileRoleEntity.getPlatform().getId(),
-                      platformProfileRoleEntity.getProfile().getId(),
-                      platformProfileRoleEntity.getRole().getId())));
+                      "Platform Profile Role UnAssign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                      platformRolePermissionEntity.getPlatform().getId(),
+                      platformRolePermissionEntity.getRole().getId(),
+                      platformRolePermissionEntity.getPermission().getId())));
 
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
@@ -103,19 +104,24 @@ public class PlatformProfileRoleController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Unassign Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
+          "Unassign Platform Role Permission: [{}], [{}], [{}]",
+          platformId,
+          roleId,
+          permissionId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
 
   @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
-  @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}/hard")
-  public ResponseEntity<ResponseWithMetadata> hardDeletePlatformProfileRole(
+  @DeleteMapping("/platform/{platformId}/role/{roleId}/permission/{permissionId}/hard")
+  public ResponseEntity<ResponseWithMetadata> hardDeletePlatformRolePermission(
       @PathVariable final long platformId,
-      @PathVariable final long profileId,
-      @PathVariable final long roleId) {
+      @PathVariable final long roleId,
+      @PathVariable final long permissionId) {
     try {
-      platformProfileRoleService.hardDeletePlatformProfileRole(platformId, profileId, roleId);
+      platformRolePermissionService.hardDeletePlatformRolePermission(
+          platformId, roleId, permissionId);
 
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
@@ -127,7 +133,11 @@ public class PlatformProfileRoleController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Hard Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
+          "Hard Delete Platform Role Permission: [{}], [{}], [{}]",
+          platformId,
+          roleId,
+          permissionId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }

@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PlatformRolePermissionEntity {
 
-  @EmbeddedId private PlatformProfileRoleId id;
+  @EmbeddedId private PlatformRolePermissionId id;
 
   @MapsId("platformId")
   @ManyToOne
