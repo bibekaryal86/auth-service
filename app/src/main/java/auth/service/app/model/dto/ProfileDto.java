@@ -33,6 +33,7 @@ public class ProfileDto {
   private List<PlatformProfileRoleDto> platformProfileRoles;
   private List<AuditProfileDto> history;
 
+  // TODO
   public AuthToken toAuthToken(final PlatformEntity platformEntity) {
     return null;
   }
