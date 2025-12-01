@@ -1,5 +1,9 @@
 package auth.service.app.service;
 
+import auth.service.app.model.dto.AuditPermissionDto;
+import auth.service.app.model.dto.AuditPlatformDto;
+import auth.service.app.model.dto.AuditProfileDto;
+import auth.service.app.model.dto.AuditRoleDto;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -16,9 +20,11 @@ import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -35,6 +41,7 @@ public class AuditService {
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
   private final ProfileRepository profileRepository;
+  private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -74,6 +81,11 @@ public class AuditService {
     }
   }
 
+  public List<AuditPermissionDto> auditPermissions(final Long id) {
+    final List<AuditPermissionEntity> entities = auditPermissionRepository.findByPermissionId(id);
+    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoPermissionAudit).toList();
+  }
+
   public void auditRole(
       final HttpServletRequest request,
       final RoleEntity roleEntity,
@@ -96,6 +108,11 @@ public class AuditService {
       log.error(
           "AuditRoleException: [{}], [{}], [{}]", roleEntity.getId(), eventType, eventDesc, ex);
     }
+  }
+
+  public List<AuditRoleDto> auditRoles(final Long id) {
+    final List<AuditRoleEntity> entities = auditRoleRepository.findByRoleId(id);
+    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoRoleAudit).toList();
   }
 
   public void auditPlatform(
@@ -126,6 +143,11 @@ public class AuditService {
     }
   }
 
+  public List<AuditPlatformDto> auditPlatforms(final Long id) {
+    final List<AuditPlatformEntity> entities = auditPlatformRepository.findByPlatformId(id);
+    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoPlatformAudit).toList();
+  }
+
   public void auditProfile(
       final HttpServletRequest request,
       final ProfileEntity profileEntity,
@@ -153,5 +175,10 @@ public class AuditService {
           eventDesc,
           ex);
     }
+  }
+
+  public List<AuditProfileDto> auditProfiles(final Long id) {
+    final List<AuditProfileEntity> entities = auditProfileRepository.findByProfileId(id);
+    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoProfileAudit).toList();
   }
 }

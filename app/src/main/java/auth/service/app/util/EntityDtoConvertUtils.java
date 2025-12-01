@@ -124,7 +124,7 @@ public class EntityDtoConvertUtils {
 
   // AUDITS
 
-  private AuditPermissionDto convertEntityToDtoPermissionAudit(
+  public AuditPermissionDto convertEntityToDtoPermissionAudit(
       final AuditPermissionEntity auditEntity) {
     if (auditEntity == null) {
       return null;
@@ -146,7 +146,7 @@ public class EntityDtoConvertUtils {
         eventData);
   }
 
-  private AuditRoleDto convertEntityToDtoRoleAudit(final AuditRoleEntity auditEntity) {
+  public AuditRoleDto convertEntityToDtoRoleAudit(final AuditRoleEntity auditEntity) {
     if (auditEntity == null) {
       return null;
     }
@@ -165,7 +165,7 @@ public class EntityDtoConvertUtils {
         eventData);
   }
 
-  private AuditPlatformDto convertEntityToDtoPlatformAudit(final AuditPlatformEntity auditEntity) {
+  public AuditPlatformDto convertEntityToDtoPlatformAudit(final AuditPlatformEntity auditEntity) {
     if (auditEntity == null) {
       return null;
     }
@@ -184,7 +184,7 @@ public class EntityDtoConvertUtils {
         eventData);
   }
 
-  private AuditProfileDto convertEntityToDtoProfileAudit(final AuditProfileEntity auditEntity) {
+  public AuditProfileDto convertEntityToDtoProfileAudit(final AuditProfileEntity auditEntity) {
     if (auditEntity == null) {
       return null;
     }
