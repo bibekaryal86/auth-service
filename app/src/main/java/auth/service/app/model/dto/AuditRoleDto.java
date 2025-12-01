@@ -17,5 +17,4 @@ public class AuditRoleDto {
   private final String ipAddress;
   private final String userAgent;
   private final RoleDto eventData;
-  private final RoleDto role;
 }

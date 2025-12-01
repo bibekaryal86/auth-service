@@ -17,5 +17,4 @@ public class AuditPlatformDto {
   private final String ipAddress;
   private final String userAgent;
   private final PlatformDto eventData;
-  private final PlatformDto platform;
 }

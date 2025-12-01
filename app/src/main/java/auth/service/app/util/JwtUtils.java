@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
-  private static final String SECRET_KEY = CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_SECRET_KEY);
+  private static final String SECRET_KEY =
+      CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_SECRET_KEY);
   private static final ObjectMapper OBJECT_MAPPER =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 

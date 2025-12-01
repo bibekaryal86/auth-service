@@ -1,6 +1,6 @@
 package auth.service.app.model.dto;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlatformDtoRoleProfile {
+public class PlatformRolePermissionDto {
+  private PlatformDto platform;
   private RoleDto role;
-  private List<ProfileDto> profiles;
+  private PermissionDto permission;
+
+  private LocalDateTime assignedDate;
+  private LocalDateTime unassignedDate;
 }

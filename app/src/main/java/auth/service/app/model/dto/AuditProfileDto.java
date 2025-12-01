@@ -17,5 +17,4 @@ public class AuditProfileDto {
   private final String ipAddress;
   private final String userAgent;
   private final ProfileDto eventData;
-  private final ProfileDto profile;
 }

@@ -12,4 +12,7 @@ import lombok.Getter;
 public class ProfileResponse {
   private List<ProfileDto> profiles;
   private ResponseMetadata responseMetadata;
+
+  private List<Long> platformIds;
+  private List<Long> roleIds;
 }

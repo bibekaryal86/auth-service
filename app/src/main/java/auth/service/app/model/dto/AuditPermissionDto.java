@@ -17,5 +17,4 @@ public class AuditPermissionDto {
   private final String ipAddress;
   private final String userAgent;
   private final PermissionDto eventData;
-  private final PermissionDto permission;
 }

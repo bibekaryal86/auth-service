@@ -1,6 +1,5 @@
 package auth.service.app.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import lombok.AllArgsConstructor;
@@ -16,8 +15,9 @@ public class ProfilePasswordTokenResponse {
   @JsonProperty("accessToken")
   private String accessToken;
 
-  @ToString.Exclude @JsonIgnore private String refreshToken;
-  @ToString.Exclude @JsonIgnore private String csrfToken;
+  // TODO when building add conditions such that these are ignored in PRODUCTION
+  @ToString.Exclude private String refreshToken;
+  @ToString.Exclude private String csrfToken;
 
   private ProfileDto profile;
   private ResponseMetadata responseMetadata;
