@@ -1,9 +1,9 @@
 package auth.service.app.filter;
 
 import auth.service.app.exception.TokenInvalidException;
-import auth.service.app.model.token.AuthToken;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.FilterChain;

@@ -3,8 +3,7 @@ package auth.service.app.util;
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.token.AuthToken;
-import auth.service.app.model.token.AuthTokenPermission;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -98,7 +97,7 @@ public class PermissionCheck {
       final AuthToken authToken, final List<String> requiredPermissions) {
     final Set<String> userPermissions =
         authToken.getPermissions().stream()
-            .map(AuthTokenPermission::getPermissionName)
+            .map(AuthToken.AuthTokenPermission::getPermissionName)
             .collect(Collectors.toSet());
 
     final Map<String, Boolean> checkedPermissions =

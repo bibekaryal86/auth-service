@@ -1,11 +1,9 @@
 package auth.service.app.util;
 
 import auth.service.app.exception.TokenInvalidException;
-import auth.service.app.model.dto.ProfileDto;
-import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.model.token.AuthToken;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -75,13 +73,12 @@ public class JwtUtils {
   }
 
   public static String encodeAuthCredentials(
-      final PlatformEntity platform, final ProfileDto profile, final long expirationMillis) {
-    AuthToken authToken = profile.toAuthToken(platform);
+      final AuthToken authToken, final long expirationMillis) {
     Map<String, Object> tokenClaim = new HashMap<>();
     tokenClaim.put(ConstantUtils.TOKEN_CLAIM_AUTH, authToken);
     return Jwts.builder()
         .claims(tokenClaim)
-        .subject(profile.getEmail())
+        .subject(authToken.getProfile().getEmail())
         .issuer(ConstantUtils.TOKEN_CLAIM_ISSUER)
         .issuedAt(Date.from(Instant.now()))
         .expiration(new Date(System.currentTimeMillis() + expirationMillis))

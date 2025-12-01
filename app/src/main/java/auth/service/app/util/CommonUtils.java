@@ -1,7 +1,7 @@
 package auth.service.app.util;
 
 import auth.service.app.exception.CheckPermissionException;
-import auth.service.app.model.token.AuthToken;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -68,9 +68,6 @@ public class CommonUtils {
 
     if (authentication.getCredentials() != null
         && authentication.getCredentials() instanceof AuthToken authToken) {
-      if (authToken.getIsSuperUser() == null) {
-        authToken.setIsSuperUser(false);
-      }
       return authToken;
     }
 

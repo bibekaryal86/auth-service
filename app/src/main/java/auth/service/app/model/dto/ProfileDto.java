@@ -1,7 +1,5 @@
 package auth.service.app.model.dto;
 
-import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.model.token.AuthToken;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -32,9 +30,4 @@ public class ProfileDto {
 
   private List<PlatformProfileRoleDto> platformProfileRoles;
   private List<AuditProfileDto> history;
-
-  // TODO
-  public AuthToken toAuthToken(final PlatformEntity platformEntity) {
-    return null;
-  }
 }

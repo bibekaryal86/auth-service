@@ -22,6 +22,7 @@ import auth.service.app.model.dto.PlatformResponse;
 import auth.service.app.model.dto.PlatformRolePermissionDto;
 import auth.service.app.model.dto.ProfileAddressDto;
 import auth.service.app.model.dto.ProfileDto;
+import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.dto.RoleDto;
 import auth.service.app.model.dto.RoleResponse;
@@ -35,16 +36,22 @@ import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.token.AuthTokenRolePermissionLookup;
+import auth.service.app.repository.RawSqlRepository;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.PlatformRolePermissionService;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -55,6 +62,8 @@ public class EntityDtoConvertUtils {
 
   private final PlatformProfileRoleService pprService;
   private final PlatformRolePermissionService prpService;
+  private final CookieService cookieService;
+  private final RawSqlRepository rawSqlRepository;
 
   // HELPERS
 
@@ -92,6 +101,13 @@ public class EntityDtoConvertUtils {
   public ResponseMetadata.ResponseCrudInfo getResponseCrudInfoForResponse(
       ResponseMetadata.ResponseCrudInfo responseCrudInfo) {
     return responseCrudInfo == null ? ResponseMetadata.emptyResponseCrudInfo() : responseCrudInfo;
+  }
+
+  public ResponseMetadata.ResponseStatusInfo getResponseStatusInfoForResponse(
+      final Exception exception) {
+    return exception == null
+        ? ResponseMetadata.emptyResponseStatusInfo()
+        : new ResponseMetadata.ResponseStatusInfo(exception.getMessage());
   }
 
   public ResponseEntity<ResponseWithMetadata> getResponseErrorResponseMetadata(
@@ -279,11 +295,11 @@ public class EntityDtoConvertUtils {
                       convertEntityToDtoPermission(entity, null, Boolean.FALSE, Boolean.FALSE))
               .toList();
 
-      final List<PlatformRolePermissionEntity> pprEntities =
+      final List<PlatformRolePermissionEntity> prpEntities =
           prpService.readPlatformRolePermissionsByPermissionIds(
               entities.stream().map(PermissionEntity::getId).toList(), Boolean.TRUE);
-      platformIds = pprEntities.stream().map(pprEntity -> pprEntity.getPlatform().getId()).toList();
-      roleIds = pprEntities.stream().map(pprEntity -> pprEntity.getRole().getId()).toList();
+      platformIds = prpEntities.stream().map(pprEntity -> pprEntity.getPlatform().getId()).toList();
+      roleIds = prpEntities.stream().map(pprEntity -> pprEntity.getRole().getId()).toList();
     }
 
     return ResponseEntity.ok(
@@ -334,32 +350,13 @@ public class EntityDtoConvertUtils {
     }
 
     if (isIncludeExtras) {
-      final List<PlatformRolePermissionEntity> prpEntities =
-          prpService.readPlatformRolePermissionsByRoleIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
       final List<PlatformProfileRoleEntity> pprEntities =
           pprService.readPlatformProfileRolesByRoleIds(
               Collections.singletonList(entity.getId()), isIncludeDeleted);
-      final List<PlatformRolePermissionDto> prpDtos =
-          CommonUtilities.isEmpty(prpEntities)
-              ? Collections.emptyList()
-              : prpEntities.stream()
-                  .map(
-                      prpEntity -> {
-                        final PlatformDto platformDto =
-                            convertEntityToDtoPlatform(
-                                prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
-                        final PermissionDto permissionDto =
-                            convertEntityToDtoPermission(
-                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformRolePermissionDto.builder()
-                            .platform(platformDto)
-                            .permission(permissionDto)
-                            .assignedDate(prpEntity.getAssignedDate())
-                            .unassignedDate(prpEntity.getUnassignedDate())
-                            .build();
-                      })
-                  .toList();
+      final List<PlatformRolePermissionEntity> prpEntities =
+          prpService.readPlatformRolePermissionsByRoleIds(
+              Collections.singletonList(entity.getId()), isIncludeDeleted);
+
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()
@@ -380,11 +377,32 @@ public class EntityDtoConvertUtils {
                             .build();
                       })
                   .toList();
-      dto.setPlatformRolePermissions(prpDtos);
+      final List<PlatformRolePermissionDto> prpDtos =
+          CommonUtilities.isEmpty(prpEntities)
+              ? Collections.emptyList()
+              : prpEntities.stream()
+                  .map(
+                      prpEntity -> {
+                        final PlatformDto platformDto =
+                            convertEntityToDtoPlatform(
+                                prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
+                        final PermissionDto permissionDto =
+                            convertEntityToDtoPermission(
+                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
+                        return PlatformRolePermissionDto.builder()
+                            .platform(platformDto)
+                            .permission(permissionDto)
+                            .assignedDate(prpEntity.getAssignedDate())
+                            .unassignedDate(prpEntity.getUnassignedDate())
+                            .build();
+                      })
+                  .toList();
+
       dto.setPlatformProfileRoles(pprDtos);
+      dto.setPlatformRolePermissions(prpDtos);
     } else {
-      dto.setPlatformRolePermissions(Collections.emptyList());
       dto.setPlatformProfileRoles(Collections.emptyList());
+      dto.setPlatformRolePermissions(Collections.emptyList());
     }
 
     return dto;
@@ -466,32 +484,13 @@ public class EntityDtoConvertUtils {
     }
 
     if (isIncludeExtras) {
-      final List<PlatformRolePermissionEntity> prpEntities =
-          prpService.readPlatformRolePermissionsByPlatformIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
       final List<PlatformProfileRoleEntity> pprEntities =
           pprService.readPlatformProfileRolesByPlatformIds(
               Collections.singletonList(entity.getId()), isIncludeDeleted);
-      final List<PlatformRolePermissionDto> prpDtos =
-          CommonUtilities.isEmpty(prpEntities)
-              ? Collections.emptyList()
-              : prpEntities.stream()
-                  .map(
-                      prpEntity -> {
-                        final RoleDto roleDto =
-                            convertEntityToDtoRole(
-                                prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
-                        final PermissionDto permissionDto =
-                            convertEntityToDtoPermission(
-                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformRolePermissionDto.builder()
-                            .role(roleDto)
-                            .permission(permissionDto)
-                            .assignedDate(prpEntity.getAssignedDate())
-                            .unassignedDate(prpEntity.getUnassignedDate())
-                            .build();
-                      })
-                  .toList();
+      final List<PlatformRolePermissionEntity> prpEntities =
+          prpService.readPlatformRolePermissionsByPlatformIds(
+              Collections.singletonList(entity.getId()), isIncludeDeleted);
+
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()
@@ -512,11 +511,32 @@ public class EntityDtoConvertUtils {
                             .build();
                       })
                   .toList();
-      dto.setPlatformRolePermissions(prpDtos);
+      final List<PlatformRolePermissionDto> prpDtos =
+          CommonUtilities.isEmpty(prpEntities)
+              ? Collections.emptyList()
+              : prpEntities.stream()
+                  .map(
+                      prpEntity -> {
+                        final RoleDto roleDto =
+                            convertEntityToDtoRole(
+                                prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
+                        final PermissionDto permissionDto =
+                            convertEntityToDtoPermission(
+                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
+                        return PlatformRolePermissionDto.builder()
+                            .role(roleDto)
+                            .permission(permissionDto)
+                            .assignedDate(prpEntity.getAssignedDate())
+                            .unassignedDate(prpEntity.getUnassignedDate())
+                            .build();
+                      })
+                  .toList();
+
       dto.setPlatformProfileRoles(pprDtos);
+      dto.setPlatformRolePermissions(prpDtos);
     } else {
-      dto.setPlatformRolePermissions(Collections.emptyList());
       dto.setPlatformProfileRoles(Collections.emptyList());
+      dto.setPlatformRolePermissions(Collections.emptyList());
     }
 
     return dto;
@@ -607,7 +627,7 @@ public class EntityDtoConvertUtils {
 
     if (isIncludeExtras) {
       final List<PlatformProfileRoleEntity> pprEntities =
-          pprService.readPlatformProfileRolesByPlatformIds(
+          pprService.readPlatformProfileRolesByProfileIds(
               Collections.singletonList(entity.getId()), isIncludeDeleted);
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
@@ -700,5 +720,81 @@ public class EntityDtoConvertUtils {
                     ResponseMetadata.emptyResponsePageInfo()))
             .build(),
         getHttpStatusForErrorResponse(exception));
+  }
+
+  // OTHERS
+
+  public ResponseEntity<Void> getResponseValidateProfile(
+      final String redirectUrl, final boolean isValidated) {
+    if (CommonUtilities.isEmpty(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(
+        URI.create(redirectUrl + (isValidated ? "?is_validated=true" : "?is_validated=false")));
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
+
+  public ResponseEntity<Void> getResponseResetProfile(
+      final String redirectUrl, final boolean isReset, final String email) {
+    if (CommonUtilities.isEmpty(redirectUrl)) {
+      throw new IllegalStateException("Redirect URL cannot be null or empty...");
+    }
+
+    final String url =
+        redirectUrl + (isReset ? "?is_reset=true&to_reset=" + email : "?is_reset=false");
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(URI.create(url));
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
+
+  public ResponseEntity<ProfilePasswordTokenResponse> getResponseErrorProfilePassword(
+      final Exception exception) {
+    final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
+    final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
+    final ProfilePasswordTokenResponse profilePasswordTokenResponse =
+        ProfilePasswordTokenResponse.builder()
+            .responseMetadata(
+                new ResponseMetadata(
+                    getResponseStatusInfoForResponse(exception),
+                    ResponseMetadata.emptyResponseCrudInfo(),
+                    ResponseMetadata.emptyResponsePageInfo()))
+            .build();
+    final HttpStatus httpStatus = getHttpStatusForErrorResponse(exception);
+    return ResponseEntity.status(httpStatus)
+        .header(HttpHeaders.SET_COOKIE, refreshTokenCookieResponse.toString())
+        .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
+        .body(profilePasswordTokenResponse);
+  }
+
+  public AuthToken getAuthTokenFromProfile(
+      final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
+    final List<AuthTokenRolePermissionLookup> rolesPermissions =
+        rawSqlRepository.findRolePermissionsForAuthToken(
+            platformEntity.getId(), profileEntity.getId());
+
+    final AuthToken.AuthTokenPlatform platform =
+        new AuthToken.AuthTokenPlatform(platformEntity.getId(), platformEntity.getPlatformName());
+    final AuthToken.AuthTokenProfile profile =
+        new AuthToken.AuthTokenProfile(profileEntity.getId(), profileEntity.getEmail());
+    final List<AuthToken.AuthTokenRole> roles =
+        rolesPermissions.stream()
+            .map(
+                rolePermission ->
+                    new AuthToken.AuthTokenRole(rolePermission.roleId(), rolePermission.roleName()))
+            .toList();
+    final List<AuthToken.AuthTokenPermission> permissions =
+        rolesPermissions.stream()
+            .map(
+                rolePermission ->
+                    new AuthToken.AuthTokenPermission(
+                        rolePermission.permissionId(), rolePermission.permissionName()))
+            .toList();
+    final boolean isSuperUser =
+        roles.stream()
+            .anyMatch(role -> role.getRoleName().equals(ConstantUtils.ROLE_NAME_SUPERUSER));
+
+    return new AuthToken(platform, profile, roles, permissions, isSuperUser);
   }
 }
