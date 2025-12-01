@@ -13,12 +13,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PermissionRepository
     extends JpaRepository<PermissionEntity, Long>, JpaSpecificationExecutor<PermissionEntity> {
-
-  @Query("SELECT pe FROM PermissionEntity pe WHERE pe.role.id in (:roleIds)")
-  List<PermissionEntity> findByRoleIds(@Param("roleIds") List<Long> roleIds);
-
-  @Modifying
-  @Transactional
-  @Query("DELETE FROM PermissionEntity pe WHERE pe.role.id = :roleId")
-  void deleteByRoleId(@Param("roleId") Long roleId);
 }
