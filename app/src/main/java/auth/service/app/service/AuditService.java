@@ -1,8 +1,5 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.CommonUtils.getIpAddress;
-import static auth.service.app.util.CommonUtils.getUserAgent;
-
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -18,8 +15,8 @@ import auth.service.app.repository.AuditPlatformRepository;
 import auth.service.app.repository.AuditProfileRepository;
 import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
-import auth.service.app.util.EntityDtoConvertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +35,6 @@ public class AuditService {
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
   private final ProfileRepository profileRepository;
-  private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,8 +60,8 @@ public class AuditService {
 
       auditPermissionEntity.setCreatedBy(getCreatedByProfileEntity());
       auditPermissionEntity.setCreatedAt(LocalDateTime.now());
-      auditPermissionEntity.setIpAddress(getIpAddress(request));
-      auditPermissionEntity.setUserAgent(getUserAgent(request));
+      auditPermissionEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditPermissionEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditPermissionRepository.save(auditPermissionEntity);
     } catch (Exception ex) {
@@ -92,8 +88,8 @@ public class AuditService {
 
       auditRoleEntity.setCreatedBy(getCreatedByProfileEntity());
       auditRoleEntity.setCreatedAt(LocalDateTime.now());
-      auditRoleEntity.setIpAddress(getIpAddress(request));
-      auditRoleEntity.setUserAgent(getUserAgent(request));
+      auditRoleEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditRoleEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditRoleRepository.save(auditRoleEntity);
     } catch (Exception ex) {
@@ -116,8 +112,8 @@ public class AuditService {
 
       auditPlatformEntity.setCreatedBy(getCreatedByProfileEntity());
       auditPlatformEntity.setCreatedAt(LocalDateTime.now());
-      auditPlatformEntity.setIpAddress(getIpAddress(request));
-      auditPlatformEntity.setUserAgent(getUserAgent(request));
+      auditPlatformEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditPlatformEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditPlatformRepository.save(auditPlatformEntity);
     } catch (Exception ex) {
@@ -145,8 +141,8 @@ public class AuditService {
       }
       auditProfileEntity.setCreatedBy(getCreatedByProfileEntity());
       auditProfileEntity.setCreatedAt(LocalDateTime.now());
-      auditProfileEntity.setIpAddress(getIpAddress(request));
-      auditProfileEntity.setUserAgent(getUserAgent(request));
+      auditProfileEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditProfileEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditProfileRepository.save(auditProfileEntity);
     } catch (Exception ex) {

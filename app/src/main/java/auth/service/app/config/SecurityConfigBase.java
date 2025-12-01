@@ -1,13 +1,12 @@
 package auth.service.app.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import auth.service.app.exception.handler.CustomAccessDeniedHandler;
 import auth.service.app.exception.handler.CustomAuthenticationEntrypoint;
 import auth.service.app.filter.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -61,7 +60,7 @@ public abstract class SecurityConfigBase {
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .httpBasic(withDefaults())
+        .httpBasic(Customizer.withDefaults())
         .build();
   }
 

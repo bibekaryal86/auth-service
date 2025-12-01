@@ -1,13 +1,5 @@
 package auth.service.app.util;
 
-import static auth.service.app.util.ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
@@ -53,32 +45,32 @@ public class CommonUtils {
 
   public static HttpStatus getHttpStatusForErrorResponse(final Exception exception) {
     if (exception instanceof ElementNotFoundException) {
-      return NOT_FOUND;
+      return HttpStatus.NOT_FOUND;
     } else if (exception instanceof ElementMissingException) {
-      return BAD_REQUEST;
+      return HttpStatus.BAD_REQUEST;
     } else if (exception instanceof ProfileForbiddenException
         || exception instanceof ProfileNotValidatedException
         || exception instanceof ElementNotActiveException
         || exception instanceof ProfileNotActiveException
         || exception instanceof ProfileLockedException
         || exception instanceof CheckPermissionException) {
-      return FORBIDDEN;
+      return HttpStatus.FORBIDDEN;
     } else if (exception instanceof ProfileNotAuthorizedException
         || exception instanceof TokenInvalidException) {
-      return UNAUTHORIZED;
+      return HttpStatus.UNAUTHORIZED;
     } else {
-      return INTERNAL_SERVER_ERROR;
+      return HttpStatus.INTERNAL_SERVER_ERROR;
     }
   }
 
   public static <T> HttpStatus getHttpStatusForSingleResponse(final T object) {
-    return ObjectUtils.isEmpty(object) ? INTERNAL_SERVER_ERROR : OK;
+    return ObjectUtils.isEmpty(object) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;
   }
 
   public static <T> ResponseMetadata.ResponseStatusInfo getResponseStatusInfoForSingleResponse(
       final T object) {
     return ObjectUtils.isEmpty(object)
-        ? new ResponseMetadata.ResponseStatusInfo(INTERNAL_SERVER_ERROR_MESSAGE)
+        ? new ResponseMetadata.ResponseStatusInfo(ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE)
         : null;
   }
 

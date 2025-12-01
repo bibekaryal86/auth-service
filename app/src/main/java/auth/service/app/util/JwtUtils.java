@@ -1,10 +1,5 @@
 package auth.service.app.util;
 
-import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
-import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_AUTH;
-import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_EMAIL;
-import static auth.service.app.util.ConstantUtils.TOKEN_CLAIM_ISSUER;
-
 import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.entity.PlatformEntity;
@@ -30,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
-  private static final String SECRET_KEY = CommonUtilities.getSystemEnvProperty(ENV_SECRET_KEY);
+  private static final String SECRET_KEY = CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_SECRET_KEY);
   private static final ObjectMapper OBJECT_MAPPER =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
@@ -40,8 +35,8 @@ public class JwtUtils {
 
   public static String encodeEmailAddress(final String email) {
     return Jwts.builder()
-        .claim(TOKEN_CLAIM_EMAIL, email)
-        .issuer(TOKEN_CLAIM_ISSUER)
+        .claim(ConstantUtils.TOKEN_CLAIM_EMAIL, email)
+        .issuer(ConstantUtils.TOKEN_CLAIM_ISSUER)
         .issuedAt(Date.from(Instant.now()))
         .expiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
         .signWith(getSigningKey())
@@ -56,7 +51,7 @@ public class JwtUtils {
               .build()
               .parseSignedClaims(encodedEmail)
               .getPayload()
-              .get(TOKEN_CLAIM_EMAIL, String.class);
+              .get(ConstantUtils.TOKEN_CLAIM_EMAIL, String.class);
 
       if (emailToken == null) {
         throw new IllegalArgumentException("Incorrect Email Credentials");
@@ -82,11 +77,11 @@ public class JwtUtils {
       final PlatformEntity platform, final ProfileDto profile, final long expirationMillis) {
     AuthToken authToken = profile.toAuthToken(platform);
     Map<String, Object> tokenClaim = new HashMap<>();
-    tokenClaim.put(TOKEN_CLAIM_AUTH, authToken);
+    tokenClaim.put(ConstantUtils.TOKEN_CLAIM_AUTH, authToken);
     return Jwts.builder()
         .claims(tokenClaim)
         .subject(profile.getEmail())
-        .issuer(TOKEN_CLAIM_ISSUER)
+        .issuer(ConstantUtils.TOKEN_CLAIM_ISSUER)
         .issuedAt(Date.from(Instant.now()))
         .expiration(new Date(System.currentTimeMillis() + expirationMillis))
         .signWith(getSigningKey())
@@ -106,7 +101,7 @@ public class JwtUtils {
           Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
 
       final AuthToken authToken =
-          OBJECT_MAPPER.convertValue(claims.get(TOKEN_CLAIM_AUTH), AuthToken.class);
+          OBJECT_MAPPER.convertValue(claims.get(ConstantUtils.TOKEN_CLAIM_AUTH), AuthToken.class);
       return Map.of(subject, authToken);
     } catch (ExpiredJwtException e) {
       throw new TokenInvalidException("Expired Auth Credentials");
