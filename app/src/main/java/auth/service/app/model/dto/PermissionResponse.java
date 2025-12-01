@@ -12,5 +12,4 @@ import lombok.Getter;
 public class PermissionResponse {
   private List<PermissionDto> permissions;
   private ResponseMetadata responseMetadata;
-  private RequestMetadata requestMetadata;
 }

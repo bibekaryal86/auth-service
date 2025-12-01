@@ -12,5 +12,4 @@ import lombok.Getter;
 public class PlatformResponse {
   private List<PlatformDto> platforms;
   private ResponseMetadata responseMetadata;
-  private RequestMetadata requestMetadata;
 }

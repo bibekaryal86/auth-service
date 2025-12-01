@@ -7,6 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlatformRolePermissionRepository
-    extends JpaRepository<PlatformRolePermissionEntity, PlatformRolePermissionId> {
-
-}
+    extends JpaRepository<PlatformRolePermissionEntity, PlatformRolePermissionId> {}
