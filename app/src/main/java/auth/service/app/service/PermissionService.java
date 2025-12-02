@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class PermissionService {
 
   private final PermissionRepository permissionRepository;
+  private final PlatformRolePermissionService platformRolePermissionService;
 
   // CREATE
   public PermissionEntity createPermission(final PermissionRequest permissionRequest) {
@@ -69,9 +71,14 @@ public class PermissionService {
     return permissionRepository.save(permissionEntity);
   }
 
+  @Transactional
   public void hardDeletePermission(final Long id) {
     log.info("Hard Delete Permission: Id=[{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
+
+    // before Role can be deleted, we need to delete entities in PlatformRolePermission
+    platformRolePermissionService.hardDeletePlatformRolePermissionsByPermissionIds(List.of(id));
+
     permissionRepository.delete(permissionEntity);
   }
 

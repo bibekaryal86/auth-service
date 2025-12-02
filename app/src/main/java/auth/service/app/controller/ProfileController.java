@@ -54,9 +54,23 @@ public class ProfileController {
 
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "") final String platformId,
+      @RequestParam(required = false, defaultValue = "") final String roleId) {
     try {
-      final List<ProfileEntity> profileEntities = profileService.readProfiles(isIncludeDeleted);
+      final Long platformIdLong = CommonUtils.getValidId(platformId);
+      final Long roleIdLong = CommonUtils.getValidId(roleId);
+
+      List<ProfileEntity> profileEntities;
+      if (platformIdLong == null && roleIdLong == null) {
+        profileEntities = profileService.readProfiles(isIncludeDeleted);
+      } else {
+        final List<PlatformProfileRoleEntity> pprEntities =
+            platformProfileRoleService.readPlatformProfileRoles(
+                platformIdLong, roleIdLong, isIncludeDeleted);
+        profileEntities = pprEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
+      }
+
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
       return entityDtoConvertUtils.getResponseMultipleProfiles(

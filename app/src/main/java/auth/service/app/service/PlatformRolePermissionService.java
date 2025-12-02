@@ -132,7 +132,7 @@ public class PlatformRolePermissionService {
     platformRolePermissionRepository.deleteByIdRoleIdIn(roleIds);
   }
 
-  public void hardDeletePlatformRolePermissionsByProfileIds(final List<Long> permissionIds) {
+  public void hardDeletePlatformRolePermissionsByPermissionIds(final List<Long> permissionIds) {
     log.info(
         "Hard Delete Platform Role Permissions By Permission Ids: PermissionIds=[{}]",
         permissionIds);

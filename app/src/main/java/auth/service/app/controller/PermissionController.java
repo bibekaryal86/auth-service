@@ -5,10 +5,12 @@ import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
+import auth.service.app.service.PlatformRolePermissionService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
@@ -41,6 +43,7 @@ public class PermissionController {
 
   private final PermissionService permissionService;
   private final CircularDependencyService circularDependencyService;
+  private final PlatformRolePermissionService platformRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
@@ -74,10 +77,24 @@ public class PermissionController {
   @CheckPermission("AUTHSVC_PERMISSION_READ")
   @GetMapping
   public ResponseEntity<PermissionResponse> readPermissions(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
+      @RequestParam(required = false, defaultValue = "") final String platformId,
+      @RequestParam(required = false, defaultValue = "") final String roleId) {
     try {
-      final List<PermissionEntity> permissionEntities =
-          permissionService.readPermissions(isIncludeDeleted);
+      final Long platformIdLong = CommonUtils.getValidId(platformId);
+      final Long roleIdLong = CommonUtils.getValidId(roleId);
+
+      List<PermissionEntity> permissionEntities;
+      if (platformIdLong == null && roleIdLong == null) {
+        permissionEntities = permissionService.readPermissions(isIncludeDeleted);
+      } else {
+        final List<PlatformRolePermissionEntity> prpEntities =
+            platformRolePermissionService.readPlatformRolePermissions(
+                platformIdLong, roleIdLong, isIncludeDeleted);
+        permissionEntities =
+            prpEntities.stream().map(PlatformRolePermissionEntity::getPermission).toList();
+      }
+
       return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
     } catch (Exception ex) {
       log.error("Read Permissions: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
