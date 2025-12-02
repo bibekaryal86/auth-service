@@ -8,6 +8,7 @@ import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.entity.PlatformRolePermissionId;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.PlatformRolePermissionRepository;
+import auth.service.app.util.JpaSpecificationUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,14 @@ public class PlatformRolePermissionService {
                 new ElementNotFoundException(
                     "Platform Role Permission",
                     String.format("%s,%s,%s", platformId, roleId, permissionId)));
+  }
+
+  public List<PlatformRolePermissionEntity> readPlatformRolePermissions(
+      final Long platformId, final Long roleId, final boolean isIncludeDeleted) {
+    log.debug(
+        "Read Platform Role Permission: [{}], [{}] | [{}]", platformId, roleId, isIncludeDeleted);
+    return platformRolePermissionRepository.findAll(
+        JpaSpecificationUtils.prpFilters(platformId, roleId, isIncludeDeleted));
   }
 
   public List<PlatformRolePermissionEntity> readPlatformRolePermissionsByPlatformIds(

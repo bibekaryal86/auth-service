@@ -9,6 +9,7 @@ import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.repository.PlatformProfileRoleRepository;
+import auth.service.app.util.JpaSpecificationUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -99,6 +100,14 @@ public class PlatformProfileRoleService {
     }
 
     return pprListActive.getFirst();
+  }
+
+  public List<PlatformProfileRoleEntity> readPlatformProfileRoles(
+      final Long platformId, final Long roleId, final boolean isIncludeDeleted) {
+    log.debug(
+        "Read Platform Profile Role: [{}], [{}] | [{}]", platformId, roleId, isIncludeDeleted);
+    return platformProfileRoleRepository.findAll(
+        JpaSpecificationUtils.pprFilters(platformId, roleId, isIncludeDeleted));
   }
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformIds(
