@@ -209,7 +209,11 @@ VALUES (1, 'AUTHSVC_PERMISSION_READ', 'Can View Permission(s)');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (1, 'AUTHSVC_PERMISSION_UPDATE', 'Can Update Permission');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_PERMISSION_DELETE', 'Can Delete Permission');
+VALUES (1, 'AUTHSVC_PERMISSION_SOFTDELETE', 'Can Soft Delete Permission');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PERMISSION_HARDDELETE', 'Can Hard Delete Permission');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PERMISSION_RESTORE', 'Can Restore Soft Deleted Permission');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (2, 'AUTHSVC_PERMISSION_READ', 'Can View Permission(s)');
 
@@ -220,7 +224,11 @@ VALUES (1, 'AUTHSVC_ROLE_READ', 'Can View Role(s)');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (1, 'AUTHSVC_ROLE_UPDATE', 'Can Update Role');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_ROLE_DELETE', 'Can Delete Role');
+VALUES (1, 'AUTHSVC_ROLE_SOFTDELETE', 'Can Soft Delete Role');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_ROLE_HARDDELETE', 'Can Hard Delete Role');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_ROLE_RESTORE', 'Can Restore Soft Deleted Role');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (2, 'AUTHSVC_ROLE_READ', 'Can View Role(s)');
 
@@ -231,9 +239,11 @@ VALUES (1, 'AUTHSVC_PROFILE_READ', 'Can View Profile(s)');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (1, 'AUTHSVC_PROFILE_UPDATE', 'Can Update Profile');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_PROFILE_DELETE', 'Can Delete Profile');
+VALUES (1, 'AUTHSVC_PROFILE_SOFTDELETE', 'Can Soft Delete Profile');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (2, 'AUTHSVC_PROFILE_READ', 'Can View Profile(s)');
+VALUES (1, 'AUTHSVC_PROFILE_HARDDELETE', 'Can Hard Delete Profile');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (2, 'AUTHSVC_PROFILE_RESTORE', 'Can Restore Soft Deleted Profile');
 
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (1, 'AUTHSVC_PLATFORM_CREATE', 'Can Add Platform');
@@ -242,20 +252,31 @@ VALUES (1, 'AUTHSVC_PLATFORM_READ', 'Can View Platform(s)');
 INSERT INTO permission (role_id, permission_name, permission_desc)
 VALUES (1, 'AUTHSVC_PLATFORM_UPDATE', 'Can Update Platform');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_PLATFORM_DELETE', 'Can Delete Platform');
+VALUES (1, 'AUTHSVC_PLATFORM_SOFTDELETE', 'Can Delete Platform');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (2, 'AUTHSVC_PLATFORM_READ', 'Can View Platform(s)');
+VALUES (1, 'AUTHSVC_PLATFORM_HARDDELETE', 'Can Delete Platform');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (2, 'AUTHSVC_PLATFORM_RESTORE', 'Can Restore Soft Deleted Platform');
 
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN', 'Can Add Role to Profile in Platform');
+VALUES (1, 'AUTHSVC_PPR_ASSIGN', 'Can Add Role to Profile in Platform');
 INSERT INTO permission (role_id, permission_name, permission_desc)
-VALUES (1, 'AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN', 'Can Remove Role from Profile in Platform');
+VALUES (1, 'AUTHSVC_PPR_UNASSIGN', 'Can Remove Role from Profile in Platform');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PPR_HARDDELETE', 'Can Hard Delete Platform Profile Role');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PRP_ASSIGN', 'Can Add Role to Profile in Platform');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PRP_UNASSIGN', 'Can Remove Role from Profile in Platform');
+INSERT INTO permission (role_id, permission_name, permission_desc)
+VALUES (1, 'AUTHSVC_PRP_HARDDELETE', 'Can Hard Delete Platform Role Permission');
 
 -- DROP TABLE public.audit_platform CASCADE;
 -- DROP TABLE public.audit_profile CASCADE;
 -- DROP TABLE public.audit_role CASCADE;
 -- DROP TABLE public.audit_permission CASCADE;
 -- DROP TABLE public.platform_profile_role CASCADE;
+-- DROP TABLE public.platform_role_permission CASCADE;
 -- DROP TABLE public.permission CASCADE;
 -- DROP TABLE public.role CASCADE;
 -- DROP TABLE public.token CASCADE;

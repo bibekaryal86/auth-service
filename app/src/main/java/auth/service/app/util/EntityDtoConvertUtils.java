@@ -678,26 +678,24 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseMultipleProfiles(
-      final List<ProfileEntity> entities, final boolean isExcludeExtras) {
-    List<ProfileDto> dtos;
-    List<Long> platformIds;
-    List<Long> roleIds;
+      final List<ProfileEntity> entities, final boolean isIncludeExtras) {
+    List<ProfileDto> dtos = Collections.emptyList();
+    List<Long> platformIds = Collections.emptyList();
+    List<Long> roleIds = Collections.emptyList();
 
-    if (CommonUtilities.isEmpty(entities) || isExcludeExtras) {
-      dtos = Collections.emptyList();
-      platformIds = Collections.emptyList();
-      roleIds = Collections.emptyList();
-    } else {
+    if (!CommonUtilities.isEmpty(entities)) {
       dtos =
           entities.stream()
               .map(entity -> convertEntityToDtoProfile(entity, null, Boolean.FALSE, Boolean.FALSE))
               .toList();
-
-      final List<PlatformProfileRoleEntity> pprEntities =
-          pprService.readPlatformProfileRolesByProfileIds(
-              entities.stream().map(ProfileEntity::getId).toList(), Boolean.TRUE);
-      platformIds = pprEntities.stream().map(pprEntity -> pprEntity.getPlatform().getId()).toList();
-      roleIds = pprEntities.stream().map(pprEntity -> pprEntity.getRole().getId()).toList();
+      if (isIncludeExtras) {
+        final List<PlatformProfileRoleEntity> pprEntities =
+            pprService.readPlatformProfileRolesByProfileIds(
+                entities.stream().map(ProfileEntity::getId).toList(), Boolean.TRUE);
+        platformIds =
+            pprEntities.stream().map(pprEntity -> pprEntity.getPlatform().getId()).toList();
+        roleIds = pprEntities.stream().map(pprEntity -> pprEntity.getRole().getId()).toList();
+      }
     }
 
     return ResponseEntity.ok(

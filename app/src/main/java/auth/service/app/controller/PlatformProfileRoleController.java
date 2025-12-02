@@ -34,7 +34,7 @@ public class PlatformProfileRoleController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
+  @CheckPermission("AUTHSVC_PPR_ASSIGN")
   @PostMapping
   public ResponseEntity<ResponseWithMetadata> assignPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
@@ -70,7 +70,7 @@ public class PlatformProfileRoleController {
     }
   }
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
+  @CheckPermission("AUTHSVC_PPR_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
   public ResponseEntity<ResponseWithMetadata> unassignPlatformProfileRole(
       @PathVariable final long platformId,
@@ -108,7 +108,7 @@ public class PlatformProfileRoleController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_PPR_HARDDELETE")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}/hard")
   public ResponseEntity<ResponseWithMetadata> hardDeletePlatformProfileRole(
       @PathVariable final long platformId,

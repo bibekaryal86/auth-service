@@ -76,7 +76,7 @@ public class RoleController {
       final List<RoleEntity> roleEntities = roleService.readRoles(isIncludeDeleted);
       return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities);
     } catch (Exception ex) {
-      log.error("Read Roles...", ex);
+      log.error("Read Roles: [{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -127,7 +127,7 @@ public class RoleController {
     }
   }
 
-  @CheckPermission("AUTHSVC_ROLE_DELETE")
+  @CheckPermission("AUTHSVC_ROLE_SOFTDELETE")
   @DeleteMapping("/role/{id}")
   public ResponseEntity<RoleResponse> softDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -152,7 +152,7 @@ public class RoleController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_ROLE_HARDDELETE")
   @DeleteMapping("/role/{id}/hard")
   public ResponseEntity<RoleResponse> hardDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -177,7 +177,7 @@ public class RoleController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_ROLE_RESTORE")
   @PatchMapping("/role/{id}/restore")
   public ResponseEntity<RoleResponse> restoreRole(
       @PathVariable final long id, final HttpServletRequest request) {

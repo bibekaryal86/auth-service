@@ -75,7 +75,7 @@ public class SsoApiController {
               List.of(platformId), Boolean.FALSE);
       final List<ProfileEntity> profileEntities =
           pprEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
-      return entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.TRUE);
+      return entityDtoConvertUtils.getResponseMultipleProfiles(profileEntities, Boolean.FALSE);
     } catch (Exception ex) {
       log.error("List Sso Profiles: [{}]", platformId, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

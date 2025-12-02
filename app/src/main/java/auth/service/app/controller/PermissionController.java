@@ -80,7 +80,7 @@ public class PermissionController {
           permissionService.readPermissions(isIncludeDeleted);
       return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permissions...", ex);
+      log.error("Read Permissions: [{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -102,7 +102,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, null, auditPermissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permission: [{}]", id, ex);
+      log.error("Read Permission: [{}] | [{}] | [{}]", id, isIncludeDeleted, isIncludeHistory, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -135,7 +135,7 @@ public class PermissionController {
     }
   }
 
-  @CheckPermission("AUTHSVC_PERMISSION_DELETE")
+  @CheckPermission("AUTHSVC_PERMISSION_SOFTDELETE")
   @DeleteMapping("/permission/{id}")
   public ResponseEntity<PermissionResponse> softDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -162,7 +162,7 @@ public class PermissionController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_PERMISSION_HARDDELETE")
   @DeleteMapping("/permission/{id}/hard")
   public ResponseEntity<PermissionResponse> hardDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -188,7 +188,7 @@ public class PermissionController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_PERMISSION_RESTORE")
   @PatchMapping("/permission/{id}/restore")
   public ResponseEntity<PermissionResponse> restorePermission(
       @PathVariable final long id, final HttpServletRequest request) {
