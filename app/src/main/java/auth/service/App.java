@@ -3,6 +3,7 @@
  */
 package auth.service;
 
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.ArrayList;
@@ -34,12 +35,9 @@ public class App {
   }
 
   private static void validateInitArgs() {
-    final boolean isProduction =
-        "production"
-            .equals(CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE));
     final List<String> envKeyNames = new ArrayList<>(ConstantUtils.ENV_KEY_NAMES);
 
-    if (isProduction) {
+    if (CommonUtils.isProduction()) {
       envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_PROD);
     } else {
       envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_SANDBOX);

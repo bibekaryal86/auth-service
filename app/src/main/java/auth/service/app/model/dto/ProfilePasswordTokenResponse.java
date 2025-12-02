@@ -1,6 +1,7 @@
 package auth.service.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,6 @@ public class ProfilePasswordTokenResponse {
   @ToString.Exclude private String refreshToken;
   @ToString.Exclude private String csrfToken;
 
-  private ProfileDto profile;
+  AuthToken authToken;
   private ResponseMetadata responseMetadata;
 }

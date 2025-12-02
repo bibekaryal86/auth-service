@@ -100,4 +100,8 @@ public class ConstantUtils {
   // fields
   public static final String DELETED_DATE = "deletedDate";
   public static final String NOT_NULL_VALUE = "NOT_NULL";
+
+  // environment
+  public static final String ENV_PROD = "production";
+  public static final String ENV_SPRINGBOOTTEST = "springboottest";
 }

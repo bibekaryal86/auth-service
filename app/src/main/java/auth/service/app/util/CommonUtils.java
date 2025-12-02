@@ -3,6 +3,7 @@ package auth.service.app.util;
 import auth.service.app.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -13,6 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
+
+  public static boolean isProduction() {
+    return CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE)
+        .equals(ConstantUtils.ENV_PROD);
+  }
 
   public static String getBaseUrlForLinkInEmail(final HttpServletRequest request) {
     final String scheme = request.getScheme();
