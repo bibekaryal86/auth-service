@@ -95,7 +95,7 @@ CREATE TABLE platform_role_permission
     permission_id       BIGINT                                        NOT NULL,
     assigned_date TIMESTAMP                                            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     unassigned_date TIMESTAMP,
-    PRIMARY KEY (platform_id, ,permission_id),
+    PRIMARY KEY (platform_id, role_id,permission_id),
     FOREIGN KEY (platform_id) REFERENCES platform (id),
     FOREIGN KEY (role_id) REFERENCES role (id),
     FOREIGN KEY (permission_id) REFERENCES permission (id)
