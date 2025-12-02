@@ -33,15 +33,6 @@ A small utility for authentication and authorization with platforms, profiles, r
 
 ## TODO
   * Update this README.md for proper documentation
-  * Refactor Role/Permission to use Join table like PlatformProfileRole
-    * Current execution is effective but not efficient and leads to a lot of duplication between roles
 
-lookup permission by platform, role or both
-    PRP = by platform should give all
-    PRP -> by role should give all
-    PRP -> add one method to look up by platform and role
-(both would ned filter for deleted date)
-lookup profile by platform, role or both
-    PPR -> by platform should give all
-    PPR -> by role should give all
-    PPR -> add one method to look up by platform and role
+
+CHECK log messages

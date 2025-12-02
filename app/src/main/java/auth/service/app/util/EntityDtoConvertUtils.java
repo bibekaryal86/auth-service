@@ -678,12 +678,12 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseMultipleProfiles(
-      final List<ProfileEntity> entities) {
+      final List<ProfileEntity> entities, final boolean isExcludeExtras) {
     List<ProfileDto> dtos;
     List<Long> platformIds;
     List<Long> roleIds;
 
-    if (CommonUtilities.isEmpty(entities)) {
+    if (CommonUtilities.isEmpty(entities) || isExcludeExtras) {
       dtos = Collections.emptyList();
       platformIds = Collections.emptyList();
       roleIds = Collections.emptyList();
