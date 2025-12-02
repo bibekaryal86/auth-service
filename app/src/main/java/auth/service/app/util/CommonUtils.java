@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -48,14 +47,6 @@ public class CommonUtils {
 
   public static String getUserAgent(final HttpServletRequest request) {
     return request.getHeader("User-Agent");
-  }
-
-  public static ResponseMetadata.ResponsePageInfo defaultResponsePageInfo(final Page<?> page) {
-    return new ResponseMetadata.ResponsePageInfo(
-        (int) page.getTotalElements(),
-        page.getTotalPages(),
-        page.getPageable().getPageNumber() + 1,
-        page.getPageable().getPageSize());
   }
 
   public static ResponseMetadata.ResponseCrudInfo defaultResponseCrudInfo(

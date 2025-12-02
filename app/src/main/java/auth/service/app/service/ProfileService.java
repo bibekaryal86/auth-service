@@ -131,7 +131,7 @@ public class ProfileService {
   }
 
   // UPDATE
-  private ProfileEntity updateProfile(final ProfileEntity profileEntity) {
+  public ProfileEntity updateProfile(final ProfileEntity profileEntity) {
     return profileRepository.save(profileEntity);
   }
 
