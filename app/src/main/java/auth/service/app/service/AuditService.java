@@ -1,9 +1,5 @@
 package auth.service.app.service;
 
-import auth.service.app.model.dto.AuditPermissionDto;
-import auth.service.app.model.dto.AuditPlatformDto;
-import auth.service.app.model.dto.AuditProfileDto;
-import auth.service.app.model.dto.AuditRoleDto;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -81,9 +77,8 @@ public class AuditService {
     }
   }
 
-  public List<AuditPermissionDto> auditPermissions(final Long id) {
-    final List<AuditPermissionEntity> entities = auditPermissionRepository.findByPermissionId(id);
-    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoPermissionAudit).toList();
+  public List<AuditPermissionEntity> auditPermissions(final Long id) {
+    return auditPermissionRepository.findByPermissionId(id);
   }
 
   public void auditRole(
@@ -110,9 +105,8 @@ public class AuditService {
     }
   }
 
-  public List<AuditRoleDto> auditRoles(final Long id) {
-    final List<AuditRoleEntity> entities = auditRoleRepository.findByRoleId(id);
-    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoRoleAudit).toList();
+  public List<AuditRoleEntity> auditRoles(final Long id) {
+    return auditRoleRepository.findByRoleId(id);
   }
 
   public void auditPlatform(
@@ -143,9 +137,8 @@ public class AuditService {
     }
   }
 
-  public List<AuditPlatformDto> auditPlatforms(final Long id) {
-    final List<AuditPlatformEntity> entities = auditPlatformRepository.findByPlatformId(id);
-    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoPlatformAudit).toList();
+  public List<AuditPlatformEntity> auditPlatforms(final Long id) {
+    return auditPlatformRepository.findByPlatformId(id);
   }
 
   public void auditProfile(
@@ -177,8 +170,7 @@ public class AuditService {
     }
   }
 
-  public List<AuditProfileDto> auditProfiles(final Long id) {
-    final List<AuditProfileEntity> entities = auditProfileRepository.findByProfileId(id);
-    return entities.stream().map(entityDtoConvertUtils::convertEntityToDtoProfileAudit).toList();
+  public List<AuditProfileEntity> auditProfiles(final Long id) {
+    return auditProfileRepository.findByProfileId(id);
   }
 }
