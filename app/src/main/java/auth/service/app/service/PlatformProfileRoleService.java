@@ -27,7 +27,9 @@ public class PlatformProfileRoleService {
   // ASSIGN
   public PlatformProfileRoleEntity assignPlatformProfileRole(
       final PlatformProfileRoleRequest platformProfileRoleRequest) {
-    log.debug("Assign Platform Profile Role: [{}]", platformProfileRoleRequest);
+    log.debug(
+        "Assign Platform Profile Role: PlatformProfileRoleRequest=[{}]",
+        platformProfileRoleRequest);
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
     final PlatformEntity platformEntity =
         circularDependencyService.readPlatform(
@@ -53,7 +55,11 @@ public class PlatformProfileRoleService {
   // UNASSIGN
   public PlatformProfileRoleEntity unassignPlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
-    log.info("Unassign Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    log.info(
+        "Unassign Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+        platformId,
+        profileId,
+        roleId);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         readPlatformProfileRole(platformId, profileId, roleId);
     platformProfileRoleEntity.setUnassignedDate(LocalDateTime.now());
@@ -63,7 +69,11 @@ public class PlatformProfileRoleService {
   // READ
   private PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
-    log.debug("Read Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    log.debug(
+        "Read Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+        platformId,
+        profileId,
+        roleId);
     return platformProfileRoleRepository
         .findById(new PlatformProfileRoleId(platformId, profileId, roleId))
         .orElseThrow(
@@ -75,7 +85,7 @@ public class PlatformProfileRoleService {
 
   public PlatformProfileRoleEntity readPlatformProfileRole(
       final Long platformId, final String email) {
-    log.debug("Read Platform Profile Role: [{}], [{}]", platformId, email);
+    log.debug("Read Platform Profile Role: PlatformId=[{}], Email=[{}]", platformId, email);
 
     List<PlatformProfileRoleEntity> pprList =
         platformProfileRoleRepository.findByPlatformIdAndProfileEmail(platformId, email);
@@ -105,7 +115,10 @@ public class PlatformProfileRoleService {
   public List<PlatformProfileRoleEntity> readPlatformProfileRoles(
       final Long platformId, final Long roleId, final boolean isIncludeDeleted) {
     log.debug(
-        "Read Platform Profile Role: [{}], [{}] | [{}]", platformId, roleId, isIncludeDeleted);
+        "Read Platform Profile Role: PlatformId=[{}], ProfileId=[{}], IsIncludeDeleted=[{}]",
+        platformId,
+        roleId,
+        isIncludeDeleted);
     return platformProfileRoleRepository.findAll(
         JpaSpecificationUtils.pprFilters(platformId, roleId, isIncludeDeleted));
   }
@@ -113,7 +126,7 @@ public class PlatformProfileRoleService {
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByPlatformIds(
       final List<Long> platformIds, final boolean isIncludeUnassigned) {
     log.debug(
-        "Read Platform Profile Roles By Platform Ids: [{}] | [{}]",
+        "Read Platform Profile Roles By Platform Ids: PlatformIds=[{}], IsIncludeUnassigned=[{}]",
         platformIds,
         isIncludeUnassigned);
     return platformProfileRoleRepository.findByPlatformIds(platformIds, isIncludeUnassigned);
@@ -122,34 +135,43 @@ public class PlatformProfileRoleService {
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByProfileIds(
       final List<Long> profileIds, final boolean isIncludeUnassigned) {
     log.debug(
-        "Read Platform Profile Roles By Profile Ids: [{}] | [{}]", profileIds, isIncludeUnassigned);
+        "Read Platform Profile Roles By Profile Ids: ProfileIds=[{}], IsIncludeUnassigned=[{}]",
+        profileIds,
+        isIncludeUnassigned);
     return platformProfileRoleRepository.findByProfileIds(profileIds, isIncludeUnassigned);
   }
 
   public List<PlatformProfileRoleEntity> readPlatformProfileRolesByRoleIds(
       final List<Long> roleIds, final boolean isIncludeUnassigned) {
-    log.debug("Read Platform Profile Roles By Role Ids: [{}] | [{}]", roleIds, isIncludeUnassigned);
+    log.debug(
+        "Read Platform Profile Roles By Role Ids: RoleIds=[{}], IsIncludeUnassigned=[{}]",
+        roleIds,
+        isIncludeUnassigned);
     return platformProfileRoleRepository.findByRoleIds(roleIds, isIncludeUnassigned);
   }
 
   public void hardDeletePlatformProfileRolesByPlatformIds(final List<Long> platformIds) {
-    log.info("Hard Delete Platform Profile Roles By Platform Ids: [{}]", platformIds);
+    log.info("Hard Delete Platform Profile Roles By Platform Ids: PlatformIds=[{}]", platformIds);
     platformProfileRoleRepository.deleteByIdPlatformIdIn(platformIds);
   }
 
   public void hardDeletePlatformProfileRolesByProfileIds(final List<Long> profileIds) {
-    log.info("Hard Delete Platform Profile Roles By Profile Ids: [{}]", profileIds);
+    log.info("Hard Delete Platform Profile Roles By Profile Ids: ProfileIds=[{}]", profileIds);
     platformProfileRoleRepository.deleteByIdProfileIdIn(profileIds);
   }
 
   public void hardDeletePlatformProfileRolesByRoleIds(final List<Long> roleIds) {
-    log.info("Hard Delete Platform Profile Roles By Role Ids: [{}]", roleIds);
+    log.info("Hard Delete Platform Profile Roles By Role Ids: RoleIds=[{}]", roleIds);
     platformProfileRoleRepository.deleteByIdRoleIdIn(roleIds);
   }
 
   public void hardDeletePlatformProfileRole(
       final Long platformId, final Long profileId, final Long roleId) {
-    log.info("Hard Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId);
+    log.info(
+        "Hard Delete Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+        platformId,
+        profileId,
+        roleId);
     // will throw exception if not found
     readPlatformProfileRole(platformId, profileId, roleId);
     platformProfileRoleRepository.deleteById(

@@ -64,7 +64,7 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Platform: [{}]", platformRequest, ex);
+      log.error("Create Platform: PlatformRequest=[{}]", platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -77,7 +77,7 @@ public class PlatformController {
       final List<PlatformEntity> platformEntities = platformService.readPlatforms(isIncludeDeleted);
       return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities);
     } catch (Exception ex) {
-      log.error("Read Platforms: [{}]", isIncludeDeleted, ex);
+      log.error("Read Platforms: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -100,7 +100,12 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, null, auditPlatformEntities);
     } catch (Exception ex) {
-      log.error("Read Platform: [{}] | [{}] | [{}}", id, isIncludeDeleted, isIncludeHistory, ex);
+      log.error(
+          "Read Platform: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -127,7 +132,7 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Platform: [{}] | [{}]", id, platformRequest, ex);
+      log.error("Update Platform: Id=[{}], PlatformRequest=[{}]", id, platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -153,7 +158,7 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           new PlatformEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Platform: [{}]", id, ex);
+      log.error("Soft Delete Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -179,7 +184,7 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           new PlatformEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Platform: [{}]", id, ex);
+      log.error("Hard Delete Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
@@ -204,7 +209,7 @@ public class PlatformController {
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Platform: [{}]", id, ex);
+      log.error("Restore Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }

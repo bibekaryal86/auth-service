@@ -53,7 +53,10 @@ public class ProfileService {
       final PlatformEntity platformEntity,
       final ProfileRequest profileRequest,
       final String baseUrlForEmail) {
-    log.debug("Create Profile: [{}], [{}]", profileRequest, baseUrlForEmail);
+    log.debug(
+        "Create Profile: ProfileRequest=[{}], BaseUrlForEmail=[{}]",
+        profileRequest,
+        baseUrlForEmail);
     createProfileValidate(profileRequest);
 
     // profile
@@ -102,27 +105,27 @@ public class ProfileService {
 
   // READ
   public List<ProfileEntity> readProfiles(final boolean isIncludeDeleted) {
-    log.debug("Read Profiles: [{}]", isIncludeDeleted);
+    log.debug("Read Profiles: IsIncludeDeleted=[{}]", isIncludeDeleted);
     return profileRepository.findAllProfiles(isIncludeDeleted);
   }
 
   /** Use {@link CircularDependencyService#readProfile(Long, boolean)} */
   private ProfileEntity readProfile(final Long id) {
-    log.debug("Read Profile: [{}]", id);
+    log.debug("Read Profile: Id=[{}]", id);
     return profileRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
   }
 
   public ProfileEntity readProfileByEmail(final String email) {
-    log.debug("Read Profile By Email: [{}]", email);
+    log.debug("Read Profile By Email: Email=[{}]", email);
     return profileRepository
         .findByEmail(email)
         .orElseThrow(() -> new ElementNotFoundException("Profile", email));
   }
 
   public ProfileEntity readProfileByEmailNoException(final String email) {
-    log.debug("Read Profile By Email No Exception: [{}]", email);
+    log.debug("Read Profile By Email No Exception: Email=[{}]", email);
     try {
       return readProfileByEmail(email);
     } catch (Exception ignored) {
@@ -137,7 +140,7 @@ public class ProfileService {
 
   @Transactional
   public ProfileEntity updateProfile(final Long id, final ProfileRequest profileRequest) {
-    log.debug("Update Profile: [{}], [{}]", id, profileRequest);
+    log.debug("Update Profile: Id=[{}], ProfileRequest=[{}]", id, profileRequest);
     ProfileEntity profileEntity = readProfile(id);
 
     if (profileEntity.getDeletedDate() != null) {
@@ -178,7 +181,7 @@ public class ProfileService {
       final PlatformEntity platformEntity,
       final String baseUrlForEmail) {
     log.debug(
-        "Update Profile Email: platform-[{}], profile-[{}], [{}]",
+        "Update Profile Email: PlatformId=[{}], ProfileId=[{}], ProfileEmailRequest=[{}]",
         platformEntity.getId(),
         id,
         profileEmailRequest);
@@ -212,7 +215,7 @@ public class ProfileService {
       final ProfilePasswordRequest profilePasswordRequest,
       final PlatformEntity platformEntity) {
     log.debug(
-        "Update Profile Password: platform-[{}], profile-[{}], [{}]",
+        "Update Profile Password: PlatformId=[{}], ProfileId=[{}], ProfilePasswordRequest=[{}]",
         platformEntity.getId(),
         id,
         profilePasswordRequest);
@@ -238,7 +241,7 @@ public class ProfileService {
 
   // DELETE
   public ProfileEntity softDeleteProfile(final Long id) {
-    log.info("Soft Delete Profile: [{}]", id);
+    log.info("Soft Delete Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
 
     if (profileEntity.getDeletedDate() != null) {
@@ -251,7 +254,7 @@ public class ProfileService {
 
   @Transactional
   public void hardDeleteProfile(final Long id) {
-    log.info("Hard Delete Profile: [{}]", id);
+    log.info("Hard Delete Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
 
     // before Profile can be deleted, we need to delete entities in PlatformProfileRole
@@ -267,7 +270,7 @@ public class ProfileService {
 
   // RESTORE
   public ProfileEntity restoreSoftDeletedProfile(final Long id) {
-    log.info("Restore Soft Deleted Profile: [{}]", id);
+    log.info("Restore Soft Deleted Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
     profileEntity.setDeletedDate(null);
     return profileRepository.save(profileEntity);
@@ -279,7 +282,10 @@ public class ProfileService {
       final ProfilePasswordRequest profilePasswordRequest,
       final String ipAddress) {
     log.info(
-        "Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
+        "Login Profile: PlatformId=[{}], Email=[{}], IdAddress=[{}]",
+        platformId,
+        profilePasswordRequest.getEmail(),
+        ipAddress);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         platformProfileRoleService.readPlatformProfileRole(
             platformId, profilePasswordRequest.getEmail());

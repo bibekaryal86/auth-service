@@ -24,7 +24,7 @@ public class PlatformService {
 
   // CREATE
   public PlatformEntity createPlatform(final PlatformRequest platformRequest) {
-    log.debug("Create Platform: [{}]", platformRequest);
+    log.debug("Create Platform: PlatformRequest=[{}]", platformRequest);
     PlatformEntity platformEntity = new PlatformEntity();
     BeanUtils.copyProperties(platformRequest, platformEntity);
     return platformRepository.save(platformEntity);
@@ -32,13 +32,13 @@ public class PlatformService {
 
   // READ
   public List<PlatformEntity> readPlatforms(final boolean isIncludeDeleted) {
-    log.debug("Read Platforms: [{}]", isIncludeDeleted);
+    log.debug("Read Platforms: IsIncludeDeleted=[{}]", isIncludeDeleted);
     return platformRepository.findAllPlatforms(isIncludeDeleted);
   }
 
   /** Use {@link CircularDependencyService#readPlatform(Long, boolean)} */
   private PlatformEntity readPlatform(final Long id) {
-    log.debug("Read Platform: [{}]", id);
+    log.debug("Read Platform: Id=[{}]", id);
     return platformRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("Platform", String.valueOf(id)));
@@ -46,7 +46,7 @@ public class PlatformService {
 
   // UPDATE
   public PlatformEntity updatePlatform(final Long id, final PlatformRequest platformRequest) {
-    log.debug("Update Platform: [{}], [{}]", id, platformRequest);
+    log.debug("Update Platform: Id=[{}], PlatformRequest=[{}]", id, platformRequest);
     final PlatformEntity platformEntity = readPlatform(id);
 
     if (platformEntity.getDeletedDate() != null) {
@@ -59,7 +59,7 @@ public class PlatformService {
 
   // DELETE
   public PlatformEntity softDeletePlatform(final Long id) {
-    log.info("Soft Delete Platform: [{}]", id);
+    log.info("Soft Delete Platform: Id=[{}]", id);
     final PlatformEntity platformEntity = readPlatform(id);
 
     if (platformEntity.getDeletedDate() != null) {
@@ -72,7 +72,7 @@ public class PlatformService {
 
   @Transactional
   public void hardDeletePlatform(final Long id) {
-    log.info("Hard Delete Platform: [{}]", id);
+    log.info("Hard Delete Platform: Id=[{}]", id);
     final PlatformEntity platformEntity = readPlatform(id);
 
     // before Platform can be deleted, we need to delete entities in PlatformProfileRole
@@ -85,7 +85,7 @@ public class PlatformService {
 
   // RESTORE
   public PlatformEntity restoreSoftDeletedPlatform(final Long id) {
-    log.info("Restore Soft Deleted Platform: [{}]", id);
+    log.info("Restore Soft Deleted Platform: Id=[{}]", id);
     final PlatformEntity platformEntity = readPlatform(id);
     platformEntity.setDeletedDate(null);
     return platformRepository.save(platformEntity);

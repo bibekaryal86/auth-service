@@ -63,7 +63,7 @@ public class RoleController {
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Role: [{}]", roleRequest, ex);
+      log.error("Create Role: RoleRequest=[{}]", roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -76,7 +76,7 @@ public class RoleController {
       final List<RoleEntity> roleEntities = roleService.readRoles(isIncludeDeleted);
       return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities);
     } catch (Exception ex) {
-      log.error("Read Roles: [{}]", isIncludeDeleted, ex);
+      log.error("Read Roles: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -96,7 +96,12 @@ public class RoleController {
 
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, null, auditRoleEntities);
     } catch (Exception ex) {
-      log.error("Read Role: [{}] | [{}] | [{}]", id, isIncludeDeleted, isIncludeHistory, ex);
+      log.error(
+          "Read Role: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -122,7 +127,7 @@ public class RoleController {
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Role: [{}] | [{}]", id, roleRequest, ex);
+      log.error("Update Role: Id=[{}], RoleRequest=[{}]", id, roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -147,7 +152,7 @@ public class RoleController {
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Role: [{}]", id, ex);
+      log.error("Soft Delete Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -172,7 +177,7 @@ public class RoleController {
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Role: [{}]", id, ex);
+      log.error("Hard Delete Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -196,7 +201,7 @@ public class RoleController {
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Role: [{}]", id, ex);
+      log.error("Restore Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }

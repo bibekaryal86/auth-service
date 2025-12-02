@@ -89,7 +89,8 @@ public class ProfileBasicAuthController {
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Profile: [{}] | [{}]", platformId, profileRequest, ex);
+      log.error(
+          "Create Profile: PlatformId=[{}], ProfileRequest=[{}]", platformId, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -134,7 +135,11 @@ public class ProfileBasicAuthController {
           .header(HttpHeaders.SET_COOKIE, csrfTokenCookie.toString())
           .body(profilePasswordTokenResponse);
     } catch (Exception ex) {
-      log.error("Login Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
+      log.error(
+          "Login Profile: PlatformId=[{}], ProfilePasswordRequest=[{}]",
+          platformId,
+          profilePasswordRequest,
+          ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
 
@@ -223,7 +228,7 @@ public class ProfileBasicAuthController {
           .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
           .body(profilePasswordTokenResponse);
     } catch (Exception ex) {
-      log.error("Refresh Token: [{}] | [{}]", platformId, profileId, ex);
+      log.error("Refresh Token: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
           circularDependencyService.readProfile(profileId, Boolean.TRUE);
       CompletableFuture.runAsync(
@@ -288,7 +293,7 @@ public class ProfileBasicAuthController {
           .header(HttpHeaders.SET_COOKIE, csrfTokenCookieResponse.toString())
           .build();
     } catch (Exception ex) {
-      log.error("Logout: [{}] | [{}]", platformId, profileId, ex);
+      log.error("Logout: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
           circularDependencyService.readProfile(profileId, Boolean.TRUE);
       CompletableFuture.runAsync(
@@ -336,7 +341,7 @@ public class ProfileBasicAuthController {
                       platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      log.error("Validate Profile Init: [{}], [{}]", platformId, email, ex);
+      log.error("Validate Profile Init: PlatformId=[{}], Email=[{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
       CompletableFuture.runAsync(
           () ->
@@ -385,7 +390,7 @@ public class ProfileBasicAuthController {
                       platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      log.error("Reset Profile Init: [{}], [{}]", platformId, email, ex);
+      log.error("Reset Profile Init: PlatformId=[{}], Email=[{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
       CompletableFuture.runAsync(
           () ->
@@ -423,7 +428,11 @@ public class ProfileBasicAuthController {
                       profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
-      log.error("Reset Profile: [{}] | [{}]", platformId, profilePasswordRequest, ex);
+      log.error(
+          "Reset Profile: PlatformId=[{}], ProfilePasswordRequest=[{}]",
+          platformId,
+          profilePasswordRequest,
+          ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
       CompletableFuture.runAsync(

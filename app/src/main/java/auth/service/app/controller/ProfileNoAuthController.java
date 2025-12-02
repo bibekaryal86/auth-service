@@ -60,7 +60,11 @@ public class ProfileNoAuthController {
       return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, true);
     } catch (Exception ex) {
       final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toValidate);
-      log.error("Validate Profile Exit: [{}], [{}]", platformId, decodedEmail, ex);
+      log.error(
+          "Validate Profile Exit: PlatformId=[{}], DecodedEmail=[{}]",
+          platformId,
+          decodedEmail,
+          ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
       CompletableFuture.runAsync(
@@ -106,7 +110,8 @@ public class ProfileNoAuthController {
           redirectUrl, true, profileEntity.getEmail());
     } catch (Exception ex) {
       final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toReset);
-      log.error("Reset Profile Exit: [{}], [{}]", platformId, decodedEmail, ex);
+      log.error(
+          "Reset Profile Exit: PlatformId=[{}], DecodedEmail=[{}]", platformId, decodedEmail, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
       CompletableFuture.runAsync(

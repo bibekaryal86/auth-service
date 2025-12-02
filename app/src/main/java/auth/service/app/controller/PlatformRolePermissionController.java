@@ -65,7 +65,10 @@ public class PlatformRolePermissionController {
                   responseCrudInfo,
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
-      log.error("Create Platform Role Permission: [{}}", platformRolePermissionRequest, ex);
+      log.error(
+          "Create Platform Role Permission: PlatformRolePermissionRequest=[{}]",
+          platformRolePermissionRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -104,7 +107,7 @@ public class PlatformRolePermissionController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Unassign Platform Role Permission: [{}], [{}], [{}]",
+          "Unassign Platform Role Permission: PlatformId=[{}], RoleId=[{}], PermissionId=[{}]",
           platformId,
           roleId,
           permissionId,
@@ -133,7 +136,7 @@ public class PlatformRolePermissionController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Hard Delete Platform Role Permission: [{}], [{}], [{}]",
+          "Hard Delete Platform Role Permission: PlatformId=[{}], RoleId=[{}], PermissionId=[{}]",
           platformId,
           roleId,
           permissionId,

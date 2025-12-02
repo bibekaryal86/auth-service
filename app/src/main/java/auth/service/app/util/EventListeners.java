@@ -24,7 +24,7 @@ public class EventListeners {
     final ProfileEntity profileEntity = profileEvent.getProfileEntity();
     final String baseUrl = profileEvent.getBaseUrl();
     log.info(
-        "Handle Profile Event: [{}], [{}], [{}]",
+        "Handle Profile Event: EvenType=[{}], PlatformId=[{}], ProfileId=[{}]",
         eventType,
         platformEntity.getId(),
         profileEntity.getId());

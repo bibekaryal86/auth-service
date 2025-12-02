@@ -66,7 +66,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Permission: [{}]", permissionRequest, ex);
+      log.error("Create Permission: PermissionRequest=[{}]", permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -80,7 +80,7 @@ public class PermissionController {
           permissionService.readPermissions(isIncludeDeleted);
       return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permissions: [{}]", isIncludeDeleted, ex);
+      log.error("Read Permissions: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -102,7 +102,12 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, null, auditPermissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permission: [{}] | [{}] | [{}]", id, isIncludeDeleted, isIncludeHistory, ex);
+      log.error(
+          "Read Permission: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -130,7 +135,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Permission: [{}] | [{}]", id, permissionRequest, ex);
+      log.error("Update Permission: Id=[{}], PermissionRequest=[{}]", id, permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -157,7 +162,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           new PermissionEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Permission: [{}]", id, ex);
+      log.error("Soft Delete Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -183,7 +188,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           new PermissionEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Permission: [{}]", id, ex);
+      log.error("Hard Delete Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -208,7 +213,7 @@ public class PermissionController {
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Permission: [{}]", id, ex);
+      log.error("Restore Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }

@@ -69,7 +69,7 @@ public class AuditService {
       auditPermissionRepository.save(auditPermissionEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditPermissionException: [{}], [{}], [{}]",
+          "AuditPermissionException: PermissionsId=[{}], EventType=[{}], EventDesc=[{}]",
           permissionEntity.getId(),
           eventType,
           eventDesc,
@@ -101,7 +101,11 @@ public class AuditService {
       auditRoleRepository.save(auditRoleEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditRoleException: [{}], [{}], [{}]", roleEntity.getId(), eventType, eventDesc, ex);
+          "AuditRoleException: RoleId=[{}], EventType=[{}], EventDesc=[{}]",
+          roleEntity.getId(),
+          eventType,
+          eventDesc,
+          ex);
     }
   }
 
@@ -129,7 +133,7 @@ public class AuditService {
       auditPlatformRepository.save(auditPlatformEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditPlatformException: [{}], [{}], [{}]",
+          "AuditPlatformException: PlatformId=[{}], EventType=[{}], EventDesc=[{}]",
           platformEntity.getId(),
           eventType,
           eventDesc,
@@ -162,7 +166,7 @@ public class AuditService {
       auditProfileRepository.save(auditProfileEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditProfileException: [{}], [{}], [{}]",
+          "AuditProfileException: ProfileId=[{}], EventType=[{}], EventDesc=[{}]",
           profileEntity == null ? ConstantUtils.ELEMENT_ID_NOT_FOUND : profileEntity.getId(),
           eventType,
           eventDesc,

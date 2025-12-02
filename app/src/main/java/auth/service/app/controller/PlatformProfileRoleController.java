@@ -65,7 +65,10 @@ public class PlatformProfileRoleController {
                   responseCrudInfo,
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
-      log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
+      log.error(
+          "Create Platform Profile Role: PlatformProfileRoleRequest=[{}]",
+          platformProfileRoleRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -103,7 +106,11 @@ public class PlatformProfileRoleController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Unassign Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
+          "Unassign Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+          platformId,
+          profileId,
+          roleId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -127,7 +134,11 @@ public class PlatformProfileRoleController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Hard Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
+          "Hard Delete Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+          platformId,
+          profileId,
+          roleId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }

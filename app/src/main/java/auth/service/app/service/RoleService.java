@@ -24,7 +24,7 @@ public class RoleService {
 
   // CREATE
   public RoleEntity createRole(final RoleRequest roleRequest) {
-    log.debug("Create Role: [{}]", roleRequest);
+    log.debug("Create Role: RoleRequest=[{}]", roleRequest);
     RoleEntity roleEntity = new RoleEntity();
     BeanUtils.copyProperties(roleRequest, roleEntity);
     return roleRepository.save(roleEntity);
@@ -32,13 +32,13 @@ public class RoleService {
 
   // READ
   public List<RoleEntity> readRoles(final boolean isIncludeDeleted) {
-    log.debug("Read Roles: [{}]", isIncludeDeleted);
+    log.debug("Read Roles: IsIncludeDeleted=[{}]", isIncludeDeleted);
     return roleRepository.findAllRoles(isIncludeDeleted);
   }
 
   /** Use {@link CircularDependencyService#readRole(Long, boolean)} */
   private RoleEntity readRole(final Long id) {
-    log.debug("Read Role: [{}]", id);
+    log.debug("Read Role: Id=[{}]", id);
     return roleRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("Role", String.valueOf(id)));
@@ -46,7 +46,7 @@ public class RoleService {
 
   // UPDATE
   public RoleEntity updateRole(final Long id, final RoleRequest roleRequest) {
-    log.debug("Update Role: [{}], [{}]", id, roleRequest);
+    log.debug("Update Role: Id=[{}], RoleRequest=[{}]", id, roleRequest);
     final RoleEntity roleEntity = readRole(id);
 
     if (roleEntity.getDeletedDate() != null) {
@@ -59,7 +59,7 @@ public class RoleService {
 
   // DELETE
   public RoleEntity softDeleteRole(final Long id) {
-    log.info("Soft Delete Role: [{}]", id);
+    log.info("Soft Delete Role: Id=[{}]", id);
     final RoleEntity roleEntity = readRole(id);
 
     if (roleEntity.getDeletedDate() != null) {
@@ -72,7 +72,7 @@ public class RoleService {
 
   @Transactional
   public void hardDeleteRole(final Long id) {
-    log.info("Hard Delete Role: [{}]", id);
+    log.info("Hard Delete Role: Id=[{}]", id);
     final RoleEntity roleEntity = readRole(id);
 
     // before Role can be deleted, we need to delete entities in PlatformProfileRole
@@ -85,7 +85,7 @@ public class RoleService {
 
   // RESTORE
   public RoleEntity restoreSoftDeletedRole(final Long id) {
-    log.info("Restore Soft Deleted Role: [{}]", id);
+    log.info("Restore Soft Deleted Role: Id=[{}]", id);
     final RoleEntity roleEntity = readRole(id);
     roleEntity.setDeletedDate(null);
     return roleRepository.save(roleEntity);

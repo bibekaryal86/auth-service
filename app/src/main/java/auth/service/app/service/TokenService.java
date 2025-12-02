@@ -58,7 +58,7 @@ public class TokenService {
   // OTHERS
 
   public int setTokenDeletedDateByProfileId(final long profileId) {
-    log.debug("Set Token Deleted Date by Profile Id: [{}]", profileId);
+    log.debug("Set Token Deleted Date by Profile Id: ProfileId=[{}]", profileId);
     final boolean isTest = environment.matchesProfiles(ConstantUtils.ENV_SPRINGBOOTTEST);
     return isTest
         ? tokenRepository.setTokensAsDeletedByProfileIdTest(profileId)
@@ -72,7 +72,7 @@ public class TokenService {
       final ProfileEntity profileEntity,
       final String ipAddress) {
     log.debug(
-        "Save Token: [{}], [{}], [{}], [{}], [{}]",
+        "Save Token: Id=[{}], DeletedDate=[{}], PlatformId=[{}], Email=[{}], IpAddress=[{}]",
         id,
         deletedDate,
         platformEntity.getId(),

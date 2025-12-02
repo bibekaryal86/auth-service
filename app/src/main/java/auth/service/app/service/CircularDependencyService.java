@@ -28,7 +28,7 @@ public class CircularDependencyService {
   private final ProfileRepository profileRepository;
 
   public PermissionEntity readPermission(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Permission: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Permission: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final PermissionEntity permissionEntity =
         permissionRepository
             .findById(id)
@@ -43,7 +43,7 @@ public class CircularDependencyService {
   }
 
   public PlatformEntity readPlatform(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Platform: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Platform: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final PlatformEntity platformEntity =
         platformRepository
             .findById(id)
@@ -58,7 +58,7 @@ public class CircularDependencyService {
   }
 
   public RoleEntity readRole(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Role: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Role: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final RoleEntity roleEntity =
         roleRepository
             .findById(id)
@@ -73,7 +73,7 @@ public class CircularDependencyService {
   }
 
   public RoleEntity readRoleByName(final String roleName, final boolean isIncludeDeleted) {
-    log.debug("Read Role By Name: [{}] | [{}]", roleName, isIncludeDeleted);
+    log.debug("Read Role By Name: Name=[{}], IsIncludeDeleted=[{}]", roleName, isIncludeDeleted);
     final RoleEntity roleEntity =
         roleRepository
             .findOne(getRoleNameExample(roleName))
@@ -100,7 +100,7 @@ public class CircularDependencyService {
   }
 
   public ProfileEntity readProfile(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Profile: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Profile: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
 
     final ProfileEntity profileEntity =
         profileRepository

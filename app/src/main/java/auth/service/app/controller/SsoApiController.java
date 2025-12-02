@@ -45,7 +45,7 @@ public class SsoApiController {
       }
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception ex) {
-      log.error("Validate Token Error", ex);
+      log.error("Validate Token Error: PlatformId=[{}]", platformId, ex);
       return ResponseEntity.internalServerError().build();
     }
   }
@@ -62,7 +62,11 @@ public class SsoApiController {
       }
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception ex) {
-      log.error("Check Permissions Error", ex);
+      log.error(
+          "Check Permissions Error: PlatformId=[{}], PermissionsToCheck=[{}]",
+          platformId,
+          permissionsToCheck,
+          ex);
       return ResponseEntity.internalServerError().build();
     }
   }

@@ -62,7 +62,7 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseMultipleProfiles(
           filteredProfileEntities, Boolean.TRUE);
     } catch (Exception ex) {
-      log.error("Read Profiles: [{}]", isIncludeDeleted, ex);
+      log.error("Read Profiles: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -85,7 +85,12 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseSingleProfile(
           profileEntity, null, auditProfileEntities);
     } catch (Exception ex) {
-      log.error("Read Profile: [{}] | [{}] | [{}]", id, isIncludeDeleted, isIncludeHistory, ex);
+      log.error(
+          "Read Profile: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -111,7 +116,7 @@ public class ProfileController {
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Profile: [{}] | [{}]", id, profileRequest, ex);
+      log.error("Update Profile: Id=[{}], ProfileRequest=[{}]", id, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -156,7 +161,11 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error(
-          "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
+          "Update Profile Email: PlatformId=[{}], Id=[{}], ProfileEmailRequest=[{}]",
+          platformId,
+          id,
+          profileEmailRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -190,7 +199,7 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error(
-          "Update Profile Password: [{}] | [{}] | [{}]",
+          "Update Profile Password: PlatformId=[{}] | Id=[{}] | ProfilePasswordRequest=[{}]",
           platformId,
           id,
           profilePasswordRequest,
@@ -220,7 +229,7 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseSingleProfile(
           new ProfileEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Profile: [{}]", id, ex);
+      log.error("Soft Delete Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -246,7 +255,7 @@ public class ProfileController {
       return entityDtoConvertUtils.getResponseSingleProfile(
           new ProfileEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Profile: [{}]", id, ex);
+      log.error("Hard Delete Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -270,7 +279,7 @@ public class ProfileController {
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Profile: [{}]", id, ex);
+      log.error("Restore Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
