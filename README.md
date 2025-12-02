@@ -35,4 +35,8 @@ A small utility for authentication and authorization with platforms, profiles, r
   * Update this README.md for proper documentation
 
 
-CHECK log messages
+readPlatformProfileRoles
+readPlatformRolePermissions
+readTokenByRefreshTokenNoException
+ConstantUtils
+CommonUtils

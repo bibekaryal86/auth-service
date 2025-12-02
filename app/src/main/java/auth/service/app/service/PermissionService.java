@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class PermissionService {
 
   private final PermissionRepository permissionRepository;
-  private final CircularDependencyService circularDependencyService;
 
   // CREATE
   public PermissionEntity createPermission(final PermissionRequest permissionRequest) {
