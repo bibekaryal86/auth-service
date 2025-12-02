@@ -71,30 +71,7 @@ public class CommonUtils {
     throw new CheckPermissionException("Profile not authorized...");
   }
 
-  private static boolean hasPermission(final String permissionName) {
-    final AuthToken authToken = getAuthentication();
-    return isSuperUser(authToken)
-        || authToken.getPermissions().stream()
-            .anyMatch(permission -> Objects.equals(permission.getPermissionName(), permissionName));
-  }
-
   public static boolean isSuperUser(final AuthToken authToken) {
     return authToken.getIsSuperUser() != null && authToken.getIsSuperUser() == true;
-  }
-
-  public static boolean canReadPermissions() {
-    return hasPermission(ConstantUtils.PERMISSION_READ_PERMISSION);
-  }
-
-  public static boolean canReadRoles() {
-    return hasPermission(ConstantUtils.PERMISSION_READ_ROLE);
-  }
-
-  public static boolean canReadPlatforms() {
-    return hasPermission(ConstantUtils.PERMISSION_READ_PLATFORM);
-  }
-
-  public static boolean canReadProfiles() {
-    return hasPermission(ConstantUtils.PERMISSION_READ_PROFILE);
   }
 }

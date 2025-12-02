@@ -97,10 +97,6 @@ public class ConstantUtils {
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
       "Something went wrong, please try again later!";
 
-  // fields
-  public static final String DELETED_DATE = "deletedDate";
-  public static final String NOT_NULL_VALUE = "NOT_NULL";
-
   // environment
   public static final String ENV_PROD = "production";
   public static final String ENV_SPRINGBOOTTEST = "springboottest";
