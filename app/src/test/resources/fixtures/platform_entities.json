@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 1",
+    "platformDesc": "This is Platform One"
+  },
+  {
+    "id": 2,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 2",
+    "platformDesc": "This is Platform Two"
+  },
+  {
+    "id": 3,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "platformName": "Platform 3",
+    "platformDesc": "This is Platform Three"
+  },
+  {
+    "id": 4,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 4",
+    "platformDesc": "This is Platform Four"
+  },
+  {
+    "id": 5,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 5",
+    "platformDesc": "This is Platform Five"
+  },
+  {
+    "id": 6,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "platformName": "Platform 6",
+    "platformDesc": "This is Platform Six"
+  },
+  {
+    "id": 7,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 7",
+    "platformDesc": "This is Platform Seven"
+  },
+  {
+    "id": 8,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "platformName": "Platform 8",
+    "platformDesc": "This is Platform Eight"
+  },
+  {
+    "id": 9,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "platformName": "Platform 9",
+    "platformDesc": "This is Platform Nine"
+  }
+]

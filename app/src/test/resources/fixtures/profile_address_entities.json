@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "profileId": 1,
+    "street": "1 Street",
+    "city": "CityOne",
+    "state": "1S",
+    "country": "USA",
+    "postalCode": "11111",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": null
+  },
+  {
+    "id": 2,
+    "profileId": 5,
+    "street": "5 Street",
+    "city": "CityFive",
+    "state": "5S",
+    "country": "USA",
+    "postalCode": "55555",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": null
+  },
+  {
+    "id": 3,
+    "profileId": 9,
+    "street": "9 Street",
+    "city": "CityNine",
+    "state": "9S",
+    "country": "USA",
+    "postalCode": "99999",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": "2025-01-01T00:00:00"
+  }
+]

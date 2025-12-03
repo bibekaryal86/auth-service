@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 1",
+    "roleDesc": "This is Role One"
+  },
+  {
+    "id": 2,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 2",
+    "roleDesc": "This is Role Two"
+  },
+  {
+    "id": 3,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "roleName": "Role 3",
+    "roleDesc": "This is Role Three"
+  },
+  {
+    "id": 4,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 4",
+    "roleDesc": "This is Role Four"
+  },
+  {
+    "id": 5,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 5",
+    "roleDesc": "This is Role Five"
+  },
+  {
+    "id": 6,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "roleName": "Role 6",
+    "roleDesc": "This is Role Six"
+  },
+  {
+    "id": 7,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 7",
+    "roleDesc": "This is Role Seven"
+  },
+  {
+    "id": 8,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": null,
+    "roleName": "Role 8",
+    "roleDesc": "This is Role Eight"
+  },
+  {
+    "id": 9,
+    "createdDate": "'2025-01-01T00:00:00.000000'",
+    "updatedDate": "'2025-01-01T00:00:00.000000'",
+    "deletedDate": "'2025-01-01T00:00:00.000000'",
+    "roleName": "Role 9",
+    "roleDesc": "This is Role Nine"
+  }
+]

@@ -162,8 +162,9 @@ CREATE TABLE audit_platform
 );
 
 -- unique indexes
-CREATE UNIQUE INDEX idx_profile_phone ON profile (phone) WHERE phone IS NOT NULL;
-CREATE UNIQUE INDEX idx_platform_profile_role ON platform_profile_role (platform_id, profile_id) WHERE unassigned_date IS NULL;
+-- partial index not supported in H2 database where the tests are running
+-- CREATE UNIQUE INDEX idx_profile_phone ON profile (phone) WHERE phone IS NOT NULL;
+-- CREATE UNIQUE INDEX idx_platform_profile_role ON platform_profile_role (platform_id, profile_id) WHERE unassigned_date IS NULL;
 -- indexes
 CREATE INDEX idx_platform_id ON platform (id);
 CREATE INDEX idx_platform_name ON platform (platform_name);
@@ -176,8 +177,8 @@ CREATE INDEX idx_role_id ON role (id);
 CREATE INDEX idx_role_name ON role (role_name);
 CREATE INDEX idx_permission_id ON permission (id);
 CREATE INDEX idx_permission_name ON permission (permission_name);
-CREATE INDEX idx_refresh_token_active ON token (refresh_token) WHERE deleted_date IS NULL;
-CREATE INDEX idx_csrf_token_active ON token (csrf_token) WHERE deleted_date IS NULL;
+--CREATE INDEX idx_refresh_token_active ON token (refresh_token) WHERE deleted_date IS NULL;
+--CREATE INDEX idx_csrf_token_active ON token (csrf_token) WHERE deleted_date IS NULL;
 CREATE INDEX idx_audit_platform_created_at ON audit_platform (created_at);
 CREATE INDEX idx_audit_profile_created_at ON audit_profile (created_at);
 CREATE INDEX idx_audit_role_created_at ON audit_role (created_at);
@@ -190,99 +191,3 @@ CREATE INDEX idx_audit_platform_platform_id ON audit_platform (platform_id);
 CREATE INDEX idx_audit_profile_profile_id ON audit_profile (profile_id);
 CREATE INDEX idx_audit_role_role_id ON audit_role (role_id);
 CREATE INDEX idx_audit_permission_permission_id ON audit_permission (permission_id);
-
--- initial table data
-INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Auth Service', 'Authentication / Authorization Server with Roles and Permissions');
-INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Env Service', 'Platform to hold runtime variables for different services');
-INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Health Data', 'Application to manage / track health test results');
-INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Personal Expenses Tracking System', 'Application to manage / budget personal finances');
-INSERT INTO platform (platform_name, platform_desc)
-VALUES ('Trackcase', 'Application to manage immigration / court cases');
-
-INSERT INTO role (role_name, role_desc)
-VALUES ('SUPERUSER', 'User has all and unlimited access, including hard delete');
-INSERT INTO role (role_name, role_desc)
-VALUES ('POWERUSER', 'User has all access, including soft delete. View access to ref/admin data');
-INSERT INTO role (role_name, role_desc)
-VALUES ('STANDARD', 'User has create, read and update access. No access to ref/admin data');
-INSERT INTO role (role_name, role_desc)
-VALUES ('GUEST', 'User has view only access. No access to ref/admin data');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_CREATE', 'Can Add Permission');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_READ', 'Can View Permission(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_UPDATE', 'Can Update Permission');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_SOFTDELETE', 'Can Soft Delete Permission');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_HARDDELETE', 'Can Hard Delete Permission');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PERMISSION_RESTORE', 'Can Restore Soft Deleted Permission');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_CREATE', 'Can Add Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_READ', 'Can View Role(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_UPDATE', 'Can Update Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_SOFTDELETE', 'Can Soft Delete Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_HARDDELETE', 'Can Hard Delete Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_ROLE_RESTORE', 'Can Restore Soft Deleted Role');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PROFILE_CREATE', 'Can Add Profile');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PROFILE_READ', 'Can View Profile(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PROFILE_UPDATE', 'Can Update Profile');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PROFILE_SOFTDELETE', 'Can Soft Delete Profile');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PROFILE_HARDDELETE', 'Can Hard Delete Profile');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PLATFORM_CREATE', 'Can Add Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PLATFORM_READ', 'Can View Platform(s)');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PLATFORM_UPDATE', 'Can Update Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PLATFORM_SOFTDELETE', 'Can Delete Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PLATFORM_HARDDELETE', 'Can Delete Platform');
-
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PPR_ASSIGN', 'Can Add Role to Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PPR_UNASSIGN', 'Can Remove Role from Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PPR_HARDDELETE', 'Can Hard Delete Platform Profile Role');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PRP_ASSIGN', 'Can Add Role to Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PRP_UNASSIGN', 'Can Remove Role from Profile in Platform');
-INSERT INTO permission (permission_name, permission_desc)
-VALUES ('AUTHSVC_PRP_HARDDELETE', 'Can Hard Delete Platform Role Permission');
-
--- DROP TABLE public.audit_platform CASCADE;
--- DROP TABLE public.audit_profile CASCADE;
--- DROP TABLE public.audit_role CASCADE;
--- DROP TABLE public.audit_permission CASCADE;
--- DROP TABLE public.platform_profile_role CASCADE;
--- DROP TABLE public.platform_role_permission CASCADE;
--- DROP TABLE public.permission CASCADE;
--- DROP TABLE public.role CASCADE;
--- DROP TABLE public.token CASCADE;
--- DROP TABLE public.profile_address CASCADE;
--- DROP TABLE public.profile CASCADE;
--- DROP TABLE public.platform CASCADE;
--- DROP TABLE public.flyway_schema_history;
