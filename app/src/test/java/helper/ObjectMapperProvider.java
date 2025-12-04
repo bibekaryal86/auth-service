@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ObjectMapperProvider {
 
-    public static ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
-        return objectMapper;
-    }
+  public static ObjectMapper objectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
+    return objectMapper;
+  }
 }

@@ -17,7 +17,7 @@ public class EnvServiceConnector {
 
   private final Environment environment;
 
-  private List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
+  public List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
     return AppEnvProperty.getEnvDetailsList("authsvc", true);
   }
 

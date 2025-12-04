@@ -13,19 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FixtureReader {
 
-    public static String readFixture(final String fileWhichExistsInResources) {
-        // ../ exists because FixtureReader lives in helper package
-        URL url = FixtureReader.class.getResource("../fixtures/" + fileWhichExistsInResources);
+  public static String readFixture(final String fileWhichExistsInResources) {
+    // ../ exists because FixtureReader lives in helper package
+    URL url = FixtureReader.class.getResource("../fixtures/" + fileWhichExistsInResources);
 
-        try {
-            if (url == null) {
-                throw new FileNotFoundException(fileWhichExistsInResources);
-            }
+    try {
+      if (url == null) {
+        throw new FileNotFoundException(fileWhichExistsInResources);
+      }
 
-            Path path = Paths.get(url.toURI());
-            return String.join("\n", Files.readAllLines(path));
-        } catch (IOException | URISyntaxException ex) {
-            return null;
-        }
+      Path path = Paths.get(url.toURI());
+      return String.join("\n", Files.readAllLines(path));
+    } catch (IOException | URISyntaxException ex) {
+      return null;
     }
+  }
 }

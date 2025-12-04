@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy
 public class App {
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     log.info("Begin application initialization...");
     validateInitArgs();
     SpringApplication app = new SpringApplication(App.class);
@@ -34,7 +34,7 @@ public class App {
     log.info("End application initialization...");
   }
 
-  private static void validateInitArgs() {
+  public static void validateInitArgs() {
     final List<String> envKeyNames = new ArrayList<>(ConstantUtils.ENV_KEY_NAMES);
 
     if (CommonUtils.isProduction()) {
