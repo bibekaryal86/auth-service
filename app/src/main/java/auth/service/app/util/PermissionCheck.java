@@ -1,9 +1,9 @@
 package auth.service.app.util;
 
-import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.entity.ProfileEntity;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
+import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

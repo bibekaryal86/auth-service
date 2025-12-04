@@ -1,8 +1,8 @@
 package auth.service.app.util;
 
-import auth.service.app.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;

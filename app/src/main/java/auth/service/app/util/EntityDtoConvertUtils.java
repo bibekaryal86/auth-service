@@ -1,6 +1,5 @@
 package auth.service.app.util;
 
-import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
@@ -43,6 +42,7 @@ import auth.service.app.service.PlatformRolePermissionService;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.net.URI;
 import java.util.Collections;

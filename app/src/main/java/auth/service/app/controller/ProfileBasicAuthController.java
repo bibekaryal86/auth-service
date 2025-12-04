@@ -1,7 +1,6 @@
 package auth.service.app.controller;
 
 import auth.service.app.connector.EnvServiceConnector;
-import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.TokenInvalidException;
 import auth.service.app.model.dto.ProfilePasswordRequest;
@@ -25,6 +24,7 @@ import auth.service.app.util.CookieService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

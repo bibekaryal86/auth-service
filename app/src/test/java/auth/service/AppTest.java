@@ -9,13 +9,16 @@ import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+@DisplayName("Main App Unit Tests")
 public class AppTest {
 
   @Test
-  void shouldFailToStartApplicationOnMissingEnvProperty() {
+  @DisplayName("Should fail if env properties are missing")
+  void shouldFailIfEnvPropertiesAreMissing() {
     try (MockedStatic<CommonUtilities> mockedStatic = mockStatic(CommonUtilities.class)) {
       Map<String, String> requiredEnvProperties = TestData.getSystemEnvPropertyTestData();
       requiredEnvProperties.remove(ConstantUtils.ENV_DB_USERNAME_SANDBOX);
