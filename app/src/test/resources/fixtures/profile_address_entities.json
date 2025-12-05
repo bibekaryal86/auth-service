@@ -9,7 +9,21 @@
     "postalCode": "11111",
     "createdDate": "2025-01-01T00:00:00",
     "updatedDate": "2025-01-01T00:00:00",
-    "deletedDate": null
+    "deletedDate": null,
+    "profile": {
+      "id": 1,
+      "firstName": "Profile 1",
+      "lastName": "1 Profile",
+      "email": "profile@one.com",
+      "phone": "+1-111-111-1111",
+      "password": "password1",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": null
+    }
   },
   {
     "id": 2,
@@ -21,7 +35,21 @@
     "postalCode": "55555",
     "createdDate": "2025-01-01T00:00:00",
     "updatedDate": "2025-01-01T00:00:00",
-    "deletedDate": null
+    "deletedDate": null,
+    "profile": {
+      "id": 5,
+      "firstName": "Profile 5",
+      "lastName": "5 Profile",
+      "email": "profile@five.com",
+      "phone": null,
+      "password": "password5",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": null
+    }
   },
   {
     "id": 3,
@@ -33,6 +61,20 @@
     "postalCode": "99999",
     "createdDate": "2025-01-01T00:00:00",
     "updatedDate": "2025-01-01T00:00:00",
-    "deletedDate": "2025-01-01T00:00:00"
+    "deletedDate": "2025-01-01T00:00:00",
+    "profile": {
+      "id": 9,
+      "firstName": "Profile 9",
+      "lastName": "9 Profile",
+      "email": "profile@nine.com",
+      "phone": "",
+      "password": "password9",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": "2025-01-01T00:00:00"
+    }
   }
 ]
