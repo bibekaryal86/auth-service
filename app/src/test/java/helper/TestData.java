@@ -10,6 +10,10 @@ import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.entity.AuditPermissionEntity;
+import auth.service.app.model.entity.AuditPlatformEntity;
+import auth.service.app.model.entity.AuditProfileEntity;
+import auth.service.app.model.entity.AuditRoleEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
@@ -79,6 +83,16 @@ public class TestData {
     return permissionEntity;
   }
 
+  public static List<AuditPermissionEntity> getAuditPermissionEntities() {
+    String fixtureAsString = FixtureReader.readFixture("audit_permission_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
+  }
+
   public static List<RoleEntity> getRoleEntities() {
     String fixtureAsString = FixtureReader.readFixture("role_entities.json");
     try {
@@ -96,6 +110,16 @@ public class TestData {
     return roleEntity;
   }
 
+  public static List<AuditRoleEntity> getAuditRoleEntities() {
+      String fixtureAsString = FixtureReader.readFixture("audit_role_entities.json");
+      try {
+          return ObjectMapperProvider.objectMapper()
+              .readValue(fixtureAsString, new TypeReference<>() {});
+      } catch (JsonProcessingException ex) {
+          return Collections.emptyList();
+      }
+  }
+
   public static List<PlatformEntity> getPlatformEntities() {
     String fixtureAsString = FixtureReader.readFixture("platform_entities.json");
     try {
@@ -111,6 +135,16 @@ public class TestData {
     platformEntity.setPlatformName("Platform 99");
     platformEntity.setPlatformDesc("This is Platform Ninety Nine");
     return platformEntity;
+  }
+
+  public static List<AuditPlatformEntity> getAuditPlatformEntities() {
+      String fixtureAsString = FixtureReader.readFixture("audit_platform_entities.json");
+      try {
+          return ObjectMapperProvider.objectMapper()
+              .readValue(fixtureAsString, new TypeReference<>() {});
+      } catch (JsonProcessingException ex) {
+          return Collections.emptyList();
+      }
   }
 
   public static List<ProfileAddressEntity> getProfileAddressEntities() {
@@ -185,6 +219,16 @@ public class TestData {
     profileEntity.setLoginAttempts(0);
     profileEntity.setProfileAddress(null);
     return profileEntity;
+  }
+
+  public static List<AuditProfileEntity> getAuditProfileEntities() {
+      String fixtureAsString = FixtureReader.readFixture("audit_profile_entities.json");
+      try {
+          return ObjectMapperProvider.objectMapper()
+              .readValue(fixtureAsString, new TypeReference<>() {});
+      } catch (JsonProcessingException ex) {
+          return Collections.emptyList();
+      }
   }
 
   public static ProfileRequest getProfileRequest(
