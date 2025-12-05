@@ -84,7 +84,8 @@ class PermissionCheckTest {
     @DisplayName("Should allow access when user has one of multiple required permissions")
     void shouldAllowAccessWhenUserHasOneOfMultipleRequiredPermissions() {
       when(checkPermissionAnnotation.value())
-          .thenReturn(new String[] {PERMISSION_READ, PERMISSION_WRITE, PERMISSION_DELETE, TEST_PERMISSION});
+          .thenReturn(
+              new String[] {PERMISSION_READ, PERMISSION_WRITE, PERMISSION_DELETE, TEST_PERMISSION});
       commonUtilsMock.when(CommonUtils::getAuthentication).thenReturn(authToken);
       commonUtilsMock.when(() -> CommonUtils.isSuperUser(authToken)).thenReturn(false);
 
@@ -172,7 +173,9 @@ class PermissionCheckTest {
               CheckPermissionException.class,
               () -> permissionCheck.checkPermission(checkPermissionAnnotation));
 
-      assertEquals("Permission Denied: Profile does not have required permissions...", exception.getMessage());
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions...",
+          exception.getMessage());
     }
   }
 
@@ -183,7 +186,8 @@ class PermissionCheckTest {
     @Test
     @DisplayName("Should return all permissions as true for super user")
     void shouldReturnAllPermissionsAsTrueForSuperUser() {
-      List<String> requiredPermissions = List.of(PERMISSION_READ, PERMISSION_WRITE, TEST_PERMISSION);
+      List<String> requiredPermissions =
+          List.of(PERMISSION_READ, PERMISSION_WRITE, TEST_PERMISSION);
       commonUtilsMock.when(CommonUtils::getAuthentication).thenReturn(authToken);
       commonUtilsMock.when(() -> CommonUtils.isSuperUser(authToken)).thenReturn(true);
 
@@ -200,7 +204,8 @@ class PermissionCheckTest {
     @Test
     @DisplayName("Should return correct permission status for regular user")
     void shouldReturnCorrectPermissionStatusForRegularUser() {
-      List<String> requiredPermissions = List.of(PERMISSION_READ, PERMISSION_WRITE, TEST_PERMISSION);
+      List<String> requiredPermissions =
+          List.of(PERMISSION_READ, PERMISSION_WRITE, TEST_PERMISSION);
       commonUtilsMock.when(CommonUtils::getAuthentication).thenReturn(authToken);
       commonUtilsMock.when(() -> CommonUtils.isSuperUser(authToken)).thenReturn(false);
 
@@ -208,7 +213,7 @@ class PermissionCheckTest {
 
       assertNotNull(result);
       assertEquals(3, result.size());
-        assertTrue(result.get(TEST_PERMISSION));
+      assertTrue(result.get(TEST_PERMISSION));
       assertFalse(result.get(PERMISSION_READ));
       assertFalse(result.get(PERMISSION_WRITE));
     }
@@ -247,8 +252,13 @@ class PermissionCheckTest {
           new AuthToken.AuthTokenPermission(TEST_ID, PERMISSION_READ);
       AuthToken.AuthTokenPermission permission2 =
           new AuthToken.AuthTokenPermission(TEST_ID, PERMISSION_WRITE);
-        AuthToken authTokenNew = new AuthToken(authToken.getPlatform(), authToken.getProfile(), authToken.getRoles(), List.of(permission1, permission2), false);
-
+      AuthToken authTokenNew =
+          new AuthToken(
+              authToken.getPlatform(),
+              authToken.getProfile(),
+              authToken.getRoles(),
+              List.of(permission1, permission2),
+              false);
 
       List<String> requiredPermissions =
           List.of(PERMISSION_READ, PERMISSION_WRITE, PERMISSION_DELETE);
@@ -260,7 +270,7 @@ class PermissionCheckTest {
       assertNotNull(result);
       assertEquals(3, result.size());
       assertTrue(result.get(PERMISSION_READ));
-        assertTrue(result.get(PERMISSION_WRITE));
+      assertTrue(result.get(PERMISSION_WRITE));
       assertFalse(result.get(PERMISSION_DELETE));
     }
 
