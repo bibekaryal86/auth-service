@@ -111,13 +111,13 @@ public class TestData {
   }
 
   public static List<AuditRoleEntity> getAuditRoleEntities() {
-      String fixtureAsString = FixtureReader.readFixture("audit_role_entities.json");
-      try {
-          return ObjectMapperProvider.objectMapper()
-              .readValue(fixtureAsString, new TypeReference<>() {});
-      } catch (JsonProcessingException ex) {
-          return Collections.emptyList();
-      }
+    String fixtureAsString = FixtureReader.readFixture("audit_role_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
   }
 
   public static List<PlatformEntity> getPlatformEntities() {
@@ -138,13 +138,13 @@ public class TestData {
   }
 
   public static List<AuditPlatformEntity> getAuditPlatformEntities() {
-      String fixtureAsString = FixtureReader.readFixture("audit_platform_entities.json");
-      try {
-          return ObjectMapperProvider.objectMapper()
-              .readValue(fixtureAsString, new TypeReference<>() {});
-      } catch (JsonProcessingException ex) {
-          return Collections.emptyList();
-      }
+    String fixtureAsString = FixtureReader.readFixture("audit_platform_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
   }
 
   public static List<ProfileAddressEntity> getProfileAddressEntities() {
@@ -222,13 +222,13 @@ public class TestData {
   }
 
   public static List<AuditProfileEntity> getAuditProfileEntities() {
-      String fixtureAsString = FixtureReader.readFixture("audit_profile_entities.json");
-      try {
-          return ObjectMapperProvider.objectMapper()
-              .readValue(fixtureAsString, new TypeReference<>() {});
-      } catch (JsonProcessingException ex) {
-          return Collections.emptyList();
-      }
+    String fixtureAsString = FixtureReader.readFixture("audit_profile_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
   }
 
   public static ProfileRequest getProfileRequest(
@@ -458,8 +458,8 @@ public class TestData {
     return authToken;
   }
 
-  public static String getBearerAuthCredentialsForTest(final AuthToken authToken) {
-    return JwtUtils.encodeAuthCredentials(authToken, 1000 * 60 * 15);
+  public static String getBearerAuthCredentialsForTest() {
+    return JwtUtils.encodeAuthCredentials(getAuthToken(), 1000 * 60 * 15);
   }
 
   public static TokenEntity getTokenEntity(
