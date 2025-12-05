@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
@@ -23,6 +24,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ExtendWith(BaseTestExtension.class)
 @Import({TestDatasourceConfig.class, TestSecurityConfig.class, TestConfigs.class})
 @AutoConfigureWebTestClient
+@AutoConfigureDataJpa
 public abstract class BaseTest {
 
   @LocalServerPort protected int localServerPort;

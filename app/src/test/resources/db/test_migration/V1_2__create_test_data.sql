@@ -64,7 +64,7 @@ VALUES
 (1, 3, 3, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000'),
 (5, 5, 5, '2025-01-01T00:00:00.000000', NULL),
 (5, 6, 6, '2025-01-01T00:00:00.000000', NULL),
-(5, 7, 7, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000',
+(5, 7, 7, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000'),
 (9, 7, 7, '2025-01-01T00:00:00.000000', NULL),
 (9, 8, 8, '2025-01-01T00:00:00.000000', NULL),
 (9, 9, 9, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000');
@@ -74,7 +74,7 @@ INSERT INTO platform_role_permission
 VALUES
 (1, 1, 1, '2025-01-01T00:00:00.000000', NULL),
 (1, 1, 2, '2025-01-01T00:00:00.000000', NULL),
-(1, 1, 3, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000')),
+(1, 1, 3, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000'),
 (5, 5, 5, '2025-01-01T00:00:00.000000', NULL),
 (5, 5, 6, '2025-01-01T00:00:00.000000', NULL),
 (5, 6, 6, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000'),
@@ -83,37 +83,29 @@ VALUES
 (9, 9, 9, '2025-01-01T00:00:00.000000', '2025-01-01T00:00:00.000000');
 
 INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Permission Audit 1 One', 'This is Permission Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Permission Audit 1 Two', 'This is Permission Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Permission Audit 1 Three', 'This is Permission Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2');
-INSERT INTO audit_permission (permission_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (9, 'Permission Audit 9 One', 'This is Permission Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
+VALUES
+(1, 'Permission Audit 1 One', 'This is Permission Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Permission Audit 1 Two', 'This is Permission Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Permission Audit 1 Three', 'This is Permission Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2'),
+(9, 'Permission Audit 9 One', 'This is Permission Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
 
 INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Role Audit 1 One', 'This is Role Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Role Audit 1 Two', 'This is Role Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Role Audit 1 Three', 'This is Role Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2');
-INSERT INTO audit_role (role_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (9, 'Role Audit 9 One', 'This is Role Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
+VALUES
+(1, 'Role Audit 1 One', 'This is Role Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Role Audit 1 Two', 'This is Role Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Role Audit 1 Three', 'This is Role Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2'),
+(9, 'Role Audit 9 One', 'This is Role Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
 
 INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Platform Audit 1 One', 'This is Platform Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
-VALUES (1, 'Platform Audit 1 Two', 'This is Platform Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
-VALUES (1, 'Platform Audit 1 Three', 'This is Platform Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2');
-INSERT INTO audit_platform (platform_id, event_type, event_desc, event_data, created_by, ip_address, user_agent)
-VALUES (9, 'Platform Audit 9 One', 'This is Platform Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
+VALUES
+(1, 'Platform Audit 1 One', 'This is Platform Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Platform Audit 1 Two', 'This is Platform Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Platform Audit 1 Three', 'This is Platform Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2'),
+(9, 'Platform Audit 9 One', 'This is Platform Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
 
 INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Profile Audit 1 One', 'This is Profile Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Profile Audit 1 Two', 'This is Profile Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1');
-INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (1, 'Profile Audit 1 Three', 'This is Profile Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2');
-INSERT INTO audit_profile (profile_id, event_type, event_desc, event_data, created_at, created_by, ip_address, user_agent)
-VALUES (9, 'Profile Audit 9 One', 'This is Profile Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
+VALUES
+(1, 'Profile Audit 1 One', 'This is Profile Audit One One', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Profile Audit 1 Two', 'This is Profile Audit One Two', null, '2025-01-01T00:00:00.000000', 1, 'IP-1', 'UA-1'),
+(1, 'Profile Audit 1 Three', 'This is Profile Audit One Three', null, '2025-01-01T00:00:00.000000', 1, 'IP-2', 'UA-2'),
+(9, 'Profile Audit 9 One', 'This is Profile Audit Nine One', null, '2025-01-01T00:00:00.000000', 9, 'IP-9', 'UA-9');
