@@ -45,7 +45,6 @@ dependencies {
     // flyway autoconfigure only used in tests
     testImplementation "org.springframework.boot:spring-boot-starter-flyway:$springVersion"
     testImplementation "org.springframework.boot:spring-boot-webflux-test:$springVersion"
-    testImplementation "org.springframework.boot:spring-boot-data-jpa-test:$springVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
