@@ -31,7 +31,7 @@ public abstract class BaseTest {
   @Autowired protected WebTestClient webTestClient;
 
   protected static final Long ID = 1L;
-  protected static final Long ID_DELETED = 3L;
+  protected static final Long ID_DELETED = 9L;
   protected static final Long ID_NOT_FOUND = 99L;
   protected static final String EMAIL = "profile@one.com";
   protected static final boolean INCLUDE_DELETED = true;

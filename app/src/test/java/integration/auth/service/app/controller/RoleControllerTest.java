@@ -338,7 +338,7 @@ public class RoleControllerTest extends BaseTest {
       RoleResponse response =
           webTestClient
               .get()
-              .uri("/api/v1/roles/role/1")
+              .uri(String.format("/api/v1/roles/role/%s", ID))
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
@@ -359,7 +359,7 @@ public class RoleControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Read Role Superuser Include Deleted")
+    @DisplayName("Read Role Superuser Include Deleted And History")
     void testReadRole_Success_SuperUser() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.TRUE);
@@ -368,7 +368,10 @@ public class RoleControllerTest extends BaseTest {
       RoleResponse response =
           webTestClient
               .get()
-              .uri("/api/v1/roles/role/9?isIncludeDeleted=true&isIncludeHistory=true")
+              .uri(
+                  String.format(
+                      "/api/v1/roles/role/%s?isIncludeDeleted=true&isIncludeHistory=true",
+                      ID_DELETED))
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
@@ -398,7 +401,10 @@ public class RoleControllerTest extends BaseTest {
       RoleResponse response =
           webTestClient
               .get()
-              .uri("/api/v1/roles/role/9?isIncludeDeleted=true")
+              .uri(
+                  String.format(
+                      "/api/v1/roles/role/%s?isIncludeDeleted=true&isIncludeHistory=true",
+                      ID_DELETED))
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
@@ -415,7 +421,8 @@ public class RoleControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
       assertEquals(
-          "Active Role Not Found for [9]", response.getResponseMetadata().responseStatusInfo().errMsg());
+          "Active Role Not Found for [9]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
 
       verifyNoInteractions(auditService);
     }
@@ -430,7 +437,7 @@ public class RoleControllerTest extends BaseTest {
       ResponseWithMetadata response =
           webTestClient
               .get()
-              .uri("/api/v1/roles/role/1")
+              .uri(String.format("/api/v1/roles/role/%s", ID))
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
@@ -454,7 +461,7 @@ public class RoleControllerTest extends BaseTest {
       ResponseWithMetadata response =
           webTestClient
               .get()
-              .uri("/api/v1/roles/role/1")
+              .uri(String.format("/api/v1/roles/role/%s", ID))
               .exchange()
               .expectStatus()
               .isUnauthorized()
