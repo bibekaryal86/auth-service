@@ -145,8 +145,7 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> softDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, false);
-      platformService.softDeletePlatform(id);
+      final PlatformEntity platformEntity = platformService.softDeletePlatform(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
@@ -171,7 +170,8 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> hardDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, true);
+      final PlatformEntity platformEntity =
+          circularDependencyService.readPlatform(id, Boolean.TRUE);
       platformService.hardDeletePlatform(id);
       CompletableFuture.runAsync(
           () ->

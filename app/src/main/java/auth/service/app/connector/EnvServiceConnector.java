@@ -18,7 +18,7 @@ public class EnvServiceConnector {
   private final Environment environment;
 
   public List<EnvDetailsResponse.EnvDetails> getAuthServiceEnvProperties() {
-    return AppEnvProperty.getEnvDetailsList("authsvc", true);
+    return AppEnvProperty.getEnvDetailsList("authsvc", Boolean.TRUE);
   }
 
   @Cacheable("redirectUrls")

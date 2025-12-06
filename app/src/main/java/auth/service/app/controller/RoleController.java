@@ -140,8 +140,7 @@ public class RoleController {
   public ResponseEntity<RoleResponse> softDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, Boolean.FALSE);
-      roleService.softDeleteRole(id);
+      RoleEntity roleEntity = roleService.softDeleteRole(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
@@ -165,7 +164,7 @@ public class RoleController {
   public ResponseEntity<RoleResponse> hardDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, true);
+      final RoleEntity roleEntity = circularDependencyService.readRole(id, Boolean.TRUE);
       roleService.hardDeleteRole(id);
       CompletableFuture.runAsync(
           () ->

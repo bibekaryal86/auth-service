@@ -164,9 +164,7 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> softDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PermissionEntity permissionEntity =
-          circularDependencyService.readPermission(id, Boolean.FALSE);
-      permissionService.softDeletePermission(id);
+      final PermissionEntity permissionEntity = permissionService.softDeletePermission(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
@@ -191,7 +189,8 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> hardDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id, true);
+      final PermissionEntity permissionEntity =
+          circularDependencyService.readPermission(id, Boolean.TRUE);
       permissionService.hardDeletePermission(id);
       CompletableFuture.runAsync(
           () ->

@@ -229,8 +229,7 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> softDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, false);
-      profileService.softDeleteProfile(id);
+      final ProfileEntity profileEntity = profileService.softDeleteProfile(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
@@ -255,7 +254,7 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> hardDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, true);
+      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, Boolean.TRUE);
       profileService.hardDeleteProfile(id);
       CompletableFuture.runAsync(
           () ->

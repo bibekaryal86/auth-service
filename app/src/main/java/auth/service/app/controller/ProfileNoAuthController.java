@@ -43,11 +43,11 @@ public class ProfileNoAuthController {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
       final PlatformEntity platformEntity =
-          circularDependencyService.readPlatform(platformId, false);
+          circularDependencyService.readPlatform(platformId, Boolean.FALSE);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
-          profileService.validateAndResetProfile(platformId, toValidate, true);
+          profileService.validateAndResetProfile(platformId, toValidate, Boolean.TRUE);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
@@ -57,7 +57,7 @@ public class ProfileNoAuthController {
                   String.format(
                       "Profile Validate Exit [Id: %s] - [Email: %s] - [Platform: %s]",
                       profileEntity.getId(), profileEntity.getEmail(), platformId)));
-      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, true);
+      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, Boolean.TRUE);
     } catch (Exception ex) {
       final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toValidate);
       log.error(
@@ -80,7 +80,7 @@ public class ProfileNoAuthController {
                           : profileEntity.getId(),
                       profileEntity == null ? decodedEmail : profileEntity.getEmail(),
                       platformId)));
-      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, false);
+      return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, Boolean.FALSE);
     }
   }
 
@@ -92,11 +92,11 @@ public class ProfileNoAuthController {
     String redirectUrl = String.format("RedirectUrl-%s", platformId);
     try {
       final PlatformEntity platformEntity =
-          circularDependencyService.readPlatform(platformId, false);
+          circularDependencyService.readPlatform(platformId, Boolean.FALSE);
       redirectUrl =
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
-          profileService.validateAndResetProfile(platformId, toReset, false);
+          profileService.validateAndResetProfile(platformId, toReset, Boolean.FALSE);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
@@ -107,7 +107,7 @@ public class ProfileNoAuthController {
                       "Profile Reset Exit [Id: %s] - [Email: %s] - [Platform: %s]",
                       profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return entityDtoConvertUtils.getResponseResetProfile(
-          redirectUrl, true, profileEntity.getEmail());
+          redirectUrl, Boolean.TRUE, profileEntity.getEmail());
     } catch (Exception ex) {
       final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toReset);
       log.error(
