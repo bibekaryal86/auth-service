@@ -350,7 +350,7 @@ public class RoleControllerTest extends BaseTest {
       assertNotNull(response);
       assertNotNull(response.getRoles());
       assertEquals(1, response.getRoles().size());
-      assertEquals(1L, response.getRoles().getFirst().getId());
+      assertEquals(ID, response.getRoles().getFirst().getId());
       assertNull(response.getRoles().getFirst().getDeletedDate());
       assertNotNull(response.getResponseMetadata());
       assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
@@ -383,7 +383,7 @@ public class RoleControllerTest extends BaseTest {
       assertNotNull(response);
       assertNotNull(response.getRoles());
       assertEquals(1, response.getRoles().size());
-      assertEquals(9L, response.getRoles().getFirst().getId());
+      assertEquals(ID_DELETED, response.getRoles().getFirst().getId());
       assertNotNull(response.getRoles().getFirst().getDeletedDate());
       assertNotNull(response.getResponseMetadata());
       assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
@@ -476,6 +476,212 @@ public class RoleControllerTest extends BaseTest {
       assertEquals(
           "Profile not authenticated to access this resource...",
           response.getResponseMetadata().responseStatusInfo().errMsg());
+    }
+  }
+
+  @Nested
+  @DisplayName("Update Role Tests")
+  class UpdateRoleTests {
+
+    @Test
+    @DisplayName("Update Role Success")
+    void testUpdateRole_Success() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      RoleEntity existingRole = roleRepository.findById(ID).orElseThrow();
+      String existingName = existingRole.getRoleName();
+      RoleRequest request = new RoleRequest("NEW_ROLE_NAME", existingRole.getRoleDesc());
+
+      RoleResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertEquals(1, response.getRoles().size());
+      assertEquals(ID, response.getRoles().getFirst().getId());
+      assertEquals("NEW_ROLE_NAME", response.getRoles().getFirst().getRoleName());
+
+      verify(auditService, after(100).times(1))
+          .auditRole(
+              any(HttpServletRequest.class),
+              argThat(
+                  roleEntityParam -> roleEntityParam.getRoleName().equals(request.getRoleName())),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditRole.ROLE_UPDATE)),
+              any(String.class));
+
+      // reset
+        existingRole.setRoleName(existingName);
+      roleRepository.save(existingRole);
+    }
+
+    @Test
+    @DisplayName("Update Role Failure Deleted")
+    void testUpdateRole_Failure_IsDeleted() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      RoleRequest request = new RoleRequest("NEW_ROLE_NAME_DELETED", "NEW_ROLE_DESC");
+
+      RoleResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID_DELETED))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertTrue(response.getRoles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Role Not Found for [9]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Update Role Failure No Auth")
+    void testUpdateRole_Failure_NoAuth() {
+      ResponseWithMetadata response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID))
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertEquals(
+          "Profile not authenticated to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Update Role Failure No Permission")
+    void testUpdateRole_Failure_NoPermission() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      RoleRequest request = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
+      ResponseWithMetadata response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Update Role Failure Bad Request")
+    void testUpdateRole_Failure_BadRequest() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      RoleRequest request = new RoleRequest("", null);
+
+      ResponseWithMetadata response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isBadRequest()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertTrue(
+          response.getResponseMetadata().responseStatusInfo().errMsg().contains("Name is required")
+              && response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("Description is required"));
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Update Role Failure With Exception")
+    void testCreateRole_Failure_Exception() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      RoleRequest request = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
+
+      RoleResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/roles/role/%s", ID_NOT_FOUND))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isNotFound()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertTrue(response.getRoles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Role Not Found for [99]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      verifyNoInteractions(auditService);
     }
   }
 }
