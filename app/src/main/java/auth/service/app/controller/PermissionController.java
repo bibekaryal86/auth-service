@@ -228,6 +228,9 @@ public class PermissionController {
                       permissionEntity.getId(), permissionEntity.getPermissionName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
+
+      // setId as null to not include entity in response
+      permissionEntity.setId(null);
       return entityDtoConvertUtils.getResponseSinglePermission(
           permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
