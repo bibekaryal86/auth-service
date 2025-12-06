@@ -17,12 +17,15 @@ import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.service.AuditService;
+import auth.service.app.util.CommonUtils;
 import helper.TestData;
 import integration.BaseTest;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +81,7 @@ public class RoleControllerTest extends BaseTest {
       assertEquals(1, response.getRoles().size());
       assertEquals("NEW_ROLE_NAME", response.getRoles().getFirst().getRoleName());
       assertNotNull(response.getResponseMetadata());
-      assertEquals(1, response.getResponseMetadata().responseCrudInfo().insertedRowsCount());
+        assertEquals(CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0), response.getResponseMetadata().responseCrudInfo());
 
       verify(auditService, after(100).times(1))
           .auditRole(
@@ -324,6 +327,12 @@ public class RoleControllerTest extends BaseTest {
           "Profile not authenticated to access this resource...",
           response.getResponseMetadata().responseStatusInfo().errMsg());
     }
+
+      @Test
+      @DisplayName("Read Roles Failure With Exception")
+      void test_Failure_Exception() {
+          // not possible without mocking
+      }
   }
 
   @Nested
@@ -479,6 +488,12 @@ public class RoleControllerTest extends BaseTest {
           "Profile not authenticated to access this resource...",
           response.getResponseMetadata().responseStatusInfo().errMsg());
     }
+
+      @Test
+      @DisplayName("Read Role Failure With Exception")
+      void test_Failure_Exception() {
+          // see test_Failure_IncludeDeleteNotSuperUser
+      }
   }
 
   @Nested
@@ -514,7 +529,7 @@ public class RoleControllerTest extends BaseTest {
       assertEquals(ID, response.getRoles().getFirst().getId());
       assertEquals("NEW_ROLE_NAME", response.getRoles().getFirst().getRoleName());
       assertNotNull(response.getResponseMetadata());
-      assertEquals(1, response.getResponseMetadata().responseCrudInfo().updatedRowsCount());
+        assertEquals(CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0), response.getResponseMetadata().responseCrudInfo());
 
       verify(auditService, after(100).times(1))
           .auditRole(
@@ -716,11 +731,10 @@ public class RoleControllerTest extends BaseTest {
       assertNotNull(response);
       assertNotNull(response.getRoles());
       assertEquals(1, response.getRoles().size());
-      System.out.println(response.getRoles().getFirst());
       assertEquals(ID, response.getRoles().getFirst().getId());
       assertNotNull(response.getRoles().getFirst().getDeletedDate());
       assertNotNull(response.getResponseMetadata());
-      assertEquals(1, response.getResponseMetadata().responseCrudInfo().deletedRowsCount());
+        assertEquals(CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0), response.getResponseMetadata().responseCrudInfo());
 
       verify(auditService, after(100).times(1))
           .auditRole(
@@ -823,8 +837,8 @@ public class RoleControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update Role Failure With Exception")
-    void testCreateRole_Failure_Exception() {
+    @DisplayName("Soft Delete Role Failure With Exception")
+    void test_Failure_Exception() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_SOFTDELETE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
@@ -853,4 +867,135 @@ public class RoleControllerTest extends BaseTest {
       verifyNoInteractions(auditService);
     }
   }
+
+    @Nested
+    @DisplayName("Restore Soft Deleted Role Tests")
+    class RestoreRoleTests {
+
+        @Test
+        @DisplayName("Restore Role Success")
+        void test_Success() {
+            AuthToken authToken =
+                    TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_RESTORE"), Boolean.FALSE);
+            String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+            RoleEntity existingRole = roleRepository.findById(ID_DELETED).orElseThrow();
+
+            RoleResponse response =
+                    webTestClient
+                            .patch()
+                            .uri(String.format("/api/v1/roles/role/%s/restore", ID_DELETED))
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+                            .exchange()
+                            .expectStatus()
+                            .isOk()
+                            .expectBody(RoleResponse.class)
+                            .returnResult()
+                            .getResponseBody();
+
+            assertNotNull(response);
+            assertNotNull(response.getRoles());
+            assertEquals(1, response.getRoles().size());
+            assertEquals(ID_DELETED, response.getRoles().getFirst().getId());
+            assertNull(response.getRoles().getFirst().getDeletedDate());
+            assertNotNull(response.getResponseMetadata());
+            assertEquals(CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1), response.getResponseMetadata().responseCrudInfo());
+
+            verify(auditService, after(100).times(1))
+                    .auditRole(
+                            any(HttpServletRequest.class),
+                            argThat(
+                                    roleEntityParam ->
+                                            roleEntityParam.getRoleName().equals(existingRole.getRoleName())),
+                            argThat(eventType -> eventType.equals(AuditEnums.AuditRole.ROLE_RESTORE)),
+                            any(String.class));
+
+            // reset
+            existingRole.setDeletedDate(LocalDateTime.now());
+            roleRepository.save(existingRole);
+        }
+
+        @Test
+        @DisplayName("Restore Role Failure No Auth")
+        void test_Failure_NoAuth() {
+            ResponseWithMetadata response =
+                    webTestClient
+                            .patch()
+                            .uri(String.format("/api/v1/roles/role/%s/restore", ID))
+                            .exchange()
+                            .expectStatus()
+                            .isUnauthorized()
+                            .expectBody(ResponseWithMetadata.class)
+                            .returnResult()
+                            .getResponseBody();
+            assertTrue(
+                    response != null
+                            && response.getResponseMetadata() != null
+                            && response.getResponseMetadata().responseStatusInfo() != null
+                            && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+            assertEquals(
+                    "Profile not authenticated to access this resource...",
+                    response.getResponseMetadata().responseStatusInfo().errMsg());
+            verifyNoInteractions(auditService);
+        }
+
+        @Test
+        @DisplayName("Restore Role Failure No Permission")
+        void test_Failure_NoPermission() {
+            AuthToken authToken =
+                    TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+            String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+            ResponseWithMetadata response =
+                    webTestClient
+                            .patch()
+                            .uri(String.format("/api/v1/roles/role/%s/restore", ID))
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+                            .exchange()
+                            .expectStatus()
+                            .isForbidden()
+                            .expectBody(ResponseWithMetadata.class)
+                            .returnResult()
+                            .getResponseBody();
+            assertTrue(
+                    response != null
+                            && response.getResponseMetadata() != null
+                            && response.getResponseMetadata().responseStatusInfo() != null
+                            && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+            assertEquals(
+                    "Permission Denied: Profile does not have required permissions...",
+                    response.getResponseMetadata().responseStatusInfo().errMsg());
+            verifyNoInteractions(auditService);
+        }
+
+        @Test
+        @DisplayName("Restore Role Failure With Exception")
+        void test_Failure_Exception() {
+            AuthToken authToken =
+                    TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_RESTORE"), Boolean.TRUE);
+            String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+            RoleResponse response =
+                    webTestClient
+                            .patch()
+                            .uri(String.format("/api/v1/roles/role/%s/restore", ID_NOT_FOUND))
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+                            .exchange()
+                            .expectStatus()
+                            .isNotFound()
+                            .expectBody(RoleResponse.class)
+                            .returnResult()
+                            .getResponseBody();
+
+            assertNotNull(response);
+            assertNotNull(response.getRoles());
+            assertTrue(response.getRoles().isEmpty());
+            assertTrue(
+                    response.getResponseMetadata() != null
+                            && response.getResponseMetadata().responseStatusInfo() != null
+                            && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+            assertEquals(
+                    "Role Not Found for [99]", response.getResponseMetadata().responseStatusInfo().errMsg());
+            verifyNoInteractions(auditService);
+        }
+    }
 }
