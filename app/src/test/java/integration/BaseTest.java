@@ -1,12 +1,13 @@
-package auth.service;
+package integration;
 
 import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 
-import auth.service.app.config.TestConfigs;
-import auth.service.app.config.TestDatasourceConfig;
-import auth.service.app.config.TestSecurityConfig;
+import auth.service.App;
 import helper.BaseTestExtension;
+import integration.auth.service.app.config.TestConfigs;
+import integration.auth.service.app.config.TestDatasourceConfig;
+import integration.auth.service.app.config.TestSecurityConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("springboottest")
 @ExtendWith(BaseTestExtension.class)
 @Import({TestDatasourceConfig.class, TestSecurityConfig.class, TestConfigs.class})

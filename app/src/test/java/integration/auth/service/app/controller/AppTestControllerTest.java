@@ -1,21 +1,25 @@
-package auth.service.app.integration;
+package integration.auth.service.app.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import auth.service.BaseTest;
+import integration.BaseTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@Tag("integration")
 @DisplayName("AppTestController Tests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class AppTestControllerTest extends BaseTest {
 
   @MockitoBean private CacheManager cacheManager;

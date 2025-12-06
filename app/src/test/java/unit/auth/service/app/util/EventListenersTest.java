@@ -1,4 +1,4 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.mockito.Mockito.*;
 
@@ -7,15 +7,18 @@ import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.service.EmailService;
+import auth.service.app.util.EventListeners;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("EventListeners Unit Tests")
 class EventListenersTest {

@@ -1,4 +1,4 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,6 +36,9 @@ import auth.service.app.model.token.AuthTokenRolePermissionLookup;
 import auth.service.app.repository.RawSqlRepository;
 import auth.service.app.service.PlatformProfileRoleService;
 import auth.service.app.service.PlatformRolePermissionService;
+import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.CookieService;
+import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
@@ -45,9 +48,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,6 +65,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("EntityDtoConvertUtils Unit Tests")
@@ -197,7 +203,7 @@ class EntityDtoConvertUtilsTest {
       ResponseMetadata.ResponseStatusInfo statusInfo =
           convertUtils.getResponseStatusInfoForSingleResponse(null);
       assertNotNull(statusInfo);
-      assertEquals(ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE, statusInfo.errMsg());
+      Assertions.assertEquals(ConstantUtils.INTERNAL_SERVER_ERROR_MESSAGE, statusInfo.errMsg());
     }
 
     @Test

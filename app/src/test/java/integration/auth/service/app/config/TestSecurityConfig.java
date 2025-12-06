@@ -1,8 +1,9 @@
-package auth.service.app.config;
+package integration.auth.service.app.config;
 
 import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
 import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 
+import auth.service.app.config.SecurityConfigBase;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

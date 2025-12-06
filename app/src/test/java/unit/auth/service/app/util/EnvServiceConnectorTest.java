@@ -1,8 +1,9 @@
-package auth.service.app.connector;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import auth.service.app.connector.EnvServiceConnector;
 import io.github.bibekaryal86.shdsvc.dtos.EnvDetailsResponse;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +13,14 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("EnvServiceConnector Unit Tests")
 class EnvServiceConnectorTest {

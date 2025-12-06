@@ -1,4 +1,4 @@
-package auth.service.app.config;
+package integration.auth.service.app.config;
 
 import java.util.HashMap;
 import java.util.Map;

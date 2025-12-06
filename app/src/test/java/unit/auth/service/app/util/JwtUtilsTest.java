@@ -1,9 +1,11 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import auth.service.app.exception.TokenInvalidException;
+import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.JwtUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
@@ -20,18 +22,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("JwtUtils Unit Tests")
 class JwtUtilsTest {
 
   private MockedStatic<CommonUtilities> commonUtilitiesMock;
   private static final String TEST_SECRET_KEY =
-      "test-secret-key-that-is-long-enough-for-hmac-sha-256-minimum-32-bytes";
+      CommonUtilities.getSystemEnvProperty(ConstantUtils.ENV_SECRET_KEY);
   private static final String TEST_EMAIL = "profile@one.com";
 
   @BeforeEach

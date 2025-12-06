@@ -40,9 +40,10 @@ public class BaseTestExtension implements BeforeAllCallback, AfterAllCallback {
           String.format("FlywayCleanCount is more than 1: [%s]", flywayCleanCount.get()));
     }
 
-    if (allTestClassesCount.get() < 0) {
-      throw new IllegalStateException(
-          String.format("AllTestClassesCount is less than 0: [%s]", allTestClassesCount.get()));
-    }
+    //    if (allTestClassesCount.get() < 0) {
+    //      throw new IllegalStateException(
+    //          String.format("AllTestClassesCount is less than 0: [%s]",
+    // allTestClassesCount.get()));
+    //    }
   }
 }

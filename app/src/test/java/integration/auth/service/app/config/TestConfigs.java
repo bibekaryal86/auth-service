@@ -1,4 +1,4 @@
-package auth.service.app.config;
+package integration.auth.service.app.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationEvent;

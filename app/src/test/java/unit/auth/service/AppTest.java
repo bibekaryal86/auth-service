@@ -1,18 +1,21 @@
-package auth.service;
+package unit.auth.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
+import auth.service.App;
 import auth.service.app.util.ConstantUtils;
 import helper.TestData;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+@Tag("unit")
 @DisplayName("Main App Unit Tests")
 public class AppTest {
 

@@ -1,14 +1,17 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import auth.service.app.util.PasswordUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Tag("unit")
 @DisplayName("PasswordUtils Unit Tests")
 class PasswordUtilsTest {
 

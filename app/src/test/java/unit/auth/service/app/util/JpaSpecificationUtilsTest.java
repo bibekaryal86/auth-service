@@ -1,4 +1,4 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,10 +6,12 @@ import static org.mockito.Mockito.*;
 
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformRolePermissionEntity;
+import auth.service.app.util.JpaSpecificationUtils;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.jpa.domain.Specification;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("JpaSpecificationUtils Unit Tests")

@@ -1,17 +1,21 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import auth.service.app.util.CommonUtils;
+import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CommonUtils Unit Tests")
 class CommonUtilsTest {
@@ -55,7 +60,7 @@ class CommonUtilsTest {
           .when(() -> CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE))
           .thenReturn(ConstantUtils.ENV_PROD);
 
-      assertTrue(CommonUtils.isProduction());
+      Assertions.assertTrue(CommonUtils.isProduction());
     }
 
     @Test

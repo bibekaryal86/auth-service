@@ -1,19 +1,24 @@
-package auth.service.app.util;
+package unit.auth.service.app.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.CookieService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseCookie;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CookieService Unit Tests")
 class CookieServiceTest {
@@ -172,7 +177,7 @@ class CookieServiceTest {
       ResponseCookie cookie = cookieService.buildRefreshCookie(token, maxAge);
 
       assertNotNull(cookie);
-      assertEquals(ConstantUtils.COOKIE_REFRESH_TOKEN, cookie.getName());
+      Assertions.assertEquals(ConstantUtils.COOKIE_REFRESH_TOKEN, cookie.getName());
       assertEquals(token, cookie.getValue());
       assertTrue(cookie.isHttpOnly());
       assertTrue(cookie.isSecure());
