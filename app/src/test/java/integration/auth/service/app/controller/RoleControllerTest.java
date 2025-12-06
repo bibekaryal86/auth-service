@@ -651,22 +651,22 @@ public class RoleControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update Role Failure With Exception")
+    @DisplayName("Update Role Failure With Exception Deleted Role")
     void testCreateRole_Failure_Exception() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.FALSE);
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_UPDATE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       RoleRequest request = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
 
       RoleResponse response =
           webTestClient
               .put()
-              .uri(String.format("/api/v1/roles/role/%s", ID_NOT_FOUND))
+              .uri(String.format("/api/v1/roles/role/%s", ID_DELETED))
               .bodyValue(request)
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
-              .isNotFound()
+              .isForbidden()
               .expectBody(RoleResponse.class)
               .returnResult()
               .getResponseBody();
@@ -679,7 +679,7 @@ public class RoleControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
       assertEquals(
-          "Role Not Found for [99]",
+          "Active Role Not Found for [9]",
           response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
