@@ -26,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Tag("integration")
-@DisplayName("SsoApiControllerTest Tests")
+@DisplayName("SsoApiController Tests")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SsoApiControllerTest extends BaseTest {
 
@@ -36,7 +36,7 @@ public class SsoApiControllerTest extends BaseTest {
 
   @BeforeAll
   static void setUpBeforeAll() {
-    bearerAuthCredentials = TestData.getBearerAuthCredentialsForTest();
+    bearerAuthCredentials = TestData.getBearerAuthCredentialsForTest(TestData.getAuthToken());
   }
 
   @AfterEach
@@ -112,7 +112,8 @@ public class SsoApiControllerTest extends BaseTest {
     @DisplayName("CheckPermissions success")
     @Test
     void testCheckPermissions_Success() {
-      String bearerAuthCredentialsWithPermission = TestData.getBearerAuthCredentialsForTest();
+      String bearerAuthCredentialsWithPermission =
+          TestData.getBearerAuthCredentialsForTest(TestData.getAuthToken());
       List<String> permissionsToCheck = List.of("Permission 1", "Permission 2", "Permission 3");
 
       Map<String, Boolean> response =
@@ -135,7 +136,8 @@ public class SsoApiControllerTest extends BaseTest {
     @Test
     @DisplayName("CheckPermissions failure different platform")
     void testCheckPermissions_FailureDifferentPlatform() {
-      String bearerAuthCredentialsWithPermission = TestData.getBearerAuthCredentialsForTest();
+      String bearerAuthCredentialsWithPermission =
+          TestData.getBearerAuthCredentialsForTest(TestData.getAuthToken());
       List<String> permissionsToCheck = List.of("Permission 1");
 
       webTestClient
