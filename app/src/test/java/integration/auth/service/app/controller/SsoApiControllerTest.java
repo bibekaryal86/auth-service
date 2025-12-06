@@ -75,8 +75,8 @@ public class SsoApiControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("ValidateToken failure for different platform")
-    void testValidateToken_FailureDifferentPlatform() {
+    @DisplayName("ValidateToken failure different platform")
+    void testValidateToken_Failure_DifferentPlatform() {
       AuthToken authTokenInput = TestData.getAuthToken();
 
       when(securityContext.getAuthentication())
@@ -94,8 +94,8 @@ public class SsoApiControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("ValidateToken failure for no auth")
-    void testValidateToken_FailureNoAuth() {
+    @DisplayName("ValidateToken failure no auth")
+    void testValidateToken_Failure_NoAuth() {
       webTestClient
           .get()
           .uri("/api/v1/sso/9999/validate/token")
@@ -135,7 +135,7 @@ public class SsoApiControllerTest extends BaseTest {
 
     @Test
     @DisplayName("CheckPermissions failure different platform")
-    void testCheckPermissions_FailureDifferentPlatform() {
+    void testCheckPermissions_Failure_DifferentPlatform() {
       String bearerAuthCredentialsWithPermission =
           TestData.getBearerAuthCredentialsForTest(TestData.getAuthToken());
       List<String> permissionsToCheck = List.of("Permission 1");
@@ -152,7 +152,7 @@ public class SsoApiControllerTest extends BaseTest {
 
     @Test
     @DisplayName("CheckPermissions failure no auth")
-    void testCheckPermissions_FailureNoToken() {
+    void testCheckPermissions_Failure_NoToken() {
       webTestClient
           .post()
           .uri("/api/v1/sso/9999/check/permissions")
@@ -188,7 +188,7 @@ public class SsoApiControllerTest extends BaseTest {
 
     @Test
     @DisplayName("ListSsoProfiles failure for no auth")
-    void testListSsoProfiles_FailureNoAuth() {
+    void testListSsoProfiles_Failure_NoAuth() {
       webTestClient
           .get()
           .uri(String.format("/api/v1/sso/%s/ba_profiles/list", 4L))

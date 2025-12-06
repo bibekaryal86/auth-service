@@ -68,14 +68,14 @@ public class AppTestControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Reset test failure for no auth")
-    public void testResetCaches_FailureForNoAuth() {
+    @DisplayName("Reset test failure no auth")
+    public void testResetCaches_Failure_NoAuth() {
       webTestClient.get().uri("/tests/reset").exchange().expectStatus().isUnauthorized();
     }
 
     @Test
-    @DisplayName("Reset test failure for bad auth")
-    public void testResetCaches_FailureForBadAuth() {
+    @DisplayName("Reset test failure bad auth")
+    public void testResetCaches_Failure_BadAuth() {
       webTestClient
           .get()
           .uri("/tests/reset")

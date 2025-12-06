@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -82,6 +83,8 @@ public class EntityDtoConvertUtils {
     } else if (exception instanceof ProfileNotAuthorizedException
         || exception instanceof TokenInvalidException) {
       return HttpStatus.UNAUTHORIZED;
+    } else if (exception instanceof DataIntegrityViolationException) {
+      return HttpStatus.BAD_REQUEST;
     } else {
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }
@@ -312,6 +315,12 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PermissionResponse> getResponseErrorPermission(final Exception exception) {
+    String exceptionMessage;
+    if (exception instanceof DataIntegrityViolationException) {
+      exceptionMessage = "Action Failed! Permission Name Already Exists!! Please Try Again!!!";
+    } else {
+      exceptionMessage = exception.getMessage();
+    }
     return new ResponseEntity<>(
         PermissionResponse.builder()
             .permissions(Collections.emptyList())
@@ -319,7 +328,7 @@ public class EntityDtoConvertUtils {
             .roleIds(Collections.emptyList())
             .responseMetadata(
                 new ResponseMetadata(
-                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    new ResponseMetadata.ResponseStatusInfo(exceptionMessage),
                     ResponseMetadata.emptyResponseCrudInfo(),
                     ResponseMetadata.emptyResponsePageInfo()))
             .build(),
@@ -448,12 +457,18 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<RoleResponse> getResponseErrorRole(final Exception exception) {
+    String exceptionMessage;
+    if (exception instanceof DataIntegrityViolationException) {
+      exceptionMessage = "Action Failed! Role Name Already Exists!! Please Try Again!!!";
+    } else {
+      exceptionMessage = exception.getMessage();
+    }
     return new ResponseEntity<>(
         RoleResponse.builder()
             .roles(Collections.emptyList())
             .responseMetadata(
                 new ResponseMetadata(
-                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    new ResponseMetadata.ResponseStatusInfo(exceptionMessage),
                     ResponseMetadata.emptyResponseCrudInfo(),
                     ResponseMetadata.emptyResponsePageInfo()))
             .build(),
@@ -584,12 +599,18 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<PlatformResponse> getResponseErrorPlatform(final Exception exception) {
+    String exceptionMessage;
+    if (exception instanceof DataIntegrityViolationException) {
+      exceptionMessage = "Action Failed! Platform Name Already Exists!! Please Try Again!!!";
+    } else {
+      exceptionMessage = exception.getMessage();
+    }
     return new ResponseEntity<>(
         PlatformResponse.builder()
             .platforms(Collections.emptyList())
             .responseMetadata(
                 new ResponseMetadata(
-                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    new ResponseMetadata.ResponseStatusInfo(exceptionMessage),
                     ResponseMetadata.emptyResponseCrudInfo(),
                     ResponseMetadata.emptyResponsePageInfo()))
             .build(),
@@ -708,12 +729,19 @@ public class EntityDtoConvertUtils {
   }
 
   public ResponseEntity<ProfileResponse> getResponseErrorProfile(final Exception exception) {
+    String exceptionMessage;
+    if (exception instanceof DataIntegrityViolationException) {
+      exceptionMessage =
+          "Action Failed! Profile Email or Phone Already Exists!! Please Try Again!!!";
+    } else {
+      exceptionMessage = exception.getMessage();
+    }
     return new ResponseEntity<>(
         ProfileResponse.builder()
             .profiles(Collections.emptyList())
             .responseMetadata(
                 new ResponseMetadata(
-                    new ResponseMetadata.ResponseStatusInfo(exception.getMessage()),
+                    new ResponseMetadata.ResponseStatusInfo(exceptionMessage),
                     ResponseMetadata.emptyResponseCrudInfo(),
                     ResponseMetadata.emptyResponsePageInfo()))
             .build(),

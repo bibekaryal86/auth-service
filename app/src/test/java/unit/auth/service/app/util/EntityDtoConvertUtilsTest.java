@@ -60,6 +60,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -164,6 +165,14 @@ class EntityDtoConvertUtilsTest {
       Exception exception = new TokenInvalidException("Invalid token");
       HttpStatus status = convertUtils.getHttpStatusForErrorResponse(exception);
       assertEquals(HttpStatus.UNAUTHORIZED, status);
+    }
+
+    @Test
+    @DisplayName("Should return BAD_REQUEST for DataIntegrityViolationException")
+    void shouldReturnBadRequestForDataIntegrityViolationException() {
+      Exception exception = new DataIntegrityViolationException("something bad happened");
+      HttpStatus status = convertUtils.getHttpStatusForErrorResponse(exception);
+      assertEquals(HttpStatus.BAD_REQUEST, status);
     }
 
     @Test
@@ -370,6 +379,21 @@ class EntityDtoConvertUtilsTest {
           "Permission Not Found for [ID]",
           response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
     }
+
+    @Test
+    @DisplayName("Should create data integrity violation error response for permission")
+    void shouldCreateErrorResponseForPermission_DataIntegrityViolationException() {
+      Exception exception = new DataIntegrityViolationException("something bad happened");
+      ResponseEntity<PermissionResponse> response =
+          convertUtils.getResponseErrorPermission(exception);
+
+      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      assertNotNull(response.getBody());
+      assertTrue(response.getBody().getPermissions().isEmpty());
+      assertEquals(
+          "Action Failed! Permission Name Already Exists!! Please Try Again!!!",
+          response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
+    }
   }
 
   @Nested
@@ -467,6 +491,20 @@ class EntityDtoConvertUtilsTest {
       assertTrue(response.getBody().getRoles().isEmpty());
       assertEquals(
           "Role Not Found for [ID]",
+          response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
+    }
+
+    @Test
+    @DisplayName("Should create data integrity violation error response for role")
+    void shouldCreateErrorResponseForRole_DataIntegrityViolationException() {
+      Exception exception = new DataIntegrityViolationException("something bad happened");
+      ResponseEntity<RoleResponse> response = convertUtils.getResponseErrorRole(exception);
+
+      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      assertNotNull(response.getBody());
+      assertTrue(response.getBody().getRoles().isEmpty());
+      assertEquals(
+          "Action Failed! Role Name Already Exists!! Please Try Again!!!",
           response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
     }
   }
@@ -567,6 +605,20 @@ class EntityDtoConvertUtilsTest {
       assertTrue(response.getBody().getPlatforms().isEmpty());
       assertEquals(
           "Platform Not Found for [ID]",
+          response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
+    }
+
+    @Test
+    @DisplayName("Should create data integrity violation error response for platform")
+    void shouldCreateErrorResponseForRole_DataIntegrityViolationException() {
+      Exception exception = new DataIntegrityViolationException("something bad happened");
+      ResponseEntity<PlatformResponse> response = convertUtils.getResponseErrorPlatform(exception);
+
+      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      assertNotNull(response.getBody());
+      assertTrue(response.getBody().getPlatforms().isEmpty());
+      assertEquals(
+          "Action Failed! Platform Name Already Exists!! Please Try Again!!!",
           response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
     }
   }
@@ -729,6 +781,20 @@ class EntityDtoConvertUtilsTest {
       assertTrue(response.getBody().getProfiles().isEmpty());
       assertEquals(
           "Profile Not Found for [ID]",
+          response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
+    }
+
+    @Test
+    @DisplayName("Should create data integrity violation error response for profile")
+    void shouldCreateErrorResponseForRole_DataIntegrityViolationException() {
+      Exception exception = new DataIntegrityViolationException("something bad happened");
+      ResponseEntity<ProfileResponse> response = convertUtils.getResponseErrorProfile(exception);
+
+      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      assertNotNull(response.getBody());
+      assertTrue(response.getBody().getProfiles().isEmpty());
+      assertEquals(
+          "Action Failed! Profile Email or Phone Already Exists!! Please Try Again!!!",
           response.getBody().getResponseMetadata().responseStatusInfo().errMsg());
     }
   }
@@ -1132,6 +1198,7 @@ class EntityDtoConvertUtilsTest {
         new ElementMissingException("type", "variable"),
         new ProfileForbiddenException(),
         new ProfileNotAuthorizedException("Not authorized"),
+        new DataIntegrityViolationException("something bad happened"),
         new RuntimeException("Unknown")
       };
 
@@ -1140,6 +1207,7 @@ class EntityDtoConvertUtilsTest {
         HttpStatus.BAD_REQUEST,
         HttpStatus.FORBIDDEN,
         HttpStatus.UNAUTHORIZED,
+        HttpStatus.BAD_REQUEST,
         HttpStatus.INTERNAL_SERVER_ERROR
       };
 

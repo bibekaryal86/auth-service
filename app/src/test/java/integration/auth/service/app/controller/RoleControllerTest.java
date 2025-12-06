@@ -2,6 +2,7 @@ package integration.auth.service.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -91,7 +92,7 @@ public class RoleControllerTest extends BaseTest {
 
     @Test
     @DisplayName("Create Role Failure No Auth")
-    void testCreateRole_FailureNoAuth() {
+    void testCreateRole_Failure_NoAuth() {
       ResponseWithMetadata response =
           webTestClient
               .post()
@@ -108,12 +109,15 @@ public class RoleControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
 
+      assertEquals(
+          "Profile not authenticated to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
 
     @Test
     @DisplayName("Create Role Failure No Permission")
-    void testCreateRole_FailureNoPermission() {
+    void testCreateRole_Failure_NoPermission() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
@@ -135,13 +139,15 @@ public class RoleControllerTest extends BaseTest {
               && response.getResponseMetadata() != null
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
 
     @Test
     @DisplayName("Create Role Failure Bad Request")
-    void testCreateRole_FailureBadRequest() {
+    void testCreateRole_Failure_BadRequest() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
@@ -176,7 +182,7 @@ public class RoleControllerTest extends BaseTest {
 
     @Test
     @DisplayName("Create Role Failure With Exception")
-    void testCreateRole_FailureException() {
+    void testCreateRole_Failure_Exception() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
@@ -191,7 +197,7 @@ public class RoleControllerTest extends BaseTest {
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
               .expectStatus()
-              .is5xxServerError()
+              .isBadRequest()
               .expectBody(RoleResponse.class)
               .returnResult()
               .getResponseBody();
@@ -203,7 +209,9 @@ public class RoleControllerTest extends BaseTest {
           response.getResponseMetadata() != null
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
+      assertEquals(
+          "Action Failed! Role Name Already Exists!! Please Try Again!!!",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
   }
@@ -214,12 +222,12 @@ public class RoleControllerTest extends BaseTest {
 
     @Test
     @DisplayName("Read Roles Success")
-    void testReadRoles_Success_RequestMetadata() {
+    void testReadRoles_Success() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
-      RoleResponse roleResponse =
+      RoleResponse response =
           webTestClient
               .get()
               .uri("/api/v1/roles?isIncludeDeleted=true")
@@ -231,11 +239,236 @@ public class RoleControllerTest extends BaseTest {
               .returnResult()
               .getResponseBody();
 
-      assertNotNull(roleResponse);
-      assertNotNull(roleResponse.getRoles());
-      assertEquals(9, roleResponse.getRoles().size());
-      assertNotNull(roleResponse.getResponseMetadata());
-      assertEquals(ResponseMetadata.emptyResponseMetadata(), roleResponse.getResponseMetadata());
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertEquals(6, response.getRoles().size());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
+    }
+
+    @Test
+    @DisplayName("Read Roles Superuser Include Deleted")
+    void testReadRoles_Success_SuperUser() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      RoleResponse response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles?isIncludeDeleted=true")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertEquals(9, response.getRoles().size());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
+    }
+
+    @Test
+    @DisplayName("Read Roles Failure No Permissions")
+    void testReadRoles_Failure_NoPermissions() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      ResponseWithMetadata response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+    }
+
+    @Test
+    @DisplayName("Read Roles Failure No Auth")
+    void testReadRoles_Failure_NoAuth() {
+      ResponseWithMetadata response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles")
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile not authenticated to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+    }
+  }
+
+  @Nested
+  @DisplayName("Read Role Tests")
+  class ReadRoleTests {
+
+    @Test
+    @DisplayName("Read Role Success")
+    void testReadRole_Success() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      RoleResponse response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles/role/1")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertEquals(1, response.getRoles().size());
+      assertEquals(1L, response.getRoles().getFirst().getId());
+      assertNull(response.getRoles().getFirst().getDeletedDate());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
+
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Read Role Superuser Include Deleted")
+    void testReadRole_Success_SuperUser() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      RoleResponse response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles/role/9?isIncludeDeleted=true&isIncludeHistory=true")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertEquals(1, response.getRoles().size());
+      assertEquals(9L, response.getRoles().getFirst().getId());
+      assertNotNull(response.getRoles().getFirst().getDeletedDate());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(ResponseMetadata.emptyResponseMetadata(), response.getResponseMetadata());
+
+      verify(auditService).auditRoles(9L);
+    }
+
+    @Test
+    @DisplayName("Read Roles Failure Include Deleted Not SuperUser")
+    void testReadRole_Failure_IncludeDeleteNotSuperUser() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      RoleResponse response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles/role/9?isIncludeDeleted=true")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getRoles());
+      assertTrue(response.getRoles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Role Not Found for [9]", response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Read Role Failure No Permissions")
+    void testReadRole_Failure_NoPermissions() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      ResponseWithMetadata response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles/role/1")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+    }
+
+    @Test
+    @DisplayName("Read Role Failure No Auth")
+    void testReadRoles_Failure_NoAuth() {
+      ResponseWithMetadata response =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles/role/1")
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile not authenticated to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
     }
   }
 }
