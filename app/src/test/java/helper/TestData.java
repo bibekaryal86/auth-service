@@ -448,13 +448,19 @@ public class TestData {
         Boolean.FALSE);
   }
 
-  public static AuthToken getAuthTokenWithPermissions(List<String> permissionNames, boolean isSuperUser) {
+  public static AuthToken getAuthTokenWithPermissions(
+      List<String> permissionNames, boolean isSuperUser) {
     final AuthToken authToken = getAuthToken();
     final List<AuthToken.AuthTokenPermission> permissions =
         IntStream.range(0, permissionNames.size())
             .mapToObj(i -> new AuthToken.AuthTokenPermission(i, permissionNames.get(i)))
             .toList();
-    return new AuthToken(authToken.getPlatform(), authToken.getProfile(), authToken.getRoles(), permissions, isSuperUser);
+    return new AuthToken(
+        authToken.getPlatform(),
+        authToken.getProfile(),
+        authToken.getRoles(),
+        permissions,
+        isSuperUser);
   }
 
   public static String getBearerAuthCredentialsForTest(AuthToken authToken) {

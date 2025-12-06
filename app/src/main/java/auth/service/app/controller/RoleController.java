@@ -73,7 +73,8 @@ public class RoleController {
   public ResponseEntity<RoleResponse> readRoles(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
     try {
-      final List<RoleEntity> roleEntities = roleService.readRoles(isIncludeDeleted);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final List<RoleEntity> roleEntities = roleService.readRoles(isIncludeDeleted && isSuperUser);
       return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities);
     } catch (Exception ex) {
       log.error("Read Roles: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
@@ -88,7 +89,9 @@ public class RoleController {
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, isIncludeDeleted);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final RoleEntity roleEntity =
+          circularDependencyService.readRole(id, isIncludeDeleted && isSuperUser);
       List<AuditRoleEntity> auditRoleEntities = Collections.emptyList();
       if (isIncludeHistory) {
         auditRoleEntities = auditService.auditRoles(id);

@@ -60,14 +60,15 @@ public class ProfileController {
     try {
       final Long platformIdLong = CommonUtils.getValidId(platformId);
       final Long roleIdLong = CommonUtils.getValidId(roleId);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
 
       List<ProfileEntity> profileEntities;
       if (platformIdLong == null && roleIdLong == null) {
-        profileEntities = profileService.readProfiles(isIncludeDeleted);
+        profileEntities = profileService.readProfiles(isIncludeDeleted && isSuperUser);
       } else {
         final List<PlatformProfileRoleEntity> pprEntities =
             platformProfileRoleService.readPlatformProfileRoles(
-                platformIdLong, roleIdLong, isIncludeDeleted);
+                platformIdLong, roleIdLong, isIncludeDeleted && isSuperUser);
         profileEntities = pprEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
       }
 
@@ -88,8 +89,9 @@ public class ProfileController {
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
       permissionCheck.checkProfileAccess("", id);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final ProfileEntity profileEntity =
-          circularDependencyService.readProfile(id, isIncludeDeleted);
+          circularDependencyService.readProfile(id, isIncludeDeleted && isSuperUser);
 
       List<AuditProfileEntity> auditProfileEntities = Collections.emptyList();
       if (isIncludeHistory) {

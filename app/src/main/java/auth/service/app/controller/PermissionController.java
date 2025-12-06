@@ -83,14 +83,15 @@ public class PermissionController {
     try {
       final Long platformIdLong = CommonUtils.getValidId(platformId);
       final Long roleIdLong = CommonUtils.getValidId(roleId);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
 
       List<PermissionEntity> permissionEntities;
       if (platformIdLong == null && roleIdLong == null) {
-        permissionEntities = permissionService.readPermissions(isIncludeDeleted);
+        permissionEntities = permissionService.readPermissions(isIncludeDeleted && isSuperUser);
       } else {
         final List<PlatformRolePermissionEntity> prpEntities =
             platformRolePermissionService.readPlatformRolePermissions(
-                platformIdLong, roleIdLong, isIncludeDeleted);
+                platformIdLong, roleIdLong, isIncludeDeleted && isSuperUser);
         permissionEntities =
             prpEntities.stream().map(PlatformRolePermissionEntity::getPermission).toList();
       }
@@ -109,8 +110,9 @@ public class PermissionController {
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final PermissionEntity permissionEntity =
-          circularDependencyService.readPermission(id, isIncludeDeleted);
+          circularDependencyService.readPermission(id, isIncludeDeleted && isSuperUser);
       List<AuditPermissionEntity> auditPermissionEntities = Collections.emptyList();
       if (isIncludeHistory) {
         auditPermissionEntities = auditService.auditPermissions(id);

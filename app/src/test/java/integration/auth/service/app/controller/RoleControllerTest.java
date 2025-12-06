@@ -1,7 +1,6 @@
 package integration.auth.service.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +54,8 @@ public class RoleControllerTest extends BaseTest {
     @Test
     @DisplayName("Create Role Success")
     void testCreateRole_Success() {
-      AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       RoleRequest request = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
 
@@ -114,7 +114,8 @@ public class RoleControllerTest extends BaseTest {
     @Test
     @DisplayName("Create Role Failure No Permission")
     void testCreateRole_FailureNoPermission() {
-      AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       RoleRequest request = new RoleRequest("NEW_ROLE_NAME", "NEW_ROLE_DESC");
       ResponseWithMetadata response =
@@ -141,7 +142,8 @@ public class RoleControllerTest extends BaseTest {
     @Test
     @DisplayName("Create Role Failure Bad Request")
     void testCreateRole_FailureBadRequest() {
-      AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       RoleRequest request = new RoleRequest("", null);
 
@@ -175,7 +177,8 @@ public class RoleControllerTest extends BaseTest {
     @Test
     @DisplayName("Create Role Failure With Exception")
     void testCreateRole_FailureException() {
-      AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       RoleEntity existingRole = TestData.getRoleEntities().getFirst();
       RoleRequest request = new RoleRequest(existingRole.getRoleName(), "NEW_ROLE_DESC");
@@ -205,34 +208,34 @@ public class RoleControllerTest extends BaseTest {
     }
   }
 
-    @Nested
-    @DisplayName("Read Roles Tests")
-    class ReadRolesTests {
+  @Nested
+  @DisplayName("Read Roles Tests")
+  class ReadRolesTests {
 
-      @Test
-        @DisplayName("Read Roles Success")
-      void testReadRoles_Success_RequestMetadata() {
-          AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
-          String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+    @Test
+    @DisplayName("Read Roles Success")
+    void testReadRoles_Success_RequestMetadata() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_ROLE_READ"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
-          RoleResponse roleResponse =
-                  webTestClient
-                          .get()
-                          .uri(
-                                  "/api/v1/roles?isIncludeDeleted=true")
-                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
-                          .exchange()
-                          .expectStatus()
-                          .isOk()
-                          .expectBody(RoleResponse.class)
-                          .returnResult()
-                          .getResponseBody();
+      RoleResponse roleResponse =
+          webTestClient
+              .get()
+              .uri("/api/v1/roles?isIncludeDeleted=true")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(RoleResponse.class)
+              .returnResult()
+              .getResponseBody();
 
-          assertNotNull(roleResponse);
-          assertNotNull(roleResponse.getRoles());
-          assertEquals(9, roleResponse.getRoles().size());
-          assertNotNull(roleResponse.getResponseMetadata());
-          assertEquals(ResponseMetadata.emptyResponseMetadata(), roleResponse.getResponseMetadata());
-      }
+      assertNotNull(roleResponse);
+      assertNotNull(roleResponse.getRoles());
+      assertEquals(9, roleResponse.getRoles().size());
+      assertNotNull(roleResponse.getResponseMetadata());
+      assertEquals(ResponseMetadata.emptyResponseMetadata(), roleResponse.getResponseMetadata());
     }
+  }
 }

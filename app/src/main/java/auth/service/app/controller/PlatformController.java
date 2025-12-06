@@ -74,7 +74,9 @@ public class PlatformController {
   public ResponseEntity<PlatformResponse> readPlatforms(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
     try {
-      final List<PlatformEntity> platformEntities = platformService.readPlatforms(isIncludeDeleted);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final List<PlatformEntity> platformEntities =
+          platformService.readPlatforms(isIncludeDeleted && isSuperUser);
       return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities);
     } catch (Exception ex) {
       log.error("Read Platforms: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
@@ -89,8 +91,9 @@ public class PlatformController {
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final PlatformEntity platformEntity =
-          circularDependencyService.readPlatform(id, isIncludeDeleted);
+          circularDependencyService.readPlatform(id, isIncludeDeleted && isSuperUser);
 
       List<AuditPlatformEntity> auditPlatformEntities = Collections.emptyList();
       if (isIncludeHistory) {
