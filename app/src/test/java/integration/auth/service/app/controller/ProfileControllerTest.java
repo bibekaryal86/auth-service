@@ -762,17 +762,19 @@ public class ProfileControllerTest extends BaseTest {
     @Test
     @DisplayName("Update Profile Email Success - Own Profile")
     void test_Success() {
-      AuthToken authToken = TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       ProfileEntity existingProfile = profileRepository.findById(ID).orElseThrow();
       String existingEmail = existingProfile.getEmail();
       String newEmail = "new@email.com";
       ProfileEmailRequest request = new ProfileEmailRequest(existingEmail, newEmail);
 
-        TokenEntity tokenEntity = TestData.getTokenEntity(1, TestData.getPlatformEntities().getFirst(), existingProfile);
-        tokenEntity = tokenRepository.save(tokenEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(1, TestData.getPlatformEntities().getFirst(), existingProfile);
+      tokenEntity = tokenRepository.save(tokenEntity);
 
-        assertNull(tokenEntity.getDeletedDate());
+      assertNull(tokenEntity.getDeletedDate());
 
       ProfileResponse response =
           webTestClient
@@ -832,10 +834,11 @@ public class ProfileControllerTest extends BaseTest {
       String newEmail = "new@email.com";
       ProfileEmailRequest request = new ProfileEmailRequest(existingEmail, newEmail);
 
-        TokenEntity tokenEntity = TestData.getTokenEntity(2, TestData.getPlatformEntities().getFirst(), existingProfile);
-        tokenEntity = tokenRepository.save(tokenEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(2, TestData.getPlatformEntities().getFirst(), existingProfile);
+      tokenEntity = tokenRepository.save(tokenEntity);
 
-        assertNull(tokenEntity.getDeletedDate());
+      assertNull(tokenEntity.getDeletedDate());
 
       ProfileResponse response =
           webTestClient
@@ -861,8 +864,8 @@ public class ProfileControllerTest extends BaseTest {
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0),
           response.getResponseMetadata().responseCrudInfo());
 
-        tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
-        assertNotNull(tokenEntity.getDeletedDate());
+      tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
+      assertNotNull(tokenEntity.getDeletedDate());
 
       verify(auditService, after(100).times(1))
           .auditProfile(
@@ -963,7 +966,7 @@ public class ProfileControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update Profile Failure No Auth")
+    @DisplayName("Update Profile Email Failure No Auth")
     void test_Failure_NoAuth() {
       ResponseWithMetadata response =
           webTestClient
@@ -990,7 +993,7 @@ public class ProfileControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update Profile Failure Bad Request")
+    @DisplayName("Update Profile Email Failure Bad Request")
     void test_Failure_BadRequest() {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
@@ -1047,6 +1050,323 @@ public class ProfileControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/profiles/platform/%s/profile/%s/email", ID_DELETED, ID_DELETED))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertTrue(response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Profile Role Not Found for [9,profile@eight.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+  }
+
+  @Nested
+  @DisplayName("Update Profile Password Tests")
+  class UpdateProfilePasswordTests {
+
+    @Test
+    @DisplayName("Update Profile Password Success - Own Profile")
+    void test_Success() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      ProfileEntity existingProfile = profileRepository.findById(ID).orElseThrow();
+      String existingEmail = existingProfile.getEmail();
+      String existingPassword = existingProfile.getPassword();
+      String newPassword = "someNewPassword99";
+      ProfilePasswordRequest request = new ProfilePasswordRequest(existingEmail, newPassword);
+
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(1, TestData.getPlatformEntities().getFirst(), existingProfile);
+      tokenEntity = tokenRepository.save(tokenEntity);
+
+      assertNull(tokenEntity.getDeletedDate());
+
+      ProfileResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID, ID))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertEquals(1, response.getProfiles().size());
+      assertEquals(ID, response.getProfiles().getFirst().getId());
+
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(
+          CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0),
+          response.getResponseMetadata().responseCrudInfo());
+
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(
+                  eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE)),
+              any(String.class));
+
+      verify(publisher)
+          .publishEvent(
+              ArgumentMatchers.argThat(
+                  event ->
+                      event instanceof ProfileEvent
+                          && ((ProfileEvent) event).getEventType()
+                              == TypeEnums.EventType.UPDATE_PASSWORD));
+
+      tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
+      assertNotNull(tokenEntity.getDeletedDate());
+
+      // reset
+      existingProfile.setPassword(existingPassword);
+      profileRepository.save(existingProfile);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Success - Others Profile")
+    void test_Success_Superuser() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      ProfileEntity existingProfile = profileRepository.findById(5L).orElseThrow();
+      String existingEmail = existingProfile.getEmail();
+      String existingPassword = existingProfile.getPassword();
+      String newPassword = "someNewPassword99";
+      ProfilePasswordRequest request = new ProfilePasswordRequest(existingEmail, newPassword);
+
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(2, TestData.getPlatformEntities().getFirst(), existingProfile);
+      tokenEntity = tokenRepository.save(tokenEntity);
+
+      assertNull(tokenEntity.getDeletedDate());
+
+      ProfileResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 5, 5))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertEquals(1, response.getProfiles().size());
+      assertEquals(5L, response.getProfiles().getFirst().getId());
+
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(
+          CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0),
+          response.getResponseMetadata().responseCrudInfo());
+
+      tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
+      assertNotNull(tokenEntity.getDeletedDate());
+
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(
+                  eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE)),
+              any(String.class));
+
+      verify(publisher)
+          .publishEvent(
+              ArgumentMatchers.argThat(
+                  event ->
+                      event instanceof ProfileEvent
+                          && ((ProfileEvent) event).getEventType()
+                              == TypeEnums.EventType.UPDATE_PASSWORD));
+
+      // reset
+      existingProfile.setPassword(existingPassword);
+      profileRepository.save(existingProfile);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Failure - Others Profile")
+    void test_Failure_OthersProfile() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      ProfileEntity existingProfile = profileRepository.findById(ID).orElseThrow();
+      String existingEmail = existingProfile.getEmail();
+      String newPassword = "someNewPassword99";
+      ProfilePasswordRequest request = new ProfilePasswordRequest(existingEmail, newPassword);
+
+      ProfileResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", 2, 2))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertTrue(response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Permission Denied: Profile does not have required permissions to profile entity...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Failure Deleted")
+    void testFailure_IsDeleted() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      ProfileEntity existingProfile = profileRepository.findById(7L).orElseThrow();
+      String existingEmail = existingProfile.getEmail();
+      String newPassword = "someNewPassword99";
+      ProfilePasswordRequest request = new ProfilePasswordRequest(existingEmail, newPassword);
+
+      ProfileResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID_DELETED, 7))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertTrue(response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Profile Role Not Found for [9,profile@seven.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Failure No Auth")
+    void test_Failure_NoAuth() {
+      ResponseWithMetadata response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID, ID))
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertEquals(
+          "Profile not authenticated to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Failure Bad Request")
+    void test_Failure_BadRequest() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.FALSE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+      ProfilePasswordRequest request = new ProfilePasswordRequest("", "");
+
+      ResponseWithMetadata response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID, ID))
+              .bodyValue(request)
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
+              .exchange()
+              .expectStatus()
+              .isBadRequest()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertTrue(
+          response.getResponseMetadata().responseStatusInfo().errMsg().contains("Email is Required")
+              && response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("Password is Required"));
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Update Profile Password Failure With Exception Deleted Platform")
+    void test_Failure_Exception() {
+      AuthToken authToken =
+          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PROFILE_UPDATE"), Boolean.TRUE);
+      String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
+
+      ProfileEntity existingProfile = profileRepository.findById(8L).orElseThrow();
+      String existingEmail = existingProfile.getEmail();
+      String newPassword = "someNewPassword99";
+      ProfilePasswordRequest request = new ProfilePasswordRequest(existingEmail, newPassword);
+
+      ProfileResponse response =
+          webTestClient
+              .put()
+              .uri(String.format("/api/v1/profiles/platform/%s/profile/%s/password", ID_DELETED, 8))
               .bodyValue(request)
               .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerAuth)
               .exchange()
