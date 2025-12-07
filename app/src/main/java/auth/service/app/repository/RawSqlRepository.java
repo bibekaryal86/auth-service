@@ -4,6 +4,7 @@ import auth.service.app.model.token.AuthTokenRolePermissionLookup;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,10 @@ public class RawSqlRepository {
 
   public List<AuthTokenRolePermissionLookup> findRolePermissionsForAuthToken(
       final Long platformId, final Long profileId) {
+    if (platformId == null || profileId == null) {
+      return Collections.emptyList();
+    }
+
     final String sql =
         """
         SELECT DISTINCT
