@@ -471,7 +471,7 @@ public class TestData {
       int integer, PlatformEntity platformEntity, ProfileEntity profileEntity) {
     TokenEntity tokenEntity = new TokenEntity();
     tokenEntity.setRefreshToken("some-refresh-token" + integer);
-    tokenEntity.setCsrfToken("some-csrf-token");
+    tokenEntity.setCsrfToken("some-csrf-token" + integer);
     tokenEntity.setIpAddress("some-ip-address" + integer);
     tokenEntity.setExpiryDate(LocalDateTime.now().plusDays(1L));
     tokenEntity.setPlatform(platformEntity);

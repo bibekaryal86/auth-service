@@ -39,7 +39,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="production,docker">
+    <springProfile name="production,docker,springboottest">
         <appender name="STDOUT" class="ConsoleAppender">
             <!--
             replace the encoder block below with the following if using logstash encoder in build.gradle
