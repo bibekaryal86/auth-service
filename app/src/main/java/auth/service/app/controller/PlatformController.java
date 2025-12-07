@@ -209,9 +209,6 @@ public class PlatformController {
                       platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-
-      // setId as null to not include entity in response
-      platformEntity.setId(null);
       return entityDtoConvertUtils.getResponseSinglePlatform(
           platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {

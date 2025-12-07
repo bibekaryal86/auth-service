@@ -177,10 +177,7 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-
-      // setId as null to not include entity in response
-      roleEntity.setId(null);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
+      return entityDtoConvertUtils.getResponseSingleRole(new RoleEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
       log.error("Hard Delete Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
