@@ -26,6 +26,7 @@ import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -153,7 +154,10 @@ public class ProfileService {
     // profile_address
     ProfileAddressEntity profileAddressEntity = null;
     if (profileRequest.getAddressRequest() != null) {
-      profileAddressEntity = profileEntity.getProfileAddress();
+      profileAddressEntity =
+          profileEntity.getProfileAddress() == null
+              ? new ProfileAddressEntity()
+              : profileEntity.getProfileAddress();
       BeanUtils.copyProperties(
           profileRequest.getAddressRequest(), profileAddressEntity, "profileId");
     }
@@ -162,10 +166,11 @@ public class ProfileService {
     profileEntity = updateProfile(profileEntity);
     // save profile_address
     if (profileAddressEntity != null) {
-      if (profileRequest.getAddressRequest().isDeleteAddress()) {
+      if (Objects.equals(profileRequest.getAddressRequest().getIsDeleteAddress(), Boolean.TRUE)) {
         profileAddressRepository.deleteById(profileRequest.getAddressRequest().getId());
         profileEntity.setProfileAddress(null);
       } else {
+        profileAddressEntity.setProfile(profileEntity);
         profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
         profileEntity.setProfileAddress(profileAddressEntity);
       }

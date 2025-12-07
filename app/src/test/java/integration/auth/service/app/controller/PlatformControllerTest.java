@@ -1,38 +1,5 @@
 package integration.auth.service.app.controller;
 
-import auth.service.app.model.dto.PlatformRequest;
-import auth.service.app.model.dto.PlatformResponse;
-import auth.service.app.model.entity.PermissionEntity;
-import auth.service.app.model.entity.PlatformEntity;
-import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformRolePermissionEntity;
-import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.entity.RoleEntity;
-import auth.service.app.model.enums.AuditEnums;
-import auth.service.app.repository.PlatformProfileRoleRepository;
-import auth.service.app.repository.PlatformRolePermissionRepository;
-import auth.service.app.repository.PlatformRepository;
-import auth.service.app.service.AuditService;
-import auth.service.app.util.CommonUtils;
-import helper.TestData;
-import integration.BaseTest;
-import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
-import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -43,6 +10,38 @@ import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+
+import auth.service.app.model.dto.PlatformRequest;
+import auth.service.app.model.dto.PlatformResponse;
+import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformEntity;
+import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
+import auth.service.app.model.entity.ProfileEntity;
+import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.enums.AuditEnums;
+import auth.service.app.repository.PlatformProfileRoleRepository;
+import auth.service.app.repository.PlatformRepository;
+import auth.service.app.repository.PlatformRolePermissionRepository;
+import auth.service.app.service.AuditService;
+import auth.service.app.util.CommonUtils;
+import helper.TestData;
+import integration.BaseTest;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Tag("integration")
 @DisplayName("PlatformController Tests")
@@ -98,7 +97,8 @@ public class PlatformControllerTest extends BaseTest {
           .auditPlatform(
               any(HttpServletRequest.class),
               argThat(
-                  platformEntityParam -> platformEntityParam.getPlatformName().equals(request.getPlatformName())),
+                  platformEntityParam ->
+                      platformEntityParam.getPlatformName().equals(request.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_CREATE)),
               any(String.class));
 
@@ -203,7 +203,8 @@ public class PlatformControllerTest extends BaseTest {
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_CREATE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       PlatformEntity existingPlatform = TestData.getPlatformEntities().getFirst();
-      PlatformRequest request = new PlatformRequest(existingPlatform.getPlatformName(), "NEW_PLATFORM_DESC");
+      PlatformRequest request =
+          new PlatformRequest(existingPlatform.getPlatformName(), "NEW_PLATFORM_DESC");
 
       PlatformResponse response =
           webTestClient
@@ -519,7 +520,8 @@ public class PlatformControllerTest extends BaseTest {
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       PlatformEntity existingPlatform = platformRepository.findById(ID).orElseThrow();
       String existingName = existingPlatform.getPlatformName();
-      PlatformRequest request = new PlatformRequest("NEW_PLATFORM_NAME", existingPlatform.getPlatformDesc());
+      PlatformRequest request =
+          new PlatformRequest("NEW_PLATFORM_NAME", existingPlatform.getPlatformDesc());
 
       PlatformResponse response =
           webTestClient
@@ -548,7 +550,8 @@ public class PlatformControllerTest extends BaseTest {
           .auditPlatform(
               any(HttpServletRequest.class),
               argThat(
-                  platformEntityParam -> platformEntityParam.getPlatformName().equals(request.getPlatformName())),
+                  platformEntityParam ->
+                      platformEntityParam.getPlatformName().equals(request.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_UPDATE)),
               any(String.class));
 
@@ -563,7 +566,8 @@ public class PlatformControllerTest extends BaseTest {
       AuthToken authToken =
           TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_UPDATE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
-      PlatformRequest request = new PlatformRequest("NEW_PLATFORM_NAME_DELETED", "NEW_PLATFORM_DESC");
+      PlatformRequest request =
+          new PlatformRequest("NEW_PLATFORM_NAME_DELETED", "NEW_PLATFORM_DESC");
 
       PlatformResponse response =
           webTestClient
@@ -725,7 +729,8 @@ public class PlatformControllerTest extends BaseTest {
     @DisplayName("Soft Delete Platform Success")
     void test_Success() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.FALSE);
+          TestData.getAuthTokenWithPermissions(
+              List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
       PlatformEntity existingPlatform = platformRepository.findById(ID).orElseThrow();
 
@@ -756,7 +761,9 @@ public class PlatformControllerTest extends BaseTest {
               any(HttpServletRequest.class),
               argThat(
                   platformEntityParam ->
-                      platformEntityParam.getPlatformName().equals(existingPlatform.getPlatformName())),
+                      platformEntityParam
+                          .getPlatformName()
+                          .equals(existingPlatform.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT)),
               any(String.class));
 
@@ -769,7 +776,8 @@ public class PlatformControllerTest extends BaseTest {
     @DisplayName("Soft Delete Platform Failure Deleted")
     void test_Failure_IsDeleted() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.TRUE);
+          TestData.getAuthTokenWithPermissions(
+              List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
       PlatformResponse response =
@@ -855,7 +863,8 @@ public class PlatformControllerTest extends BaseTest {
     @DisplayName("Soft Delete Platform Failure With Exception")
     void test_Failure_Exception() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.TRUE);
+          TestData.getAuthTokenWithPermissions(
+              List.of("AUTHSVC_PLATFORM_SOFTDELETE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
       PlatformResponse response =
@@ -878,7 +887,8 @@ public class PlatformControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
       assertEquals(
-          "Platform Not Found for [99]", response.getResponseMetadata().responseStatusInfo().errMsg());
+          "Platform Not Found for [99]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
   }
@@ -891,7 +901,8 @@ public class PlatformControllerTest extends BaseTest {
     @DisplayName("Hard Delete Platform Success")
     void test_Success() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_HARDDELETE"), Boolean.FALSE);
+          TestData.getAuthTokenWithPermissions(
+              List.of("AUTHSVC_PLATFORM_HARDDELETE"), Boolean.FALSE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
       // setup
@@ -935,7 +946,9 @@ public class PlatformControllerTest extends BaseTest {
               any(HttpServletRequest.class),
               argThat(
                   platformEntityParam ->
-                      platformEntityParam.getPlatformName().equals(platformEntity.getPlatformName())),
+                      platformEntityParam
+                          .getPlatformName()
+                          .equals(platformEntity.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_DELETE_HARD)),
               any(String.class));
 
@@ -1001,7 +1014,8 @@ public class PlatformControllerTest extends BaseTest {
     @DisplayName("Hard Delete Platform Failure With Exception")
     void test_Failure_Exception() {
       AuthToken authToken =
-          TestData.getAuthTokenWithPermissions(List.of("AUTHSVC_PLATFORM_HARDDELETE"), Boolean.TRUE);
+          TestData.getAuthTokenWithPermissions(
+              List.of("AUTHSVC_PLATFORM_HARDDELETE"), Boolean.TRUE);
       String bearerAuth = TestData.getBearerAuthCredentialsForTest(authToken);
 
       PlatformResponse response =
@@ -1024,7 +1038,8 @@ public class PlatformControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
       assertEquals(
-          "Platform Not Found for [99]", response.getResponseMetadata().responseStatusInfo().errMsg());
+          "Platform Not Found for [99]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
   }
@@ -1068,7 +1083,9 @@ public class PlatformControllerTest extends BaseTest {
               any(HttpServletRequest.class),
               argThat(
                   platformEntityParam ->
-                      platformEntityParam.getPlatformName().equals(existingPlatform.getPlatformName())),
+                      platformEntityParam
+                          .getPlatformName()
+                          .equals(existingPlatform.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_RESTORE)),
               any(String.class));
 
@@ -1157,7 +1174,8 @@ public class PlatformControllerTest extends BaseTest {
               && response.getResponseMetadata().responseStatusInfo() != null
               && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
       assertEquals(
-          "Platform Not Found for [99]", response.getResponseMetadata().responseStatusInfo().errMsg());
+          "Platform Not Found for [99]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
       verifyNoInteractions(auditService);
     }
   }

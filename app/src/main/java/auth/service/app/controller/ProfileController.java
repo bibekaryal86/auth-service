@@ -130,8 +130,11 @@ public class ProfileController {
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
+      ResponseEntity<ProfileResponse> response =
+          entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
+      return response;
     } catch (Exception ex) {
+      System.out.println(ex.toString());
       log.error("Update Profile: Id=[{}], ProfileRequest=[{}]", id, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
@@ -241,8 +244,7 @@ public class ProfileController {
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          new ProfileEntity(), responseCrudInfo, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error("Soft Delete Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);

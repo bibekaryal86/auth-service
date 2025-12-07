@@ -1,12 +1,12 @@
 package auth.service.app.model.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ProfileAddressRequest {
   private Long id; // needed in request for updates from within profile
   private Long profileId;
@@ -15,5 +15,5 @@ public class ProfileAddressRequest {
   private String state;
   private String country;
   private String postalCode;
-  private boolean isDeleteAddress;
+  private Boolean isDeleteAddress;
 }

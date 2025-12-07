@@ -158,7 +158,7 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          new PlatformEntity(), responseCrudInfo, null);
+          platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error("Soft Delete Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
