@@ -66,7 +66,6 @@ public class ProfileControllerTest extends BaseTest {
   @Autowired private ProfileAddressRepository profileAddressRepository;
   @Autowired private PlatformProfileRoleRepository pprRepository;
   @Autowired private TokenRepository tokenRepository;
-
   @Autowired private ApplicationEventPublisher publisher;
 
   @MockitoBean private AuditService auditService;
