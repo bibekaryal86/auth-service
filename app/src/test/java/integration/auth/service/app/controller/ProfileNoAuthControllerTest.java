@@ -20,6 +20,8 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -48,88 +50,104 @@ public class ProfileNoAuthControllerTest extends BaseTest {
     reset(auditService, envServiceConnector);
   }
 
-  @Test
-  public void testValidateProfileExit_Success() {
-    webTestClient
-        .get()
-        .uri(
-            String.format(
-                "/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s", ID, encodedEmail))
-        .exchange()
-        .expectStatus()
-        .is3xxRedirection()
-        .expectHeader()
-        .location(REDIRECT_URL + "?is_validated=true");
+  @Nested
+  @DisplayName("ValidateProfileExit Tests")
+  class ValidateProfileExitTests {
 
-    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
-    verify(auditService, after(200).times(1))
-        .auditProfile(
-            any(HttpServletRequest.class),
-            any(ProfileEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_EXIT)),
-            any(String.class));
+    @Test
+    @DisplayName("ValidateProfileExit Success")
+    public void test_Success() {
+      webTestClient
+          .get()
+          .uri(
+              String.format(
+                  "/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s", ID, encodedEmail))
+          .exchange()
+          .expectStatus()
+          .is3xxRedirection()
+          .expectHeader()
+          .location(REDIRECT_URL + "?is_validated=true");
+
+      verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
+      verify(auditService, after(200).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_EXIT)),
+              any(String.class));
+    }
+
+    @Test
+    @DisplayName("ValidateProfileExit Failure")
+    public void test_Failure() {
+      webTestClient
+          .get()
+          .uri(
+              String.format(
+                  "/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s", ID, EMAIL))
+          .exchange()
+          .expectStatus()
+          .is3xxRedirection()
+          .expectHeader()
+          .location(REDIRECT_URL + "?is_validated=false");
+
+      verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
+      verify(auditService, after(200).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(
+                  eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
+              any(String.class));
+    }
   }
 
-  @Test
-  public void testValidateProfileExit_Failure() {
-    webTestClient
-        .get()
-        .uri(
-            String.format("/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s", ID, EMAIL))
-        .exchange()
-        .expectStatus()
-        .is3xxRedirection()
-        .expectHeader()
-        .location(REDIRECT_URL + "?is_validated=false");
+  @Nested
+  @DisplayName("ResetProfileExit Tests")
+  class ResetProfileExitTests {
 
-    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
-    verify(auditService, after(200).times(1))
-        .auditProfile(
-            any(HttpServletRequest.class),
-            any(ProfileEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
-            any(String.class));
-  }
+    @Test
+    @DisplayName("ResetProfileExit Success")
+    public void test_Success() {
+      webTestClient
+          .get()
+          .uri(
+              String.format(
+                  "/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s", ID, encodedEmail))
+          .exchange()
+          .expectStatus()
+          .is3xxRedirection()
+          .expectHeader()
+          .location(REDIRECT_URL + "?is_reset=true&to_reset=" + EMAIL);
 
-  @Test
-  public void testResetProfileExit_Success() {
-    webTestClient
-        .get()
-        .uri(
-            String.format(
-                "/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s", ID, encodedEmail))
-        .exchange()
-        .expectStatus()
-        .is3xxRedirection()
-        .expectHeader()
-        .location(REDIRECT_URL + "?is_reset=true&to_reset=" + EMAIL);
+      verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
+      verify(auditService, after(200).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_EXIT)),
+              any(String.class));
+    }
 
-    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
-    verify(auditService, after(200).times(1))
-        .auditProfile(
-            any(HttpServletRequest.class),
-            any(ProfileEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_EXIT)),
-            any(String.class));
-  }
+    @Test
+    @DisplayName("ResetProfileExit Failure")
+    public void test_Failure() {
+      webTestClient
+          .get()
+          .uri(String.format("/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s", ID, EMAIL))
+          .exchange()
+          .expectStatus()
+          .is3xxRedirection()
+          .expectHeader()
+          .location(REDIRECT_URL + "?is_reset=false");
 
-  @Test
-  public void testResetProfileExit_Failure() {
-    webTestClient
-        .get()
-        .uri(String.format("/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s", ID, EMAIL))
-        .exchange()
-        .expectStatus()
-        .is3xxRedirection()
-        .expectHeader()
-        .location(REDIRECT_URL + "?is_reset=false");
-
-    verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
-    verify(auditService, after(200).times(1))
-        .auditProfile(
-            any(HttpServletRequest.class),
-            any(ProfileEntity.class),
-            argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
-            any(String.class));
+      verify(envServiceConnector, after(100).times(1)).getRedirectUrls();
+      verify(auditService, after(200).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
+              any(String.class));
+    }
   }
 }
