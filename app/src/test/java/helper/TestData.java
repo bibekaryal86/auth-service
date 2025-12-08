@@ -335,15 +335,18 @@ public class TestData {
     // 1, 1, 1
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(0), profileEntities.get(0), roleEntities.get(0), null));
+            platformEntities.getFirst(),
+            profileEntities.getFirst(),
+            roleEntities.getFirst(),
+            null));
     // 1, 2, 2
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(0), profileEntities.get(1), roleEntities.get(1), null));
+            platformEntities.getFirst(), profileEntities.get(1), roleEntities.get(1), null));
     // 1, 3, 3
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(0),
+            platformEntities.getFirst(),
             profileEntities.get(2),
             roleEntities.get(2),
             LocalDateTime.now()));
@@ -392,15 +395,18 @@ public class TestData {
     // 1, 1, 1
     platformRolePermissionEntities.add(
         getPlatformRolePermissionEntity(
-            platformEntities.get(0), roleEntities.get(0), permissionEntities.get(0), null));
+            platformEntities.getFirst(),
+            roleEntities.getFirst(),
+            permissionEntities.getFirst(),
+            null));
     // 1, 2, 2
     platformRolePermissionEntities.add(
         getPlatformRolePermissionEntity(
-            platformEntities.get(0), roleEntities.get(1), permissionEntities.get(1), null));
+            platformEntities.getFirst(), roleEntities.get(1), permissionEntities.get(1), null));
     // 1, 3, 3
     platformRolePermissionEntities.add(
         getPlatformRolePermissionEntity(
-            platformEntities.get(0),
+            platformEntities.getFirst(),
             roleEntities.get(2),
             permissionEntities.get(2),
             LocalDateTime.now()));
