@@ -35,3 +35,4 @@ A small utility for authentication and authorization with platforms, profiles, r
   * Update this README.md for proper documentation
 
 see if ID_TO_USE can be removed from ProfileBasicAuthControllerTest
+replace integer in refresh token tests,logout tests

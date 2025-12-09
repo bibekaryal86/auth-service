@@ -20,6 +20,6 @@ public class ProfilePasswordTokenResponse {
   @ToString.Exclude private String refreshToken;
   @ToString.Exclude private String csrfToken;
 
-  AuthToken authToken;
+  private AuthToken authToken;
   private ResponseMetadata responseMetadata;
 }

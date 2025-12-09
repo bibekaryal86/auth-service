@@ -36,7 +36,7 @@ public class PlatformProfileRoleService {
             platformProfileRoleRequest.getPlatformId(), Boolean.FALSE);
     final ProfileEntity profileEntity =
         circularDependencyService.readProfile(
-            platformProfileRoleRequest.getProfileId(), Boolean.FALSE);
+            platformProfileRoleRequest.getProfileId(), Boolean.FALSE, Boolean.FALSE);
     final RoleEntity roleEntity =
         circularDependencyService.readRole(platformProfileRoleRequest.getRoleId(), Boolean.FALSE);
 

@@ -100,4 +100,5 @@ public class ConstantUtils {
   // environment
   public static final String ENV_PROD = "production";
   public static final String ENV_SPRINGBOOTTEST = "springboottest";
+  public static final String ENV_SANDBOX = "sandbox";
 }

@@ -91,7 +91,7 @@ public class ProfileController {
       permissionCheck.checkProfileAccess("", id);
       final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final ProfileEntity profileEntity =
-          circularDependencyService.readProfile(id, isIncludeDeleted && isSuperUser);
+          circularDependencyService.readProfile(id, isIncludeDeleted && isSuperUser, Boolean.FALSE);
 
       List<AuditProfileEntity> auditProfileEntities = Collections.emptyList();
       if (isIncludeHistory) {
@@ -253,7 +253,8 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> hardDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, Boolean.TRUE);
+      final ProfileEntity profileEntity =
+          circularDependencyService.readProfile(id, Boolean.TRUE, Boolean.FALSE);
       profileService.hardDeleteProfile(id);
       CompletableFuture.runAsync(
           () ->

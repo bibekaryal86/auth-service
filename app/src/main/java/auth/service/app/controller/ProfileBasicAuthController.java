@@ -24,7 +24,6 @@ import auth.service.app.util.CookieService;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
-import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -186,7 +185,7 @@ public class ProfileBasicAuthController {
       if (CommonUtilities.isEmpty(csrfTokenCookieRequest)
           || CommonUtilities.isEmpty(csrfTokenHeaderRequest)
           || !csrfTokenCookieRequest.equals(csrfTokenHeaderRequest)) {
-        throw new CheckPermissionException("Token Invalid/Mismatch...");
+        throw new ProfileNotAuthorizedException("Token Invalid/Mismatch...");
       }
 
       final TokenEntity tokenEntity = tokenService.readTokenByRefreshToken(refreshTokenRequest);
@@ -252,44 +251,19 @@ public class ProfileBasicAuthController {
       @PathVariable final Long profileId,
       final HttpServletRequest request) {
     try {
-      final String refreshTokenRequest =
-          cookieService.getCookieValue(request, ConstantUtils.COOKIE_REFRESH_TOKEN);
-      ProfileEntity profileEntity = null;
-      if (CommonUtilities.isEmpty(refreshTokenRequest)) {
-        tokenService.setTokenDeletedDateByProfileId(profileId);
-      } else {
-        final TokenEntity tokenEntity =
-            tokenService.readTokenByRefreshTokenNoException(refreshTokenRequest);
+      final ProfileEntity profileEntity =
+          circularDependencyService.readProfile(profileId, Boolean.TRUE, Boolean.FALSE);
+      tokenService.setTokenDeletedDateByProfileId(profileId);
 
-        if (tokenEntity == null) {
-          tokenService.setTokenDeletedDateByProfileId(profileId);
-        } else {
-          profileEntity = tokenEntity.getProfile();
-          tokenService.saveToken(
-              tokenEntity.getId(),
-              LocalDateTime.now(),
-              tokenEntity.getPlatform(),
-              tokenEntity.getProfile(),
-              CommonUtils.getIpAddress(request));
-        }
-      }
-
-      if (profileEntity == null) {
-        profileEntity = circularDependencyService.readProfile(profileId, Boolean.TRUE);
-      }
-
-      ProfileEntity finalProfileEntity = profileEntity;
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
                   request,
-                  finalProfileEntity,
+                  profileEntity,
                   AuditEnums.AuditProfile.PROFILE_LOGOUT,
                   String.format(
                       "Profile Logout [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileId,
-                      finalProfileEntity == null ? "N/A" : finalProfileEntity.getEmail(),
-                      platformId)));
+                      profileId, profileEntity.getEmail(), platformId)));
 
       final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
       final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
@@ -481,6 +455,6 @@ public class ProfileBasicAuthController {
     // if platform is deleted, it will throw exception
     circularDependencyService.readPlatform(platformId, Boolean.FALSE);
     // if profile is deleted, it will throw exception
-    circularDependencyService.readProfile(profileId, Boolean.FALSE);
+    circularDependencyService.readProfile(profileId, Boolean.FALSE, Boolean.FALSE);
   }
 }

@@ -112,10 +112,12 @@ public class TokenService {
 
     tokenRepository.save(tokenEntity);
 
+    final boolean isSandbox = environment.matchesProfiles(ConstantUtils.ENV_SANDBOX);
+
     return ProfilePasswordTokenResponse.builder()
         .accessToken(accessToken)
-        .refreshToken(refreshToken)
-        .csrfToken(csrfToken)
+        .refreshToken(isSandbox ? refreshToken : null)
+        .csrfToken(isSandbox ? csrfToken : null)
         .authToken(authToken)
         .build();
   }

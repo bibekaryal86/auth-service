@@ -99,8 +99,13 @@ public class CircularDependencyService {
     return Example.of(probe, matcher); // Exact match for roleName
   }
 
-  public ProfileEntity readProfile(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Profile: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
+  public ProfileEntity readProfile(
+      final Long id, final boolean isIncludeDeleted, final boolean isForceIncludeDeleted) {
+    log.debug(
+        "Read Profile: Id=[{}], IsIncludeDeleted=[{}], IsForceIncludeDeleted=[{}]",
+        id,
+        isIncludeDeleted,
+        isForceIncludeDeleted);
 
     final ProfileEntity profileEntity =
         profileRepository
@@ -108,6 +113,7 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
 
     if (profileEntity.getDeletedDate() == null
+        || isForceIncludeDeleted
         || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return profileEntity;
     } else {
@@ -117,7 +123,7 @@ public class CircularDependencyService {
 
   public ProfileEntity readProfileNoException(final Long id, final boolean isIncludeDeleted) {
     try {
-      return readProfile(id, isIncludeDeleted);
+      return readProfile(id, isIncludeDeleted, Boolean.TRUE);
     } catch (Exception ignored) {
       return null;
     }
