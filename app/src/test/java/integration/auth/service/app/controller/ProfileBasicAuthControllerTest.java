@@ -26,9 +26,7 @@ import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformProfileRoleRepository;
-import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
@@ -42,6 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -69,16 +68,11 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   private static RoleEntity roleEntity;
   private static PlatformProfileRoleEntity pprEntity;
 
-  private static final Long ID_TO_USE = 7L;
-
   @BeforeAll
   static void setUpBeforeAll(
       @Autowired PasswordUtils passwordUtils,
-      @Autowired PlatformRepository platformRepository,
       @Autowired ProfileRepository profileRepository,
-      @Autowired RoleRepository roleRepository,
-      @Autowired PlatformProfileRoleRepository pprRepository,
-      @Autowired TokenRepository tokenRepository) {
+      @Autowired PlatformProfileRoleRepository pprRepository) {
     platformEntity = TestData.getPlatformEntities().get(6);
     profileEntity = TestData.getProfileEntities().get(6);
     roleEntity = TestData.getRoleEntities().get(6);
@@ -93,11 +87,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @AfterAll
   static void tearDownAfterAll(
-      @Autowired PlatformRepository platformRepository,
       @Autowired ProfileRepository profileRepository,
-      @Autowired RoleRepository roleRepository,
-      @Autowired PlatformProfileRoleRepository pprRepository,
-      @Autowired TokenRepository tokenRepository) {
+      @Autowired PlatformProfileRoleRepository pprRepository) {
     pprRepository.deleteById(pprEntity.getId());
 
     profileEntity.setIsValidated(true);
@@ -125,7 +116,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Success")
     void test_Success() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -133,7 +126,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -199,7 +193,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure No Refresh Token Cookie")
     void test_Failure_NoRefreshTokenCookie() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -207,7 +203,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -266,7 +263,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure No Csrf Token Cookie")
     void test_Failure_NoCsrfTokenCookie() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -274,7 +273,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -333,7 +333,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure No Csrf Token Header")
     void test_Failure_NoCsrfTokenHeader() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -341,7 +343,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -400,7 +403,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Mismatch Csrf Token")
     void test_Failure_MismatchCsrfToken() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -408,7 +413,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getRefreshToken())
@@ -468,7 +474,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Refresh Token Not Found")
     void test_Failure_RefreshTokenNotFound() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -476,7 +484,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -536,7 +545,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Platform Mismatch")
     void test_Failure_PlatformMismatch() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -544,7 +555,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      ID, profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -603,7 +615,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Profile Mismatch")
     void test_Failure_ProfileMismatch() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -611,7 +625,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), ID))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -670,7 +685,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Deleted Token")
     void test_Failure_DeletedToken() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity.setDeletedDate(LocalDateTime.now());
       tokenEntity = tokenRepository.save(tokenEntity);
 
@@ -679,7 +696,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -738,7 +756,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Refresh Token Failure Expired Token")
     void test_Failure_ExpiredToken() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity.setExpiryDate(LocalDateTime.now().minusSeconds(61L));
       tokenEntity = tokenRepository.save(tokenEntity);
 
@@ -747,7 +767,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -807,7 +828,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @DisplayName("Refresh Token Failure Deleted Platform")
     void test_Failure_DeletedPlatform() {
       PlatformEntity deletedPlatformEntity = TestData.getPlatformEntities().getLast();
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, deletedPlatformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), deletedPlatformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -815,7 +838,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_DELETED, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      ID_DELETED, profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -876,7 +900,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @DisplayName("Refresh Token Failure Deleted Profile")
     void test_Failure_DeletedProfile() {
       ProfileEntity deletedProfileEntity = TestData.getProfileEntities().getLast();
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, deletedProfileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, deletedProfileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
 
       WebTestClient.ResponseSpec responseSpec =
@@ -884,7 +910,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_DELETED))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), ID_DELETED))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
@@ -949,7 +976,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      platformEntity.getId(), profileEntity.getId()))
               .exchange()
               .expectStatus()
               .isUnauthorized()
@@ -977,8 +1005,12 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Logout Success")
     void test_Success() {
-      TokenEntity tokenEntity1 = TestData.getTokenEntity(1, platformEntity, profileEntity);
-      TokenEntity tokenEntity2 = TestData.getTokenEntity(2, platformEntity, profileEntity);
+      TokenEntity tokenEntity1 =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
+      TokenEntity tokenEntity2 =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity1 = tokenRepository.save(tokenEntity1);
       tokenEntity2 = tokenRepository.save(tokenEntity2);
       assertNull(tokenEntity1.getDeletedDate());
@@ -989,7 +1021,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
+                      platformEntity.getId(), profileEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange();
 
@@ -1027,7 +1060,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     @Test
     @DisplayName("Logout Failure Profile Not Found")
     void test_Failure_ProfileNotFound() {
-      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity =
+          TestData.getTokenEntity(
+              ThreadLocalRandom.current().nextInt(1, 9999), platformEntity, profileEntity);
       tokenEntity = tokenRepository.save(tokenEntity);
       assertNull(tokenEntity.getDeletedDate());
 
@@ -1078,7 +1113,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
+                      platformEntity.getId(), profileEntity.getId()))
               .exchange()
               .expectStatus()
               .isUnauthorized()
@@ -1112,7 +1148,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
           .uri(
               String.format(
                   "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                  ID_TO_USE, profileEntity.getEmail()))
+                  platformEntity.getId(), profileEntity.getEmail()))
           .header("Authorization", "Basic " + basicAuthCredentialsForTest)
           .exchange()
           .expectStatus()
@@ -1145,7 +1181,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      ID_TO_USE, profileEntity.getEmail()))
+                      platformEntity.getId(), profileEntity.getEmail()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -1186,7 +1222,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      ID_TO_USE, EMAIL_NOT_FOUND))
+                      platformEntity.getId(), EMAIL_NOT_FOUND))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -1228,7 +1264,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      ID_TO_USE, profileEntity.getEmail()))
+                      platformEntity.getId(), profileEntity.getEmail()))
               .exchange()
               .expectStatus()
               .isUnauthorized()
@@ -1263,7 +1299,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
           .uri(
               String.format(
                   "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                  ID_TO_USE, profileEntity.getEmail()))
+                  platformEntity.getId(), profileEntity.getEmail()))
           .header("Authorization", "Basic " + basicAuthCredentialsForTest)
           .exchange()
           .expectStatus()
@@ -1296,7 +1332,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      ID_TO_USE, profileEntity.getEmail()))
+                      platformEntity.getId(), profileEntity.getEmail()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -1336,7 +1372,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      ID_TO_USE, EMAIL_NOT_FOUND))
+                      platformEntity.getId(), EMAIL_NOT_FOUND))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -1377,7 +1413,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      ID_TO_USE, profileEntity.getEmail()))
+                      platformEntity.getId(), profileEntity.getEmail()))
               .exchange()
               .expectStatus()
               .isUnauthorized()
@@ -1403,7 +1439,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Nested
   @DisplayName("Reset Profile Tests")
   class ResetProfileTests {
-    private static final String PASSWORD_BEFORE_RESET = "password-1";
     private static final String PASSWORD_AFTER_RESET = "password-9";
 
     @Test
@@ -1417,7 +1452,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
           new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD_AFTER_RESET);
       webTestClient
           .post()
-          .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", ID_TO_USE))
+          .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
           .header("Authorization", "Basic " + basicAuthCredentialsForTest)
           .bodyValue(request)
           .exchange()
@@ -1451,7 +1486,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       ResponseWithMetadata response =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", ID_TO_USE))
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .bodyValue(request)
               .exchange()
@@ -1487,7 +1522,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       ResponseWithMetadata response =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", ID_TO_USE))
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .bodyValue(request)
               .exchange()
@@ -1529,7 +1564,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       ResponseWithMetadata response =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", ID_TO_USE))
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
               .bodyValue(request)
               .exchange()
               .expectStatus()
