@@ -2,6 +2,8 @@ package integration.auth.service.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -20,6 +22,7 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
+import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.PlatformRepository;
@@ -28,11 +31,14 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
+import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 import integration.BaseTest;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,11 +49,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Autowired private ApplicationEventPublisher publisher;
   @Autowired private ProfileRepository profileRepository;
+  @Autowired private TokenRepository tokenRepository;
 
   @MockitoBean private AuditService auditService;
   @MockitoBean private EmailService emailService;
@@ -59,8 +67,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   private static PlatformProfileRoleEntity pprEntity;
 
   private static final Long ID_TO_USE = 7L;
-  private static final String PASSWORD_BEFORE_RESET = "password-1";
-  private static final String PASSWORD_AFTER_RESET = "password-9";
 
   @BeforeAll
   static void setUpBeforeAll(
@@ -78,7 +84,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     pprRepository.save(pprEntity);
 
     // hash password
-    profileEntity.setPassword(passwordUtils.hashPassword(PASSWORD_BEFORE_RESET));
+    profileEntity.setPassword(passwordUtils.hashPassword("password-1"));
     profileRepository.save(profileEntity);
   }
 
@@ -108,6 +114,232 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @AfterEach
   void tearDown() {
     reset(auditService, emailService, envServiceConnector, publisher);
+  }
+
+  @Nested
+  @DisplayName("Logout Tests")
+  class LogoutTests {
+    @Test
+    @DisplayName("Logout Success Refresh Token Cookie")
+    void test_Success_RefreshToken() {
+      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      tokenEntity = tokenRepository.save(tokenEntity);
+      assertNull(tokenEntity.getDeletedDate());
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .get()
+              .uri(
+                  String.format(
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
+              .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
+              .exchange();
+
+      responseSpec.expectStatus().isNoContent();
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_CSRF_TOKEN, value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
+      assertNotNull(tokenEntity.getDeletedDate());
+
+      // verify audit service called for logout success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT)),
+              any(String.class));
+
+      // reset
+      tokenRepository.deleteById(tokenEntity.getId());
+    }
+
+    @Test
+    @DisplayName("Logout Success No Refresh Token Cookie")
+    void test_Success_NoRefreshToken() {
+      TokenEntity tokenEntity1 = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity2 = TestData.getTokenEntity(2, platformEntity, profileEntity);
+      tokenEntity1 = tokenRepository.save(tokenEntity1);
+      tokenEntity2 = tokenRepository.save(tokenEntity2);
+      assertNull(tokenEntity1.getDeletedDate());
+      assertNull(tokenEntity2.getDeletedDate());
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .get()
+              .uri(
+                  String.format(
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .exchange();
+
+      responseSpec.expectStatus().isNoContent();
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_CSRF_TOKEN, value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      tokenEntity1 = tokenRepository.findById(tokenEntity1.getId()).orElseThrow();
+      tokenEntity2 = tokenRepository.findById(tokenEntity2.getId()).orElseThrow();
+      assertNotNull(tokenEntity1.getDeletedDate());
+      assertNotNull(tokenEntity2.getDeletedDate());
+
+      // verify audit service called for logout success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT)),
+              any(String.class));
+
+      // reset
+      tokenRepository.deleteById(tokenEntity1.getId());
+      tokenRepository.deleteById(tokenEntity2.getId());
+    }
+
+    @Test
+    @DisplayName("Logout Success Refresh Token Not Found")
+    void test_Success_BadRefreshToken() {
+      TokenEntity tokenEntity1 = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      TokenEntity tokenEntity2 = TestData.getTokenEntity(2, platformEntity, profileEntity);
+      tokenEntity1 = tokenRepository.save(tokenEntity1);
+      tokenEntity2 = tokenRepository.save(tokenEntity2);
+      assertNull(tokenEntity1.getDeletedDate());
+      assertNull(tokenEntity2.getDeletedDate());
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .get()
+              .uri(
+                  String.format(
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, "TOKEN-DOES-NOT-EXIST")
+              .exchange();
+
+      responseSpec.expectStatus().isNoContent();
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_CSRF_TOKEN, value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      tokenEntity1 = tokenRepository.findById(tokenEntity1.getId()).orElseThrow();
+      tokenEntity2 = tokenRepository.findById(tokenEntity2.getId()).orElseThrow();
+      assertNotNull(tokenEntity1.getDeletedDate());
+      assertNotNull(tokenEntity2.getDeletedDate());
+
+      // verify audit service called for logout success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT)),
+              any(String.class));
+
+      // reset
+      tokenRepository.deleteById(tokenEntity1.getId());
+      tokenRepository.deleteById(tokenEntity2.getId());
+    }
+
+    @Test
+    @DisplayName("Logout Failure Profile Not Found")
+    void test_Failure_ProfileNotFound() {
+      TokenEntity tokenEntity = TestData.getTokenEntity(1, platformEntity, profileEntity);
+      tokenEntity = tokenRepository.save(tokenEntity);
+      assertNull(tokenEntity.getDeletedDate());
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .get()
+              .uri(
+                  String.format(
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
+                      ID_NOT_FOUND, ID_NOT_FOUND))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, "TOKEN-NOT-FOUND")
+              .exchange();
+
+      responseSpec.expectStatus().isNotFound();
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec
+          .expectCookie()
+          .value(
+              ConstantUtils.COOKIE_CSRF_TOKEN, value -> assertTrue(CommonUtilities.isEmpty(value)));
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
+      assertNull(tokenEntity.getDeletedDate());
+
+      // verify audit service called for logout success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              isNull(),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR)),
+              any(String.class));
+
+      // reset
+      tokenRepository.deleteById(tokenEntity.getId());
+    }
+
+    @Test
+    @DisplayName("Logout Failure No Auth")
+    void test_Failure_NoAuth() {
+      ResponseWithMetadata response =
+          webTestClient
+              .get()
+              .uri(
+                  String.format(
+                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout", ID_TO_USE, ID_TO_USE))
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertEquals(
+          "Not authorized to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+    }
   }
 
   @Nested
@@ -196,7 +428,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      ID_TO_USE, PASSWORD_BEFORE_RESET))
+                      ID_TO_USE, EMAIL_NOT_FOUND))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -216,7 +448,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .getResponseMetadata()
               .responseStatusInfo()
               .errMsg()
-              .contains("Platform Profile Role Not Found for [7,password-1]"));
+              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
 
       // verify audit service called for reset failure
       verify(auditService, after(100).times(1))
@@ -346,7 +578,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .uri(
                   String.format(
                       "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      ID_TO_USE, PASSWORD_BEFORE_RESET))
+                      ID_TO_USE, EMAIL_NOT_FOUND))
               .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange()
               .expectStatus()
@@ -366,7 +598,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .getResponseMetadata()
               .responseStatusInfo()
               .errMsg()
-              .contains("Platform Profile Role Not Found for [7,password-1]"));
+              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
 
       // verify audit service called for reset failure
       verify(auditService, after(100).times(1))
@@ -413,6 +645,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Nested
   @DisplayName("Reset Profile Tests")
   class ResetProfileTests {
+    private static final String PASSWORD_BEFORE_RESET = "password-1";
+    private static final String PASSWORD_AFTER_RESET = "password-9";
 
     @Test
     @DisplayName("Reset Profile Success")
@@ -490,7 +724,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     void test_Failure_NotFound() {
       profileRepository.findById(profileEntity.getId()).orElseThrow();
       ProfilePasswordRequest request =
-          new ProfilePasswordRequest(PASSWORD_BEFORE_RESET, PASSWORD_AFTER_RESET);
+          new ProfilePasswordRequest(EMAIL_NOT_FOUND, PASSWORD_AFTER_RESET);
 
       ResponseWithMetadata response =
           webTestClient
@@ -516,7 +750,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .getResponseMetadata()
               .responseStatusInfo()
               .errMsg()
-              .contains("Platform Profile Role Not Found for [7,password-1]"));
+              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
 
       // verify audit service called for reset failure
       verify(auditService, after(100).times(1))
@@ -528,7 +762,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Reset Profile Failure Profile No Auth")
+    @DisplayName("Reset Profile Failure No Auth")
     void test_Failure_NoAuth() {
       ProfileEntity existingProfileEntity =
           profileRepository.findById(profileEntity.getId()).orElseThrow();

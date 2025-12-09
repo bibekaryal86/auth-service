@@ -230,7 +230,7 @@ public class ProfileBasicAuthController {
     } catch (Exception ex) {
       log.error("Refresh Token: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
-          circularDependencyService.readProfile(profileId, Boolean.TRUE);
+          circularDependencyService.readProfileNoException(profileId, Boolean.TRUE);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
@@ -258,14 +258,20 @@ public class ProfileBasicAuthController {
       if (CommonUtilities.isEmpty(refreshTokenRequest)) {
         tokenService.setTokenDeletedDateByProfileId(profileId);
       } else {
-        final TokenEntity tokenEntity = tokenService.readTokenByRefreshToken(refreshTokenRequest);
-        profileEntity = tokenEntity.getProfile();
-        tokenService.saveToken(
-            tokenEntity.getId(),
-            LocalDateTime.now(),
-            tokenEntity.getPlatform(),
-            tokenEntity.getProfile(),
-            CommonUtils.getIpAddress(request));
+        final TokenEntity tokenEntity =
+            tokenService.readTokenByRefreshTokenNoException(refreshTokenRequest);
+
+        if (tokenEntity == null) {
+          tokenService.setTokenDeletedDateByProfileId(profileId);
+        } else {
+          profileEntity = tokenEntity.getProfile();
+          tokenService.saveToken(
+              tokenEntity.getId(),
+              LocalDateTime.now(),
+              tokenEntity.getPlatform(),
+              tokenEntity.getProfile(),
+              CommonUtils.getIpAddress(request));
+        }
       }
 
       if (profileEntity == null) {
@@ -295,7 +301,7 @@ public class ProfileBasicAuthController {
     } catch (Exception ex) {
       log.error("Logout: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
-          circularDependencyService.readProfile(profileId, Boolean.TRUE);
+          circularDependencyService.readProfileNoException(profileId, Boolean.TRUE);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(

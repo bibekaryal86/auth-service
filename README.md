@@ -34,7 +34,4 @@ A small utility for authentication and authorization with platforms, profiles, r
 ## TODO
   * Update this README.md for proper documentation
 
-
-readPlatformProfileRoles
-readPlatformRolePermissions
-readTokenByRefreshTokenNoException
+see if ID_TO_USE can be removed from ProfileBasicAuthControllerTest

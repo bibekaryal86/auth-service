@@ -34,6 +34,7 @@ public abstract class BaseTest {
   protected static final Long ID_DELETED = 9L;
   protected static final Long ID_NOT_FOUND = 99L;
   protected static final String EMAIL = "profile@one.com";
+  protected static final String EMAIL_NOT_FOUND = "email@notfound.com";
   protected static final boolean INCLUDE_DELETED = true;
 
   protected String basicAuthCredentialsForTest =

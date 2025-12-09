@@ -114,4 +114,12 @@ public class CircularDependencyService {
       throw new ElementNotActiveException("Profile", String.valueOf(id));
     }
   }
+
+  public ProfileEntity readProfileNoException(final Long id, final boolean isIncludeDeleted) {
+    try {
+      return readProfile(id, isIncludeDeleted);
+    } catch (Exception ignored) {
+      return null;
+    }
+  }
 }
