@@ -72,7 +72,7 @@ public class ProfileBasicAuthController {
         baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
       final PlatformEntity platformEntity =
-          circularDependencyService.readPlatform(platformId, false);
+          circularDependencyService.readPlatform(platformId, Boolean.FALSE);
       final ProfileEntity profileEntity =
           profileService.createProfile(platformEntity, profileRequest, baseUrlForLinkInEmail);
       CompletableFuture.runAsync(

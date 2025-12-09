@@ -8,10 +8,14 @@ import integration.BaseTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
+@Tag("integration")
 @DisplayName("RawSqlRepository Integration Tests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RawSqlRepositoryTest extends BaseTest {
 
   @Autowired private RawSqlRepository rawSqlRepository;

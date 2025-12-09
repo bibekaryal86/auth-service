@@ -22,9 +22,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@Tag("integration")
+@DisplayName("ProfileNoAuthControllerTest Tests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ProfileNoAuthControllerTest extends BaseTest {
 
   private static final String REDIRECT_URL = "https://some-app-redirect-url.com/home/";

@@ -43,25 +43,30 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ThreadLocalRandom;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+@Tag("integration")
+@DisplayName("ProfileBasicAuthControllerTest Tests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Autowired private ApplicationEventPublisher publisher;
   @Autowired private PlatformRepository platformRepository;
   @Autowired private ProfileRepository profileRepository;
   @Autowired private RoleRepository roleRepository;
+  @Autowired private PlatformProfileRoleRepository pprRepository;
   @Autowired private TokenRepository tokenRepository;
+  @Autowired private PasswordUtils passwordUtils;
 
   @MockitoBean private AuditService auditService;
   @MockitoBean private EmailService emailService;
@@ -74,11 +79,17 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
   private static final String PASSWORD = "password-1";
 
-  @BeforeAll
-  static void setUpBeforeAll(
-      @Autowired PasswordUtils passwordUtils,
-      @Autowired ProfileRepository profileRepository,
-      @Autowired PlatformProfileRoleRepository pprRepository) {
+  // better to use BeforeAll and AfterAll
+  // but did not work in Nested test classes
+  // should revisit in future to put them in each Nested class
+  @BeforeEach
+  void setUp() {
+    doNothing().when(emailService).sendProfilePasswordEmail(any(), any());
+    doNothing().when(emailService).sendProfileValidationEmail(any(), any(), any());
+    doNothing().when(emailService).sendProfileResetEmail(any(), any(), any());
+    when(envServiceConnector.getBaseUrlForLinkInEmail())
+        .thenReturn("https://base-url-for-link-in-email.com");
+
     platformEntity = TestData.getPlatformEntities().get(6);
     profileEntity = TestData.getProfileEntities().get(6);
     roleEntity = TestData.getRoleEntities().get(6);
@@ -94,29 +105,13 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     profileRepository.save(profileEntity);
   }
 
-  @AfterAll
-  static void tearDownAfterAll(
-      @Autowired ProfileRepository profileRepository,
-      @Autowired PlatformProfileRoleRepository pprRepository) {
-    pprRepository.deleteById(pprEntity.getId());
-
-    profileEntity.setIsValidated(true);
-    profileEntity.setPassword("password7");
-    profileRepository.save(profileEntity);
-  }
-
-  @BeforeEach
-  void setUpBeforeEach() {
-    doNothing().when(emailService).sendProfilePasswordEmail(any(), any());
-    doNothing().when(emailService).sendProfileValidationEmail(any(), any(), any());
-    doNothing().when(emailService).sendProfileResetEmail(any(), any(), any());
-    when(envServiceConnector.getBaseUrlForLinkInEmail())
-        .thenReturn("https://base-url-for-link-in-email.com");
-  }
-
   @AfterEach
   void tearDown() {
     reset(auditService, emailService, envServiceConnector, publisher);
+    pprRepository.deleteById(pprEntity.getId());
+
+    profileEntity.setPassword("password7");
+    profileRepository.save(profileEntity);
   }
 
   @Nested
@@ -183,12 +178,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN)),
               any(String.class));
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -251,12 +240,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN)),
               any(String.class));
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -365,12 +348,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
               any(String.class));
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -435,11 +412,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       // reset
       platformEntity.setDeletedDate(null);
       platformRepository.save(platformEntity);
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -503,9 +475,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
       // reset
       profileEntity.setDeletedDate(null);
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
       profileRepository.save(profileEntity);
     }
 
@@ -571,11 +540,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       // reset
       roleEntity.setDeletedDate(null);
       roleRepository.save(roleEntity);
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -626,6 +590,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
 
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
       // verify audit service called for token login success
       verify(auditService, after(100).times(1))
           .auditProfile(
@@ -633,15 +600,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
               any(String.class));
-
-      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
-      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -692,6 +650,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
 
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
       // verify audit service called for token login success
       verify(auditService, after(100).times(1))
           .auditProfile(
@@ -699,15 +660,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
               any(String.class));
-
-      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
-      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -758,6 +710,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
 
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
       // verify audit service called for token login success
       verify(auditService, after(100).times(1))
           .auditProfile(
@@ -765,15 +720,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
               any(String.class));
-
-      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
-      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
@@ -821,6 +767,9 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
       responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
 
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
       // verify audit service called for token login success
       verify(auditService, after(100).times(1))
           .auditProfile(
@@ -828,15 +777,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               any(ProfileEntity.class),
               argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
               any(String.class));
-
-      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
-      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
-
-      // reset
-      profileEntity.setIsValidated(true);
-      profileEntity.setLoginAttempts(2);
-      profileEntity.setLastLogin(null);
-      profileRepository.save(profileEntity);
     }
 
     @Test
