@@ -26,7 +26,9 @@ import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.repository.PlatformProfileRoleRepository;
+import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
@@ -56,7 +58,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class ProfileBasicAuthControllerTest extends BaseTest {
 
   @Autowired private ApplicationEventPublisher publisher;
+  @Autowired private PlatformRepository platformRepository;
   @Autowired private ProfileRepository profileRepository;
+  @Autowired private RoleRepository roleRepository;
   @Autowired private TokenRepository tokenRepository;
 
   @MockitoBean private AuditService auditService;
@@ -67,6 +71,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   private static ProfileEntity profileEntity;
   private static RoleEntity roleEntity;
   private static PlatformProfileRoleEntity pprEntity;
+
+  private static final String PASSWORD = "password-1";
 
   @BeforeAll
   static void setUpBeforeAll(
@@ -81,7 +87,10 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
     pprRepository.save(pprEntity);
 
     // hash password
-    profileEntity.setPassword(passwordUtils.hashPassword("password-1"));
+    profileEntity.setPassword(passwordUtils.hashPassword(PASSWORD));
+    profileEntity.setIsValidated(true);
+    profileEntity.setLoginAttempts(2);
+    profileEntity.setLastLogin(null);
     profileRepository.save(profileEntity);
   }
 
@@ -111,8 +120,803 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   }
 
   @Nested
+  @DisplayName("Login Tests")
+  class LoginTests {
+
+    @Test
+    @DisplayName("Login Success")
+    void test_Success() {
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertNull(profileEntity.getLastLogin());
+      assertEquals(2, profileEntity.getLoginAttempts());
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isOk();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertNotNull(response.getAccessToken());
+      assertNotNull(response.getAuthToken());
+      assertEquals(profileEntity.getEmail(), response.getAuthToken().getProfile().getEmail());
+      // refresh and csrf tokens should not be contained in the body
+      assertNull(response.getRefreshToken());
+      assertNull(response.getCsrfToken());
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec
+          .expectCookie()
+          .maxAge(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              Duration.of(ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS));
+      responseSpec
+          .expectCookie()
+          .maxAge(
+              ConstantUtils.COOKIE_CSRF_TOKEN,
+              Duration.of(ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertNotNull(profileEntity.getLastLogin());
+      assertEquals(0, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN)),
+              any(String.class));
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Success Null Login Attempts")
+    void test_Success_NullLoginAttempts() {
+      profileEntity.setLoginAttempts(null);
+      profileEntity.setLastLogin(LocalDateTime.now().minusDays(1L));
+      profileRepository.save(profileEntity);
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isOk();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertNotNull(response.getAccessToken());
+      assertNotNull(response.getAuthToken());
+      assertEquals(profileEntity.getEmail(), response.getAuthToken().getProfile().getEmail());
+      // refresh and csrf tokens should not be contained in the body
+      assertNull(response.getRefreshToken());
+      assertNull(response.getCsrfToken());
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec
+          .expectCookie()
+          .maxAge(
+              ConstantUtils.COOKIE_REFRESH_TOKEN,
+              Duration.of(ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS));
+      responseSpec
+          .expectCookie()
+          .maxAge(
+              ConstantUtils.COOKIE_CSRF_TOKEN,
+              Duration.of(ConstantUtils.REFRESH_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertNotNull(profileEntity.getLastLogin());
+      assertEquals(0, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN)),
+              any(String.class));
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Invalid Email")
+    void test_Failure_InvalidEmail() {
+      ProfilePasswordRequest request = new ProfilePasswordRequest(EMAIL_NOT_FOUND, PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isNotFound();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile Not Found for [email@notfound.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              isNull(),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+    }
+
+    @Test
+    @DisplayName("Login Failure Invalid Platform")
+    void test_Failure_InvalidPlatform() {
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", ID))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isNotFound();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Platform Profile Role Not Found for [1,profile@seven.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Platform Deleted")
+    void test_Failure_PlatformDeleted() {
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      platformEntity.setDeletedDate(LocalDateTime.now());
+      platformRepository.save(platformEntity);
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Profile Role Not Found for [7,profile@seven.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      // reset
+      platformEntity.setDeletedDate(null);
+      platformRepository.save(platformEntity);
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Profile Deleted")
+    void test_Failure_ProfileDeleted() {
+      profileEntity.setDeletedDate(LocalDateTime.now());
+      profileRepository.save(profileEntity);
+
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Profile Role Not Found for [7,profile@seven.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      // reset
+      profileEntity.setDeletedDate(null);
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Role Deleted")
+    void test_Failure_RoleDeleted() {
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      roleEntity.setDeletedDate(LocalDateTime.now());
+      roleRepository.save(roleEntity);
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Profile Role Not Found for [7,profile@seven.com]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      // reset
+      roleEntity.setDeletedDate(null);
+      roleRepository.save(roleEntity);
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Profile Not Validated")
+    void test_Failure_ProfileNotValidated() {
+      profileEntity.setIsValidated(false);
+      profileRepository.save(profileEntity);
+
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile not validated, please check your email for instructions to validate account!",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Profile Locked")
+    void test_Failure_ProfileLocked() {
+      profileEntity.setLoginAttempts(5);
+      profileRepository.save(profileEntity);
+
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile is locked, please reset your account!",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Profile Inactive")
+    void test_Failure_ProfileInactive() {
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      profileEntity.setLastLogin(LocalDateTime.now().minusDays(46));
+      profileRepository.save(profileEntity);
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isForbidden();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Profile is not active, please revalidate or reset your account!",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Incorrect Password")
+    void test_Failure_IncorrectPassword() {
+      int loginAttempts = profileEntity.getLoginAttempts();
+
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD + "IS_WRONG");
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isUnauthorized();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Unauthorized Profile, email and/or password not found in the system...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      // assert cookies
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_REFRESH_TOKEN, Boolean.TRUE);
+      responseSpec.expectCookie().httpOnly(ConstantUtils.COOKIE_CSRF_TOKEN, Boolean.FALSE);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_REFRESH_TOKEN, Duration.ZERO);
+      responseSpec.expectCookie().maxAge(ConstantUtils.COOKIE_CSRF_TOKEN, Duration.ZERO);
+
+      // verify audit service called for token login success
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR)),
+              any(String.class));
+
+      profileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
+      assertEquals(loginAttempts + 1, profileEntity.getLoginAttempts());
+
+      // reset
+      profileEntity.setIsValidated(true);
+      profileEntity.setLoginAttempts(2);
+      profileEntity.setLastLogin(null);
+      profileRepository.save(profileEntity);
+    }
+
+    @Test
+    @DisplayName("Login Failure Bad Request")
+    void test_Failure_BadRequest() {
+      ProfilePasswordRequest request = new ProfilePasswordRequest("", null);
+
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange();
+
+      // assert status
+      responseSpec.expectStatus().isBadRequest();
+
+      // assert body
+      ProfilePasswordTokenResponse response =
+          responseSpec
+              .expectBody(ProfilePasswordTokenResponse.class)
+              .returnResult()
+              .getResponseBody();
+      assertNotNull(response);
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertTrue(
+          response.getResponseMetadata().responseStatusInfo().errMsg().contains("Email is Required")
+              && response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("Password is Required"));
+      assertTrue(
+          response.getAccessToken() == null
+              && response.getAuthToken() == null
+              && response.getRefreshToken() == null
+              && response.getCsrfToken() == null);
+
+      verifyNoInteractions(auditService);
+    }
+
+    @Test
+    @DisplayName("Login Failure No Auth")
+    void test_Failure_NoAuth() {
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+      ResponseWithMetadata response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertEquals(
+          "Not authorized to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+    }
+  }
+
+  @Nested
   @DisplayName("Refresh Token Tests")
   class RefreshTokenTests {
+
     @Test
     @DisplayName("Refresh Token Success")
     void test_Success() {
@@ -1002,6 +1806,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Nested
   @DisplayName("Logout Tests")
   class LogoutTests {
+
     @Test
     @DisplayName("Logout Success")
     void test_Success() {

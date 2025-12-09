@@ -343,10 +343,13 @@ public class ProfileService {
 
   private void loginProfileValidate(
       final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
+    // this code block should never be true
+    // deleted date is checked when looking up PPR
     if (platformEntity.getDeletedDate() != null) {
       throw new ElementNotActiveException("Platform", String.valueOf(platformEntity.getId()));
     }
-
+    // this code block should never be true
+    // deleted date is checked when looking up PPR
     if (profileEntity.getDeletedDate() != null) {
       throw new ElementNotActiveException("Profile", profileEntity.getEmail());
     }
