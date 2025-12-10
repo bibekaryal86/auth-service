@@ -24,6 +24,7 @@ import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +34,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -68,14 +68,12 @@ public class ProfileService {
 
     // profile_address
     ProfileAddressEntity profileAddressEntity = null;
-
-    if (profileRequest.getAddressRequest() != null) {
+    if (profileRequest.getAddressRequest() == null) {
       profileEntity.setProfileAddress(null);
     } else {
       profileAddressEntity = new ProfileAddressEntity();
       BeanUtils.copyProperties(
           profileRequest.getAddressRequest(), profileAddressEntity, "id", "profileId");
-      profileAddressEntity.setProfile(profileEntity);
     }
 
     // platform_profile_role
@@ -89,7 +87,9 @@ public class ProfileService {
     profileEntity = profileRepository.save(profileEntity);
     // save profile address
     if (profileAddressEntity != null) {
-      profileAddressRepository.save(profileAddressEntity);
+      profileAddressEntity.setProfile(profileEntity);
+      profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
+      profileEntity.setProfileAddress(profileAddressEntity);
     }
     // save platform profile role
     PlatformProfileRoleRequest platformProfileRoleRequest =
@@ -336,7 +336,7 @@ public class ProfileService {
 
   private void createProfileValidate(final ProfileRequest profileRequest) {
     // password required for create profile
-    if (!StringUtils.hasText(profileRequest.getPassword())) {
+    if (CommonUtilities.isEmpty(profileRequest.getPassword())) {
       throw new ElementMissingException("Profile", "password");
     }
   }

@@ -230,7 +230,7 @@ public class EntityDtoConvertUtils {
     if (isIncludeExtras) {
       final List<PlatformRolePermissionEntity> prpEntities =
           prpService.readPlatformRolePermissionsByPermissionIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
       final List<PlatformRolePermissionDto> prpDtos =
           CommonUtilities.isEmpty(prpEntities)
               ? Collections.emptyList()
@@ -361,10 +361,10 @@ public class EntityDtoConvertUtils {
     if (isIncludeExtras) {
       final List<PlatformProfileRoleEntity> pprEntities =
           pprService.readPlatformProfileRolesByRoleIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
       final List<PlatformRolePermissionEntity> prpEntities =
           prpService.readPlatformRolePermissionsByRoleIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
 
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
@@ -501,10 +501,10 @@ public class EntityDtoConvertUtils {
     if (isIncludeExtras) {
       final List<PlatformProfileRoleEntity> pprEntities =
           pprService.readPlatformProfileRolesByPlatformIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
       final List<PlatformRolePermissionEntity> prpEntities =
           prpService.readPlatformRolePermissionsByPlatformIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
 
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
@@ -649,7 +649,7 @@ public class EntityDtoConvertUtils {
     if (isIncludeExtras) {
       final List<PlatformProfileRoleEntity> pprEntities =
           pprService.readPlatformProfileRolesByProfileIds(
-              Collections.singletonList(entity.getId()), isIncludeDeleted);
+              List.of(entity.getId()), isIncludeDeleted);
       final List<PlatformProfileRoleDto> pprDtos =
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()

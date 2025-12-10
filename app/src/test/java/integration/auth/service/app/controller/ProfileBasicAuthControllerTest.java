@@ -12,6 +12,7 @@ import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -19,19 +20,26 @@ import static org.mockito.Mockito.when;
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
+import auth.service.app.model.dto.ProfileRequest;
+import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
+import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
+import auth.service.app.model.enums.TypeEnums;
+import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.PlatformRepository;
+import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
@@ -43,6 +51,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,6 +74,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   @Autowired private ProfileRepository profileRepository;
   @Autowired private RoleRepository roleRepository;
   @Autowired private PlatformProfileRoleRepository pprRepository;
+  @Autowired private ProfileAddressRepository profileAddressRepository;
   @Autowired private TokenRepository tokenRepository;
   @Autowired private PasswordUtils passwordUtils;
 
@@ -112,6 +122,321 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
     profileEntity.setPassword("password7");
     profileRepository.save(profileEntity);
+  }
+
+  @Nested
+  @DisplayName("Create Profile Tests")
+  class CreateProfileTests {
+
+    @Test
+    @DisplayName("Create Profile Success")
+    void test_Success() {
+      String roleName = roleEntity.getRoleName();
+      roleEntity.setRoleName(ConstantUtils.ROLE_NAME_GUEST);
+      roleRepository.save(roleEntity);
+
+      ProfileRequest request =
+          TestData.getProfileRequest(
+              "FirstName", "LastName", "new@email.com", "NewPassword123", null);
+
+      ProfileResponse response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertEquals(1, response.getProfiles().size());
+      assertEquals(request.getEmail(), response.getProfiles().getFirst().getEmail());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(
+          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0),
+          response.getResponseMetadata().responseCrudInfo());
+
+      ProfileEntity newProfileEntity =
+          profileRepository.findById(response.getProfiles().getFirst().getId()).orElseThrow();
+      assertEquals(request.getEmail(), newProfileEntity.getEmail());
+      assertNotEquals(request.getPassword(), newProfileEntity.getPassword());
+
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_CREATE)),
+              any(String.class));
+
+      verify(publisher, times(1))
+          .publishEvent(
+              argThat(
+                  event -> {
+                    ProfileEvent profileEvent = (ProfileEvent) event;
+                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
+                    assertEquals(
+                        "https://base-url-for-link-in-email.com", profileEvent.getBaseUrl());
+                    return true;
+                  }));
+
+      // reset
+      roleEntity.setRoleName(roleName);
+      roleRepository.save(roleEntity);
+
+      pprRepository.deleteById(
+          new PlatformProfileRoleId(
+              platformEntity.getId(), newProfileEntity.getId(), roleEntity.getId()));
+      profileRepository.deleteById(newProfileEntity.getId());
+    }
+
+    @Test
+    @DisplayName("Create Profile Success Standard User With Address")
+    void test_Success_StandardUserWithAddress() {
+      when(envServiceConnector.getBaseUrlForLinkInEmail()).thenReturn(null);
+      String roleName = roleEntity.getRoleName();
+      roleEntity.setRoleName(ConstantUtils.ROLE_NAME_STANDARD);
+      roleRepository.save(roleEntity);
+
+      ProfileRequest request =
+          TestData.getProfileRequest(
+              "FirstName", "LastName", "new@email.com", "NewPassword123", null);
+      request.setGuestUser(false);
+      request.setAddressRequest(TestData.getProfileAddressRequest(null, null, "123 New St", false));
+
+      ProfileResponse response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isOk()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertNotNull(response);
+      assertNotNull(response.getProfiles());
+      assertEquals(1, response.getProfiles().size());
+      assertEquals(request.getEmail(), response.getProfiles().getFirst().getEmail());
+      assertNotNull(response.getProfiles().getFirst().getProfileAddress());
+      assertEquals("123 New St", response.getProfiles().getFirst().getProfileAddress().getStreet());
+      assertNotNull(response.getResponseMetadata());
+      assertEquals(
+          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0),
+          response.getResponseMetadata().responseCrudInfo());
+
+      ProfileEntity newProfileEntity =
+          profileRepository.findById(response.getProfiles().getFirst().getId()).orElseThrow();
+      assertEquals(request.getEmail(), newProfileEntity.getEmail());
+      assertNotEquals(request.getPassword(), newProfileEntity.getPassword());
+
+      verify(auditService, after(100).times(1))
+          .auditProfile(
+              any(HttpServletRequest.class),
+              any(ProfileEntity.class),
+              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_CREATE)),
+              any(String.class));
+
+      verify(publisher, times(1))
+          .publishEvent(
+              argThat(
+                  event -> {
+                    ProfileEvent profileEvent = (ProfileEvent) event;
+                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
+                    assertTrue(
+                        Pattern.matches(
+                            "^http://localhost:\\d+/authsvc$", profileEvent.getBaseUrl()));
+                    return true;
+                  }));
+
+      // reset
+      roleEntity.setRoleName(roleName);
+      roleRepository.save(roleEntity);
+
+      profileAddressRepository.deleteById(newProfileEntity.getProfileAddress().getId());
+      pprRepository.deleteById(
+          new PlatformProfileRoleId(
+              platformEntity.getId(), newProfileEntity.getId(), roleEntity.getId()));
+      profileRepository.deleteById(newProfileEntity.getId());
+    }
+
+    @Test
+    @DisplayName("Create Profile Failure Bad Request")
+    void test_Failure_BadRequest() {
+      ProfileRequest request = TestData.getProfileRequest("", null, "", "NewPassword123", null);
+
+      ResponseWithMetadata response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isBadRequest()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertTrue(
+          response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("First Name is required")
+              && response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("Last Name is required")
+              && response
+                  .getResponseMetadata()
+                  .responseStatusInfo()
+                  .errMsg()
+                  .contains("Email is required"));
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Create Profile Failure Validation Error")
+    void test_Failure_ValidationError() {
+      ProfileRequest request =
+          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
+
+      ProfileResponse response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isBadRequest()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(response != null && response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "[password] is Missing in [Profile] request",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Create Profile Failure Platform Deleted")
+    void test_Failure_PlatformDeleted() {
+      ProfileRequest request =
+          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
+
+      ProfileResponse response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", ID_DELETED))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isForbidden()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(response != null && response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Active Platform Not Found for [9]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Create Profile Failure Platform Not Found")
+    void test_Failure_PlatformNotFound() {
+      ProfileRequest request =
+          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
+
+      ProfileResponse response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", ID_NOT_FOUND))
+              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isNotFound()
+              .expectBody(ProfileResponse.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(response != null && response.getProfiles().isEmpty());
+      assertTrue(
+          response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+      assertEquals(
+          "Platform Not Found for [99]",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+      verifyNoInteractions(publisher);
+    }
+
+    @Test
+    @DisplayName("Create Profile Failure No Auth")
+    void test_Failure_NoAuth() {
+      ProfilePasswordRequest request =
+          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
+      ResponseWithMetadata response =
+          webTestClient
+              .post()
+              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
+              .bodyValue(request)
+              .exchange()
+              .expectStatus()
+              .isUnauthorized()
+              .expectBody(ResponseWithMetadata.class)
+              .returnResult()
+              .getResponseBody();
+
+      assertTrue(
+          response != null
+              && response.getResponseMetadata() != null
+              && response.getResponseMetadata().responseStatusInfo() != null
+              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
+
+      assertEquals(
+          "Not authorized to access this resource...",
+          response.getResponseMetadata().responseStatusInfo().errMsg());
+
+      verifyNoInteractions(auditService);
+    }
   }
 
   @Nested
