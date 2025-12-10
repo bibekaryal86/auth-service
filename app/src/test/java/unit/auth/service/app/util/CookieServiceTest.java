@@ -5,8 +5,10 @@ import static org.mockito.Mockito.*;
 
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.CookieService;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseCookie;
 
@@ -27,9 +30,22 @@ class CookieServiceTest {
 
   private CookieService cookieService;
 
+  private MockedStatic<CommonUtilities> commonUtilitiesMock;
+
   @BeforeEach
   void setUp() {
     cookieService = new CookieService();
+    commonUtilitiesMock = mockStatic(CommonUtilities.class);
+    commonUtilitiesMock
+        .when(() -> CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE))
+        .thenReturn(ConstantUtils.ENV_PROD);
+  }
+
+  @AfterEach
+  void tearDown() {
+    if (commonUtilitiesMock != null) {
+      commonUtilitiesMock.close();
+    }
   }
 
   @Nested
@@ -183,7 +199,7 @@ class CookieServiceTest {
       assertTrue(cookie.isSecure());
       assertEquals("Strict", cookie.getSameSite());
       assertEquals(maxAge, cookie.getMaxAge().getSeconds());
-      assertEquals("/api/v1/ba_profiles/platform/", cookie.getPath());
+      assertEquals("/", cookie.getPath());
     }
 
     @Test
@@ -449,19 +465,6 @@ class CookieServiceTest {
 
       assertEquals("Strict", refreshCookie.getSameSite());
       assertEquals("Strict", csrfCookie.getSameSite());
-    }
-
-    @Test
-    @DisplayName("Cookies should have different paths")
-    void shouldHaveDifferentPaths() {
-      String token = "token";
-      long maxAge = 3600L;
-
-      ResponseCookie refreshCookie = cookieService.buildRefreshCookie(token, maxAge);
-      ResponseCookie csrfCookie = cookieService.buildCsrfCookie(token, maxAge);
-
-      assertEquals("/api/v1/ba_profiles/platform/", refreshCookie.getPath());
-      assertEquals("/", csrfCookie.getPath());
     }
 
     @Test

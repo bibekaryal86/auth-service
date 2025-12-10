@@ -360,8 +360,7 @@ public class EntityDtoConvertUtils {
 
     if (isIncludeExtras) {
       final List<PlatformProfileRoleEntity> pprEntities =
-          pprService.readPlatformProfileRolesByRoleIds(
-              List.of(entity.getId()), isIncludeDeleted);
+          pprService.readPlatformProfileRolesByRoleIds(List.of(entity.getId()), isIncludeDeleted);
       final List<PlatformRolePermissionEntity> prpEntities =
           prpService.readPlatformRolePermissionsByRoleIds(
               List.of(entity.getId()), isIncludeDeleted);
