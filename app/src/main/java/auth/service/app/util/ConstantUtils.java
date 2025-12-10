@@ -45,6 +45,7 @@ public class ConstantUtils {
   public static final String ENV_EMAIL_API_URL = "EMAIL_API_URL";
   public static final String ENV_EMAIL_API_USERNAME = "EMAIL_API_USR";
   public static final String ENV_EMAIL_API_PASSWORD = "EMAIL_API_PWD";
+  public static final String ENV_ALLOWED_ORIGINS = "ALLOWED_ORIGINS";
   public static final List<String> ENV_KEY_NAMES =
       List.of(
           ENV_SERVER_PORT,
@@ -57,7 +58,8 @@ public class ConstantUtils {
           ENV_EMAIL_API_PASSWORD,
           ENV_ENVSVC_BASE_URL,
           ENV_ENVSVC_USERNAME,
-          ENV_ENVSVC_PASSWORD);
+          ENV_ENVSVC_PASSWORD,
+          ENV_ALLOWED_ORIGINS);
 
   public static final List<String> ENV_KEY_NAMES_PROD =
       List.of(ENV_DB_HOST_PROD, ENV_DB_NAME_PROD, ENV_DB_USERNAME_PROD, ENV_DB_PASSWORD_PROD);

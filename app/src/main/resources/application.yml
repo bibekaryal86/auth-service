@@ -69,3 +69,7 @@ springdoc:
 endpoint:
   env_service:
     get_properties: ${ENVSVC_BASE_URL}/api/v1/authservice
+
+auth:
+  cors:
+    allowed_origins: ${ALLOWED_ORIGINS}

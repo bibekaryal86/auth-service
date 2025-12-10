@@ -36,6 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,6 +95,7 @@ public class ProfileBasicAuthController {
     }
   }
 
+  @CrossOrigin(origins = "${auth.cors.allowed_origins}", allowCredentials = "true")
   @PostMapping("/{platformId}/login")
   public ResponseEntity<ProfilePasswordTokenResponse> loginProfile(
       @PathVariable final Long platformId,
@@ -166,6 +168,7 @@ public class ProfileBasicAuthController {
     }
   }
 
+  @CrossOrigin(origins = "${auth.cors.allowed_origins}", allowCredentials = "true")
   @GetMapping("/{platformId}/profile/{profileId}/refresh")
   public ResponseEntity<ProfilePasswordTokenResponse> refreshToken(
       @PathVariable final Long platformId,
@@ -245,6 +248,7 @@ public class ProfileBasicAuthController {
     }
   }
 
+  @CrossOrigin(origins = "${auth.cors.allowed_origins}", allowCredentials = "true")
   @GetMapping("/{platformId}/profile/{profileId}/logout")
   public ResponseEntity<ProfilePasswordTokenResponse> logout(
       @PathVariable final Long platformId,
