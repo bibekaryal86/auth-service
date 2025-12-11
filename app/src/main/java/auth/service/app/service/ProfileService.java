@@ -126,7 +126,6 @@ public class ProfileService {
   }
 
   public ProfileEntity readProfileByEmailNoException(final String email) {
-    log.debug("Read Profile By Email No Exception: Email=[{}]", email);
     try {
       return readProfileByEmail(email);
     } catch (Exception ignored) {
@@ -287,7 +286,7 @@ public class ProfileService {
       final ProfilePasswordRequest profilePasswordRequest,
       final String ipAddress) {
     log.info(
-        "Login Profile: PlatformId=[{}], Email=[{}], IdAddress=[{}]",
+        "Login Profile: PlatformId=[{}], Email=[{}], IpAddress=[{}]",
         platformId,
         profilePasswordRequest.getEmail(),
         ipAddress);
