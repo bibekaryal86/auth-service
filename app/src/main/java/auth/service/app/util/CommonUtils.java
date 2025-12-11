@@ -5,6 +5,7 @@ import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -71,7 +72,7 @@ public class CommonUtils {
   }
 
   public static boolean isSuperUser(final AuthToken authToken) {
-    return authToken.getIsSuperUser() != null && authToken.getIsSuperUser() == true;
+    return Objects.equals(authToken.getIsSuperUser(), Boolean.TRUE);
   }
 
   public static Long getValidId(final String value) {

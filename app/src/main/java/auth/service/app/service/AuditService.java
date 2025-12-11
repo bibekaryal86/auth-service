@@ -16,7 +16,6 @@ import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
-import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -37,7 +36,6 @@ public class AuditService {
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
   private final ProfileRepository profileRepository;
-  private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
