@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "profileId": 1,
+    "street": "1 Street",
+    "city": "CityOne",
+    "state": "1S",
+    "country": "USA",
+    "postalCode": "11111",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": null,
+    "profile": {
+      "id": 1,
+      "firstName": "Profile 1",
+      "lastName": "1 Profile",
+      "email": "profile@one.com",
+      "phone": "+1-111-111-1111",
+      "password": "password1",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": null
+    }
+  },
+  {
+    "id": 2,
+    "profileId": 5,
+    "street": "5 Street",
+    "city": "CityFive",
+    "state": "5S",
+    "country": "USA",
+    "postalCode": "55555",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": null,
+    "profile": {
+      "id": 5,
+      "firstName": "Profile 5",
+      "lastName": "5 Profile",
+      "email": "profile@five.com",
+      "phone": null,
+      "password": "password5",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": null
+    }
+  },
+  {
+    "id": 3,
+    "profileId": 9,
+    "street": "9 Street",
+    "city": "CityNine",
+    "state": "9S",
+    "country": "USA",
+    "postalCode": "99999",
+    "createdDate": "2025-01-01T00:00:00",
+    "updatedDate": "2025-01-01T00:00:00",
+    "deletedDate": "2025-01-01T00:00:00",
+    "profile": {
+      "id": 9,
+      "firstName": "Profile 9",
+      "lastName": "9 Profile",
+      "email": "profile@nine.com",
+      "phone": "",
+      "password": "password9",
+      "isValidated": true,
+      "loginAttempts": 0,
+      "lastLogin": "2025-01-01T00:00:00",
+      "createdDate": "2025-01-01T00:00:00",
+      "updatedDate": "2025-01-01T00:00:00",
+      "deletedDate": "2025-01-01T00:00:00"
+    }
+  }
+]

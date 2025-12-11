@@ -26,19 +26,18 @@ public class CookieService {
   public ResponseCookie buildRefreshCookie(final String token, final long maxAge) {
     return ResponseCookie.from(ConstantUtils.COOKIE_REFRESH_TOKEN, token)
         .httpOnly(true)
-        .secure(true)
-        .sameSite("Strict")
+        .secure(CommonUtils.isProduction())
+        .sameSite(CommonUtils.isProduction() ? "Strict" : "None")
         .maxAge(maxAge)
-        .path("/api/v1/ba_profiles/platform/")
-        // .path("/")
+        .path("/")
         .build();
   }
 
   public ResponseCookie buildCsrfCookie(final String token, final long maxAge) {
     return ResponseCookie.from(ConstantUtils.COOKIE_CSRF_TOKEN, token)
         .httpOnly(false)
-        .secure(true)
-        .sameSite("Strict")
+        .secure(CommonUtils.isProduction())
+        .sameSite(CommonUtils.isProduction() ? "Strict" : "None")
         .maxAge(maxAge)
         .path("/")
         .build();

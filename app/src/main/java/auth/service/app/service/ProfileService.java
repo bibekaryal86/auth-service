@@ -1,9 +1,5 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.ConstantUtils.ROLE_NAME_GUEST;
-import static auth.service.app.util.ConstantUtils.ROLE_NAME_STANDARD;
-import static auth.service.app.util.JwtUtils.decodeEmailAddress;
-
 import auth.service.app.exception.ElementMissingException;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
@@ -12,12 +8,10 @@ import auth.service.app.exception.ProfileNotActiveException;
 import auth.service.app.exception.ProfileNotAuthorizedException;
 import auth.service.app.exception.ProfileNotValidatedException;
 import auth.service.app.model.dto.PlatformProfileRoleRequest;
-import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.dto.ProfileRequest;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileAddressEntity;
@@ -27,20 +21,19 @@ import auth.service.app.model.enums.TypeEnums;
 import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.ProfileAddressRepository;
 import auth.service.app.repository.ProfileRepository;
-import auth.service.app.util.JpaDataUtils;
+import auth.service.app.util.ConstantUtils;
+import auth.service.app.util.JwtUtils;
 import auth.service.app.util.PasswordUtils;
+import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -61,7 +54,10 @@ public class ProfileService {
       final PlatformEntity platformEntity,
       final ProfileRequest profileRequest,
       final String baseUrlForEmail) {
-    log.debug("Create App User: [{}], [{}]", profileRequest, baseUrlForEmail);
+    log.debug(
+        "Create Profile: ProfileRequest=[{}], BaseUrlForEmail=[{}]",
+        profileRequest,
+        baseUrlForEmail);
     createProfileValidate(profileRequest);
 
     // profile
@@ -71,18 +67,29 @@ public class ProfileService {
     profileEntity.setIsValidated(false);
 
     // profile_address
-    ProfileAddressEntity profileAddressEntity =
-        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, true);
+    ProfileAddressEntity profileAddressEntity = null;
+    if (profileRequest.getAddressRequest() == null) {
+      profileEntity.setProfileAddress(null);
+    } else {
+      profileAddressEntity = new ProfileAddressEntity();
+      BeanUtils.copyProperties(
+          profileRequest.getAddressRequest(), profileAddressEntity, "id", "profileId");
+    }
 
     // platform_profile_role
-    final String roleName = profileRequest.isGuestUser() ? ROLE_NAME_GUEST : ROLE_NAME_STANDARD;
-    final RoleEntity roleEntity = circularDependencyService.readRoleByName(roleName, false);
+    final String roleName =
+        profileRequest.isGuestUser()
+            ? ConstantUtils.ROLE_NAME_GUEST
+            : ConstantUtils.ROLE_NAME_STANDARD;
+    final RoleEntity roleEntity = circularDependencyService.readRoleByName(roleName, Boolean.FALSE);
 
     // save profile
     profileEntity = profileRepository.save(profileEntity);
     // save profile address
     if (profileAddressEntity != null) {
-      profileAddressRepository.save(profileAddressEntity);
+      profileAddressEntity.setProfile(profileEntity);
+      profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
+      profileEntity.setProfileAddress(profileAddressEntity);
     }
     // save platform profile role
     PlatformProfileRoleRequest platformProfileRoleRequest =
@@ -98,31 +105,27 @@ public class ProfileService {
   }
 
   // READ
-  public Page<ProfileEntity> readProfiles(final RequestMetadata requestMetadata) {
-    log.debug("Read Profiles: [{}]", requestMetadata);
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
-    final Specification<ProfileEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadata);
-    return profileRepository.findAll(specification, pageable);
+  public List<ProfileEntity> readProfiles(final boolean isIncludeDeleted) {
+    log.debug("Read Profiles: IsIncludeDeleted=[{}]", isIncludeDeleted);
+    return profileRepository.findAllProfiles(isIncludeDeleted);
   }
 
   /** Use {@link CircularDependencyService#readProfile(Long, boolean)} */
   private ProfileEntity readProfile(final Long id) {
-    log.debug("Read Profile: [{}]", id);
+    log.debug("Read Profile: Id=[{}]", id);
     return profileRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
   }
 
   public ProfileEntity readProfileByEmail(final String email) {
-    log.debug("Read Profile By Email: [{}]", email);
+    log.debug("Read Profile By Email: Email=[{}]", email);
     return profileRepository
         .findByEmail(email)
         .orElseThrow(() -> new ElementNotFoundException("Profile", email));
   }
 
   public ProfileEntity readProfileByEmailNoException(final String email) {
-    log.debug("Read Profile By Email No Exception: [{}]", email);
     try {
       return readProfileByEmail(email);
     } catch (Exception ignored) {
@@ -137,7 +140,7 @@ public class ProfileService {
 
   @Transactional
   public ProfileEntity updateProfile(final Long id, final ProfileRequest profileRequest) {
-    log.debug("Update Profiler: [{}], [{}]", id, profileRequest);
+    log.debug("Update Profile: Id=[{}], ProfileRequest=[{}]", id, profileRequest);
     ProfileEntity profileEntity = readProfile(id);
 
     if (profileEntity.getDeletedDate() != null) {
@@ -146,18 +149,27 @@ public class ProfileService {
 
     // profile
     BeanUtils.copyProperties(profileRequest, profileEntity, "email", "password", "profileAddress");
+
     // profile_address
-    ProfileAddressEntity profileAddressEntity =
-        convertAddressRequestToEntity(profileRequest.getAddressRequest(), profileEntity, false);
+    ProfileAddressEntity profileAddressEntity = null;
+    if (profileRequest.getAddressRequest() != null) {
+      profileAddressEntity =
+          profileEntity.getProfileAddress() == null
+              ? new ProfileAddressEntity()
+              : profileEntity.getProfileAddress();
+      BeanUtils.copyProperties(
+          profileRequest.getAddressRequest(), profileAddressEntity, "profileId");
+    }
 
     // save profile
     profileEntity = updateProfile(profileEntity);
     // save profile_address
     if (profileAddressEntity != null) {
-      if (profileRequest.getAddressRequest().isDeleteAddress()) {
+      if (Objects.equals(profileRequest.getAddressRequest().getIsDeleteAddress(), Boolean.TRUE)) {
         profileAddressRepository.deleteById(profileRequest.getAddressRequest().getId());
         profileEntity.setProfileAddress(null);
       } else {
+        profileAddressEntity.setProfile(profileEntity);
         profileAddressEntity = profileAddressRepository.save(profileAddressEntity);
         profileEntity.setProfileAddress(profileAddressEntity);
       }
@@ -173,7 +185,7 @@ public class ProfileService {
       final PlatformEntity platformEntity,
       final String baseUrlForEmail) {
     log.debug(
-        "Update Profile Email: platform-[{}], profile-[{}], [{}]",
+        "Update Profile Email: PlatformId=[{}], ProfileId=[{}], ProfileEmailRequest=[{}]",
         platformEntity.getId(),
         id,
         profileEmailRequest);
@@ -207,7 +219,7 @@ public class ProfileService {
       final ProfilePasswordRequest profilePasswordRequest,
       final PlatformEntity platformEntity) {
     log.debug(
-        "Update Profile Password: platform-[{}], profile-[{}], [{}]",
+        "Update Profile Password: PlatformId=[{}], ProfileId=[{}], ProfilePasswordRequest=[{}]",
         platformEntity.getId(),
         id,
         profilePasswordRequest);
@@ -233,7 +245,7 @@ public class ProfileService {
 
   // DELETE
   public ProfileEntity softDeleteProfile(final Long id) {
-    log.info("Soft Delete Profile: [{}]", id);
+    log.info("Soft Delete Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
 
     if (profileEntity.getDeletedDate() != null) {
@@ -246,7 +258,7 @@ public class ProfileService {
 
   @Transactional
   public void hardDeleteProfile(final Long id) {
-    log.info("Hard Delete Profile: [{}]", id);
+    log.info("Hard Delete Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
 
     // before Profile can be deleted, we need to delete entities in PlatformProfileRole
@@ -256,13 +268,13 @@ public class ProfileService {
         && profileEntity.getProfileAddress().getId() != null) {
       profileAddressRepository.deleteById(profileEntity.getProfileAddress().getId());
     }
-    // now Profile can be deleted
+
     profileRepository.delete(profileEntity);
   }
 
   // RESTORE
   public ProfileEntity restoreSoftDeletedProfile(final Long id) {
-    log.info("Restore Soft Deleted Profile: [{}]", id);
+    log.info("Restore Soft Deleted Profile: Id=[{}]", id);
     final ProfileEntity profileEntity = readProfile(id);
     profileEntity.setDeletedDate(null);
     return profileRepository.save(profileEntity);
@@ -274,7 +286,10 @@ public class ProfileService {
       final ProfilePasswordRequest profilePasswordRequest,
       final String ipAddress) {
     log.info(
-        "Login Profile: [{}] [{}] [{}]", platformId, profilePasswordRequest.getEmail(), ipAddress);
+        "Login Profile: PlatformId=[{}], Email=[{}], IpAddress=[{}]",
+        platformId,
+        profilePasswordRequest.getEmail(),
+        ipAddress);
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         platformProfileRoleService.readPlatformProfileRole(
             platformId, profilePasswordRequest.getEmail());
@@ -307,7 +322,7 @@ public class ProfileService {
       final Long platformId, final String encodedEmail, final boolean isValidate) {
     final PlatformProfileRoleEntity platformProfileRoleEntity =
         platformProfileRoleService.readPlatformProfileRole(
-            platformId, decodeEmailAddress(encodedEmail));
+            platformId, JwtUtils.decodeEmailAddress(encodedEmail));
     final ProfileEntity profileEntity = platformProfileRoleEntity.getProfile();
 
     if (isValidate) {
@@ -318,38 +333,22 @@ public class ProfileService {
     return profileEntity;
   }
 
-  private ProfileAddressEntity convertAddressRequestToEntity(
-      final ProfileAddressRequest request,
-      final ProfileEntity profileEntity,
-      final boolean isIgnoreId) {
-    if (request == null) {
-      return null;
-    }
-
-    ProfileAddressEntity entity = new ProfileAddressEntity();
-    if (isIgnoreId) {
-      BeanUtils.copyProperties(request, entity, "id", "profileId");
-    } else {
-      BeanUtils.copyProperties(request, entity, "profileId");
-    }
-    entity.setProfile(profileEntity);
-
-    return entity;
-  }
-
   private void createProfileValidate(final ProfileRequest profileRequest) {
     // password required for create profile
-    if (!StringUtils.hasText(profileRequest.getPassword())) {
+    if (CommonUtilities.isEmpty(profileRequest.getPassword())) {
       throw new ElementMissingException("Profile", "password");
     }
   }
 
   private void loginProfileValidate(
       final PlatformEntity platformEntity, final ProfileEntity profileEntity) {
+    // this code block should never be true
+    // deleted date is checked when looking up PPR
     if (platformEntity.getDeletedDate() != null) {
       throw new ElementNotActiveException("Platform", String.valueOf(platformEntity.getId()));
     }
-
+    // this code block should never be true
+    // deleted date is checked when looking up PPR
     if (profileEntity.getDeletedDate() != null) {
       throw new ElementNotActiveException("Profile", profileEntity.getEmail());
     }

@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 1",
+    "permissionDesc": "This is Permission One"
+  },
+  {
+    "id": 2,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 2",
+    "permissionDesc": "This is Permission Two"
+  },
+  {
+    "id": 3,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": "2025-01-01T00:00:00.000000",
+    "permissionName": "Permission 3",
+    "permissionDesc": "This is Permission Three"
+  },
+  {
+    "id": 4,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 4",
+    "permissionDesc": "This is Permission Four"
+  },
+  {
+    "id": 5,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 5",
+    "permissionDesc": "This is Permission Five"
+  },
+  {
+    "id": 6,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": "2025-01-01T00:00:00.000000",
+    "permissionName": "Permission 6",
+    "permissionDesc": "This is Permission Six"
+  },
+  {
+    "id": 7,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 7",
+    "permissionDesc": "This is Permission Seven"
+  },
+  {
+    "id": 8,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": null,
+    "permissionName": "Permission 8",
+    "permissionDesc": "This is Permission Eight"
+  },
+  {
+    "id": 9,
+    "createdDate": "2025-01-01T00:00:00.000000",
+    "updatedDate": "2025-01-01T00:00:00.000000",
+    "deletedDate": "2025-01-01T00:00:00.000000",
+    "permissionName": "Permission 9",
+    "permissionDesc": "This is Permission Nine"
+  }
+]

@@ -1,10 +1,9 @@
 package auth.service.app.controller;
 
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.AuditResponse;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleRequest;
 import auth.service.app.model.dto.RoleResponse;
+import auth.service.app.model.entity.AuditRoleEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
@@ -15,12 +14,11 @@ import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,9 +61,9 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Role: [{}]", roleRequest, ex);
+      log.error("Create Role: RoleRequest=[{}]", roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -73,41 +71,13 @@ public class RoleController {
   @CheckPermission("AUTHSVC_ROLE_READ")
   @GetMapping
   public ResponseEntity<RoleResponse> readRoles(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePermissions,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeProfiles,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
-      @RequestParam(required = false, defaultValue = "100") final int perPage,
-      @RequestParam(required = false, defaultValue = "") final String sortColumn,
-      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
     try {
-      final RequestMetadata requestMetadata =
-          RequestMetadata.builder()
-              .isIncludePermissions(isIncludePermissions)
-              .isIncludePlatforms(isIncludePlatforms)
-              .isIncludeDeleted(isIncludeDeleted)
-              .isIncludeHistory(isIncludeHistory)
-              .pageNumber(pageNumber)
-              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "roleName" : sortColumn)
-              .sortDirection(sortDirection)
-              .build();
-
-      final Page<RoleEntity> roleEntityPage = roleService.readRoles(requestMetadata);
-      final List<RoleEntity> roleEntities = roleEntityPage.toList();
-      final ResponseMetadata.ResponsePageInfo responsePageInfo =
-          CommonUtils.defaultResponsePageInfo(roleEntityPage);
-      return entityDtoConvertUtils.getResponseMultipleRoles(
-          roleEntities,
-          isIncludePermissions,
-          isIncludePlatforms,
-          isIncludeProfiles,
-          responsePageInfo,
-          requestMetadata);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final List<RoleEntity> roleEntities = roleService.readRoles(isIncludeDeleted && isSuperUser);
+      return entityDtoConvertUtils.getResponseMultipleRoles(roleEntities);
     } catch (Exception ex) {
-      log.error("Read Roles...", ex);
+      log.error("Read Roles: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -117,33 +87,24 @@ public class RoleController {
   public ResponseEntity<RoleResponse> readRole(
       @PathVariable final long id,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int historyPage,
-      @RequestParam(required = false, defaultValue = "100") final int historySize) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, isIncludeDeleted);
-
-      RequestMetadata requestMetadata = null;
-      AuditResponse auditResponse = null;
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final RoleEntity roleEntity =
+          circularDependencyService.readRole(id, isIncludeDeleted && isSuperUser);
+      List<AuditRoleEntity> auditRoleEntities = Collections.emptyList();
       if (isIncludeHistory) {
-        requestMetadata =
-            RequestMetadata.builder()
-                .sortColumn("permissionName")
-                .sortDirection(Sort.Direction.ASC)
-                .isIncludeDeleted(isIncludeDeleted)
-                .isIncludeHistory(Boolean.TRUE)
-                .pageNumber(1)
-                .perPage(100)
-                .historyPage(historyPage)
-                .historySize(historySize)
-                .build();
-        auditResponse = auditService.auditRoles(requestMetadata, id);
+        auditRoleEntities = auditService.auditRoles(id);
       }
 
-      return entityDtoConvertUtils.getResponseSingleRole(
-          roleEntity, null, requestMetadata, auditResponse);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, null, auditRoleEntities);
     } catch (Exception ex) {
-      log.error("Read Role: [{}]", id, ex);
+      log.error(
+          "Read Role: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
@@ -167,20 +128,19 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Role: [{}] | [{}]", id, roleRequest, ex);
+      log.error("Update Role: Id=[{}], RoleRequest=[{}]", id, roleRequest, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
 
-  @CheckPermission("AUTHSVC_ROLE_DELETE")
+  @CheckPermission("AUTHSVC_ROLE_SOFTDELETE")
   @DeleteMapping("/role/{id}")
   public ResponseEntity<RoleResponse> softDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, false);
-      roleService.softDeleteRole(id);
+      RoleEntity roleEntity = roleService.softDeleteRole(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditRole(
@@ -192,19 +152,19 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Role: [{}]", id, ex);
+      log.error("Soft Delete Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_ROLE_HARDDELETE")
   @DeleteMapping("/role/{id}/hard")
   public ResponseEntity<RoleResponse> hardDeleteRole(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final RoleEntity roleEntity = circularDependencyService.readRole(id, true);
+      final RoleEntity roleEntity = circularDependencyService.readRole(id, Boolean.TRUE);
       roleService.hardDeleteRole(id);
       CompletableFuture.runAsync(
           () ->
@@ -217,14 +177,14 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleRole(new RoleEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Role: [{}]", id, ex);
+      log.error("Hard Delete Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_ROLE_RESTORE")
   @PatchMapping("/role/{id}/restore")
   public ResponseEntity<RoleResponse> restoreRole(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -241,9 +201,9 @@ public class RoleController {
                       roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Role: [{}]", id, ex);
+      log.error("Restore Role: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorRole(ex);
     }
   }

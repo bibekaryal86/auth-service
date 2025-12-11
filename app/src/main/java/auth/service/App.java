@@ -3,6 +3,7 @@
  */
 package auth.service;
 
+import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy
 public class App {
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     log.info("Begin application initialization...");
     validateInitArgs();
     SpringApplication app = new SpringApplication(App.class);
@@ -33,13 +34,10 @@ public class App {
     log.info("End application initialization...");
   }
 
-  private static void validateInitArgs() {
-    final boolean isProduction =
-        "production"
-            .equals(CommonUtilities.getSystemEnvProperty(ConstantUtils.SPRING_PROFILES_ACTIVE));
+  public static void validateInitArgs() {
     final List<String> envKeyNames = new ArrayList<>(ConstantUtils.ENV_KEY_NAMES);
 
-    if (isProduction) {
+    if (CommonUtils.isProduction()) {
       envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_PROD);
     } else {
       envKeyNames.addAll(ConstantUtils.ENV_KEY_NAMES_SANDBOX);

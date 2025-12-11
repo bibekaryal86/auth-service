@@ -1,14 +1,5 @@
 package auth.service.app.service;
 
-import static auth.service.app.util.CommonUtils.getIpAddress;
-import static auth.service.app.util.CommonUtils.getUserAgent;
-
-import auth.service.app.model.dto.AuditPermissionDto;
-import auth.service.app.model.dto.AuditPlatformDto;
-import auth.service.app.model.dto.AuditProfileDto;
-import auth.service.app.model.dto.AuditResponse;
-import auth.service.app.model.dto.AuditRoleDto;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.AuditProfileEntity;
@@ -18,7 +9,6 @@ import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.enums.AuditEnums;
-import auth.service.app.model.token.AuthToken;
 import auth.service.app.repository.AuditPermissionRepository;
 import auth.service.app.repository.AuditPlatformRepository;
 import auth.service.app.repository.AuditProfileRepository;
@@ -26,15 +16,12 @@ import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
-import auth.service.app.util.EntityDtoConvertUtils;
-import auth.service.app.util.JpaDataUtils;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,7 +36,6 @@ public class AuditService {
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
   private final ProfileRepository profileRepository;
-  private final EntityDtoConvertUtils entityDtoConvertUtils;
 
   private ProfileEntity getCreatedByProfileEntity() {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -75,13 +61,13 @@ public class AuditService {
 
       auditPermissionEntity.setCreatedBy(getCreatedByProfileEntity());
       auditPermissionEntity.setCreatedAt(LocalDateTime.now());
-      auditPermissionEntity.setIpAddress(getIpAddress(request));
-      auditPermissionEntity.setUserAgent(getUserAgent(request));
+      auditPermissionEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditPermissionEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditPermissionRepository.save(auditPermissionEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditPermissionException: [{}], [{}], [{}]",
+          "AuditPermissionException: PermissionsId=[{}], EventType=[{}], EventDesc=[{}]",
           permissionEntity.getId(),
           eventType,
           eventDesc,
@@ -89,17 +75,8 @@ public class AuditService {
     }
   }
 
-  public AuditResponse auditPermissions(
-      final RequestMetadata requestMetadata, final Long permissionId) {
-    final Page<AuditPermissionEntity> auditEntityPage =
-        auditPermissionRepository.findByPermissionId(
-            permissionId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponseMetadata.ResponsePageInfo auditPageInfo =
-        CommonUtils.defaultResponsePageInfo(auditEntityPage);
-    final List<AuditPermissionEntity> auditEntities = auditEntityPage.getContent();
-    final List<AuditPermissionDto> auditDtos =
-        entityDtoConvertUtils.convertEntityToDtoPermissionsAudit(auditEntities);
-    return new AuditResponse(auditPageInfo, auditDtos, null, null, null);
+  public List<AuditPermissionEntity> auditPermissions(final Long id) {
+    return auditPermissionRepository.findByPermissionId(id);
   }
 
   public void auditRole(
@@ -116,26 +93,22 @@ public class AuditService {
 
       auditRoleEntity.setCreatedBy(getCreatedByProfileEntity());
       auditRoleEntity.setCreatedAt(LocalDateTime.now());
-      auditRoleEntity.setIpAddress(getIpAddress(request));
-      auditRoleEntity.setUserAgent(getUserAgent(request));
+      auditRoleEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditRoleEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditRoleRepository.save(auditRoleEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditRoleException: [{}], [{}], [{}]", roleEntity.getId(), eventType, eventDesc, ex);
+          "AuditRoleException: RoleId=[{}], EventType=[{}], EventDesc=[{}]",
+          roleEntity.getId(),
+          eventType,
+          eventDesc,
+          ex);
     }
   }
 
-  public AuditResponse auditRoles(final RequestMetadata requestMetadata, final Long roleId) {
-    final Page<AuditRoleEntity> auditEntityPage =
-        auditRoleRepository.findByRoleId(
-            roleId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponseMetadata.ResponsePageInfo auditPageInfo =
-        CommonUtils.defaultResponsePageInfo(auditEntityPage);
-    final List<AuditRoleEntity> auditEntities = auditEntityPage.getContent();
-    final List<AuditRoleDto> auditDtos =
-        entityDtoConvertUtils.convertEntityToDtoRolesAudit(auditEntities);
-    return new AuditResponse(auditPageInfo, null, auditDtos, null, null);
+  public List<AuditRoleEntity> auditRoles(final Long id) {
+    return auditRoleRepository.findByRoleId(id);
   }
 
   public void auditPlatform(
@@ -152,13 +125,13 @@ public class AuditService {
 
       auditPlatformEntity.setCreatedBy(getCreatedByProfileEntity());
       auditPlatformEntity.setCreatedAt(LocalDateTime.now());
-      auditPlatformEntity.setIpAddress(getIpAddress(request));
-      auditPlatformEntity.setUserAgent(getUserAgent(request));
+      auditPlatformEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditPlatformEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditPlatformRepository.save(auditPlatformEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditPlatformException: [{}], [{}], [{}]",
+          "AuditPlatformException: PlatformId=[{}], EventType=[{}], EventDesc=[{}]",
           platformEntity.getId(),
           eventType,
           eventDesc,
@@ -166,17 +139,8 @@ public class AuditService {
     }
   }
 
-  public AuditResponse auditPlatforms(
-      final RequestMetadata requestMetadata, final Long platformId) {
-    final Page<AuditPlatformEntity> auditEntityPage =
-        auditPlatformRepository.findByPlatformId(
-            platformId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponseMetadata.ResponsePageInfo auditPageInfo =
-        CommonUtils.defaultResponsePageInfo(auditEntityPage);
-    final List<AuditPlatformEntity> auditEntities = auditEntityPage.getContent();
-    final List<AuditPlatformDto> auditDtos =
-        entityDtoConvertUtils.convertEntityToDtoPlatformsAudit(auditEntities);
-    return new AuditResponse(auditPageInfo, null, null, auditDtos, null);
+  public List<AuditPlatformEntity> auditPlatforms(final Long id) {
+    return auditPlatformRepository.findByPlatformId(id);
   }
 
   public void auditProfile(
@@ -194,13 +158,13 @@ public class AuditService {
       }
       auditProfileEntity.setCreatedBy(getCreatedByProfileEntity());
       auditProfileEntity.setCreatedAt(LocalDateTime.now());
-      auditProfileEntity.setIpAddress(getIpAddress(request));
-      auditProfileEntity.setUserAgent(getUserAgent(request));
+      auditProfileEntity.setIpAddress(CommonUtils.getIpAddress(request));
+      auditProfileEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
       auditProfileRepository.save(auditProfileEntity);
     } catch (Exception ex) {
       log.error(
-          "AuditProfileException: [{}], [{}], [{}]",
+          "AuditProfileException: ProfileId=[{}], EventType=[{}], EventDesc=[{}]",
           profileEntity == null ? ConstantUtils.ELEMENT_ID_NOT_FOUND : profileEntity.getId(),
           eventType,
           eventDesc,
@@ -208,15 +172,7 @@ public class AuditService {
     }
   }
 
-  public AuditResponse auditProfiles(final RequestMetadata requestMetadata, final Long profileId) {
-    final Page<AuditProfileEntity> auditEntityPage =
-        auditProfileRepository.findByProfileId(
-            profileId, JpaDataUtils.getQueryPageableAudit(requestMetadata));
-    final ResponseMetadata.ResponsePageInfo auditPageInfo =
-        CommonUtils.defaultResponsePageInfo(auditEntityPage);
-    final List<AuditProfileEntity> auditEntities = auditEntityPage.getContent();
-    final List<AuditProfileDto> auditDtos =
-        entityDtoConvertUtils.convertEntityToDtoProfilesAudit(auditEntities);
-    return new AuditResponse(auditPageInfo, null, null, null, auditDtos);
+  public List<AuditProfileEntity> auditProfiles(final Long id) {
+    return auditProfileRepository.findByProfileId(id);
   }
 }

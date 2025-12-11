@@ -1,0 +1,30 @@
+{
+  "envDetails": [
+    {
+      "name": "redirectUrls_sandbox",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "trackcase-service": "http://localhost:9191/home/"
+      }
+    },
+    {
+      "name": "redirectUrls_production",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "trackcase-service": "https://trackcase-service.com/home/"
+      }
+    },
+    {
+      "name": "baseUrlForLinkInEmail",
+      "stringValue": null,
+      "listValue": null,
+      "mapValue": {
+        "sandbox": "http://localhost:8000/authsvc",
+        "production": "https://gateway-service.com/authsvc"
+      }
+    }
+  ],
+  "errMsg": null
+}

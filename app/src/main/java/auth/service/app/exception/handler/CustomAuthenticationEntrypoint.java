@@ -14,6 +14,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint {
 
+  private final boolean isBasic;
+
+  public CustomAuthenticationEntrypoint(final boolean isBasic) {
+    this.isBasic = isBasic;
+  }
+
   @Override
   public void commence(
       final HttpServletRequest request,
@@ -24,11 +30,15 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
+    final String errMsg =
+        isBasic
+            ? "Not authorized to access this resource..."
+            : "Profile not authenticated to access this resource...";
+
     final ResponseWithMetadata responseWithMetadata =
         new ResponseWithMetadata(
             new ResponseMetadata(
-                new ResponseMetadata.ResponseStatusInfo(
-                    "Profile not authenticated to access this resource..."),
+                new ResponseMetadata.ResponseStatusInfo(errMsg),
                 ResponseMetadata.emptyResponseCrudInfo(),
                 ResponseMetadata.emptyResponsePageInfo()));
     final String jsonResponse = ConstantUtils.GSON.toJson(responseWithMetadata);

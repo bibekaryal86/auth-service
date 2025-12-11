@@ -3,20 +3,15 @@ package auth.service.app.service;
 import auth.service.app.exception.ElementNotActiveException;
 import auth.service.app.exception.ElementNotFoundException;
 import auth.service.app.model.dto.PermissionRequest;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.repository.PermissionRepository;
-import auth.service.app.util.JpaDataUtils;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -24,35 +19,25 @@ import org.springframework.stereotype.Service;
 public class PermissionService {
 
   private final PermissionRepository permissionRepository;
-  private final CircularDependencyService circularDependencyService;
+  private final PlatformRolePermissionService platformRolePermissionService;
 
   // CREATE
   public PermissionEntity createPermission(final PermissionRequest permissionRequest) {
-    log.debug("Create Permission: [{}]", permissionRequest);
+    log.debug("Create Permission: PermissionRequest=[{}]", permissionRequest);
     PermissionEntity permissionEntity = new PermissionEntity();
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
-    permissionEntity.setRole(
-        circularDependencyService.readRole(permissionRequest.getRoleId(), false));
     return permissionRepository.save(permissionEntity);
   }
 
   // READ
-  public Page<PermissionEntity> readPermissions(final RequestMetadata requestMetadata) {
-    log.debug("Read Permissions: [{}]", requestMetadata);
-    final Pageable pageable = JpaDataUtils.getQueryPageable(requestMetadata);
-    final Specification<PermissionEntity> specification =
-        JpaDataUtils.getQuerySpecification(requestMetadata);
-    return permissionRepository.findAll(specification, pageable);
-  }
-
-  public List<PermissionEntity> readPermissionsByRoleIds(final List<Long> roleIds) {
-    log.debug("Read Permissions By Role Ids: [{}]", roleIds);
-    return permissionRepository.findByRoleIds(roleIds);
+  public List<PermissionEntity> readPermissions(final boolean isIncludeDeleted) {
+    log.debug("Read Permissions: IsIncludeDeleted=[{}]", isIncludeDeleted);
+    return permissionRepository.findAllPermissions(isIncludeDeleted);
   }
 
   /** Use {@link CircularDependencyService#readPermission(Long, boolean)} */
   private PermissionEntity readPermission(final Long id) {
-    log.debug("Read Permission: [{}]", id);
+    log.debug("Read Permission: Id=[{}]", id);
     return permissionRepository
         .findById(id)
         .orElseThrow(() -> new ElementNotFoundException("Permission", String.valueOf(id)));
@@ -61,7 +46,7 @@ public class PermissionService {
   // UPDATE
   public PermissionEntity updatePermission(
       final Long id, final PermissionRequest permissionRequest) {
-    log.debug("Update Permission: [{}], [{}]", id, permissionRequest);
+    log.debug("Update Permission: Id=[{}], PermissionRequest=[{}]", id, permissionRequest);
     final PermissionEntity permissionEntity = readPermission(id);
 
     if (permissionEntity.getDeletedDate() != null) {
@@ -70,17 +55,12 @@ public class PermissionService {
 
     BeanUtils.copyProperties(permissionRequest, permissionEntity);
 
-    if (!Objects.equals(permissionEntity.getRole().getId(), permissionRequest.getRoleId())) {
-      permissionEntity.setRole(
-          circularDependencyService.readRole(permissionRequest.getRoleId(), false));
-    }
-
     return permissionRepository.save(permissionEntity);
   }
 
   // DELETE
   public PermissionEntity softDeletePermission(final Long id) {
-    log.info("Soft Delete Permission: [{}]", id);
+    log.info("Soft Delete Permission: Id=[{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
 
     if (permissionEntity.getDeletedDate() != null) {
@@ -91,20 +71,20 @@ public class PermissionService {
     return permissionRepository.save(permissionEntity);
   }
 
+  @Transactional
   public void hardDeletePermission(final Long id) {
-    log.info("Hard Delete Permission: [{}]", id);
+    log.info("Hard Delete Permission: Id=[{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
-    permissionRepository.delete(permissionEntity);
-  }
 
-  public void hardDeletePermissionsByRoleId(final Long roleId) {
-    log.info("Hard Delete Permission by Role Id: [{}]", roleId);
-    permissionRepository.deleteByRoleId(roleId);
+    // before Role can be deleted, we need to delete entities in PlatformRolePermission
+    platformRolePermissionService.hardDeletePlatformRolePermissionsByPermissionIds(List.of(id));
+
+    permissionRepository.delete(permissionEntity);
   }
 
   // RESTORE
   public PermissionEntity restoreSoftDeletedPermission(final Long id) {
-    log.info("Restore Soft Deleted Permission: [{}]", id);
+    log.info("Restore Soft Deleted Permission: Id=[{}]", id);
     final PermissionEntity permissionEntity = readPermission(id);
     permissionEntity.setDeletedDate(null);
     return permissionRepository.save(permissionEntity);

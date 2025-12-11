@@ -30,12 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/ppr")
 @Validated
 public class PlatformProfileRoleController {
-
   private final PlatformProfileRoleService platformProfileRoleService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_ASSIGN")
+  @CheckPermission("AUTHSVC_PPR_ASSIGN")
   @PostMapping
   public ResponseEntity<ResponseWithMetadata> assignPlatformProfileRole(
       @Valid @RequestBody final PlatformProfileRoleRequest platformProfileRoleRequest,
@@ -66,12 +65,15 @@ public class PlatformProfileRoleController {
                   responseCrudInfo,
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
-      log.error("Create Platform Profile Role: [{}}", platformProfileRoleRequest, ex);
+      log.error(
+          "Create Platform Profile Role: PlatformProfileRoleRequest=[{}]",
+          platformProfileRoleRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
 
-  @CheckPermission("AUTHSVC_PLATFORM_PROFILE_ROLE_UNASSIGN")
+  @CheckPermission("AUTHSVC_PPR_UNASSIGN")
   @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}")
   public ResponseEntity<ResponseWithMetadata> unassignPlatformProfileRole(
       @PathVariable final long platformId,
@@ -104,7 +106,39 @@ public class PlatformProfileRoleController {
                   ResponseMetadata.emptyResponsePageInfo())));
     } catch (Exception ex) {
       log.error(
-          "Delete Platform Profile Role: [{}], [{}], [{}]", platformId, profileId, roleId, ex);
+          "Unassign Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+          platformId,
+          profileId,
+          roleId,
+          ex);
+      return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
+    }
+  }
+
+  @CheckPermission("AUTHSVC_PPR_HARDDELETE")
+  @DeleteMapping("/platform/{platformId}/profile/{profileId}/role/{roleId}/hard")
+  public ResponseEntity<ResponseWithMetadata> hardDeletePlatformProfileRole(
+      @PathVariable final long platformId,
+      @PathVariable final long profileId,
+      @PathVariable final long roleId) {
+    try {
+      platformProfileRoleService.hardDeletePlatformProfileRole(platformId, profileId, roleId);
+
+      final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
+          CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
+      return ResponseEntity.ok(
+          new ResponseWithMetadata(
+              new ResponseMetadata(
+                  ResponseMetadata.emptyResponseStatusInfo(),
+                  responseCrudInfo,
+                  ResponseMetadata.emptyResponsePageInfo())));
+    } catch (Exception ex) {
+      log.error(
+          "Hard Delete Platform Profile Role: PlatformId=[{}], ProfileId=[{}], RoleId=[{}]",
+          platformId,
+          profileId,
+          roleId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }

@@ -1,7 +1,6 @@
 package auth.service.app.service;
 
 import auth.service.app.exception.ElementNotFoundException;
-import auth.service.app.model.dto.ProfileDto;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.ProfileEntity;
@@ -10,6 +9,7 @@ import auth.service.app.repository.TokenRepository;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import auth.service.app.util.JwtUtils;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-
   private final TokenRepository tokenRepository;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final Environment environment;
@@ -32,6 +31,7 @@ public class TokenService {
   // CREATE
   // handled by save
 
+  // READ
   public TokenEntity readTokenByRefreshToken(final String refreshToken) {
     return tokenRepository
         .findByRefreshToken(refreshToken)
@@ -49,19 +49,21 @@ public class TokenService {
   // UPDATE
   // handled by save
 
-  public int setTokenDeletedDateByProfileId(final long profileId) {
-    log.debug("Set Token Deleted Date by Profile Id: [{}]", profileId);
-    final boolean isTest = environment.matchesProfiles("springboottest");
-    return isTest
-        ? tokenRepository.setTokensAsDeletedByProfileIdTest(profileId)
-        : tokenRepository.setTokensAsDeletedByProfileId(profileId);
-  }
-
   // DELETE
   // only soft delete, handled by update
 
   // RESTORE
   // not available
+
+  // OTHERS
+
+  public int setTokenDeletedDateByProfileId(final long profileId) {
+    log.debug("Set Token Deleted Date by Profile Id: ProfileId=[{}]", profileId);
+    final boolean isTest = environment.matchesProfiles(ConstantUtils.ENV_SPRINGBOOTTEST);
+    return isTest
+        ? tokenRepository.setTokensAsDeletedByProfileIdTest(profileId)
+        : tokenRepository.setTokensAsDeletedByProfileId(profileId);
+  }
 
   public ProfilePasswordTokenResponse saveToken(
       final Long id,
@@ -70,7 +72,7 @@ public class TokenService {
       final ProfileEntity profileEntity,
       final String ipAddress) {
     log.debug(
-        "Save Token: [{}], [{}], [{}], [{}], [{}]",
+        "Save Token: Id=[{}], DeletedDate=[{}], PlatformId=[{}], Email=[{}], IpAddress=[{}]",
         id,
         deletedDate,
         platformEntity.getId(),
@@ -88,12 +90,10 @@ public class TokenService {
       return ProfilePasswordTokenResponse.builder().build();
     }
 
-    final ProfileDto profileDto =
-        entityDtoConvertUtils.convertEntityToDtoProfileBasic(profileEntity, platformEntity.getId());
-
+    final AuthToken authToken =
+        entityDtoConvertUtils.getAuthTokenFromProfile(platformEntity, profileEntity);
     final String accessToken =
-        JwtUtils.encodeAuthCredentials(
-            platformEntity, profileDto, ConstantUtils.ACCESS_TOKEN_VALIDITY_MILLISECONDS);
+        JwtUtils.encodeAuthCredentials(authToken, ConstantUtils.ACCESS_TOKEN_VALIDITY_MILLISECONDS);
     final String refreshToken = generateSecureToken();
     final String csrfToken = generateSecureToken();
 
@@ -112,11 +112,13 @@ public class TokenService {
 
     tokenRepository.save(tokenEntity);
 
+    final boolean isSandbox = environment.matchesProfiles(ConstantUtils.ENV_SANDBOX);
+
     return ProfilePasswordTokenResponse.builder()
         .accessToken(accessToken)
-        .refreshToken(refreshToken)
-        .csrfToken(csrfToken)
-        .profile(profileDto)
+        .refreshToken(isSandbox ? refreshToken : null)
+        .csrfToken(isSandbox ? csrfToken : null)
+        .authToken(authToken)
         .build();
   }
 

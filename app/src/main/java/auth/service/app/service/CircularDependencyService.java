@@ -28,7 +28,7 @@ public class CircularDependencyService {
   private final ProfileRepository profileRepository;
 
   public PermissionEntity readPermission(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Permission: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Permission: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final PermissionEntity permissionEntity =
         permissionRepository
             .findById(id)
@@ -43,7 +43,7 @@ public class CircularDependencyService {
   }
 
   public PlatformEntity readPlatform(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Platform: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Platform: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final PlatformEntity platformEntity =
         platformRepository
             .findById(id)
@@ -58,7 +58,7 @@ public class CircularDependencyService {
   }
 
   public RoleEntity readRole(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Role: [{}] | [{}]", id, isIncludeDeleted);
+    log.debug("Read Role: Id=[{}], IsIncludeDeleted=[{}]", id, isIncludeDeleted);
     final RoleEntity roleEntity =
         roleRepository
             .findById(id)
@@ -73,7 +73,7 @@ public class CircularDependencyService {
   }
 
   public RoleEntity readRoleByName(final String roleName, final boolean isIncludeDeleted) {
-    log.debug("Read Role By Name: [{}] | [{}]", roleName, isIncludeDeleted);
+    log.debug("Read Role By Name: Name=[{}], IsIncludeDeleted=[{}]", roleName, isIncludeDeleted);
     final RoleEntity roleEntity =
         roleRepository
             .findOne(getRoleNameExample(roleName))
@@ -99,8 +99,13 @@ public class CircularDependencyService {
     return Example.of(probe, matcher); // Exact match for roleName
   }
 
-  public ProfileEntity readProfile(final Long id, final boolean isIncludeDeleted) {
-    log.debug("Read Profile: [{}] | [{}]", id, isIncludeDeleted);
+  public ProfileEntity readProfile(
+      final Long id, final boolean isIncludeDeleted, final boolean isForceIncludeDeleted) {
+    log.debug(
+        "Read Profile: Id=[{}], IsIncludeDeleted=[{}], IsForceIncludeDeleted=[{}]",
+        id,
+        isIncludeDeleted,
+        isForceIncludeDeleted);
 
     final ProfileEntity profileEntity =
         profileRepository
@@ -108,10 +113,19 @@ public class CircularDependencyService {
             .orElseThrow(() -> new ElementNotFoundException("Profile", String.valueOf(id)));
 
     if (profileEntity.getDeletedDate() == null
+        || isForceIncludeDeleted
         || (isIncludeDeleted && CommonUtils.getAuthentication().getIsSuperUser())) {
       return profileEntity;
     } else {
       throw new ElementNotActiveException("Profile", String.valueOf(id));
+    }
+  }
+
+  public ProfileEntity readProfileNoException(final Long id, final boolean isIncludeDeleted) {
+    try {
+      return readProfile(id, isIncludeDeleted, Boolean.TRUE);
+    } catch (Exception ignored) {
+      return null;
     }
   }
 }

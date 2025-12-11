@@ -1,10 +1,9 @@
 package auth.service.app.controller;
 
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PlatformRequest;
 import auth.service.app.model.dto.PlatformResponse;
-import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.entity.AuditPlatformEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
@@ -15,12 +14,11 @@ import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +44,7 @@ public class PlatformController {
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
-  @CheckPermission("ONLY SUPERUSER CAN CREATE PLATFORM")
+  @CheckPermission("AUTHSVC_PLATFORM_CREATE")
   @PostMapping("/platform")
   public ResponseEntity<PlatformResponse> createPlatform(
       @Valid @RequestBody final PlatformRequest platformRequest, final HttpServletRequest request) {
@@ -64,88 +62,58 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          platformEntity, responseCrudInfo, null, null);
+          platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Platform: [{}]", platformRequest, ex);
+      log.error("Create Platform: PlatformRequest=[{}]", platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN READ PLATFORM")
+  @CheckPermission("AUTHSVC_PLATFORM_READ")
   @GetMapping
   public ResponseEntity<PlatformResponse> readPlatforms(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeProfiles,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
-      @RequestParam(required = false, defaultValue = "100") final int perPage,
-      @RequestParam(required = false, defaultValue = "") final String sortColumn,
-      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted) {
     try {
-      final RequestMetadata requestMetadata =
-          RequestMetadata.builder()
-              .isIncludeProfiles(isIncludeProfiles)
-              .isIncludeRoles(isIncludeRoles)
-              .isIncludeDeleted(isIncludeDeleted)
-              .isIncludeHistory(isIncludeHistory)
-              .pageNumber(pageNumber)
-              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "platformName" : sortColumn)
-              .sortDirection(sortDirection)
-              .build();
-
-      final Page<PlatformEntity> platformEntityPage =
-          platformService.readPlatforms(requestMetadata);
-      final List<PlatformEntity> platformEntities = platformEntityPage.toList();
-      final ResponseMetadata.ResponsePageInfo responsePageInfo =
-          CommonUtils.defaultResponsePageInfo(platformEntityPage);
-      return entityDtoConvertUtils.getResponseMultiplePlatforms(
-          platformEntities, isIncludeProfiles, isIncludeRoles, responsePageInfo, requestMetadata);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
+      final List<PlatformEntity> platformEntities =
+          platformService.readPlatforms(isIncludeDeleted && isSuperUser);
+      return entityDtoConvertUtils.getResponseMultiplePlatforms(platformEntities);
     } catch (Exception ex) {
-      log.error("Read Platforms...", ex);
+      log.error("Read Platforms: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN READ PLATFORM")
+  @CheckPermission("AUTHSVC_PLATFORM_READ")
   @GetMapping("/platform/{id}")
   public ResponseEntity<PlatformResponse> readPlatform(
       @PathVariable final long id,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int historyPage,
-      @RequestParam(required = false, defaultValue = "100") final int historySize) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final PlatformEntity platformEntity =
-          circularDependencyService.readPlatform(id, isIncludeDeleted);
+          circularDependencyService.readPlatform(id, isIncludeDeleted && isSuperUser);
 
-      RequestMetadata requestMetadata = null;
-      AuditResponse auditResponse = null;
+      List<AuditPlatformEntity> auditPlatformEntities = Collections.emptyList();
       if (isIncludeHistory) {
-        requestMetadata =
-            RequestMetadata.builder()
-                .sortColumn("permissionName")
-                .sortDirection(Sort.Direction.ASC)
-                .isIncludeDeleted(isIncludeDeleted)
-                .isIncludeHistory(Boolean.TRUE)
-                .pageNumber(1)
-                .perPage(100)
-                .historyPage(historyPage)
-                .historySize(historySize)
-                .build();
-        auditResponse = auditService.auditPlatforms(requestMetadata, id);
+        auditPlatformEntities = auditService.auditPlatforms(id);
       }
 
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          platformEntity, null, requestMetadata, auditResponse);
+          platformEntity, null, auditPlatformEntities);
     } catch (Exception ex) {
-      log.error("Read Platform: [{}]", id, ex);
+      log.error(
+          "Read Platform: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN UPDATE PLATFORM")
+  @CheckPermission("AUTHSVC_PLATFORM_UPDATE")
   @PutMapping("/platform/{id}")
   public ResponseEntity<PlatformResponse> updatePlatform(
       @PathVariable final long id,
@@ -165,20 +133,19 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          platformEntity, responseCrudInfo, null, null);
+          platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Platform: [{}] | [{}]", id, platformRequest, ex);
+      log.error("Update Platform: Id=[{}], PlatformRequest=[{}]", id, platformRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN DELETE PLATFORM")
+  @CheckPermission("AUTHSVC_PLATFORM_SOFTDELETE")
   @DeleteMapping("/platform/{id}")
   public ResponseEntity<PlatformResponse> softDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, false);
-      platformService.softDeletePlatform(id);
+      final PlatformEntity platformEntity = platformService.softDeletePlatform(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditPlatform(
@@ -191,19 +158,20 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          new PlatformEntity(), responseCrudInfo, null, null);
+          platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Platform: [{}]", id, ex);
+      log.error("Soft Delete Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_PLATFORM_HARDDELETE")
   @DeleteMapping("/platform/{id}/hard")
   public ResponseEntity<PlatformResponse> hardDeletePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PlatformEntity platformEntity = circularDependencyService.readPlatform(id, true);
+      final PlatformEntity platformEntity =
+          circularDependencyService.readPlatform(id, Boolean.TRUE);
       platformService.hardDeletePlatform(id);
       CompletableFuture.runAsync(
           () ->
@@ -217,14 +185,14 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          new PlatformEntity(), responseCrudInfo, null, null);
+          new PlatformEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Platform: [{}]", id, ex);
+      log.error("Hard Delete Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_PLATFORM_RESTORE")
   @PatchMapping("/platform/{id}/restore")
   public ResponseEntity<PlatformResponse> restorePlatform(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -242,9 +210,9 @@ public class PlatformController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePlatform(
-          platformEntity, responseCrudInfo, null, null);
+          platformEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Platform: [{}]", id, ex);
+      log.error("Restore Platform: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPlatform(ex);
     }
   }

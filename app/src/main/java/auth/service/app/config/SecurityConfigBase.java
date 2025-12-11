@@ -1,7 +1,5 @@
 package auth.service.app.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import auth.service.app.exception.handler.CustomAccessDeniedHandler;
 import auth.service.app.exception.handler.CustomAuthenticationEntrypoint;
 import auth.service.app.filter.JwtAuthFilter;
@@ -61,7 +59,13 @@ public abstract class SecurityConfigBase {
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .httpBasic(withDefaults())
+        .httpBasic(
+            httpBasic ->
+                httpBasic.authenticationEntryPoint(
+                    new CustomAuthenticationEntrypoint(Boolean.TRUE)))
+        .exceptionHandling(
+            exceptionHandling ->
+                exceptionHandling.accessDeniedHandler(new CustomAccessDeniedHandler()))
         .build();
   }
 
@@ -82,7 +86,7 @@ public abstract class SecurityConfigBase {
             exceptionHandling ->
                 exceptionHandling
                     .accessDeniedHandler(new CustomAccessDeniedHandler())
-                    .authenticationEntryPoint(new CustomAuthenticationEntrypoint()));
+                    .authenticationEntryPoint(new CustomAuthenticationEntrypoint(Boolean.FALSE)));
     return http.build();
   }
 

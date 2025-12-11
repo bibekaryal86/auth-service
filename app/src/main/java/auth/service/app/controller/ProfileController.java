@@ -2,12 +2,11 @@ package auth.service.app.controller;
 
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.ProfileEmailRequest;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfileRequest;
 import auth.service.app.model.dto.ProfileResponse;
-import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.entity.AuditProfileEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.enums.AuditEnums;
@@ -21,12 +20,11 @@ import auth.service.app.util.PermissionCheck;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,89 +54,30 @@ public class ProfileController {
 
   @GetMapping
   public ResponseEntity<ProfileResponse> readProfiles(
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
-      @RequestParam(required = false, defaultValue = "100") final int perPage,
-      @RequestParam(required = false, defaultValue = "") final String sortColumn,
-      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
+      @RequestParam(required = false, defaultValue = "") final String platformId,
+      @RequestParam(required = false, defaultValue = "") final String roleId) {
     try {
-      final RequestMetadata requestMetadata =
-          RequestMetadata.builder()
-              .isIncludeRoles(isIncludeRoles)
-              .isIncludePlatforms(isIncludePlatforms)
-              .isIncludeDeleted(isIncludeDeleted)
-              .isIncludeHistory(isIncludeHistory)
-              .pageNumber(pageNumber)
-              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "lastName" : sortColumn)
-              .sortDirection(sortDirection)
-              .build();
+      final Long platformIdLong = CommonUtils.getValidId(platformId);
+      final Long roleIdLong = CommonUtils.getValidId(roleId);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
 
-      final Page<ProfileEntity> profileEntityPage = profileService.readProfiles(requestMetadata);
-      final List<ProfileEntity> filteredProfileEntities =
-          permissionCheck.filterProfileListByAccess(profileEntityPage.toList());
-      final ResponseMetadata.ResponsePageInfo responsePageInfo =
-          CommonUtils.defaultResponsePageInfo(profileEntityPage);
-      return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities,
-          isIncludeRoles,
-          isIncludePlatforms,
-          Boolean.TRUE,
-          responsePageInfo,
-          requestMetadata);
-    } catch (Exception ex) {
-      log.error("Read Profiles...", ex);
-      return entityDtoConvertUtils.getResponseErrorProfile(ex);
-    }
-  }
+      List<ProfileEntity> profileEntities;
+      if (platformIdLong == null && roleIdLong == null) {
+        profileEntities = profileService.readProfiles(isIncludeDeleted && isSuperUser);
+      } else {
+        final List<PlatformProfileRoleEntity> pprEntities =
+            platformProfileRoleService.readPlatformProfileRoles(
+                platformIdLong, roleIdLong, isIncludeDeleted && isSuperUser);
+        profileEntities = pprEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
+      }
 
-  @GetMapping("/platform/{platformId}")
-  public ResponseEntity<ProfileResponse> readProfilesByPlatformId(
-      @PathVariable final Long platformId,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeRoles,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludePlatforms,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
-      @RequestParam(required = false, defaultValue = "100") final int perPage,
-      @RequestParam(required = false, defaultValue = "") final String sortColumn,
-      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
-    try {
-      final RequestMetadata requestMetadata =
-          RequestMetadata.builder()
-              .isIncludeRoles(isIncludeRoles)
-              .isIncludePlatforms(isIncludePlatforms)
-              .isIncludeDeleted(isIncludeDeleted)
-              .isIncludeHistory(isIncludeHistory)
-              .pageNumber(pageNumber)
-              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "lastName" : sortColumn)
-              .sortDirection(sortDirection)
-              .build();
-
-      final Page<PlatformProfileRoleEntity> platformProfileRoleEntityPage =
-          platformProfileRoleService.readPlatformProfileRolesByPlatformId(
-              platformId, requestMetadata);
-      final List<PlatformProfileRoleEntity> platformProfileRoleEntities =
-          platformProfileRoleEntityPage.toList();
-      final List<ProfileEntity> profileEntities =
-          platformProfileRoleEntities.stream().map(PlatformProfileRoleEntity::getProfile).toList();
       final List<ProfileEntity> filteredProfileEntities =
           permissionCheck.filterProfileListByAccess(profileEntities);
-      final ResponseMetadata.ResponsePageInfo responsePageInfo =
-          CommonUtils.defaultResponsePageInfo(platformProfileRoleEntityPage);
       return entityDtoConvertUtils.getResponseMultipleProfiles(
-          filteredProfileEntities,
-          isIncludeRoles,
-          isIncludePlatforms,
-          Boolean.TRUE,
-          responsePageInfo,
-          requestMetadata);
+          filteredProfileEntities, Boolean.TRUE);
     } catch (Exception ex) {
-      log.error("Read Profiles By Platform Id: [{}]", platformId, ex);
+      log.error("Read Profiles: IsIncludeDeleted=[{}]", isIncludeDeleted, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -147,35 +86,27 @@ public class ProfileController {
   public ResponseEntity<ProfileResponse> readProfile(
       @PathVariable final long id,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int historyPage,
-      @RequestParam(required = false, defaultValue = "100") final int historySize) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
       permissionCheck.checkProfileAccess("", id);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final ProfileEntity profileEntity =
-          circularDependencyService.readProfile(id, isIncludeDeleted);
+          circularDependencyService.readProfile(id, isIncludeDeleted && isSuperUser, Boolean.FALSE);
 
-      RequestMetadata requestMetadata = null;
-      AuditResponse auditResponse = null;
+      List<AuditProfileEntity> auditProfileEntities = Collections.emptyList();
       if (isIncludeHistory) {
-        requestMetadata =
-            RequestMetadata.builder()
-                .sortColumn("permissionName")
-                .sortDirection(Sort.Direction.ASC)
-                .isIncludeDeleted(isIncludeDeleted)
-                .isIncludeHistory(Boolean.TRUE)
-                .pageNumber(1)
-                .perPage(100)
-                .historyPage(historyPage)
-                .historySize(historySize)
-                .build();
-        auditResponse = auditService.auditProfiles(requestMetadata, id);
+        auditProfileEntities = auditService.auditProfiles(id);
       }
 
       return entityDtoConvertUtils.getResponseSingleProfile(
-          profileEntity, null, requestMetadata, auditResponse);
+          profileEntity, null, auditProfileEntities);
     } catch (Exception ex) {
-      log.error("Read Profile: [{}]", id, ex);
+      log.error(
+          "Read Profile: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -199,10 +130,9 @@ public class ProfileController {
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          profileEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Profile: [{}] | [{}]", id, profileRequest, ex);
+      log.error("Update Profile: Id=[{}], ProfileRequest=[{}]", id, profileRequest, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -219,6 +149,7 @@ public class ProfileController {
       if (baseUrlForLinkInEmail == null) {
         baseUrlForLinkInEmail = CommonUtils.getBaseUrlForLinkInEmail(request);
       }
+
       final PlatformProfileRoleEntity platformProfileRoleEntity =
           platformProfileRoleService.readPlatformProfileRole(
               platformId, profileEmailRequest.getOldEmail());
@@ -243,11 +174,14 @@ public class ProfileController {
                       profileEmailRequest.getNewEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          profileEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error(
-          "Update Profile Email: [{}] | [{}] | [{}]", platformId, id, profileEmailRequest, ex);
+          "Update Profile Email: PlatformId=[{}], Id=[{}], ProfileEmailRequest=[{}]",
+          platformId,
+          id,
+          profileEmailRequest,
+          ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
@@ -278,11 +212,10 @@ public class ProfileController {
                       platformId, profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          profileEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
       log.error(
-          "Update Profile Password: [{}] | [{}] | [{}]",
+          "Update Profile Password: PlatformId=[{}] | Id=[{}] | ProfilePasswordRequest=[{}]",
           platformId,
           id,
           profilePasswordRequest,
@@ -291,13 +224,12 @@ public class ProfileController {
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN SOFT DELETE PROFILE")
+  @CheckPermission("AUTHSVC_PROFILE_SOFTDELETE")
   @DeleteMapping("/profile/{id}")
   public ResponseEntity<ProfileResponse> softDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, false);
-      profileService.softDeleteProfile(id);
+      final ProfileEntity profileEntity = profileService.softDeleteProfile(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditProfile(
@@ -309,20 +241,20 @@ public class ProfileController {
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          new ProfileEntity(), responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Profile: [{}]", id, ex);
+      log.error("Soft Delete Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_PROFILE_HARDDELETE")
   @DeleteMapping("/profile/{id}/hard")
   public ResponseEntity<ProfileResponse> hardDeleteProfile(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final ProfileEntity profileEntity = circularDependencyService.readProfile(id, true);
+      final ProfileEntity profileEntity =
+          circularDependencyService.readProfile(id, Boolean.TRUE, Boolean.FALSE);
       profileService.hardDeleteProfile(id);
       CompletableFuture.runAsync(
           () ->
@@ -336,14 +268,14 @@ public class ProfileController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(
-          new ProfileEntity(), responseCrudInfo, null, null);
+          new ProfileEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Profile: [{}]", id, ex);
+      log.error("Hard Delete Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_PROFILE_RESTORE")
   @PatchMapping("/profile/{id}/restore")
   public ResponseEntity<ProfileResponse> restoreProfile(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -360,10 +292,9 @@ public class ProfileController {
                       profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
-      return entityDtoConvertUtils.getResponseSingleProfile(
-          profileEntity, responseCrudInfo, null, null);
+      return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Profile: [{}]", id, ex);
+      log.error("Restore Profile: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorProfile(ex);
     }
   }

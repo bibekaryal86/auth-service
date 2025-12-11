@@ -20,9 +20,7 @@ public class RoleDto {
   private String roleName;
   private String roleDesc;
 
-  private List<PermissionDto> permissions;
-  private List<RoleDtoPlatformProfile> platformProfiles;
-  private List<RoleDtoProfilePlatform> profilePlatforms;
-
-  private AuditResponse auditResponse;
+  private List<PlatformRolePermissionDto> platformRolePermissions;
+  private List<PlatformProfileRoleDto> platformProfileRoles;
+  private List<AuditRoleDto> history;
 }

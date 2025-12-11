@@ -1,10 +1,9 @@
 package auth.service.app.util;
 
-import auth.service.app.exception.CheckPermissionException;
 import auth.service.app.model.annotation.CheckPermission;
 import auth.service.app.model.entity.ProfileEntity;
-import auth.service.app.model.token.AuthToken;
-import auth.service.app.model.token.AuthTokenPermission;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
+import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +53,7 @@ public class PermissionCheck {
       final AuthToken authToken = CommonUtils.getAuthentication();
       final boolean isPermitted = checkUserIdEmail(email, id, authToken);
 
-      if (!authToken.getIsSuperUser() && !isPermitted) {
+      if (!CommonUtils.isSuperUser(authToken) && !isPermitted) {
         throw new CheckPermissionException(
             "Profile does not have required permissions to profile entity...");
       }
@@ -70,7 +69,7 @@ public class PermissionCheck {
     try {
       final AuthToken authToken = CommonUtils.getAuthentication();
 
-      if (authToken.getIsSuperUser()) {
+      if (CommonUtils.isSuperUser(authToken)) {
         return profileEntities;
       }
 
@@ -84,7 +83,7 @@ public class PermissionCheck {
 
   private boolean checkUserPermission(
       final AuthToken authToken, final List<String> requiredPermissions) {
-    if (authToken.getIsSuperUser()) {
+    if (CommonUtils.isSuperUser(authToken)) {
       return true;
     }
 
@@ -98,14 +97,14 @@ public class PermissionCheck {
       final AuthToken authToken, final List<String> requiredPermissions) {
     final Set<String> userPermissions =
         authToken.getPermissions().stream()
-            .map(AuthTokenPermission::getPermissionName)
+            .map(AuthToken.AuthTokenPermission::getPermissionName)
             .collect(Collectors.toSet());
 
     final Map<String, Boolean> checkedPermissions =
         requiredPermissions.stream()
             .collect(Collectors.toMap(permission -> permission, userPermissions::contains));
 
-    if (authToken.getIsSuperUser()) {
+    if (CommonUtils.isSuperUser(authToken)) {
       checkedPermissions.put(ConstantUtils.ROLE_NAME_SUPERUSER, Boolean.TRUE);
     }
 

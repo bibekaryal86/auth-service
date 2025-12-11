@@ -1,26 +1,26 @@
 package auth.service.app.controller;
 
 import auth.service.app.model.annotation.CheckPermission;
-import auth.service.app.model.dto.AuditResponse;
 import auth.service.app.model.dto.PermissionRequest;
 import auth.service.app.model.dto.PermissionResponse;
-import auth.service.app.model.dto.RequestMetadata;
+import auth.service.app.model.entity.AuditPermissionEntity;
 import auth.service.app.model.entity.PermissionEntity;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
 import auth.service.app.model.enums.AuditEnums;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.CircularDependencyService;
 import auth.service.app.service.PermissionService;
+import auth.service.app.service.PlatformRolePermissionService;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.EntityDtoConvertUtils;
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +43,7 @@ public class PermissionController {
 
   private final PermissionService permissionService;
   private final CircularDependencyService circularDependencyService;
+  private final PlatformRolePermissionService platformRolePermissionService;
   private final EntityDtoConvertUtils entityDtoConvertUtils;
   private final AuditService auditService;
 
@@ -66,9 +67,9 @@ public class PermissionController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
-          permissionEntity, responseCrudInfo, null, null);
+          permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Create Permission: [{}]", permissionRequest, ex);
+      log.error("Create Permission: PermissionRequest=[{}]", permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -77,31 +78,32 @@ public class PermissionController {
   @GetMapping
   public ResponseEntity<PermissionResponse> readPermissions(
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int pageNumber,
-      @RequestParam(required = false, defaultValue = "100") final int perPage,
-      @RequestParam(required = false, defaultValue = "") final String sortColumn,
-      @RequestParam(required = false, defaultValue = "ASC") final Sort.Direction sortDirection) {
+      @RequestParam(required = false, defaultValue = "") final String platformId,
+      @RequestParam(required = false, defaultValue = "") final String roleId) {
     try {
-      final RequestMetadata requestMetadata =
-          RequestMetadata.builder()
-              .isIncludeDeleted(isIncludeDeleted)
-              .isIncludeHistory(isIncludeHistory)
-              .pageNumber(pageNumber)
-              .perPage((perPage < 10 || perPage > 1000) ? 100 : perPage)
-              .sortColumn(sortColumn.isEmpty() ? "permissionName" : sortColumn)
-              .sortDirection(sortDirection)
-              .build();
+      final Long platformIdLong = CommonUtils.getValidId(platformId);
+      final Long roleIdLong = CommonUtils.getValidId(roleId);
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
 
-      final Page<PermissionEntity> permissionEntityPage =
-          permissionService.readPermissions(requestMetadata);
-      final List<PermissionEntity> permissionEntities = permissionEntityPage.toList();
-      final ResponseMetadata.ResponsePageInfo responsePageInfo =
-          CommonUtils.defaultResponsePageInfo(permissionEntityPage);
-      return entityDtoConvertUtils.getResponseMultiplePermissions(
-          permissionEntities, responsePageInfo, requestMetadata);
+      List<PermissionEntity> permissionEntities;
+      if (platformIdLong == null && roleIdLong == null) {
+        permissionEntities = permissionService.readPermissions(isIncludeDeleted && isSuperUser);
+      } else {
+        final List<PlatformRolePermissionEntity> prpEntities =
+            platformRolePermissionService.readPlatformRolePermissions(
+                platformIdLong, roleIdLong, isIncludeDeleted && isSuperUser);
+        permissionEntities =
+            prpEntities.stream().map(PlatformRolePermissionEntity::getPermission).toList();
+      }
+
+      return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permissions...", ex);
+      log.error(
+          "Read Permissions: IsIncludeDeleted=[{}], PlatformId=[{}], RoleId=[{}]",
+          isIncludeDeleted,
+          platformId,
+          roleId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -111,34 +113,25 @@ public class PermissionController {
   public ResponseEntity<PermissionResponse> readPermission(
       @PathVariable final long id,
       @RequestParam(required = false, defaultValue = "false") final boolean isIncludeDeleted,
-      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory,
-      @RequestParam(required = false, defaultValue = "1") final int historyPage,
-      @RequestParam(required = false, defaultValue = "100") final int historySize) {
+      @RequestParam(required = false, defaultValue = "false") final boolean isIncludeHistory) {
     try {
+      final boolean isSuperUser = CommonUtils.isSuperUser(CommonUtils.getAuthentication());
       final PermissionEntity permissionEntity =
-          circularDependencyService.readPermission(id, isIncludeDeleted);
-
-      RequestMetadata requestMetadata = null;
-      AuditResponse auditResponse = null;
+          circularDependencyService.readPermission(id, isIncludeDeleted && isSuperUser);
+      List<AuditPermissionEntity> auditPermissionEntities = Collections.emptyList();
       if (isIncludeHistory) {
-        requestMetadata =
-            RequestMetadata.builder()
-                .sortColumn("permissionName")
-                .sortDirection(Sort.Direction.ASC)
-                .isIncludeDeleted(isIncludeDeleted)
-                .isIncludeHistory(Boolean.TRUE)
-                .pageNumber(1)
-                .perPage(100)
-                .historyPage(historyPage)
-                .historySize(historySize)
-                .build();
-        auditResponse = auditService.auditPermissions(requestMetadata, id);
+        auditPermissionEntities = auditService.auditPermissions(id);
       }
 
       return entityDtoConvertUtils.getResponseSinglePermission(
-          permissionEntity, null, requestMetadata, auditResponse);
+          permissionEntity, null, auditPermissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permission: [{}]", id, ex);
+      log.error(
+          "Read Permission: Id=[{}], IsIncludeDeleted=[{}], IsIncludeHistory=[{}]",
+          id,
+          isIncludeDeleted,
+          isIncludeHistory,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
@@ -164,20 +157,19 @@ public class PermissionController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
-          permissionEntity, responseCrudInfo, null, null);
+          permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Update Permission: [{}] | [{}]", id, permissionRequest, ex);
+      log.error("Update Permission: Id=[{}], PermissionRequest=[{}]", id, permissionRequest, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
 
-  @CheckPermission("AUTHSVC_PERMISSION_DELETE")
+  @CheckPermission("AUTHSVC_PERMISSION_SOFTDELETE")
   @DeleteMapping("/permission/{id}")
   public ResponseEntity<PermissionResponse> softDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id, false);
-      permissionService.softDeletePermission(id);
+      final PermissionEntity permissionEntity = permissionService.softDeletePermission(id);
       CompletableFuture.runAsync(
           () ->
               auditService.auditPermission(
@@ -190,19 +182,20 @@ public class PermissionController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
-          new PermissionEntity(), responseCrudInfo, null, null);
+          permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Soft Delete Permission: [{}]", id, ex);
+      log.error("Soft Delete Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN HARD DELETE")
+  @CheckPermission("AUTHSVC_PERMISSION_HARDDELETE")
   @DeleteMapping("/permission/{id}/hard")
   public ResponseEntity<PermissionResponse> hardDeletePermission(
       @PathVariable final long id, final HttpServletRequest request) {
     try {
-      final PermissionEntity permissionEntity = circularDependencyService.readPermission(id, true);
+      final PermissionEntity permissionEntity =
+          circularDependencyService.readPermission(id, Boolean.TRUE);
       permissionService.hardDeletePermission(id);
       CompletableFuture.runAsync(
           () ->
@@ -216,14 +209,14 @@ public class PermissionController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
-          new PermissionEntity(), responseCrudInfo, null, null);
+          new PermissionEntity(), responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Hard Delete Permission: [{}]", id, ex);
+      log.error("Hard Delete Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
 
-  @CheckPermission("ONLY SUPERUSER CAN RESTORE")
+  @CheckPermission("AUTHSVC_PERMISSION_RESTORE")
   @PatchMapping("/permission/{id}/restore")
   public ResponseEntity<PermissionResponse> restorePermission(
       @PathVariable final long id, final HttpServletRequest request) {
@@ -241,9 +234,9 @@ public class PermissionController {
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePermission(
-          permissionEntity, responseCrudInfo, null, null);
+          permissionEntity, responseCrudInfo, null);
     } catch (Exception ex) {
-      log.error("Restore Permission: [{}]", id, ex);
+      log.error("Restore Permission: Id=[{}]", id, ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }

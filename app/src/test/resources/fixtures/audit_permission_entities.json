@@ -1,0 +1,102 @@
+[
+  {
+    "permission_id": 1,
+    "event_type": "Permission Audit 1 One",
+    "event_desc": "This is Permission Audit One One",
+    "event_data": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    },
+    "created_at": "2025-01-01T00:00:00.000000",
+    "created_by": 1,
+    "ip_address": "IP-1",
+    "user_agent": "UA-1",
+    "permission": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    }
+  },
+  {
+    "permission_id": 1,
+    "event_type": "Permission Audit 1 Two",
+    "event_desc": "This is Permission Audit One Two",
+    "event_data": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    },
+    "created_at": "2025-01-01T00:00:00.000000",
+    "created_by": 1,
+    "ip_address": "IP-1",
+    "user_agent": "UA-1",
+    "permission": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    }
+  },
+  {
+    "permission_id": 1,
+    "event_type": "Permission Audit 1 Three",
+    "event_desc": "This is Permission Audit One Three",
+    "event_data": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    },
+    "created_at": "2025-01-01T00:00:00.000000",
+    "created_by": 1,
+    "ip_address": "IP-2",
+    "user_agent": "UA-2",
+    "permission": {
+      "id": 1,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 1",
+      "permissionDesc": "This is Permission One"
+    }
+  },
+  {
+    "permission_id": 9,
+    "event_type": "Permission Audit 9 One",
+    "event_desc": "This is Permission Audit Nine One",
+    "event_data": {
+      "id": 9,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 9",
+      "permissionDesc": "This is Permission Nine"
+    },
+    "created_at": "2025-01-01T00:00:00.000000",
+    "created_by": 9,
+    "ip_address": "IP-9",
+    "user_agent": "UA-9",
+    "permission": {
+      "id": 9,
+      "createdDate": "2025-01-01T00:00:00.000000",
+      "updatedDate": "2025-01-01T00:00:00.000000",
+      "deletedDate": null,
+      "permissionName": "Permission 9",
+      "permissionDesc": "This is Permission Nine"
+    }
+  }
+]

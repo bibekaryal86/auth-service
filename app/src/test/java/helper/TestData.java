@@ -4,31 +4,31 @@ import static auth.service.app.util.ConstantUtils.ENV_KEY_NAMES;
 import static auth.service.app.util.ConstantUtils.ENV_SECRET_KEY;
 import static auth.service.app.util.ConstantUtils.ENV_SERVER_PORT;
 
-import auth.service.app.model.dto.PermissionDto;
 import auth.service.app.model.dto.PlatformDto;
+import auth.service.app.model.dto.PlatformProfileRoleDto;
 import auth.service.app.model.dto.ProfileAddressRequest;
 import auth.service.app.model.dto.ProfileDto;
-import auth.service.app.model.dto.ProfileDtoPlatformRole;
 import auth.service.app.model.dto.ProfileRequest;
-import auth.service.app.model.dto.RequestMetadata;
 import auth.service.app.model.dto.RoleDto;
+import auth.service.app.model.entity.AuditPermissionEntity;
+import auth.service.app.model.entity.AuditPlatformEntity;
+import auth.service.app.model.entity.AuditProfileEntity;
+import auth.service.app.model.entity.AuditRoleEntity;
 import auth.service.app.model.entity.PermissionEntity;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
 import auth.service.app.model.entity.PlatformProfileRoleId;
+import auth.service.app.model.entity.PlatformRolePermissionEntity;
+import auth.service.app.model.entity.PlatformRolePermissionId;
 import auth.service.app.model.entity.ProfileAddressEntity;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.TokenEntity;
-import auth.service.app.model.token.AuthToken;
-import auth.service.app.model.token.AuthTokenPermission;
-import auth.service.app.model.token.AuthTokenPlatform;
-import auth.service.app.model.token.AuthTokenProfile;
-import auth.service.app.model.token.AuthTokenRole;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.JwtUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import io.github.bibekaryal86.shdsvc.dtos.EnvDetailsResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Sort;
 
 public class TestData {
 
@@ -58,7 +57,7 @@ public class TestData {
   }
 
   public static EnvDetailsResponse getEnvDetailsResponse() {
-    String fixtureAsString = FixtureReader.readFixture("env-service_getPropertiesResponse.json");
+    String fixtureAsString = FixtureReader.readFixture("envsvc_response.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, EnvDetailsResponse.class);
@@ -68,7 +67,7 @@ public class TestData {
   }
 
   public static List<PermissionEntity> getPermissionEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-permission.json");
+    String fixtureAsString = FixtureReader.readFixture("permission_entities.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
@@ -79,14 +78,23 @@ public class TestData {
 
   public static PermissionEntity getNewPermissionEntity() {
     PermissionEntity permissionEntity = new PermissionEntity();
-    permissionEntity.setRole(getRoleEntities().getFirst());
-    permissionEntity.setPermissionName("PERMISSION-99");
-    permissionEntity.setPermissionDesc("PERMISSION Ninety Nine");
+    permissionEntity.setPermissionName("Permission 99");
+    permissionEntity.setPermissionDesc("This is Permission Ninety Nine");
     return permissionEntity;
   }
 
+  public static List<AuditPermissionEntity> getAuditPermissionEntities() {
+    String fixtureAsString = FixtureReader.readFixture("audit_permission_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
+  }
+
   public static List<RoleEntity> getRoleEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-role.json");
+    String fixtureAsString = FixtureReader.readFixture("role_entities.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
@@ -97,13 +105,23 @@ public class TestData {
 
   public static RoleEntity getNewRoleEntity() {
     RoleEntity roleEntity = new RoleEntity();
-    roleEntity.setRoleName("ROLE-99");
-    roleEntity.setRoleDesc("ROLE NINETY NINE");
+    roleEntity.setRoleName("Role 99");
+    roleEntity.setRoleDesc("This is Role Ninety Nine");
     return roleEntity;
   }
 
+  public static List<AuditRoleEntity> getAuditRoleEntities() {
+    String fixtureAsString = FixtureReader.readFixture("audit_role_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
+  }
+
   public static List<PlatformEntity> getPlatformEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-platform.json");
+    String fixtureAsString = FixtureReader.readFixture("platform_entities.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
@@ -114,13 +132,23 @@ public class TestData {
 
   public static PlatformEntity getNewPlatformEntity() {
     PlatformEntity platformEntity = new PlatformEntity();
-    platformEntity.setPlatformName("PLATFORM-99");
-    platformEntity.setPlatformDesc("PLATFORM NINETY NINE");
+    platformEntity.setPlatformName("Platform 99");
+    platformEntity.setPlatformDesc("This is Platform Ninety Nine");
     return platformEntity;
   }
 
+  public static List<AuditPlatformEntity> getAuditPlatformEntities() {
+    String fixtureAsString = FixtureReader.readFixture("audit_platform_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
+  }
+
   public static List<ProfileAddressEntity> getProfileAddressEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-profile-address.json");
+    String fixtureAsString = FixtureReader.readFixture("profile_address_entities.json");
     try {
       return ObjectMapperProvider.objectMapper()
           .readValue(fixtureAsString, new TypeReference<>() {});
@@ -131,11 +159,11 @@ public class TestData {
 
   public static ProfileAddressEntity getNewProfileAddressEntity() {
     ProfileAddressEntity profileAddressEntity = new ProfileAddressEntity();
-    profileAddressEntity.setStreet("Street-99");
-    profileAddressEntity.setCity("City-99");
-    profileAddressEntity.setState("ST-99");
-    profileAddressEntity.setCountry("Country-99");
-    profileAddressEntity.setPostalCode("Postal-99");
+    profileAddressEntity.setStreet("99 Street");
+    profileAddressEntity.setCity("CityNinetyNine");
+    profileAddressEntity.setState("99S");
+    profileAddressEntity.setCountry("USA");
+    profileAddressEntity.setPostalCode("99999");
     profileAddressEntity.setProfile(null);
     return profileAddressEntity;
   }
@@ -155,7 +183,7 @@ public class TestData {
   }
 
   public static List<ProfileEntity> getProfileEntities() {
-    String fixtureAsString = FixtureReader.readFixture("entities-profile.json");
+    String fixtureAsString = FixtureReader.readFixture("profile_entities.json");
     try {
       List<ProfileEntity> profileEntities =
           ObjectMapperProvider.objectMapper().readValue(fixtureAsString, new TypeReference<>() {});
@@ -183,14 +211,24 @@ public class TestData {
 
   public static ProfileEntity getNewProfileEntity() {
     ProfileEntity profileEntity = new ProfileEntity();
-    profileEntity.setFirstName("First Ninety Nine");
-    profileEntity.setLastName("Last Ninety Nine");
-    profileEntity.setEmail("firstlast@ninetynine.com");
-    profileEntity.setPassword("password-99");
+    profileEntity.setFirstName("Profile 99");
+    profileEntity.setLastName("99 Profile");
+    profileEntity.setEmail("profile@ninetynine.com");
+    profileEntity.setPassword("password99");
     profileEntity.setIsValidated(false);
     profileEntity.setLoginAttempts(0);
     profileEntity.setProfileAddress(null);
     return profileEntity;
+  }
+
+  public static List<AuditProfileEntity> getAuditProfileEntities() {
+    String fixtureAsString = FixtureReader.readFixture("audit_profile_entities.json");
+    try {
+      return ObjectMapperProvider.objectMapper()
+          .readValue(fixtureAsString, new TypeReference<>() {});
+    } catch (JsonProcessingException ex) {
+      return Collections.emptyList();
+    }
   }
 
   public static ProfileRequest getProfileRequest(
@@ -205,30 +243,30 @@ public class TestData {
   public static ProfileDto getProfileDto() {
     ProfileEntity profileEntity = getProfileEntities().getFirst();
     PlatformEntity platformEntity = getPlatformEntities().getFirst();
-    RoleEntity roleEntity = getRoleEntities().getLast();
+    RoleEntity roleEntity = getRoleEntities().getFirst();
 
     ProfileDto profileDto = new ProfileDto();
-    BeanUtils.copyProperties(
-        profileEntity, profileDto, "password", "addresses", "status", "platformRoles");
+    BeanUtils.copyProperties(profileEntity, profileDto, "password", "profileAddress");
 
     PlatformDto platformDto = new PlatformDto();
     BeanUtils.copyProperties(platformEntity, platformDto);
     RoleDto roleDto = new RoleDto();
     BeanUtils.copyProperties(roleEntity, roleDto);
 
-    profileDto.setPlatformRoles(
+    List<PlatformProfileRoleDto> pprDtos =
         List.of(
-            ProfileDtoPlatformRole.builder()
+            PlatformProfileRoleDto.builder()
                 .platform(platformDto)
-                .roles(List.of(roleDto))
-                .build()));
-
+                .profile(profileDto)
+                .role(roleDto)
+                .build());
+    profileDto.setPlatformProfileRoles(pprDtos);
     return profileDto;
   }
 
   public static ProfileDto getProfileDtoWithSuperUserRole(final ProfileDto profileDtoInput) {
     ProfileDto profileDtoOutput = new ProfileDto();
-    BeanUtils.copyProperties(profileDtoInput, profileDtoOutput, "platformRoles");
+    BeanUtils.copyProperties(profileDtoInput, profileDtoOutput);
 
     PlatformEntity platformEntity = getPlatformEntities().getFirst();
     PlatformDto platformDto = new PlatformDto();
@@ -239,44 +277,23 @@ public class TestData {
     BeanUtils.copyProperties(roleEntity, roleDto);
     roleDto.setRoleName(ConstantUtils.ROLE_NAME_SUPERUSER);
 
-    profileDtoOutput.setPlatformRoles(
+    List<PlatformProfileRoleDto> pprDtos =
         List.of(
-            ProfileDtoPlatformRole.builder()
+            PlatformProfileRoleDto.builder()
                 .platform(platformDto)
-                .roles(List.of(roleDto))
-                .build()));
-    return profileDtoOutput;
-  }
+                .profile(profileDtoOutput)
+                .role(roleDto)
+                .build());
+    profileDtoOutput.setPlatformProfileRoles(pprDtos);
 
-  public static ProfileDto getProfileDtoWithPermissions(
-      final List<String> permissionNames, final ProfileDto profileDtoInput) {
-    ProfileDto profileDtoOutput = new ProfileDto();
-    BeanUtils.copyProperties(profileDtoInput, profileDtoOutput, "platformRoles");
-
-    PlatformDto platformDto = profileDtoInput.getPlatformRoles().getFirst().getPlatform();
-    List<PermissionDto> permissionDtos =
-        permissionNames.stream()
-            .map(
-                permissionName ->
-                    PermissionDto.builder()
-                        .id(-1L)
-                        .permissionName(permissionName)
-                        .permissionDesc(permissionName)
-                        .build())
-            .toList();
-
-    List<RoleDto> roleDtos =
-        profileDtoInput.getPlatformRoles().stream()
-            .flatMap(profileDtoPlatformRole -> profileDtoPlatformRole.getRoles().stream())
-            .toList();
-    roleDtos.forEach(roleDto -> roleDto.setPermissions(permissionDtos));
-    profileDtoOutput.setPlatformRoles(
-        List.of(ProfileDtoPlatformRole.builder().platform(platformDto).roles(roleDtos).build()));
     return profileDtoOutput;
   }
 
   public static PlatformProfileRoleEntity getPlatformProfileRoleEntity(
-      PlatformEntity platformEntity, ProfileEntity profileEntity, RoleEntity roleEntity) {
+      PlatformEntity platformEntity,
+      ProfileEntity profileEntity,
+      RoleEntity roleEntity,
+      LocalDateTime unassignedDate) {
     PlatformProfileRoleEntity platformProfileRoleEntity = new PlatformProfileRoleEntity();
     PlatformProfileRoleId platformProfileRoleId =
         new PlatformProfileRoleId(
@@ -285,8 +302,27 @@ public class TestData {
     platformProfileRoleEntity.setPlatform(platformEntity);
     platformProfileRoleEntity.setProfile(profileEntity);
     platformProfileRoleEntity.setRole(roleEntity);
-    platformProfileRoleEntity.setAssignedDate(LocalDateTime.now());
+    platformProfileRoleEntity.setAssignedDate(LocalDateTime.now().minusDays(1L));
+    platformProfileRoleEntity.setUnassignedDate(unassignedDate);
     return platformProfileRoleEntity;
+  }
+
+  public static PlatformRolePermissionEntity getPlatformRolePermissionEntity(
+      PlatformEntity platformEntity,
+      RoleEntity roleEntity,
+      PermissionEntity permissionEntity,
+      LocalDateTime unassignedDate) {
+    PlatformRolePermissionEntity platformRolePermissionEntity = new PlatformRolePermissionEntity();
+    PlatformRolePermissionId platformRolePermissionId =
+        new PlatformRolePermissionId(
+            platformEntity.getId(), roleEntity.getId(), permissionEntity.getId());
+    platformRolePermissionEntity.setId(platformRolePermissionId);
+    platformRolePermissionEntity.setPlatform(platformEntity);
+    platformRolePermissionEntity.setRole(roleEntity);
+    platformRolePermissionEntity.setPermission(permissionEntity);
+    platformRolePermissionEntity.setAssignedDate(LocalDateTime.now().minusDays(1L));
+    platformRolePermissionEntity.setUnassignedDate(unassignedDate);
+    return platformRolePermissionEntity;
   }
 
   public static List<PlatformProfileRoleEntity> getPlatformProfileRoleEntities() {
@@ -295,92 +331,157 @@ public class TestData {
     List<ProfileEntity> profileEntities = getProfileEntities();
     List<RoleEntity> roleEntities = getRoleEntities();
 
+    // match test data sql
     // 1, 1, 1
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(0), profileEntities.get(0), roleEntities.get(0)));
-    // 2, 2, 2
+            platformEntities.getFirst(),
+            profileEntities.getFirst(),
+            roleEntities.getFirst(),
+            null));
+    // 1, 2, 2
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(1), profileEntities.get(1), roleEntities.get(1)));
-    // 3, 3, 3
+            platformEntities.getFirst(), profileEntities.get(1), roleEntities.get(1), null));
+    // 1, 3, 3
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(2), profileEntities.get(2), roleEntities.get(2)));
-    // 4, 4, 4
+            platformEntities.getFirst(),
+            profileEntities.get(2),
+            roleEntities.get(2),
+            LocalDateTime.now()));
+    // 5, 5, 5
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(3), profileEntities.get(3), roleEntities.get(3)));
-    // 4, 4, 5
+            platformEntities.get(4), profileEntities.get(4), roleEntities.get(4), null));
+    // 5, 6, 6
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(3), profileEntities.get(3), roleEntities.get(4)));
-    // 4, 4, 6
+            platformEntities.get(4), profileEntities.get(5), roleEntities.get(5), null));
+    // 5, 7, 7
     platformProfileRoleEntities.add(
         getPlatformProfileRoleEntity(
-            platformEntities.get(3), profileEntities.get(3), roleEntities.get(5)));
+            platformEntities.get(4),
+            profileEntities.get(6),
+            roleEntities.get(6),
+            LocalDateTime.now()));
+
+    // 9, 7, 7
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(8), profileEntities.get(6), roleEntities.get(6), null));
+    // 9, 8, 8
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(8), profileEntities.get(7), roleEntities.get(7), null));
+    // 9, 9, 9
+    platformProfileRoleEntities.add(
+        getPlatformProfileRoleEntity(
+            platformEntities.get(8),
+            profileEntities.get(8),
+            roleEntities.get(8),
+            LocalDateTime.now()));
 
     return platformProfileRoleEntities;
   }
 
+  public static List<PlatformRolePermissionEntity> getPlatformRolePermissionEntities() {
+    List<PlatformRolePermissionEntity> platformRolePermissionEntities = new ArrayList<>();
+    List<PlatformEntity> platformEntities = getPlatformEntities();
+    List<RoleEntity> roleEntities = getRoleEntities();
+    List<PermissionEntity> permissionEntities = getPermissionEntities();
+
+    // match test data sql
+    // 1, 1, 1
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.getFirst(),
+            roleEntities.getFirst(),
+            permissionEntities.getFirst(),
+            null));
+    // 1, 2, 2
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.getFirst(), roleEntities.get(1), permissionEntities.get(1), null));
+    // 1, 3, 3
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.getFirst(),
+            roleEntities.get(2),
+            permissionEntities.get(2),
+            LocalDateTime.now()));
+    // 5, 5, 5
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(4), roleEntities.get(4), permissionEntities.get(4), null));
+    // 5, 6, 6
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(4), roleEntities.get(5), permissionEntities.get(5), null));
+    // 5, 7, 7
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(4),
+            roleEntities.get(6),
+            permissionEntities.get(6),
+            LocalDateTime.now()));
+
+    // 9, 7, 7
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(8), roleEntities.get(6), permissionEntities.get(6), null));
+    // 9, 8, 8
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(8), roleEntities.get(7), permissionEntities.get(7), null));
+    // 9, 9, 9
+    platformRolePermissionEntities.add(
+        getPlatformRolePermissionEntity(
+            platformEntities.get(8),
+            roleEntities.get(8),
+            permissionEntities.get(8),
+            LocalDateTime.now()));
+
+    return platformRolePermissionEntities;
+  }
+
   public static AuthToken getAuthToken() {
-    return AuthToken.builder()
-        .platform(AuthTokenPlatform.builder().id(1L).platformName("PLATFORM-1").build())
-        .profile(AuthTokenProfile.builder().id(1L).email("firstlast@one.com").build())
-        .roles(List.of(AuthTokenRole.builder().id(1L).roleName("ROLE-1").build()))
-        .permissions(
-            List.of(AuthTokenPermission.builder().id(2L).permissionName("PERMISSION-1").build()))
-        .build();
+    return new AuthToken(
+        new AuthToken.AuthTokenPlatform(1L, "Platform 1"),
+        new AuthToken.AuthTokenProfile(1L, "profile@one.com"),
+        List.of(new AuthToken.AuthTokenRole(1L, "Role 1")),
+        List.of(new AuthToken.AuthTokenPermission(1L, "Permission 1")),
+        Boolean.FALSE);
   }
 
-  public static AuthToken getAuthTokenWithPermissions(List<String> permissionNames) {
-    return AuthToken.builder()
-        .platform(AuthTokenPlatform.builder().id(1L).platformName("PLATFORM-1").build())
-        .profile(AuthTokenProfile.builder().id(1L).email("firstlast@one.com").build())
-        .roles(List.of(AuthTokenRole.builder().id(1L).roleName("ROLE-1").build()))
-        .permissions(
-            IntStream.range(0, permissionNames.size())
-                .mapToObj(
-                    i ->
-                        AuthTokenPermission.builder()
-                            .id((long) i)
-                            .permissionName(permissionNames.get(i))
-                            .build())
-                .toList())
-        .build();
+  public static AuthToken getAuthTokenWithPermissions(
+      List<String> permissionNames, boolean isSuperUser) {
+    final AuthToken authToken = getAuthToken();
+    final List<AuthToken.AuthTokenPermission> permissions =
+        IntStream.range(0, permissionNames.size())
+            .mapToObj(i -> new AuthToken.AuthTokenPermission(i, permissionNames.get(i)))
+            .toList();
+    return new AuthToken(
+        authToken.getPlatform(),
+        authToken.getProfile(),
+        authToken.getRoles(),
+        permissions,
+        isSuperUser);
   }
 
-  public static String getBearerAuthCredentialsForTest(
-      final PlatformEntity platformEntity, final ProfileDto profileDto) {
-    return JwtUtils.encodeAuthCredentials(platformEntity, profileDto, 1000 * 60 * 15);
+  public static String getBearerAuthCredentialsForTest(AuthToken authToken) {
+    return JwtUtils.encodeAuthCredentials(authToken, 1000 * 60 * 15);
   }
 
   public static TokenEntity getTokenEntity(
       int integer, PlatformEntity platformEntity, ProfileEntity profileEntity) {
     TokenEntity tokenEntity = new TokenEntity();
     tokenEntity.setRefreshToken("some-refresh-token" + integer);
-    tokenEntity.setCsrfToken("some-csrf-token");
+    tokenEntity.setCsrfToken("some-csrf-token" + integer);
     tokenEntity.setIpAddress("some-ip-address" + integer);
     tokenEntity.setExpiryDate(LocalDateTime.now().plusDays(1L));
     tokenEntity.setPlatform(platformEntity);
     tokenEntity.setProfile(profileEntity);
     return tokenEntity;
-  }
-
-  public static RequestMetadata defaultRequestMetadata(final String sortColumn) {
-    return RequestMetadata.builder()
-        .isIncludePermissions(false)
-        .isIncludePlatforms(false)
-        .isIncludeProfiles(false)
-        .isIncludeRoles(false)
-        .isIncludeDeleted(false)
-        .isIncludeHistory(false)
-        .pageNumber(1)
-        .perPage(100)
-        .historyPage(1)
-        .historySize(100)
-        .sortColumn(sortColumn)
-        .sortDirection(Sort.Direction.ASC)
-        .build();
   }
 }

@@ -45,6 +45,7 @@ public class ConstantUtils {
   public static final String ENV_EMAIL_API_URL = "EMAIL_API_URL";
   public static final String ENV_EMAIL_API_USERNAME = "EMAIL_API_USR";
   public static final String ENV_EMAIL_API_PASSWORD = "EMAIL_API_PWD";
+  public static final String ENV_ALLOWED_ORIGINS = "ALLOWED_ORIGINS";
   public static final List<String> ENV_KEY_NAMES =
       List.of(
           ENV_SERVER_PORT,
@@ -57,7 +58,8 @@ public class ConstantUtils {
           ENV_EMAIL_API_PASSWORD,
           ENV_ENVSVC_BASE_URL,
           ENV_ENVSVC_USERNAME,
-          ENV_ENVSVC_PASSWORD);
+          ENV_ENVSVC_PASSWORD,
+          ENV_ALLOWED_ORIGINS);
 
   public static final List<String> ENV_KEY_NAMES_PROD =
       List.of(ENV_DB_HOST_PROD, ENV_DB_NAME_PROD, ENV_DB_USERNAME_PROD, ENV_DB_PASSWORD_PROD);
@@ -72,12 +74,6 @@ public class ConstantUtils {
   public static final String ROLE_NAME_GUEST = "GUEST";
   public static final String ROLE_NAME_STANDARD = "STANDARD";
   public static final String ROLE_NAME_SUPERUSER = "SUPERUSER";
-
-  // PERMISSION NAMES
-  public static final String PERMISSION_READ_PERMISSION = "AUTHSVC_PERMISSION_READ";
-  public static final String PERMISSION_READ_ROLE = "AUTHSVC_ROLE_READ";
-  public static final String PERMISSION_READ_PLATFORM = "AUTHSVC_PLATFORM_READ";
-  public static final String PERMISSION_READ_PROFILE = "AUTHSVC_PROFILE_READ";
 
   // TOKEN
   public static final String TOKEN_CLAIM_EMAIL = "emailToken";
@@ -97,7 +93,8 @@ public class ConstantUtils {
   public static final String INTERNAL_SERVER_ERROR_MESSAGE =
       "Something went wrong, please try again later!";
 
-  // fields
-  public static final String DELETED_DATE = "deletedDate";
-  public static final String NOT_NULL_VALUE = "NOT_NULL";
+  // environment
+  public static final String ENV_PROD = "production";
+  public static final String ENV_SPRINGBOOTTEST = "springboottest";
+  public static final String ENV_SANDBOX = "sandbox";
 }
