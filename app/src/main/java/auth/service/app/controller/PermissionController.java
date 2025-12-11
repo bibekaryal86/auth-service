@@ -98,7 +98,12 @@ public class PermissionController {
 
       return entityDtoConvertUtils.getResponseMultiplePermissions(permissionEntities);
     } catch (Exception ex) {
-      log.error("Read Permissions: IsIncludeDeleted=[{}], PlatformId=[{}], RoleId=[{}]", isIncludeDeleted, platformId, roleId, ex);
+      log.error(
+          "Read Permissions: IsIncludeDeleted=[{}], PlatformId=[{}], RoleId=[{}]",
+          isIncludeDeleted,
+          platformId,
+          roleId,
+          ex);
       return entityDtoConvertUtils.getResponseErrorPermission(ex);
     }
   }
