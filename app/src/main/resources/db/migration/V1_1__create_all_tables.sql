@@ -213,6 +213,8 @@ INSERT INTO role (role_name, role_desc)
 VALUES ('GUEST', 'User has view only access. No access to ref/admin data');
 
 INSERT INTO permission (permission_name, permission_desc)
+VALUES ('AUTHSVC_PERMISSION_SUPERUSER', 'Superuser Permissions');
+INSERT INTO permission (permission_name, permission_desc)
 VALUES ('AUTHSVC_PERMISSION_CREATE', 'Can Add Permission');
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('AUTHSVC_PERMISSION_READ', 'Can View Permission(s)');
