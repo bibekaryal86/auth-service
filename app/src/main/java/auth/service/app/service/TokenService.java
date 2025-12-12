@@ -13,6 +13,8 @@ import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+
+import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -87,7 +89,7 @@ public class TokenService {
                 toDelete.setDeletedDate(deletedDate);
                 tokenRepository.save(toDelete);
               });
-      return ProfilePasswordTokenResponse.builder().build();
+      return ProfilePasswordTokenResponse.builder().responseMetadata(ResponseMetadata.emptyResponseMetadata()).build();
     }
 
     final AuthToken authToken =
@@ -119,6 +121,7 @@ public class TokenService {
         .refreshToken(isSandbox ? refreshToken : null)
         .csrfToken(isSandbox ? csrfToken : null)
         .authToken(authToken)
+            .responseMetadata(ResponseMetadata.emptyResponseMetadata())
         .build();
   }
 
