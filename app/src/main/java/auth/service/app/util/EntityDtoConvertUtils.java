@@ -46,6 +46,7 @@ import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.net.URI;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -301,7 +302,7 @@ public class EntityDtoConvertUtils {
           dtos.stream()
               .map(dto -> dto.getPermissionName().split("_")[0])
               .sorted()
-              .collect(Collectors.toSet());
+              .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     return ResponseEntity.ok(
