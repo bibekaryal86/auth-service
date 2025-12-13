@@ -1162,8 +1162,7 @@ class EntityDtoConvertUtilsTest {
 
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertTrue(response.getBody().getPermissions().isEmpty());
-      assertTrue(response.getBody().getPlatformIds().isEmpty());
-      assertTrue(response.getBody().getRoleIds().isEmpty());
+      assertTrue(response.getBody().getPlatformNames().isEmpty());
     }
 
     @Test
