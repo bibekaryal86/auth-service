@@ -119,8 +119,8 @@ public class TokenService {
 
     return ProfilePasswordTokenResponse.builder()
         .accessToken(accessToken)
-        .refreshToken(isSandbox ? refreshToken : null)
-        .csrfToken(isSandbox ? csrfToken : null)
+        .refreshToken(refreshToken)
+        .csrfToken(csrfToken)
         .authToken(authToken)
         .responseMetadata(ResponseMetadata.emptyResponseMetadata())
         .build();
