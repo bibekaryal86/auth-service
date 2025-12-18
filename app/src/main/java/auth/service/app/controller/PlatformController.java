@@ -172,16 +172,24 @@ public class PlatformController {
     try {
       final PlatformEntity platformEntity =
           circularDependencyService.readPlatform(id, Boolean.TRUE);
+
+      // for delete, store history first
+      final String eventDesc =
+          String.format(
+              "Platform Delete Hard [Id: %s] - [Name: %s]",
+              platformEntity.getId(), platformEntity.getPlatformName());
+      final Long auditEntityId =
+          auditService.auditPlatform(
+              request, platformEntity, AuditEnums.AuditPlatform.PLATFORM_DELETE_HARD, eventDesc);
+
       platformService.hardDeletePlatform(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPlatform(
-                  request,
-                  platformEntity,
-                  AuditEnums.AuditPlatform.PLATFORM_DELETE_HARD,
-                  String.format(
-                      "Platform Delete Hard [Id: %s] - [Name: %s]",
-                      platformEntity.getId(), platformEntity.getPlatformName())));
+
+      // update history after success
+      if (auditEntityId != null) {
+        final String eventDescNew = eventDesc + " [SUCCESS]";
+        auditService.auditUpdateAfterDelete("audit_platform", auditEntityId, eventDescNew);
+      }
+
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(

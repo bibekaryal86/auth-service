@@ -23,6 +23,12 @@ public class RawSqlRepository {
     return query.getResultList();
   }
 
+  private int queryUpdate(final String sql, final Map<String, Object> params) {
+    Query query = entityManager.createNativeQuery(sql);
+    params.forEach(query::setParameter);
+    return query.executeUpdate();
+  }
+
   public List<AuthTokenRolePermissionLookup> findRolePermissionsForAuthToken(
       final Long platformId, final Long profileId) {
     if (platformId == null || profileId == null) {
@@ -68,5 +74,11 @@ public class RawSqlRepository {
     }
 
     return result;
+  }
+
+  public int updateAuditTableAfterDeletion(final String tableName, Long id, String eventDesc) {
+    final String sql = "UPDATE " + tableName + " SET event_desc = :eventDesc WHERE id = :id";
+    Map<String, Object> params = Map.of("eventDesc", eventDesc, "id", id);
+    return queryUpdate(sql, params);
   }
 }

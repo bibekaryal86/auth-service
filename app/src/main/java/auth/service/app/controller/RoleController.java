@@ -165,16 +165,24 @@ public class RoleController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = circularDependencyService.readRole(id, Boolean.TRUE);
+
+      // for delete, store history first
+      final String eventDesc =
+          String.format(
+              "Role Delete Hard [Id: %s] - [Name: %s]",
+              roleEntity.getId(), roleEntity.getRoleName());
+      final Long auditEntityId =
+          auditService.auditRole(
+              request, roleEntity, AuditEnums.AuditRole.ROLE_DELETE_HARD, eventDesc);
+
       roleService.hardDeleteRole(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  roleEntity,
-                  AuditEnums.AuditRole.ROLE_DELETE_HARD,
-                  String.format(
-                      "Role Delete Hard [Id: %s] - [Name: %s]",
-                      roleEntity.getId(), roleEntity.getRoleName())));
+
+      // update history after success
+      if (auditEntityId != null) {
+        final String eventDescNew = eventDesc + " [SUCCESS]";
+        auditService.auditUpdateAfterDelete("audit_role", auditEntityId, eventDescNew);
+      }
+
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleRole(new RoleEntity(), responseCrudInfo, null);

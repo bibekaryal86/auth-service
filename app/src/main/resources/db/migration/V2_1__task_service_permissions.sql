@@ -1,4 +1,7 @@
 INSERT INTO permission (permission_name, permission_desc)
+VALUES ('TASKSVC_PERMISSION_SUPERUSER', 'Superuser Permissions');
+
+INSERT INTO permission (permission_name, permission_desc)
 VALUES ('TASKSVC_TASK_CREATE', 'Can Add Task');
 INSERT INTO permission (permission_name, permission_desc)
 VALUES ('TASKSVC_TASK_READ', 'Can View Task(s)');

@@ -21,22 +21,22 @@ public abstract class BaseEntityAudit {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "event_type", nullable = false)
+  @Column(name = "event_type", nullable = false, updatable = false)
   private String eventType;
 
   @Column(name = "event_desc")
   private String eventDesc;
 
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
   @ManyToOne
-  @JoinColumn(name = "created_by", insertable = false, updatable = false)
+  @JoinColumn(name = "created_by", updatable = false)
   private ProfileEntity createdBy;
 
-  @Column(name = "ip_address", nullable = false)
+  @Column(name = "ip_address", nullable = false, updatable = false)
   private String ipAddress;
 
-  @Column(name = "user_agent", nullable = false)
+  @Column(name = "user_agent", nullable = false, updatable = false)
   private String userAgent;
 }

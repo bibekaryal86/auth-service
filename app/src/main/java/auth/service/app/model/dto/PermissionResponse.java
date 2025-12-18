@@ -2,6 +2,7 @@ package auth.service.app.model.dto;
 
 import io.github.bibekaryal86.shdsvc.dtos.ResponseMetadata;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +13,5 @@ import lombok.Getter;
 public class PermissionResponse {
   private List<PermissionDto> permissions;
   private ResponseMetadata responseMetadata;
-  private List<Long> platformIds;
-  private List<Long> roleIds;
+  private Set<String> platformNames;
 }
