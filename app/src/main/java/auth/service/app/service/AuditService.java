@@ -14,10 +14,12 @@ import auth.service.app.repository.AuditPlatformRepository;
 import auth.service.app.repository.AuditProfileRepository;
 import auth.service.app.repository.AuditRoleRepository;
 import auth.service.app.repository.ProfileRepository;
+import auth.service.app.repository.RawSqlRepository;
 import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class AuditService {
   private final AuditRoleRepository auditRoleRepository;
   private final AuditPlatformRepository auditPlatformRepository;
   private final AuditProfileRepository auditProfileRepository;
+  private final RawSqlRepository rawSqlRepository;
   private final ProfileRepository profileRepository;
 
   private ProfileEntity getCreatedByProfileEntity() {
@@ -47,7 +50,7 @@ public class AuditService {
     return null;
   }
 
-  public void auditPermission(
+  public Long auditPermission(
       final HttpServletRequest request,
       final PermissionEntity permissionEntity,
       final AuditEnums.AuditPermission eventType,
@@ -64,7 +67,7 @@ public class AuditService {
       auditPermissionEntity.setIpAddress(CommonUtils.getIpAddress(request));
       auditPermissionEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
-      auditPermissionRepository.save(auditPermissionEntity);
+      return auditPermissionRepository.save(auditPermissionEntity).getId();
     } catch (Exception ex) {
       log.error(
           "AuditPermissionException: PermissionsId=[{}], EventType=[{}], EventDesc=[{}]",
@@ -72,14 +75,19 @@ public class AuditService {
           eventType,
           eventDesc,
           ex);
+      return null;
     }
+  }
+
+  public List<AuditPermissionEntity> findAll() {
+    return auditPermissionRepository.findAll();
   }
 
   public List<AuditPermissionEntity> auditPermissions(final Long id) {
     return auditPermissionRepository.findByPermissionId(id);
   }
 
-  public void auditRole(
+  public Long auditRole(
       final HttpServletRequest request,
       final RoleEntity roleEntity,
       final AuditEnums.AuditRole eventType,
@@ -96,7 +104,7 @@ public class AuditService {
       auditRoleEntity.setIpAddress(CommonUtils.getIpAddress(request));
       auditRoleEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
-      auditRoleRepository.save(auditRoleEntity);
+      return auditRoleRepository.save(auditRoleEntity).getId();
     } catch (Exception ex) {
       log.error(
           "AuditRoleException: RoleId=[{}], EventType=[{}], EventDesc=[{}]",
@@ -104,6 +112,7 @@ public class AuditService {
           eventType,
           eventDesc,
           ex);
+      return null;
     }
   }
 
@@ -111,7 +120,7 @@ public class AuditService {
     return auditRoleRepository.findByRoleId(id);
   }
 
-  public void auditPlatform(
+  public Long auditPlatform(
       final HttpServletRequest request,
       final PlatformEntity platformEntity,
       final AuditEnums.AuditPlatform eventType,
@@ -128,7 +137,7 @@ public class AuditService {
       auditPlatformEntity.setIpAddress(CommonUtils.getIpAddress(request));
       auditPlatformEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
-      auditPlatformRepository.save(auditPlatformEntity);
+      return auditPlatformRepository.save(auditPlatformEntity).getId();
     } catch (Exception ex) {
       log.error(
           "AuditPlatformException: PlatformId=[{}], EventType=[{}], EventDesc=[{}]",
@@ -136,6 +145,7 @@ public class AuditService {
           eventType,
           eventDesc,
           ex);
+      return null;
     }
   }
 
@@ -143,7 +153,7 @@ public class AuditService {
     return auditPlatformRepository.findByPlatformId(id);
   }
 
-  public void auditProfile(
+  public Long auditProfile(
       final HttpServletRequest request,
       final ProfileEntity profileEntity,
       final AuditEnums.AuditProfile eventType,
@@ -161,7 +171,7 @@ public class AuditService {
       auditProfileEntity.setIpAddress(CommonUtils.getIpAddress(request));
       auditProfileEntity.setUserAgent(CommonUtils.getUserAgent(request));
 
-      auditProfileRepository.save(auditProfileEntity);
+      return auditProfileRepository.save(auditProfileEntity).getId();
     } catch (Exception ex) {
       log.error(
           "AuditProfileException: ProfileId=[{}], EventType=[{}], EventDesc=[{}]",
@@ -169,10 +179,26 @@ public class AuditService {
           eventType,
           eventDesc,
           ex);
+      return null;
     }
   }
 
   public List<AuditProfileEntity> auditProfiles(final Long id) {
     return auditProfileRepository.findByProfileId(id);
+  }
+
+  @Transactional
+  public int auditUpdateAfterDelete(String tableName, Long id, String eventDesc) {
+    try {
+      return rawSqlRepository.updateAuditTableAfterDeletion(tableName, id, eventDesc);
+    } catch (Exception ex) {
+      log.error(
+          "Audit Update After Delete Error: TableName=[{}}, Id=[{}], EventDesc=[{}]",
+          tableName,
+          id,
+          eventDesc,
+          ex);
+      return 0;
+    }
   }
 }

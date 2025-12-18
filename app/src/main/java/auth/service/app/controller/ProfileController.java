@@ -255,16 +255,24 @@ public class ProfileController {
     try {
       final ProfileEntity profileEntity =
           circularDependencyService.readProfile(id, Boolean.TRUE, Boolean.FALSE);
+
+      // for delete, store history first
+      final String eventDesc =
+          String.format(
+              "Profile Delete Hard [Id: %s] - [Email: %s]",
+              profileEntity.getId(), profileEntity.getEmail());
+      final Long auditEntityId =
+          auditService.auditProfile(
+              request, profileEntity, AuditEnums.AuditProfile.PROFILE_DELETE_HARD, eventDesc);
+
       profileService.hardDeleteProfile(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_DELETE_HARD,
-                  String.format(
-                      "Profile Delete Hard [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+
+      // update history after success
+      if (auditEntityId != null) {
+        final String eventDescNew = eventDesc + " [SUCCESS]";
+        auditService.auditUpdateAfterDelete("audit_profile", auditEntityId, eventDescNew);
+      }
+
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(

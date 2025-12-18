@@ -46,7 +46,10 @@ import io.github.bibekaryal86.shdsvc.exception.CheckPermissionException;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import java.net.URI;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -283,13 +286,11 @@ public class EntityDtoConvertUtils {
   public ResponseEntity<PermissionResponse> getResponseMultiplePermissions(
       final List<PermissionEntity> entities) {
     List<PermissionDto> dtos;
-    List<Long> platformIds;
-    List<Long> roleIds;
+    Set<String> platformNames;
 
     if (CommonUtilities.isEmpty(entities)) {
       dtos = Collections.emptyList();
-      platformIds = Collections.emptyList();
-      roleIds = Collections.emptyList();
+      platformNames = Collections.emptySet();
     } else {
       dtos =
           entities.stream()
@@ -297,19 +298,17 @@ public class EntityDtoConvertUtils {
                   entity ->
                       convertEntityToDtoPermission(entity, null, Boolean.FALSE, Boolean.FALSE))
               .toList();
-
-      final List<PlatformRolePermissionEntity> prpEntities =
-          prpService.readPlatformRolePermissionsByPermissionIds(
-              entities.stream().map(PermissionEntity::getId).toList(), Boolean.TRUE);
-      platformIds = prpEntities.stream().map(pprEntity -> pprEntity.getPlatform().getId()).toList();
-      roleIds = prpEntities.stream().map(pprEntity -> pprEntity.getRole().getId()).toList();
+      platformNames =
+          dtos.stream()
+              .map(dto -> dto.getPermissionName().split("_")[0])
+              .sorted()
+              .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     return ResponseEntity.ok(
         PermissionResponse.builder()
             .permissions(dtos)
-            .platformIds(platformIds)
-            .roleIds(roleIds)
+            .platformNames(platformNames)
             .responseMetadata(ResponseMetadata.emptyResponseMetadata())
             .build());
   }
@@ -324,8 +323,7 @@ public class EntityDtoConvertUtils {
     return new ResponseEntity<>(
         PermissionResponse.builder()
             .permissions(Collections.emptyList())
-            .platformIds(Collections.emptyList())
-            .roleIds(Collections.emptyList())
+            .platformNames(Collections.emptySet())
             .responseMetadata(
                 new ResponseMetadata(
                     new ResponseMetadata.ResponseStatusInfo(exceptionMessage),

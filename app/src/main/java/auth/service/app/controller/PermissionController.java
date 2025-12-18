@@ -196,16 +196,27 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           circularDependencyService.readPermission(id, Boolean.TRUE);
+
+      // for delete, store history first
+      final String eventDesc =
+          String.format(
+              "Permission Delete Hard [Id: %s] - [Name: %s]",
+              permissionEntity.getId(), permissionEntity.getPermissionName());
+      final Long auditEntityId =
+          auditService.auditPermission(
+              request,
+              permissionEntity,
+              AuditEnums.AuditPermission.PERMISSION_DELETE_HARD,
+              eventDesc);
+
       permissionService.hardDeletePermission(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPermission(
-                  request,
-                  permissionEntity,
-                  AuditEnums.AuditPermission.PERMISSION_DELETE_HARD,
-                  String.format(
-                      "Permission Delete Hard [Id: %s] - [Name: %s]",
-                      permissionEntity.getId(), permissionEntity.getPermissionName())));
+
+      // update history after success
+      if (auditEntityId != null) {
+        final String eventDescNew = eventDesc + " [SUCCESS]";
+        auditService.auditUpdateAfterDelete("audit_permission", auditEntityId, eventDescNew);
+      }
+
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
