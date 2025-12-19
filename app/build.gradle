@@ -11,9 +11,9 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'io.freefair.lombok' version '9.1.0'
-    id 'org.springframework.boot' version '4.0.0'
+    id 'org.springframework.boot' version '4.0.1'
     id 'com.diffplug.spotless' version '8.1.0'
-    id 'org.flywaydb.flyway' version '11.19.0'
+    id 'org.flywaydb.flyway' version '11.19.1'
 }
 
 dependencies {
