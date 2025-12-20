@@ -10,9 +10,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -20,17 +18,12 @@ import static org.mockito.Mockito.when;
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.model.dto.ProfilePasswordRequest;
 import auth.service.app.model.dto.ProfilePasswordTokenResponse;
-import auth.service.app.model.dto.ProfileRequest;
-import auth.service.app.model.dto.ProfileResponse;
 import auth.service.app.model.entity.PlatformEntity;
 import auth.service.app.model.entity.PlatformProfileRoleEntity;
-import auth.service.app.model.entity.PlatformProfileRoleId;
 import auth.service.app.model.entity.ProfileEntity;
 import auth.service.app.model.entity.RoleEntity;
 import auth.service.app.model.entity.TokenEntity;
 import auth.service.app.model.enums.AuditEnums;
-import auth.service.app.model.enums.TypeEnums;
-import auth.service.app.model.events.ProfileEvent;
 import auth.service.app.repository.PlatformProfileRoleRepository;
 import auth.service.app.repository.PlatformRepository;
 import auth.service.app.repository.ProfileAddressRepository;
@@ -39,19 +32,16 @@ import auth.service.app.repository.RoleRepository;
 import auth.service.app.repository.TokenRepository;
 import auth.service.app.service.AuditService;
 import auth.service.app.service.EmailService;
-import auth.service.app.util.CommonUtils;
 import auth.service.app.util.ConstantUtils;
 import auth.service.app.util.PasswordUtils;
 import helper.TestData;
 import integration.BaseTest;
-import io.github.bibekaryal86.shdsvc.dtos.ResponseWithMetadata;
 import io.github.bibekaryal86.shdsvc.helpers.CommonUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,9 +55,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Tag("integration")
-@DisplayName("ProfileBasicAuthControllerTest Tests")
+@DisplayName("AuthCorsController Tests")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class ProfileBasicAuthControllerTest extends BaseTest {
+public class AuthCorsControllerTest extends BaseTest {
 
   @Autowired private ApplicationEventPublisher publisher;
   @Autowired private PlatformRepository platformRepository;
@@ -125,321 +115,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
   }
 
   @Nested
-  @DisplayName("Create Profile Tests")
-  class CreateProfileTests {
-
-    @Test
-    @DisplayName("Create Profile Success")
-    void test_Success() {
-      String roleName = roleEntity.getRoleName();
-      roleEntity.setRoleName(ConstantUtils.ROLE_NAME_GUEST);
-      roleRepository.save(roleEntity);
-
-      ProfileRequest request =
-          TestData.getProfileRequest(
-              "FirstName", "LastName", "new@email.com", "NewPassword123", null);
-
-      ProfileResponse response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(ProfileResponse.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertNotNull(response);
-      assertNotNull(response.getProfiles());
-      assertEquals(1, response.getProfiles().size());
-      assertEquals(request.getEmail(), response.getProfiles().getFirst().getEmail());
-      assertNotNull(response.getResponseMetadata());
-      assertEquals(
-          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0),
-          response.getResponseMetadata().responseCrudInfo());
-
-      ProfileEntity newProfileEntity =
-          profileRepository.findById(response.getProfiles().getFirst().getId()).orElseThrow();
-      assertEquals(request.getEmail(), newProfileEntity.getEmail());
-      assertNotEquals(request.getPassword(), newProfileEntity.getPassword());
-
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_CREATE)),
-              any(String.class));
-
-      verify(publisher, times(1))
-          .publishEvent(
-              argThat(
-                  event -> {
-                    ProfileEvent profileEvent = (ProfileEvent) event;
-                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
-                    assertEquals(
-                        "https://base-url-for-link-in-email.com", profileEvent.getBaseUrl());
-                    return true;
-                  }));
-
-      // reset
-      roleEntity.setRoleName(roleName);
-      roleRepository.save(roleEntity);
-
-      pprRepository.deleteById(
-          new PlatformProfileRoleId(
-              platformEntity.getId(), newProfileEntity.getId(), roleEntity.getId()));
-      profileRepository.deleteById(newProfileEntity.getId());
-    }
-
-    @Test
-    @DisplayName("Create Profile Success Standard User With Address")
-    void test_Success_StandardUserWithAddress() {
-      when(envServiceConnector.getBaseUrlForLinkInEmail()).thenReturn(null);
-      String roleName = roleEntity.getRoleName();
-      roleEntity.setRoleName(ConstantUtils.ROLE_NAME_STANDARD);
-      roleRepository.save(roleEntity);
-
-      ProfileRequest request =
-          TestData.getProfileRequest(
-              "FirstName", "LastName", "new@email.com", "NewPassword123", null);
-      request.setGuestUser(false);
-      request.setAddressRequest(TestData.getProfileAddressRequest(null, null, "123 New St", false));
-
-      ProfileResponse response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(ProfileResponse.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertNotNull(response);
-      assertNotNull(response.getProfiles());
-      assertEquals(1, response.getProfiles().size());
-      assertEquals(request.getEmail(), response.getProfiles().getFirst().getEmail());
-      assertNotNull(response.getProfiles().getFirst().getProfileAddress());
-      assertEquals("123 New St", response.getProfiles().getFirst().getProfileAddress().getStreet());
-      assertNotNull(response.getResponseMetadata());
-      assertEquals(
-          CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0),
-          response.getResponseMetadata().responseCrudInfo());
-
-      ProfileEntity newProfileEntity =
-          profileRepository.findById(response.getProfiles().getFirst().getId()).orElseThrow();
-      assertEquals(request.getEmail(), newProfileEntity.getEmail());
-      assertNotEquals(request.getPassword(), newProfileEntity.getPassword());
-
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_CREATE)),
-              any(String.class));
-
-      verify(publisher, times(1))
-          .publishEvent(
-              argThat(
-                  event -> {
-                    ProfileEvent profileEvent = (ProfileEvent) event;
-                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
-                    assertTrue(
-                        Pattern.matches(
-                            "^http://localhost:\\d+/authsvc$", profileEvent.getBaseUrl()));
-                    return true;
-                  }));
-
-      // reset
-      roleEntity.setRoleName(roleName);
-      roleRepository.save(roleEntity);
-
-      profileAddressRepository.deleteById(newProfileEntity.getProfileAddress().getId());
-      pprRepository.deleteById(
-          new PlatformProfileRoleId(
-              platformEntity.getId(), newProfileEntity.getId(), roleEntity.getId()));
-      profileRepository.deleteById(newProfileEntity.getId());
-    }
-
-    @Test
-    @DisplayName("Create Profile Failure Bad Request")
-    void test_Failure_BadRequest() {
-      ProfileRequest request = TestData.getProfileRequest("", null, "", "NewPassword123", null);
-
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isBadRequest()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-                  .getResponseMetadata()
-                  .responseStatusInfo()
-                  .errMsg()
-                  .contains("First Name is required")
-              && response
-                  .getResponseMetadata()
-                  .responseStatusInfo()
-                  .errMsg()
-                  .contains("Last Name is required")
-              && response
-                  .getResponseMetadata()
-                  .responseStatusInfo()
-                  .errMsg()
-                  .contains("Email is required"));
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(publisher);
-    }
-
-    @Test
-    @DisplayName("Create Profile Failure Validation Error")
-    void test_Failure_ValidationError() {
-      ProfileRequest request =
-          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
-
-      ProfileResponse response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isBadRequest()
-              .expectBody(ProfileResponse.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(response != null && response.getProfiles().isEmpty());
-      assertTrue(
-          response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-      assertEquals(
-          "[password] is Missing in [Profile] request",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(publisher);
-    }
-
-    @Test
-    @DisplayName("Create Profile Failure Platform Deleted")
-    void test_Failure_PlatformDeleted() {
-      ProfileRequest request =
-          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
-
-      ProfileResponse response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", ID_DELETED))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isForbidden()
-              .expectBody(ProfileResponse.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(response != null && response.getProfiles().isEmpty());
-      assertTrue(
-          response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-      assertEquals(
-          "Active Platform Not Found for [9]",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(publisher);
-    }
-
-    @Test
-    @DisplayName("Create Profile Failure Platform Not Found")
-    void test_Failure_PlatformNotFound() {
-      ProfileRequest request =
-          TestData.getProfileRequest("FirstName", "LastName", "new@email.com", "", null);
-
-      ProfileResponse response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/create", ID_NOT_FOUND))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isNotFound()
-              .expectBody(ProfileResponse.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(response != null && response.getProfiles().isEmpty());
-      assertTrue(
-          response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-      assertEquals(
-          "Platform Not Found for [99]",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(publisher);
-    }
-
-    @Test
-    @DisplayName("Create Profile Failure No Auth")
-    void test_Failure_NoAuth() {
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-    }
-  }
-
-  @Nested
   @DisplayName("Login Tests")
   class LoginTests {
 
@@ -456,8 +131,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -518,8 +192,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -575,8 +248,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -629,8 +301,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", ID))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", ID))
               .bodyValue(request)
               .exchange();
 
@@ -689,8 +360,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -753,8 +423,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -817,8 +486,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -881,8 +549,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -941,8 +608,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -1001,8 +667,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -1058,8 +723,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -1112,8 +776,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+              .uri(String.format("/api/v1/cors/platform/%s/login", platformEntity.getId()))
               .bodyValue(request)
               .exchange();
 
@@ -1146,41 +809,11 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
       verifyNoInteractions(auditService);
     }
-
-    @Test
-    @DisplayName("Login Failure No Auth")
-    void test_Failure_NoAuth() {
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD);
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/login", platformEntity.getId()))
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-    }
   }
 
   @Nested
   @DisplayName("Refresh Token Tests")
-  class RefreshTokenTests {
+  class RefreshTests {
 
     @Test
     @DisplayName("Refresh Token Success")
@@ -1195,9 +828,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1272,9 +904,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .exchange();
@@ -1342,9 +973,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
               .exchange();
@@ -1412,9 +1042,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
               .exchange();
@@ -1482,9 +1111,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getRefreshToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1553,9 +1181,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, "TOKEN-NOT-FOUND")
@@ -1624,9 +1251,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
-                      ID, profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+                      "/api/v1/cors/platform/%s/profile/%s/refresh", ID, profileEntity.getId()))
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1694,9 +1319,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
-                      platformEntity.getId(), ID))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+                      "/api/v1/cors/platform/%s/profile/%s/refresh", platformEntity.getId(), ID))
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1765,9 +1388,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1836,9 +1458,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1907,9 +1528,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       ID_DELETED, profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -1979,9 +1599,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
+                      "/api/v1/cors/platform/%s/profile/%s/refresh",
                       platformEntity.getId(), ID_DELETED))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .header(ConstantUtils.HEADER_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_CSRF_TOKEN, tokenEntity.getCsrfToken())
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, tokenEntity.getRefreshToken())
@@ -2036,36 +1655,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
       // reset
       tokenRepository.deleteById(tokenEntity.getId());
     }
-
-    @Test
-    @DisplayName("Refresh Token Failure No Auth")
-    void test_Failure_NoAuth() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/refresh",
-                      platformEntity.getId(), profileEntity.getId()))
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-    }
   }
 
   @Nested
@@ -2091,9 +1680,8 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
+                      "/api/v1/cors/platform/%s/profile/%s/logout",
                       platformEntity.getId(), profileEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
               .exchange();
 
       responseSpec.expectStatus().isNoContent();
@@ -2141,9 +1729,7 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
               .get()
               .uri(
                   String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
-                      ID_NOT_FOUND, ID_NOT_FOUND))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
+                      "/api/v1/cors/platform/%s/profile/%s/logout", ID_NOT_FOUND, ID_NOT_FOUND))
               .cookie(ConstantUtils.COOKIE_REFRESH_TOKEN, "TOKEN-NOT-FOUND")
               .exchange();
 
@@ -2173,487 +1759,6 @@ public class ProfileBasicAuthControllerTest extends BaseTest {
 
       // reset
       tokenRepository.deleteById(tokenEntity.getId());
-    }
-
-    @Test
-    @DisplayName("Logout Failure No Auth")
-    void test_Failure_NoAuth() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/profile/%s/logout",
-                      platformEntity.getId(), profileEntity.getId()))
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-    }
-  }
-
-  @Nested
-  @DisplayName("Validate Profile Init Tests")
-  class ValidateProfileInitTests {
-
-    @Test
-    @DisplayName("Validate Profile Init Success")
-    void test_Success() {
-      webTestClient
-          .get()
-          .uri(
-              String.format(
-                  "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                  platformEntity.getId(), profileEntity.getEmail()))
-          .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-          .exchange()
-          .expectStatus()
-          .isNoContent();
-
-      // verify audit service called for reset success
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_INIT)),
-              any(String.class));
-
-      // verify email sent for reset
-      verify(emailService, after(200).times(1))
-          .sendProfileValidationEmail(
-              any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
-    }
-
-    @Test
-    @DisplayName("Validate Profile Failure Runtime Error")
-    void test_Failure_RuntimeError() {
-      doThrow(new RuntimeException("Something Bad Happened"))
-          .when(emailService)
-          .sendProfileValidationEmail(any(), any(), any());
-
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      platformEntity.getId(), profileEntity.getEmail()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .exchange()
-              .expectStatus()
-              .is5xxServerError()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Something Bad Happened"));
-
-      // verify audit service called for validate failure
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(
-                  eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
-              any(String.class));
-    }
-
-    @Test
-    @DisplayName("Validate Profile Init Failure Profile Not Found")
-    void test_Failure_NotFound() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      platformEntity.getId(), EMAIL_NOT_FOUND))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .exchange()
-              .expectStatus()
-              .isNotFound()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
-
-      // verify audit service called for reset failure
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              isNull(),
-              argThat(
-                  eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR)),
-              any(String.class));
-      verifyNoInteractions(emailService);
-    }
-
-    @Test
-    @DisplayName("Validate Profile Init Failure No Auth")
-    void test_FailureNoAuth() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/validate_init?email=%s",
-                      platformEntity.getId(), profileEntity.getEmail()))
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(emailService);
-    }
-  }
-
-  @Nested
-  @DisplayName("Reset Profile Init Tests")
-  class ResetProfileInitTests {
-
-    @Test
-    @DisplayName("Reset Profile Init Success")
-    void test_Success() {
-      webTestClient
-          .get()
-          .uri(
-              String.format(
-                  "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                  platformEntity.getId(), profileEntity.getEmail()))
-          .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-          .exchange()
-          .expectStatus()
-          .isNoContent();
-
-      // verify audit service called for reset success
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_INIT)),
-              any(String.class));
-
-      // verify email sent for reset
-      verify(emailService, after(200).times(1))
-          .sendProfileResetEmail(
-              any(PlatformEntity.class), any(ProfileEntity.class), any(String.class));
-    }
-
-    @Test
-    @DisplayName("Reset Profile Failure Runtime Error")
-    void test_Failure_RuntimeError() {
-      doThrow(new RuntimeException("Something Bad Happened"))
-          .when(emailService)
-          .sendProfileResetEmail(any(), any(), any());
-
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      platformEntity.getId(), profileEntity.getEmail()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .exchange()
-              .expectStatus()
-              .is5xxServerError()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Something Bad Happened"));
-
-      // verify audit service called for reset init failure
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
-              any(String.class));
-    }
-
-    @Test
-    @DisplayName("Reset Profile Init Failure Profile Not Found")
-    void test_Failure_NotFound() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      platformEntity.getId(), EMAIL_NOT_FOUND))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .exchange()
-              .expectStatus()
-              .isNotFound()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
-
-      // verify audit service called for reset failure
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              isNull(),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
-              any(String.class));
-      verifyNoInteractions(emailService);
-    }
-
-    @Test
-    @DisplayName("Reset Profile Init Failure No Auth")
-    void test_FailureNoAuth() {
-      ResponseWithMetadata response =
-          webTestClient
-              .get()
-              .uri(
-                  String.format(
-                      "/api/v1/ba_profiles/platform/%s/reset_init?email=%s",
-                      platformEntity.getId(), profileEntity.getEmail()))
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
-      verifyNoInteractions(emailService);
-    }
-  }
-
-  @Nested
-  @DisplayName("Reset Profile Tests")
-  class ResetProfileTests {
-    private static final String PASSWORD_AFTER_RESET = "password-9";
-
-    @Test
-    @DisplayName("Reset Profile Success")
-    void test_Success() {
-      ProfileEntity existingProfileEntity =
-          profileRepository.findById(profileEntity.getId()).orElseThrow();
-      String existingPassword = existingProfileEntity.getPassword();
-
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(profileEntity.getEmail(), PASSWORD_AFTER_RESET);
-      webTestClient
-          .post()
-          .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
-          .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-          .bodyValue(request)
-          .exchange()
-          .expectStatus()
-          .isNoContent();
-
-      existingProfileEntity = profileRepository.findById(profileEntity.getId()).orElseThrow();
-      assertNotEquals(existingPassword, existingProfileEntity.getPassword());
-
-      // verify audit service called for reset success
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              any(ProfileEntity.class),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_SUCCESS)),
-              any(String.class));
-
-      // reset
-      existingProfileEntity.setPassword(existingPassword);
-      profileRepository.save(existingProfileEntity);
-    }
-
-    @Test
-    @DisplayName("Reset Profile Failure Bad Request")
-    void test_Failure_BadRequest() {
-      ProfileEntity existingProfileEntity =
-          profileRepository.findById(profileEntity.getId()).orElseThrow();
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(existingProfileEntity.getEmail(), "");
-
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isBadRequest()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Password is Required"));
-
-      verifyNoInteractions(auditService);
-    }
-
-    @Test
-    @DisplayName("Reset Profile Failure Profile Not Found")
-    void test_Failure_NotFound() {
-      profileRepository.findById(profileEntity.getId()).orElseThrow();
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(EMAIL_NOT_FOUND, PASSWORD_AFTER_RESET);
-
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
-              .header("Authorization", "Basic " + basicAuthCredentialsForTest)
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isNotFound()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertTrue(
-          response
-              .getResponseMetadata()
-              .responseStatusInfo()
-              .errMsg()
-              .contains("Platform Profile Role Not Found for [7,email@notfound.com]"));
-
-      // verify audit service called for reset failure
-      verify(auditService, after(100).times(1))
-          .auditProfile(
-              any(HttpServletRequest.class),
-              isNull(),
-              argThat(eventType -> eventType.equals(AuditEnums.AuditProfile.PROFILE_RESET_ERROR)),
-              any(String.class));
-    }
-
-    @Test
-    @DisplayName("Reset Profile Failure No Auth")
-    void test_Failure_NoAuth() {
-      ProfileEntity existingProfileEntity =
-          profileRepository.findById(profileEntity.getId()).orElseThrow();
-      ProfilePasswordRequest request =
-          new ProfilePasswordRequest(existingProfileEntity.getEmail(), PASSWORD_AFTER_RESET);
-      ResponseWithMetadata response =
-          webTestClient
-              .post()
-              .uri(String.format("/api/v1/ba_profiles/platform/%s/reset", platformEntity.getId()))
-              .bodyValue(request)
-              .exchange()
-              .expectStatus()
-              .isUnauthorized()
-              .expectBody(ResponseWithMetadata.class)
-              .returnResult()
-              .getResponseBody();
-
-      assertTrue(
-          response != null
-              && response.getResponseMetadata() != null
-              && response.getResponseMetadata().responseStatusInfo() != null
-              && response.getResponseMetadata().responseStatusInfo().errMsg() != null);
-
-      assertEquals(
-          "Not authorized to access this resource...",
-          response.getResponseMetadata().responseStatusInfo().errMsg());
-
-      verifyNoInteractions(auditService);
     }
   }
 }

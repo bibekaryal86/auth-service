@@ -1,5 +1,7 @@
 package integration.auth.service.app.controller;
 
+import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
+import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.reset;
@@ -9,6 +11,8 @@ import auth.service.app.model.dto.ProfileResponse;
 import helper.TestData;
 import integration.BaseTest;
 import io.github.bibekaryal86.shdsvc.dtos.AuthToken;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,12 @@ public class SsoApiControllerTest extends BaseTest {
   @MockitoBean private SecurityContext securityContext;
 
   private static String bearerAuthCredentials;
+
+  private String basicAuthCredentialsForTest =
+      Base64.getEncoder()
+          .encodeToString(
+              String.format("%s:%s", ENV_SELF_USERNAME, ENV_SELF_PASSWORD)
+                  .getBytes(StandardCharsets.UTF_8));
 
   @BeforeAll
   static void setUpBeforeAll() {
