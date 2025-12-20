@@ -1,11 +1,15 @@
 package integration.auth.service.app.controller;
 
+import static auth.service.app.util.ConstantUtils.ENV_SELF_PASSWORD;
+import static auth.service.app.util.ConstantUtils.ENV_SELF_USERNAME;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import integration.BaseTest;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +27,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 public class AppTestControllerTest extends BaseTest {
 
   @MockitoBean private CacheManager cacheManager;
+
+  private String basicAuthCredentialsForTest =
+      Base64.getEncoder()
+          .encodeToString(
+              String.format("%s:%s", ENV_SELF_USERNAME, ENV_SELF_PASSWORD)
+                  .getBytes(StandardCharsets.UTF_8));
 
   @Nested
   @DisplayName("Ping tests")

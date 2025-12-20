@@ -38,7 +38,7 @@ public class EmailService {
     final String encodedEmail = JwtUtils.encodeEmailAddress(profileEntity.getEmail());
     final String activationLink =
         String.format(
-            "%s/api/v1/na_profiles/platform/%s/validate_exit?toValidate=%s",
+            "%s/api/v1/auth/platform/%s/validate_exit?toValidate=%s",
             baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils
@@ -61,7 +61,7 @@ public class EmailService {
     final String encodedEmail = JwtUtils.encodeEmailAddress(profileEntity.getEmail());
     final String resetLink =
         String.format(
-            "%s/api/v1/na_profiles/platform/%s/reset_exit?toReset=%s",
+            "%s/api/v1/auth/platform/%s/reset_exit?toReset=%s",
             baseUrl, platformEntity.getId(), encodedEmail);
     final String emailHtmlContent =
         fileReaderUtils

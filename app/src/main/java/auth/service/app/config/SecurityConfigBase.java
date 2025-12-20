@@ -26,7 +26,7 @@ public abstract class SecurityConfigBase {
                   request
                       .getRequestURI()
                       .matches(
-                          "^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/na_profiles/|/error).*");
+                          "^.*(?:/swagger-ui/|/v3/api-docs|/tests/ping|/auth/|/cors/|/error).*");
               //              if (matches) {
               //                System.out.println("noAuthSecurityFilterChain: " +
               // request.getRequestURI());
