@@ -27,12 +27,12 @@ public class TokenEntity extends BaseEntity {
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
 
-  @Column(name = "refresh_token")
+  @Column(name = "refresh_token", nullable = false)
   private String refreshToken;
 
-  @Column(name = "csrf_token")
+  @Column(name = "csrf_token", nullable = false)
   private String csrfToken;
 
-  @Column(name = "expiry_date")
+  @Column(name = "expiry_date", nullable = false)
   private LocalDateTime expiryDate;
 }
