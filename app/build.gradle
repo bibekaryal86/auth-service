@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'org.postgresql:postgresql:42.7.8'
+        classpath 'org.postgresql:postgresql:42.7.10'
         classpath 'org.flywaydb:flyway-database-postgresql:12.0.0'
         classpath 'org.yaml:snakeyaml:2.5'
     }
@@ -35,7 +35,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
-    runtimeOnly 'org.postgresql:postgresql:42.7.8'
+    runtimeOnly 'org.postgresql:postgresql:42.7.10'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:12.0.0'
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
