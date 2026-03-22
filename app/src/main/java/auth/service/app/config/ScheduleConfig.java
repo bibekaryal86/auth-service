@@ -4,6 +4,8 @@ import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.service.AuditService;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import auth.service.app.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -21,6 +23,7 @@ public class ScheduleConfig {
   private final CacheManager cacheManager;
   private final EnvServiceConnector envServiceConnector;
   private final AuditService auditService;
+  private final TokenService tokenService;
 
   @Scheduled(cron = "0 3 0 * * *")
   protected void recreateAppCaches() throws InterruptedException {
@@ -42,9 +45,11 @@ public class ScheduleConfig {
   }
 
   @Scheduled(cron = "0 2 0 * * *")
-  protected void auditCleanup() {
-    log.info("Cleaning up audit...");
+  protected void dataCleanup() {
+    log.info("Cleaning up data...");
     Map<String, Integer> cleanupAudits = auditService.cleanupAudits();
     log.info("Audit cleanup completed: {}", cleanupAudits);
+    int cleanupTokens = tokenService.cleanupTokens();
+    log.info("Token cleanup completed: [{}]", cleanupTokens);
   }
 }

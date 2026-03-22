@@ -66,6 +66,11 @@ public class TokenService {
         : tokenRepository.setTokensAsDeletedByProfileId(profileId);
   }
 
+  public int cleanupTokens() {
+    LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+    return tokenRepository.deleteByExpiryDateBefore(oneYearAgo);
+  }
+
   public ProfilePasswordTokenResponse saveToken(
       final Long id,
       final LocalDateTime deletedDate,
