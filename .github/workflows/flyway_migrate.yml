@@ -22,7 +22,7 @@ jobs:
       - name: Test Database Connection Pull
         if: github.event_name == 'pull_request'
         run: |
-          pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 5432 -U ${{ secrets.DB_USERNAME_SANDBOX }} -d ${{ secrets.DB_DBNAME_SANDBOX }}
+          pg_isready -h ${{ secrets.DB_HOST_SANDBOX }} -p 6543 -U ${{ secrets.DB_USERNAME_SANDBOX }} -d ${{ secrets.DB_DBNAME_SANDBOX }}
 
       - name: Run Flyway Migrations (Production)
         if: github.event_name == 'push'
