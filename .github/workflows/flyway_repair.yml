@@ -40,6 +40,7 @@ jobs:
               -url=jdbc:postgresql://${{ secrets.DB_HOST }}:5432/${{ secrets.DB_DBNAME }} \
               -user=${{ secrets.DB_USERNAME }} \
               -password=${{ secrets.DB_PASSWORD }} \
+              -schemas=${{ secrets.DB_SCHEMAS }} \
               repair
           else
             docker run --rm \
@@ -48,5 +49,6 @@ jobs:
               -url=jdbc:postgresql://${{ secrets.DB_HOST_SANDBOX }}:5432/${{ secrets.DB_DBNAME_SANDBOX }} \
               -user=${{ secrets.DB_USERNAME_SANDBOX }} \
               -password=${{ secrets.DB_PASSWORD_SANDBOX }} \
+              -schemas=${{ secrets.DB_SCHEMAS_SANDBOX }} \
               repair
           fi
