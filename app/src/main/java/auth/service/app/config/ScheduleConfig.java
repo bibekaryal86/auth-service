@@ -1,6 +1,8 @@
 package auth.service.app.config;
 
 import auth.service.app.connector.EnvServiceConnector;
+import auth.service.app.service.AuditService;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ public class ScheduleConfig {
 
   private final CacheManager cacheManager;
   private final EnvServiceConnector envServiceConnector;
+  private final AuditService auditService;
 
   @Scheduled(cron = "0 3 0 * * *")
   protected void recreateAppCaches() throws InterruptedException {
@@ -36,5 +39,12 @@ public class ScheduleConfig {
 
     CompletableFuture.runAsync(envServiceConnector::getRedirectUrls);
     CompletableFuture.runAsync(envServiceConnector::getBaseUrlForLinkInEmail);
+  }
+
+  @Scheduled(cron = "0 2 0 * * *")
+  protected void auditCleanup() {
+    log.info("Cleaning up audit...");
+    Map<String, Integer> cleanupAudits = auditService.cleanupAudits();
+    log.info("Audit cleanup completed: {}", cleanupAudits);
   }
 }

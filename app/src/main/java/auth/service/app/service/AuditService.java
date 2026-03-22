@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -200,5 +201,18 @@ public class AuditService {
           ex);
       return 0;
     }
+  }
+
+  public Map<String, Integer> cleanupAudits() {
+    LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+    int auditPermissionsDeleteCount = auditPermissionRepository.deleteByCreatedAtBefore(oneYearAgo);
+    int auditRolesDeleteCount = auditRoleRepository.deleteByCreatedAtBefore(oneYearAgo);
+    int auditPlatformsDeleteCount = auditPlatformRepository.deleteByCreatedAtBefore(oneYearAgo);
+    int auditProfilesDeleteCount = auditProfileRepository.deleteByCreatedAtBefore(oneYearAgo);
+    return Map.of(
+        "auditPermissionsDeleteCount", auditPermissionsDeleteCount,
+        "auditRolesDeleteCount", auditRolesDeleteCount,
+        "auditPlatformsDeleteCount", auditPlatformsDeleteCount,
+        "auditProfilesDeleteCount", auditProfilesDeleteCount);
   }
 }
