@@ -2,10 +2,9 @@ package auth.service.app.config;
 
 import auth.service.app.connector.EnvServiceConnector;
 import auth.service.app.service.AuditService;
+import auth.service.app.service.TokenService;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import auth.service.app.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
