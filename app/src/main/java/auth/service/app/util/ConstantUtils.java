@@ -34,10 +34,12 @@ public class ConstantUtils {
   public static final String ENV_DB_NAME_PROD = "DB_NAME_PROD";
   public static final String ENV_DB_USERNAME_PROD = "DB_USERNAME_PROD";
   public static final String ENV_DB_PASSWORD_PROD = "DB_PASSWORD_PROD";
+  public static final String ENV_DB_SCHEMA_PROD = "DB_SCHEMA_PROD";
   public static final String ENV_DB_HOST_SANDBOX = "DB_HOST_SANDBOX";
   public static final String ENV_DB_NAME_SANDBOX = "DB_NAME_SANDBOX";
   public static final String ENV_DB_USERNAME_SANDBOX = "DB_USERNAME_SANDBOX";
   public static final String ENV_DB_PASSWORD_SANDBOX = "DB_PASSWORD_SANDBOX";
+  public static final String ENV_DB_SCHEMA_SANDBOX = "DB_SCHEMA_SANDBOX";
   public static final String ENV_SECRET_KEY = "SECRET_KEY";
   public static final String ENV_ENVSVC_BASE_URL = "ENVSVC_BASE_URL";
   public static final String ENV_ENVSVC_USERNAME = "ENVSVC_USR";
@@ -62,13 +64,19 @@ public class ConstantUtils {
           ENV_ALLOWED_ORIGINS);
 
   public static final List<String> ENV_KEY_NAMES_PROD =
-      List.of(ENV_DB_HOST_PROD, ENV_DB_NAME_PROD, ENV_DB_USERNAME_PROD, ENV_DB_PASSWORD_PROD);
+      List.of(
+          ENV_DB_HOST_PROD,
+          ENV_DB_NAME_PROD,
+          ENV_DB_USERNAME_PROD,
+          ENV_DB_PASSWORD_PROD,
+          ENV_DB_SCHEMA_PROD);
   public static final List<String> ENV_KEY_NAMES_SANDBOX =
       List.of(
           ENV_DB_HOST_SANDBOX,
           ENV_DB_NAME_SANDBOX,
           ENV_DB_USERNAME_SANDBOX,
-          ENV_DB_PASSWORD_SANDBOX);
+          ENV_DB_PASSWORD_SANDBOX,
+          ENV_DB_SCHEMA_SANDBOX);
 
   // ROLE NAMES
   public static final String ROLE_NAME_GUEST = "GUEST";

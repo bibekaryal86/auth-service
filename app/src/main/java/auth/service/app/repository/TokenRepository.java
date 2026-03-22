@@ -1,6 +1,7 @@
 package auth.service.app.repository;
 
 import auth.service.app.model.entity.TokenEntity;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,4 +31,8 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
           "UPDATE token SET deleted_date = CURRENT_TIMESTAMP WHERE profile_id = :profileId AND created_date >= CURRENT_TIMESTAMP - 3600",
       nativeQuery = true)
   int setTokensAsDeletedByProfileIdTest(@Param("profileId") Long profileId);
+
+  @Modifying
+  @Query("DELETE FROM TokenEntity t WHERE t.expiryDate < :paramDate")
+  int deleteByExpiryDateBefore(@Param("paramDate") LocalDateTime paramDate);
 }
