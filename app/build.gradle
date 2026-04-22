@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath 'org.postgresql:postgresql:42.7.10'
-        classpath 'org.flywaydb:flyway-database-postgresql:12.3.0'
+        classpath 'org.flywaydb:flyway-database-postgresql:12.4.0'
         classpath 'org.yaml:snakeyaml:2.6'
     }
 }
@@ -36,7 +36,7 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
     runtimeOnly 'org.postgresql:postgresql:42.7.10'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:12.3.0'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:12.4.0'
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
