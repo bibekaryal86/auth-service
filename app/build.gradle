@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'org.postgresql:postgresql:42.7.10'
+        classpath 'org.postgresql:postgresql:42.7.11'
         classpath 'org.flywaydb:flyway-database-postgresql:12.4.0'
         classpath 'org.yaml:snakeyaml:2.6'
     }
@@ -35,7 +35,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
-    runtimeOnly 'org.postgresql:postgresql:42.7.10'
+    runtimeOnly 'org.postgresql:postgresql:42.7.11'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:12.4.0'
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion") {
@@ -50,7 +50,7 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.flywaydb:flyway-core:12.4.0'
-    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.3'
     testImplementation 'com.h2database:h2:2.4.240'
 }
 
