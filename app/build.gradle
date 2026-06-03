@@ -21,7 +21,7 @@ dependencies {
     def junitVersion = "6.1.0"
     def jjwtVersion = "0.13.0"
 
-    implementation 'io.github.bibekaryal86:shdsvc:1.0.12'
+    implementation 'io.github.bibekaryal86:shdsvc:1.0.13'
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springVersion"
