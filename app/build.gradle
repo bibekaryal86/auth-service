@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     def springVersion = "4.1.0"
-    def junitVersion = "6.1.1"
+    def junitVersion = "6.1.2"
     def jjwtVersion = "0.13.0"
 
     implementation 'io.github.bibekaryal86:shdsvc:1.0.13'
