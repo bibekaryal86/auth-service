@@ -26,8 +26,8 @@ public class CookieService {
   public ResponseCookie buildRefreshCookie(final String token, final long maxAge) {
     return ResponseCookie.from(ConstantUtils.COOKIE_REFRESH_TOKEN, token)
         .httpOnly(true)
-        .secure(CommonUtils.isProduction())
-        .sameSite(CommonUtils.isProduction() ? "Strict" : "Lax")
+        .secure(true) // required whenever SameSite=None
+        .sameSite("None")
         .maxAge(maxAge)
         .path("/")
         .build();
@@ -36,8 +36,8 @@ public class CookieService {
   public ResponseCookie buildCsrfCookie(final String token, final long maxAge) {
     return ResponseCookie.from(ConstantUtils.COOKIE_CSRF_TOKEN, token)
         .httpOnly(false)
-        .secure(CommonUtils.isProduction())
-        .sameSite(CommonUtils.isProduction() ? "Strict" : "Lax")
+        .secure(true) // required whenever SameSite=None
+        .sameSite("None")
         .maxAge(maxAge)
         .path("/")
         .build();

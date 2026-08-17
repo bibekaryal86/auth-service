@@ -197,7 +197,7 @@ class CookieServiceTest {
       assertEquals(token, cookie.getValue());
       assertTrue(cookie.isHttpOnly());
       assertTrue(cookie.isSecure());
-      assertEquals("Strict", cookie.getSameSite());
+      assertEquals("None", cookie.getSameSite());
       assertEquals(maxAge, cookie.getMaxAge().getSeconds());
       assertEquals("/", cookie.getPath());
     }
@@ -285,15 +285,14 @@ class CookieServiceTest {
     }
 
     @Test
-    @DisplayName("Should always set SameSite to Strict for refresh cookie")
-    void shouldAlwaysSetSameSiteStrictForRefreshCookie() {
+    @DisplayName("Should always set SameSite to None for refresh cookie")
+    void shouldAlwaysSetSameSiteNoneForRefreshCookie() {
       String token = "token";
       long maxAge = 3600L;
 
       ResponseCookie cookie = cookieService.buildRefreshCookie(token, maxAge);
 
-      assertEquals(
-          "Strict", cookie.getSameSite(), "Refresh cookie must use Strict SameSite policy");
+      assertEquals("None", cookie.getSameSite(), "Refresh cookie must use None SameSite policy");
     }
   }
 
@@ -314,7 +313,7 @@ class CookieServiceTest {
       assertEquals(token, cookie.getValue());
       assertFalse(cookie.isHttpOnly());
       assertTrue(cookie.isSecure());
-      assertEquals("Strict", cookie.getSameSite());
+      assertEquals("None", cookie.getSameSite());
       assertEquals(maxAge, cookie.getMaxAge().getSeconds());
       assertEquals("/", cookie.getPath());
     }
@@ -402,14 +401,14 @@ class CookieServiceTest {
     }
 
     @Test
-    @DisplayName("Should always set SameSite to Strict for CSRF cookie")
-    void shouldAlwaysSetSameSiteStrictForCsrfCookie() {
+    @DisplayName("Should always set SameSite to None for CSRF cookie")
+    void shouldAlwaysSetSameSiteNoneForCsrfCookie() {
       String token = "token";
       long maxAge = 3600L;
 
       ResponseCookie cookie = cookieService.buildCsrfCookie(token, maxAge);
 
-      assertEquals("Strict", cookie.getSameSite(), "CSRF cookie must use Strict SameSite policy");
+      assertEquals("None", cookie.getSameSite(), "CSRF cookie must use None SameSite policy");
     }
 
     @Test
@@ -455,16 +454,16 @@ class CookieServiceTest {
     }
 
     @Test
-    @DisplayName("Both cookies should use Strict SameSite policy")
-    void shouldBothUseStrictSameSite() {
+    @DisplayName("Both cookies should use None SameSite policy")
+    void shouldBothUseNoneSameSite() {
       String token = "token";
       long maxAge = 3600L;
 
       ResponseCookie refreshCookie = cookieService.buildRefreshCookie(token, maxAge);
       ResponseCookie csrfCookie = cookieService.buildCsrfCookie(token, maxAge);
 
-      assertEquals("Strict", refreshCookie.getSameSite());
-      assertEquals("Strict", csrfCookie.getSameSite());
+      assertEquals("None", refreshCookie.getSameSite());
+      assertEquals("None", csrfCookie.getSameSite());
     }
 
     @Test
