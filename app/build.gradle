@@ -28,7 +28,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springVersion"
     implementation "org.springframework.boot:spring-boot-starter-validation:$springVersion"
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
-    implementation 'io.swagger.parser.v3:swagger-parser:2.1.46'
+    implementation 'io.swagger.parser.v3:swagger-parser:2.1.47'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
     implementation 'ch.qos.logback:logback-classic:1.6.3'
     implementation 'com.google.code.gson:gson:2.14.0'
@@ -50,7 +50,7 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.flywaydb:flyway-core:13.3.0'
-    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.1'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2'
     testImplementation 'com.h2database:h2:2.4.240'
 }
 
