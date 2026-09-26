@@ -12,7 +12,7 @@ plugins {
     id 'jacoco'
     id 'io.freefair.lombok' version '9.7.0'
     id 'org.springframework.boot' version '4.1.0'
-    id 'com.diffplug.spotless' version '8.10.2'
+    id 'com.diffplug.spotless' version '8.10.3'
     id 'org.flywaydb.flyway' version '13.8.0'
 }
 
@@ -49,7 +49,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
     testImplementation 'org.mockito:mockito-core:5.23.0'
-    testImplementation 'org.flywaydb:flyway-core:13.7.0'
+    testImplementation 'org.flywaydb:flyway-core:13.8.0'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2'
     testImplementation 'com.h2database:h2:2.5.250'
 }
