@@ -51,7 +51,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.flywaydb:flyway-core:13.8.0'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2'
-    testImplementation 'com.h2database:h2:2.5.250'
+    testImplementation 'com.h2database:h2:2.5.252'
 }
 
 java {
