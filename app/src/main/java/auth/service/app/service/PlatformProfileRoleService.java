@@ -76,11 +76,9 @@ public class PlatformProfileRoleService {
         roleId);
     return platformProfileRoleRepository
         .findById(new PlatformProfileRoleId(platformId, profileId, roleId))
-        .orElseThrow(
-            () ->
-                new ElementNotFoundException(
-                    "Platform Profile Role",
-                    String.format("%s,%s,%s", platformId, profileId, roleId)));
+        .orElseThrow(() ->
+            new ElementNotFoundException(
+                "Platform Profile Role", String.format("%s,%s,%s", platformId, profileId, roleId)));
   }
 
   public PlatformProfileRoleEntity readPlatformProfileRole(
@@ -97,11 +95,10 @@ public class PlatformProfileRoleService {
 
     List<PlatformProfileRoleEntity> pprListActive =
         pprList.stream()
-            .filter(
-                ppr ->
-                    ppr.getPlatform().getDeletedDate() == null
-                        && ppr.getProfile().getDeletedDate() == null
-                        && ppr.getRole().getDeletedDate() == null)
+            .filter(ppr ->
+                ppr.getPlatform().getDeletedDate() == null
+                    && ppr.getProfile().getDeletedDate() == null
+                    && ppr.getRole().getDeletedDate() == null)
             .toList();
 
     if (pprListActive.isEmpty()) {

@@ -67,15 +67,14 @@ public class AuthCorsController {
       final ProfilePasswordTokenResponse profilePasswordTokenResponse =
           profileService.loginProfile(
               platformId, profilePasswordRequest, CommonUtils.getIpAddress(request));
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_LOGIN,
-                  String.format(
-                      "Profile Login [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_LOGIN,
+              String.format(
+                  "Profile Login [Id: %s] - [Email: %s]",
+                  profileEntity.getId(), profileEntity.getEmail())));
 
       // reset login attempts and set last login date
       profileEntity.setLoginAttempts(0);
@@ -112,18 +111,17 @@ public class AuthCorsController {
         profileService.updateProfile(profileEntity);
       }
 
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR,
-                  String.format(
-                      "Profile Login Error [Id: %s] - [Email: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      profilePasswordRequest.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_LOGIN_ERROR,
+              String.format(
+                  "Profile Login Error [Id: %s] - [Email: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  profilePasswordRequest.getEmail())));
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
@@ -163,17 +161,16 @@ public class AuthCorsController {
               tokenEntity.getProfile(),
               CommonUtils.getIpAddress(request));
 
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  tokenEntity.getProfile(),
-                  AuditEnums.AuditProfile.TOKEN_REFRESH,
-                  String.format(
-                      "Profile Token Refresh [Id: %s] - [Email: %s] - [Platform: %s]",
-                      tokenEntity.getProfile().getId(),
-                      tokenEntity.getProfile().getEmail(),
-                      tokenEntity.getPlatform().getId())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              tokenEntity.getProfile(),
+              AuditEnums.AuditProfile.TOKEN_REFRESH,
+              String.format(
+                  "Profile Token Refresh [Id: %s] - [Email: %s] - [Platform: %s]",
+                  tokenEntity.getProfile().getId(),
+                  tokenEntity.getProfile().getEmail(),
+                  tokenEntity.getPlatform().getId())));
 
       final ResponseCookie refreshTokenCookieResponse =
           cookieService.buildRefreshCookie(
@@ -192,17 +189,16 @@ public class AuthCorsController {
       log.error("Refresh Token: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
           circularDependencyService.readProfileNoException(profileId, Boolean.TRUE);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR,
-                  String.format(
-                      "Profile Token Refresh Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileId,
-                      profileEntity == null ? "N/A" : profileEntity.getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.TOKEN_REFRESH_ERROR,
+              String.format(
+                  "Profile Token Refresh Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileId,
+                  profileEntity == null ? "N/A" : profileEntity.getEmail(),
+                  platformId)));
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }
@@ -217,15 +213,14 @@ public class AuthCorsController {
           circularDependencyService.readProfile(profileId, Boolean.TRUE, Boolean.FALSE);
       tokenService.setTokenDeletedDateByProfileId(profileId);
 
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_LOGOUT,
-                  String.format(
-                      "Profile Logout [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileId, profileEntity.getEmail(), platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_LOGOUT,
+              String.format(
+                  "Profile Logout [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileId, profileEntity.getEmail(), platformId)));
 
       final ResponseCookie refreshTokenCookieResponse = cookieService.buildRefreshCookie("", 0);
       final ResponseCookie csrfTokenCookieResponse = cookieService.buildCsrfCookie("", 0);
@@ -238,17 +233,16 @@ public class AuthCorsController {
       log.error("Logout: PlatformId=[{}], ProfileId=[{}]", platformId, profileId, ex);
       final ProfileEntity profileEntity =
           circularDependencyService.readProfileNoException(profileId, Boolean.TRUE);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR,
-                  String.format(
-                      "Profile Logout Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileId,
-                      profileEntity == null ? "N/A" : profileEntity.getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_LOGOUT_ERROR,
+              String.format(
+                  "Profile Logout Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileId,
+                  profileEntity == null ? "N/A" : profileEntity.getEmail(),
+                  platformId)));
       return entityDtoConvertUtils.getResponseErrorProfilePassword(ex);
     }
   }

@@ -29,13 +29,12 @@ public class ScheduleConfig {
     log.info("Recreating app caches...");
     cacheManager
         .getCacheNames()
-        .forEach(
-            name -> {
-              Cache cache = cacheManager.getCache(name);
-              if (cache != null) {
-                cache.clear();
-              }
-            });
+        .forEach(name -> {
+          Cache cache = cacheManager.getCache(name);
+          if (cache != null) {
+            cache.clear();
+          }
+        });
 
     Thread.sleep(5000);
 

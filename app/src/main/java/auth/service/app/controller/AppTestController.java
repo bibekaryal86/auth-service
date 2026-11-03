@@ -27,13 +27,12 @@ public class AppTestController {
   public ResponseEntity<String> resetCaches() {
     cacheManager
         .getCacheNames()
-        .forEach(
-            name -> {
-              Cache cache = cacheManager.getCache(name);
-              if (cache != null) {
-                cache.clear();
-              }
-            });
+        .forEach(name -> {
+          Cache cache = cacheManager.getCache(name);
+          if (cache != null) {
+            cache.clear();
+          }
+        });
     return ResponseEntity.ok("{\"reset\": \"successful\"}");
   }
 }

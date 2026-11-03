@@ -55,15 +55,14 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.createPermission(permissionRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPermission(
-                  request,
-                  permissionEntity,
-                  AuditEnums.AuditPermission.PERMISSION_CREATE,
-                  String.format(
-                      "Permission Create [Id: %s] - [Name: %s]",
-                      permissionEntity.getId(), permissionEntity.getPermissionName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPermission(
+              request,
+              permissionEntity,
+              AuditEnums.AuditPermission.PERMISSION_CREATE,
+              String.format(
+                  "Permission Create [Id: %s] - [Name: %s]",
+                  permissionEntity.getId(), permissionEntity.getPermissionName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
@@ -145,15 +144,14 @@ public class PermissionController {
     try {
       final PermissionEntity permissionEntity =
           permissionService.updatePermission(id, permissionRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPermission(
-                  request,
-                  permissionEntity,
-                  AuditEnums.AuditPermission.PERMISSION_UPDATE,
-                  String.format(
-                      "Permission Update [Id: %s] - [Name: %s]",
-                      permissionEntity.getId(), permissionEntity.getPermissionName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPermission(
+              request,
+              permissionEntity,
+              AuditEnums.AuditPermission.PERMISSION_UPDATE,
+              String.format(
+                  "Permission Update [Id: %s] - [Name: %s]",
+                  permissionEntity.getId(), permissionEntity.getPermissionName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
@@ -170,15 +168,14 @@ public class PermissionController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PermissionEntity permissionEntity = permissionService.softDeletePermission(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPermission(
-                  request,
-                  permissionEntity,
-                  AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT,
-                  String.format(
-                      "Permission Delete Soft [Id: %s] - [Name: %s]",
-                      permissionEntity.getId(), permissionEntity.getPermissionName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPermission(
+              request,
+              permissionEntity,
+              AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT,
+              String.format(
+                  "Permission Delete Soft [Id: %s] - [Name: %s]",
+                  permissionEntity.getId(), permissionEntity.getPermissionName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePermission(
@@ -233,15 +230,14 @@ public class PermissionController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PermissionEntity permissionEntity = permissionService.restoreSoftDeletedPermission(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPermission(
-                  request,
-                  permissionEntity,
-                  AuditEnums.AuditPermission.PERMISSION_RESTORE,
-                  String.format(
-                      "Permission Restore [Id: %s] - [Name: %s]",
-                      permissionEntity.getId(), permissionEntity.getPermissionName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPermission(
+              request,
+              permissionEntity,
+              AuditEnums.AuditPermission.PERMISSION_RESTORE,
+              String.format(
+                  "Permission Restore [Id: %s] - [Name: %s]",
+                  permissionEntity.getId(), permissionEntity.getPermissionName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePermission(

@@ -88,11 +88,10 @@ public class TokenService {
     if (id != null && deletedDate != null) {
       tokenRepository
           .findById(id)
-          .ifPresent(
-              toDelete -> {
-                toDelete.setDeletedDate(deletedDate);
-                tokenRepository.save(toDelete);
-              });
+          .ifPresent(toDelete -> {
+            toDelete.setDeletedDate(deletedDate);
+            tokenRepository.save(toDelete);
+          });
       return ProfilePasswordTokenResponse.builder()
           .responseMetadata(ResponseMetadata.emptyResponseMetadata())
           .build();

@@ -37,22 +37,22 @@ public class RawSqlRepository {
 
     final String sql =
         """
-        SELECT DISTINCT
-            r.id AS role_id,
-            r.role_name AS role_name,
-            p.id AS permission_id,
-            p.permission_name AS permission_name
-        FROM platform_profile_role ppr
-        JOIN role r ON r.id = ppr.role_id
-        JOIN platform_role_permission prp
-            ON  prp.platform_id = ppr.platform_id
-            AND prp.role_id = ppr.role_id
-        JOIN permission p ON p.id = prp.permission_id
-        WHERE ppr.platform_id = :platformId
-          AND ppr.profile_id  = :profileId
-          AND ppr.unassigned_date IS NULL
-          AND prp.unassigned_date IS NULL
-    """;
+            SELECT DISTINCT
+                r.id AS role_id,
+                r.role_name AS role_name,
+                p.id AS permission_id,
+                p.permission_name AS permission_name
+            FROM platform_profile_role ppr
+            JOIN role r ON r.id = ppr.role_id
+            JOIN platform_role_permission prp
+                ON  prp.platform_id = ppr.platform_id
+                AND prp.role_id = ppr.role_id
+            JOIN permission p ON p.id = prp.permission_id
+            WHERE ppr.platform_id = :platformId
+              AND ppr.profile_id  = :profileId
+              AND ppr.unassigned_date IS NULL
+              AND prp.unassigned_date IS NULL
+        """;
 
     Map<String, Object> params =
         Map.of(

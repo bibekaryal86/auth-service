@@ -88,9 +88,8 @@ public class PermissionCheck {
     }
 
     return authToken.getPermissions().stream()
-        .anyMatch(
-            authTokenPermission ->
-                requiredPermissions.contains(authTokenPermission.getPermissionName()));
+        .anyMatch(authTokenPermission ->
+            requiredPermissions.contains(authTokenPermission.getPermissionName()));
   }
 
   private Map<String, Boolean> checkUserPermissionDuplicate(

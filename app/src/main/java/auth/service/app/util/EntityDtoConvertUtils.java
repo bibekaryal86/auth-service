@@ -238,21 +238,20 @@ public class EntityDtoConvertUtils {
           CommonUtilities.isEmpty(prpEntities)
               ? Collections.emptyList()
               : prpEntities.stream()
-                  .map(
-                      prpEntity -> {
-                        final PlatformDto platformDto =
-                            convertEntityToDtoPlatform(
-                                prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
-                        final RoleDto roleDto =
-                            convertEntityToDtoRole(
-                                prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformRolePermissionDto.builder()
-                            .platform(platformDto)
-                            .role(roleDto)
-                            .assignedDate(prpEntity.getAssignedDate())
-                            .unassignedDate(prpEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(prpEntity -> {
+                    final PlatformDto platformDto =
+                        convertEntityToDtoPlatform(
+                            prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
+                    final RoleDto roleDto =
+                        convertEntityToDtoRole(
+                            prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformRolePermissionDto.builder()
+                        .platform(platformDto)
+                        .role(roleDto)
+                        .assignedDate(prpEntity.getAssignedDate())
+                        .unassignedDate(prpEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
       dto.setPlatformRolePermissions(prpDtos);
     } else {
@@ -294,9 +293,8 @@ public class EntityDtoConvertUtils {
     } else {
       dtos =
           entities.stream()
-              .map(
-                  entity ->
-                      convertEntityToDtoPermission(entity, null, Boolean.FALSE, Boolean.FALSE))
+              .map(entity ->
+                  convertEntityToDtoPermission(entity, null, Boolean.FALSE, Boolean.FALSE))
               .toList();
       platformNames =
           dtos.stream()
@@ -367,41 +365,39 @@ public class EntityDtoConvertUtils {
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()
               : pprEntities.stream()
-                  .map(
-                      pprEntity -> {
-                        final PlatformDto platformDto =
-                            convertEntityToDtoPlatform(
-                                pprEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
-                        final ProfileDto profileDto =
-                            convertEntityToDtoProfile(
-                                pprEntity.getProfile(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformProfileRoleDto.builder()
-                            .platform(platformDto)
-                            .profile(profileDto)
-                            .assignedDate(pprEntity.getAssignedDate())
-                            .unassignedDate(pprEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(pprEntity -> {
+                    final PlatformDto platformDto =
+                        convertEntityToDtoPlatform(
+                            pprEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
+                    final ProfileDto profileDto =
+                        convertEntityToDtoProfile(
+                            pprEntity.getProfile(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformProfileRoleDto.builder()
+                        .platform(platformDto)
+                        .profile(profileDto)
+                        .assignedDate(pprEntity.getAssignedDate())
+                        .unassignedDate(pprEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
       final List<PlatformRolePermissionDto> prpDtos =
           CommonUtilities.isEmpty(prpEntities)
               ? Collections.emptyList()
               : prpEntities.stream()
-                  .map(
-                      prpEntity -> {
-                        final PlatformDto platformDto =
-                            convertEntityToDtoPlatform(
-                                prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
-                        final PermissionDto permissionDto =
-                            convertEntityToDtoPermission(
-                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformRolePermissionDto.builder()
-                            .platform(platformDto)
-                            .permission(permissionDto)
-                            .assignedDate(prpEntity.getAssignedDate())
-                            .unassignedDate(prpEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(prpEntity -> {
+                    final PlatformDto platformDto =
+                        convertEntityToDtoPlatform(
+                            prpEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
+                    final PermissionDto permissionDto =
+                        convertEntityToDtoPermission(
+                            prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformRolePermissionDto.builder()
+                        .platform(platformDto)
+                        .permission(permissionDto)
+                        .assignedDate(prpEntity.getAssignedDate())
+                        .unassignedDate(prpEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
 
       dto.setPlatformProfileRoles(pprDtos);
@@ -507,41 +503,39 @@ public class EntityDtoConvertUtils {
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()
               : pprEntities.stream()
-                  .map(
-                      pprEntity -> {
-                        final RoleDto roleDto =
-                            convertEntityToDtoRole(
-                                pprEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
-                        final ProfileDto profileDto =
-                            convertEntityToDtoProfile(
-                                pprEntity.getProfile(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformProfileRoleDto.builder()
-                            .role(roleDto)
-                            .profile(profileDto)
-                            .assignedDate(pprEntity.getAssignedDate())
-                            .unassignedDate(pprEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(pprEntity -> {
+                    final RoleDto roleDto =
+                        convertEntityToDtoRole(
+                            pprEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
+                    final ProfileDto profileDto =
+                        convertEntityToDtoProfile(
+                            pprEntity.getProfile(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformProfileRoleDto.builder()
+                        .role(roleDto)
+                        .profile(profileDto)
+                        .assignedDate(pprEntity.getAssignedDate())
+                        .unassignedDate(pprEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
       final List<PlatformRolePermissionDto> prpDtos =
           CommonUtilities.isEmpty(prpEntities)
               ? Collections.emptyList()
               : prpEntities.stream()
-                  .map(
-                      prpEntity -> {
-                        final RoleDto roleDto =
-                            convertEntityToDtoRole(
-                                prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
-                        final PermissionDto permissionDto =
-                            convertEntityToDtoPermission(
-                                prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformRolePermissionDto.builder()
-                            .role(roleDto)
-                            .permission(permissionDto)
-                            .assignedDate(prpEntity.getAssignedDate())
-                            .unassignedDate(prpEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(prpEntity -> {
+                    final RoleDto roleDto =
+                        convertEntityToDtoRole(
+                            prpEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
+                    final PermissionDto permissionDto =
+                        convertEntityToDtoPermission(
+                            prpEntity.getPermission(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformRolePermissionDto.builder()
+                        .role(roleDto)
+                        .permission(permissionDto)
+                        .assignedDate(prpEntity.getAssignedDate())
+                        .unassignedDate(prpEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
 
       dto.setPlatformProfileRoles(pprDtos);
@@ -651,21 +645,20 @@ public class EntityDtoConvertUtils {
           CommonUtilities.isEmpty(pprEntities)
               ? Collections.emptyList()
               : pprEntities.stream()
-                  .map(
-                      pprEntity -> {
-                        final PlatformDto platformDto =
-                            convertEntityToDtoPlatform(
-                                pprEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
-                        final RoleDto roleDto =
-                            convertEntityToDtoRole(
-                                pprEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
-                        return PlatformProfileRoleDto.builder()
-                            .role(roleDto)
-                            .platform(platformDto)
-                            .assignedDate(pprEntity.getAssignedDate())
-                            .unassignedDate(pprEntity.getUnassignedDate())
-                            .build();
-                      })
+                  .map(pprEntity -> {
+                    final PlatformDto platformDto =
+                        convertEntityToDtoPlatform(
+                            pprEntity.getPlatform(), null, Boolean.FALSE, Boolean.FALSE);
+                    final RoleDto roleDto =
+                        convertEntityToDtoRole(
+                            pprEntity.getRole(), null, Boolean.FALSE, Boolean.FALSE);
+                    return PlatformProfileRoleDto.builder()
+                        .role(roleDto)
+                        .platform(platformDto)
+                        .assignedDate(pprEntity.getAssignedDate())
+                        .unassignedDate(pprEntity.getUnassignedDate())
+                        .build();
+                  })
                   .toList();
       dto.setPlatformProfileRoles(pprDtos);
     } else {
@@ -803,16 +796,14 @@ public class EntityDtoConvertUtils {
         new AuthToken.AuthTokenProfile(profileEntity.getId(), profileEntity.getEmail());
     final List<AuthToken.AuthTokenRole> roles =
         rolesPermissions.stream()
-            .map(
-                rolePermission ->
-                    new AuthToken.AuthTokenRole(rolePermission.roleId(), rolePermission.roleName()))
+            .map(rolePermission ->
+                new AuthToken.AuthTokenRole(rolePermission.roleId(), rolePermission.roleName()))
             .toList();
     final List<AuthToken.AuthTokenPermission> permissions =
         rolesPermissions.stream()
-            .map(
-                rolePermission ->
-                    new AuthToken.AuthTokenPermission(
-                        rolePermission.permissionId(), rolePermission.permissionName()))
+            .map(rolePermission ->
+                new AuthToken.AuthTokenPermission(
+                    rolePermission.permissionId(), rolePermission.permissionName()))
             .toList();
     final boolean isSuperUser =
         roles.stream()

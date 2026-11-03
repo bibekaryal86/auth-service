@@ -47,12 +47,11 @@ public class TestData {
   }
 
   public static void setSystemEnvPropertyTestData() {
-    ENV_KEY_NAMES.forEach(
-        env -> {
-          if (!ENV_SERVER_PORT.equals(env)) {
-            System.setProperty(env, env);
-          }
-        });
+    ENV_KEY_NAMES.forEach(env -> {
+      if (!ENV_SERVER_PORT.equals(env)) {
+        System.setProperty(env, env);
+      }
+    });
     System.setProperty(ENV_SECRET_KEY, "test_secret_key_for_jwt_testing_purposes_only");
   }
 
@@ -197,11 +196,10 @@ public class TestData {
                       profileAddressEntity -> profileAddressEntity.getProfile().getId(),
                       profileAddressEntity -> profileAddressEntity));
 
-      profileEntities.forEach(
-          profile -> {
-            ProfileAddressEntity profileAddress = addressMap.getOrDefault(profile.getId(), null);
-            profile.setProfileAddress(profileAddress);
-          });
+      profileEntities.forEach(profile -> {
+        ProfileAddressEntity profileAddress = addressMap.getOrDefault(profile.getId(), null);
+        profile.setProfileAddress(profileAddress);
+      });
 
       return profileEntities;
     } catch (JsonProcessingException ex) {

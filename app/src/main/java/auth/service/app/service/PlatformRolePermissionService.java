@@ -76,11 +76,10 @@ public class PlatformRolePermissionService {
         permissionId);
     return platformRolePermissionRepository
         .findById(new PlatformRolePermissionId(platformId, roleId, permissionId))
-        .orElseThrow(
-            () ->
-                new ElementNotFoundException(
-                    "Platform Role Permission",
-                    String.format("%s,%s,%s", platformId, roleId, permissionId)));
+        .orElseThrow(() ->
+            new ElementNotFoundException(
+                "Platform Role Permission",
+                String.format("%s,%s,%s", platformId, roleId, permissionId)));
   }
 
   public List<PlatformRolePermissionEntity> readPlatformRolePermissions(

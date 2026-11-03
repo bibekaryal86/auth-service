@@ -93,11 +93,8 @@ public class PermissionControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPermission(
               any(HttpServletRequest.class),
-              argThat(
-                  permissionEntityParam ->
-                      permissionEntityParam
-                          .getPermissionName()
-                          .equals(request.getPermissionName())),
+              argThat(permissionEntityParam ->
+                  permissionEntityParam.getPermissionName().equals(request.getPermissionName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_CREATE)),
               any(String.class));
 
@@ -679,11 +676,8 @@ public class PermissionControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPermission(
               any(HttpServletRequest.class),
-              argThat(
-                  permissionEntityParam ->
-                      permissionEntityParam
-                          .getPermissionName()
-                          .equals(request.getPermissionName())),
+              argThat(permissionEntityParam ->
+                  permissionEntityParam.getPermissionName().equals(request.getPermissionName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_UPDATE)),
               any(String.class));
 
@@ -893,11 +887,10 @@ public class PermissionControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPermission(
               any(HttpServletRequest.class),
-              argThat(
-                  permissionEntityParam ->
-                      permissionEntityParam
-                          .getPermissionName()
-                          .equals(existingPermission.getPermissionName())),
+              argThat(permissionEntityParam ->
+                  permissionEntityParam
+                      .getPermissionName()
+                      .equals(existingPermission.getPermissionName())),
               argThat(
                   eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_SOFT)),
               any(String.class));
@@ -1076,11 +1069,10 @@ public class PermissionControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPermission(
               any(HttpServletRequest.class),
-              argThat(
-                  permissionEntityParam ->
-                      permissionEntityParam
-                          .getPermissionName()
-                          .equals(permissionEntity.getPermissionName())),
+              argThat(permissionEntityParam ->
+                  permissionEntityParam
+                      .getPermissionName()
+                      .equals(permissionEntity.getPermissionName())),
               argThat(
                   eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_DELETE_HARD)),
               any(String.class));
@@ -1214,11 +1206,10 @@ public class PermissionControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPermission(
               any(HttpServletRequest.class),
-              argThat(
-                  permissionEntityParam ->
-                      permissionEntityParam
-                          .getPermissionName()
-                          .equals(existingPermission.getPermissionName())),
+              argThat(permissionEntityParam ->
+                  permissionEntityParam
+                      .getPermissionName()
+                      .equals(existingPermission.getPermissionName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPermission.PERMISSION_RESTORE)),
               any(String.class));
 

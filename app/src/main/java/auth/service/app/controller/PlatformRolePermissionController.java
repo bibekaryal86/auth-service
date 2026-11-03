@@ -43,17 +43,16 @@ public class PlatformRolePermissionController {
       final PlatformRolePermissionEntity platformRolePermissionEntity =
           platformRolePermissionService.assignPlatformRolePermission(platformRolePermissionRequest);
 
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  platformRolePermissionEntity.getRole(),
-                  AuditEnums.AuditRole.ASSIGN_PLATFORM_PERMISSION,
-                  String.format(
-                      "Platform Role Permission Assign [Platform: %s] - [Role: %s] - [Permission: %s]",
-                      platformRolePermissionEntity.getPlatform().getId(),
-                      platformRolePermissionEntity.getRole().getId(),
-                      platformRolePermissionEntity.getPermission().getId())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              platformRolePermissionEntity.getRole(),
+              AuditEnums.AuditRole.ASSIGN_PLATFORM_PERMISSION,
+              String.format(
+                  "Platform Role Permission Assign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                  platformRolePermissionEntity.getPlatform().getId(),
+                  platformRolePermissionEntity.getRole().getId(),
+                  platformRolePermissionEntity.getPermission().getId())));
 
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
@@ -85,17 +84,16 @@ public class PlatformRolePermissionController {
           platformRolePermissionService.unassignPlatformRolePermission(
               platformId, roleId, permissionId);
 
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  platformRolePermissionEntity.getRole(),
-                  AuditEnums.AuditRole.UNASSIGN_PLATFORM_PERMISSION,
-                  String.format(
-                      "Platform Profile Role UnAssign [Platform: %s] - [Role: %s] - [Permission: %s]",
-                      platformRolePermissionEntity.getPlatform().getId(),
-                      platformRolePermissionEntity.getRole().getId(),
-                      platformRolePermissionEntity.getPermission().getId())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              platformRolePermissionEntity.getRole(),
+              AuditEnums.AuditRole.UNASSIGN_PLATFORM_PERMISSION,
+              String.format(
+                  "Platform Profile Role UnAssign [Platform: %s] - [Role: %s] - [Permission: %s]",
+                  platformRolePermissionEntity.getPlatform().getId(),
+                  platformRolePermissionEntity.getRole().getId(),
+                  platformRolePermissionEntity.getPermission().getId())));
 
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);

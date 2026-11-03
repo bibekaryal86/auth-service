@@ -50,15 +50,14 @@ public class PlatformController {
       @Valid @RequestBody final PlatformRequest platformRequest, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.createPlatform(platformRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPlatform(
-                  request,
-                  platformEntity,
-                  AuditEnums.AuditPlatform.PLATFORM_CREATE,
-                  String.format(
-                      "Platform Create [Id: %s] - [Name: %s]",
-                      platformEntity.getId(), platformEntity.getPlatformName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPlatform(
+              request,
+              platformEntity,
+              AuditEnums.AuditPlatform.PLATFORM_CREATE,
+              String.format(
+                  "Platform Create [Id: %s] - [Name: %s]",
+                  platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
@@ -121,15 +120,14 @@ public class PlatformController {
       final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.updatePlatform(id, platformRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPlatform(
-                  request,
-                  platformEntity,
-                  AuditEnums.AuditPlatform.PLATFORM_UPDATE,
-                  String.format(
-                      "Platform Update [Id: %s] - [Name: %s]",
-                      platformEntity.getId(), platformEntity.getPlatformName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPlatform(
+              request,
+              platformEntity,
+              AuditEnums.AuditPlatform.PLATFORM_UPDATE,
+              String.format(
+                  "Platform Update [Id: %s] - [Name: %s]",
+                  platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
@@ -146,15 +144,14 @@ public class PlatformController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.softDeletePlatform(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPlatform(
-                  request,
-                  platformEntity,
-                  AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT,
-                  String.format(
-                      "Platform Delete Soft [Id: %s] - [Name: %s]",
-                      platformEntity.getId(), platformEntity.getPlatformName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPlatform(
+              request,
+              platformEntity,
+              AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT,
+              String.format(
+                  "Platform Delete Soft [Id: %s] - [Name: %s]",
+                  platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSinglePlatform(
@@ -206,15 +203,14 @@ public class PlatformController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final PlatformEntity platformEntity = platformService.restoreSoftDeletedPlatform(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditPlatform(
-                  request,
-                  platformEntity,
-                  AuditEnums.AuditPlatform.PLATFORM_RESTORE,
-                  String.format(
-                      "Platform Restore [Id: %s] - [Name: %s]",
-                      platformEntity.getId(), platformEntity.getPlatformName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditPlatform(
+              request,
+              platformEntity,
+              AuditEnums.AuditPlatform.PLATFORM_RESTORE,
+              String.format(
+                  "Platform Restore [Id: %s] - [Name: %s]",
+                  platformEntity.getId(), platformEntity.getPlatformName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSinglePlatform(
