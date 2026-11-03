@@ -180,14 +180,12 @@ public class AuthControllerTest extends BaseTest {
 
       verify(publisher, times(1))
           .publishEvent(
-              argThat(
-                  event -> {
-                    ProfileEvent profileEvent = (ProfileEvent) event;
-                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
-                    assertEquals(
-                        "https://base-url-for-link-in-email.com", profileEvent.getBaseUrl());
-                    return true;
-                  }));
+              argThat(event -> {
+                ProfileEvent profileEvent = (ProfileEvent) event;
+                assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
+                assertEquals("https://base-url-for-link-in-email.com", profileEvent.getBaseUrl());
+                return true;
+              }));
 
       // reset
       roleEntity.setRoleName(roleName);
@@ -250,15 +248,13 @@ public class AuthControllerTest extends BaseTest {
 
       verify(publisher, times(1))
           .publishEvent(
-              argThat(
-                  event -> {
-                    ProfileEvent profileEvent = (ProfileEvent) event;
-                    assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
-                    assertTrue(
-                        Pattern.matches(
-                            "^http://localhost:\\d+/authsvc$", profileEvent.getBaseUrl()));
-                    return true;
-                  }));
+              argThat(event -> {
+                ProfileEvent profileEvent = (ProfileEvent) event;
+                assertEquals(TypeEnums.EventType.CREATE, profileEvent.getEventType());
+                assertTrue(
+                    Pattern.matches("^http://localhost:\\d+/authsvc$", profileEvent.getBaseUrl()));
+                return true;
+              }));
 
       // reset
       roleEntity.setRoleName(roleName);

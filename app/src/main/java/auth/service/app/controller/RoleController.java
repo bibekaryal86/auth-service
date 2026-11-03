@@ -50,15 +50,14 @@ public class RoleController {
       @Valid @RequestBody final RoleRequest roleRequest, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.createRole(roleRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  roleEntity,
-                  AuditEnums.AuditRole.ROLE_CREATE,
-                  String.format(
-                      "Role Create [Id: %s] - [Name: %s]",
-                      roleEntity.getId(), roleEntity.getRoleName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              roleEntity,
+              AuditEnums.AuditRole.ROLE_CREATE,
+              String.format(
+                  "Role Create [Id: %s] - [Name: %s]",
+                  roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
@@ -117,15 +116,14 @@ public class RoleController {
       final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.updateRole(id, roleRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  roleEntity,
-                  AuditEnums.AuditRole.ROLE_UPDATE,
-                  String.format(
-                      "Role Update [Id: %s] - [Name: %s]",
-                      roleEntity.getId(), roleEntity.getRoleName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              roleEntity,
+              AuditEnums.AuditRole.ROLE_UPDATE,
+              String.format(
+                  "Role Update [Id: %s] - [Name: %s]",
+                  roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
@@ -141,15 +139,14 @@ public class RoleController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       RoleEntity roleEntity = roleService.softDeleteRole(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  roleEntity,
-                  AuditEnums.AuditRole.ROLE_DELETE_SOFT,
-                  String.format(
-                      "Role Delete Soft [Id: %s] - [Name: %s]",
-                      roleEntity.getId(), roleEntity.getRoleName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              roleEntity,
+              AuditEnums.AuditRole.ROLE_DELETE_SOFT,
+              String.format(
+                  "Role Delete Soft [Id: %s] - [Name: %s]",
+                  roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);
@@ -198,15 +195,14 @@ public class RoleController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final RoleEntity roleEntity = roleService.restoreSoftDeletedRole(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditRole(
-                  request,
-                  roleEntity,
-                  AuditEnums.AuditRole.ROLE_RESTORE,
-                  String.format(
-                      "Role Restore [Id: %s] - [Name: %s]",
-                      roleEntity.getId(), roleEntity.getRoleName())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditRole(
+              request,
+              roleEntity,
+              AuditEnums.AuditRole.ROLE_RESTORE,
+              String.format(
+                  "Role Restore [Id: %s] - [Name: %s]",
+                  roleEntity.getId(), roleEntity.getRoleName())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSingleRole(roleEntity, responseCrudInfo, null);

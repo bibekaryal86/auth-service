@@ -119,15 +119,14 @@ public class ProfileController {
     try {
       permissionCheck.checkProfileAccess("", id);
       ProfileEntity profileEntity = profileService.updateProfile(id, profileRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_UPDATE,
-                  String.format(
-                      "Profile Update [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_UPDATE,
+              String.format(
+                  "Profile Update [Id: %s] - [Email: %s]",
+                  profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
@@ -160,18 +159,17 @@ public class ProfileController {
               profileEmailRequest,
               platformProfileRoleEntity.getPlatform(),
               baseUrlForLinkInEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_EMAIL_UPDATE,
-                  String.format(
-                      "Profile Update Email [PlatformId: %s] - [Id: %s] - [OldEmail: %s] - [NewEmail: %s]",
-                      platformId,
-                      profileEntity.getId(),
-                      profileEmailRequest.getOldEmail(),
-                      profileEmailRequest.getNewEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_EMAIL_UPDATE,
+              String.format(
+                  "Profile Update Email [PlatformId: %s] - [Id: %s] - [OldEmail: %s] - [NewEmail: %s]",
+                  platformId,
+                  profileEntity.getId(),
+                  profileEmailRequest.getOldEmail(),
+                  profileEmailRequest.getNewEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
@@ -201,15 +199,14 @@ public class ProfileController {
       final ProfileEntity profileEntity =
           profileService.updateProfilePassword(
               id, profilePasswordRequest, platformProfileRoleEntity.getPlatform());
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE,
-                  String.format(
-                      "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
-                      platformId, profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_PASSWORD_UPDATE,
+              String.format(
+                  "Profile Update Password [PlatformId: %s] - [Id: %s] - [Email: %s]",
+                  platformId, profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 1, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
@@ -230,15 +227,14 @@ public class ProfileController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final ProfileEntity profileEntity = profileService.softDeleteProfile(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_DELETE_SOFT,
-                  String.format(
-                      "Profile Delete Soft [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_DELETE_SOFT,
+              String.format(
+                  "Profile Delete Soft [Id: %s] - [Email: %s]",
+                  profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 1, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
@@ -289,15 +285,14 @@ public class ProfileController {
       @PathVariable final long id, final HttpServletRequest request) {
     try {
       final ProfileEntity profileEntity = profileService.restoreSoftDeletedProfile(id);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESTORE,
-                  String.format(
-                      "Profile Restore [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESTORE,
+              String.format(
+                  "Profile Restore [Id: %s] - [Email: %s]",
+                  profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(0, 0, 0, 1);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);

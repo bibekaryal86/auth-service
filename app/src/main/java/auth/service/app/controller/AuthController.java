@@ -72,15 +72,14 @@ public class AuthController {
           circularDependencyService.readPlatform(platformId, Boolean.FALSE);
       final ProfileEntity profileEntity =
           profileService.createProfile(platformEntity, profileRequest, baseUrlForLinkInEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_CREATE,
-                  String.format(
-                      "Profile Create [Id: %s] - [Email: %s]",
-                      profileEntity.getId(), profileEntity.getEmail())));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_CREATE,
+              String.format(
+                  "Profile Create [Id: %s] - [Email: %s]",
+                  profileEntity.getId(), profileEntity.getEmail())));
       final ResponseMetadata.ResponseCrudInfo responseCrudInfo =
           CommonUtils.defaultResponseCrudInfo(1, 0, 0, 0);
       return entityDtoConvertUtils.getResponseSingleProfile(profileEntity, responseCrudInfo, null);
@@ -108,34 +107,32 @@ public class AuthController {
           platformProfileRoleEntity.getPlatform(),
           platformProfileRoleEntity.getProfile(),
           baseUrlForLinkInEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  platformProfileRoleEntity.getProfile(),
-                  AuditEnums.AuditProfile.PROFILE_VALIDATE_INIT,
-                  String.format(
-                      "Profile Validate Init [Id: %s] - [Email: %s] - [Platform: %s]",
-                      platformProfileRoleEntity.getProfile().getId(),
-                      platformProfileRoleEntity.getProfile().getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              platformProfileRoleEntity.getProfile(),
+              AuditEnums.AuditProfile.PROFILE_VALIDATE_INIT,
+              String.format(
+                  "Profile Validate Init [Id: %s] - [Email: %s] - [Platform: %s]",
+                  platformProfileRoleEntity.getProfile().getId(),
+                  platformProfileRoleEntity.getProfile().getEmail(),
+                  platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Validate Profile Init: PlatformId=[{}], Email=[{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
-                  String.format(
-                      "Profile Validate Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      email,
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
+              String.format(
+                  "Profile Validate Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  email,
+                  platformId)));
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -153,15 +150,14 @@ public class AuthController {
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
           profileService.validateAndResetProfile(platformId, toValidate, Boolean.TRUE);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_VALIDATE_EXIT,
-                  String.format(
-                      "Profile Validate Exit [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_VALIDATE_EXIT,
+              String.format(
+                  "Profile Validate Exit [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, Boolean.TRUE);
     } catch (Exception ex) {
       final String decodedEmail = JwtUtils.decodeEmailAddressNoException(toValidate);
@@ -172,19 +168,18 @@ public class AuthController {
           ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
-                  String.format(
-                      "Profile Validate Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      profileEntity == null ? decodedEmail : profileEntity.getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_VALIDATE_ERROR,
+              String.format(
+                  "Profile Validate Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  profileEntity == null ? decodedEmail : profileEntity.getEmail(),
+                  platformId)));
       return entityDtoConvertUtils.getResponseValidateProfile(redirectUrl, Boolean.FALSE);
     }
   }
@@ -206,34 +201,32 @@ public class AuthController {
           platformProfileRoleEntity.getPlatform(),
           platformProfileRoleEntity.getProfile(),
           baseUrlForLinkInEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  platformProfileRoleEntity.getProfile(),
-                  AuditEnums.AuditProfile.PROFILE_RESET_INIT,
-                  String.format(
-                      "Profile Reset Init [Id: %s] - [Email: %s] - [Platform: %s]",
-                      platformProfileRoleEntity.getProfile().getId(),
-                      platformProfileRoleEntity.getProfile().getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              platformProfileRoleEntity.getProfile(),
+              AuditEnums.AuditProfile.PROFILE_RESET_INIT,
+              String.format(
+                  "Profile Reset Init [Id: %s] - [Email: %s] - [Platform: %s]",
+                  platformProfileRoleEntity.getProfile().getId(),
+                  platformProfileRoleEntity.getProfile().getEmail(),
+                  platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error("Reset Profile Init: PlatformId=[{}], Email=[{}]", platformId, email, ex);
       final ProfileEntity profileEntity = profileService.readProfileByEmailNoException(email);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
-                  String.format(
-                      "Profile Reset Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      email,
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
+              String.format(
+                  "Profile Reset Init Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  email,
+                  platformId)));
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -246,15 +239,14 @@ public class AuthController {
     try {
       final ProfileEntity profileEntity =
           profileService.resetProfile(platformId, profilePasswordRequest);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_SUCCESS,
-                  String.format(
-                      "Profile Reset Success [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESET_SUCCESS,
+              String.format(
+                  "Profile Reset Success [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return ResponseEntity.noContent().build();
     } catch (Exception ex) {
       log.error(
@@ -264,21 +256,20 @@ public class AuthController {
           ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(profilePasswordRequest.getEmail());
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
-                  String.format(
-                      "Profile Reset Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      profileEntity == null
-                          ? profilePasswordRequest.getEmail()
-                          : profileEntity.getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
+              String.format(
+                  "Profile Reset Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  profileEntity == null
+                      ? profilePasswordRequest.getEmail()
+                      : profileEntity.getEmail(),
+                  platformId)));
       return entityDtoConvertUtils.getResponseErrorResponseMetadata(ex);
     }
   }
@@ -296,15 +287,14 @@ public class AuthController {
           envServiceConnector.getRedirectUrls().getOrDefault(platformEntity.getPlatformName(), "");
       final ProfileEntity profileEntity =
           profileService.validateAndResetProfile(platformId, toReset, Boolean.FALSE);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_EXIT,
-                  String.format(
-                      "Profile Reset Exit [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity.getId(), profileEntity.getEmail(), platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESET_EXIT,
+              String.format(
+                  "Profile Reset Exit [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity.getId(), profileEntity.getEmail(), platformId)));
       return entityDtoConvertUtils.getResponseResetProfile(
           redirectUrl, Boolean.TRUE, profileEntity.getEmail());
     } catch (Exception ex) {
@@ -313,19 +303,18 @@ public class AuthController {
           "Reset Profile Exit: PlatformId=[{}], DecodedEmail=[{}]", platformId, decodedEmail, ex);
       final ProfileEntity profileEntity =
           profileService.readProfileByEmailNoException(decodedEmail);
-      CompletableFuture.runAsync(
-          () ->
-              auditService.auditProfile(
-                  request,
-                  profileEntity,
-                  AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
-                  String.format(
-                      "Profile Reset Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
-                      profileEntity == null
-                          ? ConstantUtils.ELEMENT_ID_NOT_FOUND
-                          : profileEntity.getId(),
-                      profileEntity == null ? decodedEmail : profileEntity.getEmail(),
-                      platformId)));
+      CompletableFuture.runAsync(() ->
+          auditService.auditProfile(
+              request,
+              profileEntity,
+              AuditEnums.AuditProfile.PROFILE_RESET_ERROR,
+              String.format(
+                  "Profile Reset Exit Error [Id: %s] - [Email: %s] - [Platform: %s]",
+                  profileEntity == null
+                      ? ConstantUtils.ELEMENT_ID_NOT_FOUND
+                      : profileEntity.getId(),
+                  profileEntity == null ? decodedEmail : profileEntity.getEmail(),
+                  platformId)));
       return entityDtoConvertUtils.getResponseResetProfile(redirectUrl, false, "");
     }
   }

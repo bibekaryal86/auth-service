@@ -808,11 +808,10 @@ public class ProfileControllerTest extends BaseTest {
 
       verify(publisher)
           .publishEvent(
-              ArgumentMatchers.argThat(
-                  event ->
-                      event instanceof ProfileEvent
-                          && ((ProfileEvent) event).getEventType()
-                              == TypeEnums.EventType.UPDATE_EMAIL));
+              ArgumentMatchers.argThat(event ->
+                  event instanceof ProfileEvent
+                      && ((ProfileEvent) event).getEventType()
+                          == TypeEnums.EventType.UPDATE_EMAIL));
 
       tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
       assertNotNull(tokenEntity.getDeletedDate());
@@ -875,11 +874,10 @@ public class ProfileControllerTest extends BaseTest {
 
       verify(publisher)
           .publishEvent(
-              ArgumentMatchers.argThat(
-                  event ->
-                      event instanceof ProfileEvent
-                          && ((ProfileEvent) event).getEventType()
-                              == TypeEnums.EventType.UPDATE_EMAIL));
+              ArgumentMatchers.argThat(event ->
+                  event instanceof ProfileEvent
+                      && ((ProfileEvent) event).getEventType()
+                          == TypeEnums.EventType.UPDATE_EMAIL));
 
       // reset
       existingProfile.setEmail(existingEmail);
@@ -1129,11 +1127,10 @@ public class ProfileControllerTest extends BaseTest {
 
       verify(publisher)
           .publishEvent(
-              ArgumentMatchers.argThat(
-                  event ->
-                      event instanceof ProfileEvent
-                          && ((ProfileEvent) event).getEventType()
-                              == TypeEnums.EventType.UPDATE_PASSWORD));
+              ArgumentMatchers.argThat(event ->
+                  event instanceof ProfileEvent
+                      && ((ProfileEvent) event).getEventType()
+                          == TypeEnums.EventType.UPDATE_PASSWORD));
 
       tokenEntity = tokenRepository.findById(tokenEntity.getId()).orElseThrow();
       assertNotNull(tokenEntity.getDeletedDate());
@@ -1197,11 +1194,10 @@ public class ProfileControllerTest extends BaseTest {
 
       verify(publisher)
           .publishEvent(
-              ArgumentMatchers.argThat(
-                  event ->
-                      event instanceof ProfileEvent
-                          && ((ProfileEvent) event).getEventType()
-                              == TypeEnums.EventType.UPDATE_PASSWORD));
+              ArgumentMatchers.argThat(event ->
+                  event instanceof ProfileEvent
+                      && ((ProfileEvent) event).getEventType()
+                          == TypeEnums.EventType.UPDATE_PASSWORD));
 
       // reset
       existingProfile.setPassword(existingPassword);

@@ -753,9 +753,8 @@ public class RoleControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditRole(
               any(HttpServletRequest.class),
-              argThat(
-                  roleEntityParam ->
-                      roleEntityParam.getRoleName().equals(existingRole.getRoleName())),
+              argThat(roleEntityParam ->
+                  roleEntityParam.getRoleName().equals(existingRole.getRoleName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditRole.ROLE_DELETE_SOFT)),
               any(String.class));
 
@@ -932,9 +931,8 @@ public class RoleControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditRole(
               any(HttpServletRequest.class),
-              argThat(
-                  roleEntityParam ->
-                      roleEntityParam.getRoleName().equals(roleEntity.getRoleName())),
+              argThat(roleEntityParam ->
+                  roleEntityParam.getRoleName().equals(roleEntity.getRoleName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditRole.ROLE_DELETE_HARD)),
               any(String.class));
 
@@ -1065,9 +1063,8 @@ public class RoleControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditRole(
               any(HttpServletRequest.class),
-              argThat(
-                  roleEntityParam ->
-                      roleEntityParam.getRoleName().equals(existingRole.getRoleName())),
+              argThat(roleEntityParam ->
+                  roleEntityParam.getRoleName().equals(existingRole.getRoleName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditRole.ROLE_RESTORE)),
               any(String.class));
 

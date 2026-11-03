@@ -96,9 +96,8 @@ public class PlatformControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPlatform(
               any(HttpServletRequest.class),
-              argThat(
-                  platformEntityParam ->
-                      platformEntityParam.getPlatformName().equals(request.getPlatformName())),
+              argThat(platformEntityParam ->
+                  platformEntityParam.getPlatformName().equals(request.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_CREATE)),
               any(String.class));
 
@@ -549,9 +548,8 @@ public class PlatformControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPlatform(
               any(HttpServletRequest.class),
-              argThat(
-                  platformEntityParam ->
-                      platformEntityParam.getPlatformName().equals(request.getPlatformName())),
+              argThat(platformEntityParam ->
+                  platformEntityParam.getPlatformName().equals(request.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_UPDATE)),
               any(String.class));
 
@@ -759,11 +757,8 @@ public class PlatformControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPlatform(
               any(HttpServletRequest.class),
-              argThat(
-                  platformEntityParam ->
-                      platformEntityParam
-                          .getPlatformName()
-                          .equals(existingPlatform.getPlatformName())),
+              argThat(platformEntityParam ->
+                  platformEntityParam.getPlatformName().equals(existingPlatform.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_DELETE_SOFT)),
               any(String.class));
 
@@ -944,11 +939,8 @@ public class PlatformControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPlatform(
               any(HttpServletRequest.class),
-              argThat(
-                  platformEntityParam ->
-                      platformEntityParam
-                          .getPlatformName()
-                          .equals(platformEntity.getPlatformName())),
+              argThat(platformEntityParam ->
+                  platformEntityParam.getPlatformName().equals(platformEntity.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_DELETE_HARD)),
               any(String.class));
 
@@ -1081,11 +1073,8 @@ public class PlatformControllerTest extends BaseTest {
       verify(auditService, after(100).times(1))
           .auditPlatform(
               any(HttpServletRequest.class),
-              argThat(
-                  platformEntityParam ->
-                      platformEntityParam
-                          .getPlatformName()
-                          .equals(existingPlatform.getPlatformName())),
+              argThat(platformEntityParam ->
+                  platformEntityParam.getPlatformName().equals(existingPlatform.getPlatformName())),
               argThat(eventType -> eventType.equals(AuditEnums.AuditPlatform.PLATFORM_RESTORE)),
               any(String.class));
 
